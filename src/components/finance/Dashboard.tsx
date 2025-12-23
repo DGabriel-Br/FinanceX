@@ -132,7 +132,7 @@ export const Dashboard = ({ totals, filter, onFilterChange, transactions, allTra
       </div>
 
       {/* Gráfico de colunas */}
-      <div className="mt-6 bg-card border border-border rounded-xl p-6 shadow-sm">
+      <div className="mt-6 bg-card border border-border rounded-xl p-6 shadow-sm animate-fade-in" style={{ animationDelay: '0.1s', animationFillMode: 'both' }}>
         <h3 className="text-lg font-semibold text-foreground mb-4">
           Receitas e Despesas por Mês ({new Date().getFullYear()})
         </h3>
