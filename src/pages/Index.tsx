@@ -3,12 +3,14 @@ import { Sidebar } from '@/components/finance/Sidebar';
 import { Dashboard } from '@/components/finance/Dashboard';
 import { Transactions } from '@/components/finance/Transactions';
 import { useTransactions } from '@/hooks/useTransactions';
+import { useTheme } from '@/hooks/useTheme';
 
 type Tab = 'dashboard' | 'lancamentos';
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState<Tab>('dashboard');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const { theme, toggleTheme } = useTheme();
   
   const {
     filter,
@@ -31,6 +33,8 @@ const Index = () => {
         onTabChange={setActiveTab} 
         collapsed={sidebarCollapsed}
         onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
+        theme={theme}
+        onToggleTheme={toggleTheme}
       />
 
       {/* Conteúdo principal */}
