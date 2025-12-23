@@ -16,8 +16,6 @@ const Index = () => {
   
   const {
     transactions,
-    filter,
-    setFilter,
     customRange,
     setCustomRange,
     addTransaction,
@@ -53,8 +51,6 @@ const Index = () => {
         {activeTab === 'dashboard' ? (
           <Dashboard
             totals={totals}
-            filter={filter}
-            onFilterChange={setFilter}
             customRange={customRange}
             onCustomRangeChange={setCustomRange}
             transactions={filteredTransactions}
@@ -65,8 +61,6 @@ const Index = () => {
         ) : activeTab === 'lancamentos' ? (
           <Transactions
             transactions={filteredTransactions}
-            filter={filter}
-            onFilterChange={setFilter}
             customRange={customRange}
             onCustomRangeChange={setCustomRange}
             onAdd={addTransaction}

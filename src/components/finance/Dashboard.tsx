@@ -1,8 +1,8 @@
 import { TrendingUp, TrendingDown, Wallet, BarChart3 } from 'lucide-react';
-import { AdvancedPeriodFilter, CustomDateRange } from './AdvancedPeriodFilter';
+import { PeriodFilter, CustomDateRange } from './PeriodFilter';
 import { DebtTracker } from './DebtTracker';
 import { CategoryCharts } from './CategoryCharts';
-import { PeriodFilter as PeriodFilterType, Transaction } from '@/types/transaction';
+import { Transaction } from '@/types/transaction';
 import { Debt } from '@/types/debt';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { useMemo } from 'react';
@@ -13,8 +13,6 @@ interface DashboardProps {
     despesas: number;
     saldo: number;
   };
-  filter: PeriodFilterType;
-  onFilterChange: (filter: PeriodFilterType) => void;
   customRange: CustomDateRange | null;
   onCustomRangeChange: (range: CustomDateRange | null) => void;
   transactions: Transaction[];
@@ -38,8 +36,6 @@ const formatCurrency = (value: number): string => {
 
 export const Dashboard = ({ 
   totals, 
-  filter, 
-  onFilterChange, 
   customRange, 
   onCustomRangeChange, 
   transactions, 
@@ -86,9 +82,7 @@ export const Dashboard = ({
           <h2 className="text-2xl font-bold text-foreground">Dashboard</h2>
           <p className="text-muted-foreground mt-1">Resumo das suas finanças</p>
         </div>
-        <AdvancedPeriodFilter 
-          value={filter} 
-          onChange={onFilterChange}
+        <PeriodFilter 
           customRange={customRange}
           onCustomRangeChange={onCustomRangeChange}
         />

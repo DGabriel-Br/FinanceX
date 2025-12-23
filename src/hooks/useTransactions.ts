@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Transaction, PeriodFilter } from '@/types/transaction';
-import { CustomDateRange } from '@/components/finance/AdvancedPeriodFilter';
+import { Transaction } from '@/types/transaction';
+import { CustomDateRange } from '@/components/finance/PeriodFilter';
+import { startOfMonth, endOfMonth } from 'date-fns';
 
 const STORAGE_KEY = 'financeiro-pessoal-transactions';
 
@@ -20,8 +21,10 @@ export const parseLocalDate = (dateString: string): Date => {
 
 export const useTransactions = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [filter, setFilter] = useState<PeriodFilter>('mes');
-  const [customRange, setCustomRange] = useState<CustomDateRange | null>(null);
+  const [customRange, setCustomRange] = useState<CustomDateRange | null>(() => {
+    const today = new Date();
+    return { start: startOfMonth(today), end: endOfMonth(today) };
+  });
 
   // Carregar do localStorage ao iniciar
   useEffect(() => {
@@ -65,58 +68,19 @@ export const useTransactions = () => {
 
   // Filtrar transações por período
   const getFilteredTransactions = useCallback(() => {
-    if (filter === 'todos') return transactions;
-
-    // Se há um customRange, use-o
-    if (customRange) {
-      return transactions.filter(t => {
-        const transactionDate = parseLocalDate(t.date);
-        const startDate = new Date(customRange.start);
-        startDate.setHours(0, 0, 0, 0);
-        const endDate = new Date(customRange.end);
-        endDate.setHours(23, 59, 59, 999);
-        
-        return transactionDate >= startDate && transactionDate <= endDate;
-      });
-    }
-
-    // Fallback para o filtro padrão (período atual)
-    const today = new Date();
-    const todayStr = getLocalDateString(today);
+    // Se não há customRange, retorna todas as transações (máximo)
+    if (!customRange) return transactions;
 
     return transactions.filter(t => {
       const transactionDate = parseLocalDate(t.date);
+      const startDate = new Date(customRange.start);
+      startDate.setHours(0, 0, 0, 0);
+      const endDate = new Date(customRange.end);
+      endDate.setHours(23, 59, 59, 999);
       
-      switch (filter) {
-        case 'dia':
-          return t.date === todayStr;
-        
-        case 'semana': {
-          const startOfWeek = new Date(today);
-          startOfWeek.setDate(today.getDate() - today.getDay());
-          startOfWeek.setHours(0, 0, 0, 0);
-          
-          const endOfWeek = new Date(startOfWeek);
-          endOfWeek.setDate(startOfWeek.getDate() + 6);
-          endOfWeek.setHours(23, 59, 59, 999);
-          
-          return transactionDate >= startOfWeek && transactionDate <= endOfWeek;
-        }
-        
-        case 'mes':
-          return (
-            transactionDate.getMonth() === today.getMonth() &&
-            transactionDate.getFullYear() === today.getFullYear()
-          );
-        
-        case 'ano':
-          return transactionDate.getFullYear() === today.getFullYear();
-        
-        default:
-          return true;
-      }
+      return transactionDate >= startDate && transactionDate <= endDate;
     });
-  }, [transactions, filter, customRange]);
+  }, [transactions, customRange]);
 
   // Calcular totais
   const getTotals = useCallback(() => {
@@ -139,8 +103,6 @@ export const useTransactions = () => {
 
   return {
     transactions,
-    filter,
-    setFilter,
     customRange,
     setCustomRange,
     addTransaction,
