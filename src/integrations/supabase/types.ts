@@ -14,7 +14,96 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      debts: {
+        Row: {
+          created_at: string
+          due_date: string | null
+          id: string
+          is_completed: boolean
+          name: string
+          paid_value: number
+          total_value: number
+        }
+        Insert: {
+          created_at?: string
+          due_date?: string | null
+          id?: string
+          is_completed?: boolean
+          name: string
+          paid_value?: number
+          total_value: number
+        }
+        Update: {
+          created_at?: string
+          due_date?: string | null
+          id?: string
+          is_completed?: boolean
+          name?: string
+          paid_value?: number
+          total_value?: number
+        }
+        Relationships: []
+      }
+      investment_goals: {
+        Row: {
+          created_at: string
+          current_value: number
+          deadline: string | null
+          id: string
+          is_completed: boolean
+          name: string
+          target_value: number
+        }
+        Insert: {
+          created_at?: string
+          current_value?: number
+          deadline?: string | null
+          id?: string
+          is_completed?: boolean
+          name: string
+          target_value: number
+        }
+        Update: {
+          created_at?: string
+          current_value?: number
+          deadline?: string | null
+          id?: string
+          is_completed?: boolean
+          name?: string
+          target_value?: number
+        }
+        Relationships: []
+      }
+      transactions: {
+        Row: {
+          category: string
+          created_at: number
+          date: string
+          description: string
+          id: string
+          type: string
+          value: number
+        }
+        Insert: {
+          category: string
+          created_at?: number
+          date: string
+          description: string
+          id?: string
+          type: string
+          value: number
+        }
+        Update: {
+          category?: string
+          created_at?: number
+          date?: string
+          description?: string
+          id?: string
+          type?: string
+          value?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

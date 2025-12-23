@@ -1,58 +1,134 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Debt } from '@/types/debt';
-
-const DEBTS_STORAGE_KEY = 'finance-debts';
-
-// Carrega dívidas do localStorage
-const loadDebts = (): Debt[] => {
-  try {
-    const stored = localStorage.getItem(DEBTS_STORAGE_KEY);
-    return stored ? JSON.parse(stored) : [];
-  } catch {
-    return [];
-  }
-};
-
-// Salva dívidas no localStorage
-const saveDebts = (debts: Debt[]) => {
-  localStorage.setItem(DEBTS_STORAGE_KEY, JSON.stringify(debts));
-};
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 export const useDebts = () => {
-  const [debts, setDebts] = useState<Debt[]>(loadDebts);
+  const [debts, setDebts] = useState<Debt[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // Sincroniza com localStorage
+  // Carregar do Supabase ao iniciar
   useEffect(() => {
-    saveDebts(debts);
-  }, [debts]);
+    fetchDebts();
+  }, []);
+
+  const fetchDebts = async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('debts')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      const mappedData: Debt[] = (data || []).map((d) => ({
+        id: d.id,
+        name: d.name,
+        totalValue: Number(d.total_value),
+        paidValue: Number(d.paid_value),
+        dueDate: d.due_date || undefined,
+        isCompleted: d.is_completed,
+        createdAt: new Date(d.created_at).getTime(),
+      }));
+
+      setDebts(mappedData);
+    } catch (error) {
+      console.error('Erro ao carregar dívidas:', error);
+      toast.error('Erro ao carregar dívidas');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Adicionar dívida
-  const addDebt = useCallback((debt: Omit<Debt, 'id' | 'createdAt'>) => {
-    const newDebt: Debt = {
-      ...debt,
-      id: crypto.randomUUID(),
-      createdAt: Date.now(),
-    };
-    setDebts(prev => [...prev, newDebt]);
-    return newDebt;
+  const addDebt = useCallback(async (debt: Omit<Debt, 'id' | 'createdAt'>) => {
+    try {
+      const { data, error } = await supabase
+        .from('debts')
+        .insert({
+          name: debt.name,
+          total_value: debt.totalValue,
+          paid_value: debt.paidValue,
+          due_date: debt.dueDate || null,
+          is_completed: debt.isCompleted,
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      const newDebt: Debt = {
+        id: data.id,
+        name: data.name,
+        totalValue: Number(data.total_value),
+        paidValue: Number(data.paid_value),
+        dueDate: data.due_date || undefined,
+        isCompleted: data.is_completed,
+        createdAt: new Date(data.created_at).getTime(),
+      };
+
+      setDebts(prev => [newDebt, ...prev]);
+      toast.success('Dívida adicionada!');
+      return newDebt;
+    } catch (error) {
+      console.error('Erro ao adicionar dívida:', error);
+      toast.error('Erro ao adicionar dívida');
+      return null;
+    }
   }, []);
 
   // Atualizar dívida
-  const updateDebt = useCallback((id: string, updates: Partial<Omit<Debt, 'id' | 'createdAt'>>) => {
-    setDebts(prev => prev.map(debt => 
-      debt.id === id ? { ...debt, ...updates } : debt
-    ));
+  const updateDebt = useCallback(async (id: string, updates: Partial<Omit<Debt, 'id' | 'createdAt'>>) => {
+    try {
+      const updateData: Record<string, unknown> = {};
+      if (updates.name !== undefined) updateData.name = updates.name;
+      if (updates.totalValue !== undefined) updateData.total_value = updates.totalValue;
+      if (updates.paidValue !== undefined) updateData.paid_value = updates.paidValue;
+      if (updates.dueDate !== undefined) updateData.due_date = updates.dueDate || null;
+      if (updates.isCompleted !== undefined) updateData.is_completed = updates.isCompleted;
+
+      const { error } = await supabase
+        .from('debts')
+        .update(updateData)
+        .eq('id', id);
+
+      if (error) throw error;
+
+      setDebts(prev => prev.map(debt => 
+        debt.id === id ? { ...debt, ...updates } : debt
+      ));
+      toast.success('Dívida atualizada!');
+    } catch (error) {
+      console.error('Erro ao atualizar dívida:', error);
+      toast.error('Erro ao atualizar dívida');
+    }
   }, []);
 
   // Remover dívida
-  const deleteDebt = useCallback((id: string) => {
-    setDebts(prev => prev.filter(debt => debt.id !== id));
+  const deleteDebt = useCallback(async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from('debts')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+
+      setDebts(prev => prev.filter(debt => debt.id !== id));
+      toast.success('Dívida excluída!');
+    } catch (error) {
+      console.error('Erro ao excluir dívida:', error);
+      toast.error('Erro ao excluir dívida');
+    }
   }, []);
 
   return {
     debts,
+    loading,
     addDebt,
     updateDebt,
     deleteDebt,
+    refetch: fetchDebts,
   };
 };
