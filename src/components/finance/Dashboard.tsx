@@ -5,7 +5,7 @@ import { CategoryCharts } from './CategoryCharts';
 import { Transaction } from '@/types/transaction';
 import { Debt } from '@/types/debt';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, Cell, ReferenceLine } from 'recharts';
-import { useMemo } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 
 interface DashboardProps {
   totals: {
@@ -26,6 +26,12 @@ const MONTHS = [
   'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'
 ];
 
+// Meses abreviados para mobile
+const MONTHS_SHORT = [
+  'J', 'F', 'M', 'A', 'M', 'J',
+  'J', 'A', 'S', 'O', 'N', 'D'
+];
+
 // Formatar valor em Real brasileiro
 const formatCurrency = (value: number): string => {
   return new Intl.NumberFormat('pt-BR', {
@@ -43,6 +49,16 @@ export const Dashboard = ({
   debts, 
   onNavigateToDebts 
 }: DashboardProps) => {
+  // Detectar se é mobile
+  const [isMobile, setIsMobile] = useState(false);
+  
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 768);
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
   // Obtém o ano a partir do customRange ou usa o ano atual
   const selectedYear = customRange?.start?.getFullYear() || new Date().getFullYear();
   const currentMonth = new Date().getMonth();
@@ -148,14 +164,21 @@ export const Dashboard = ({
       </div>
 
       {/* Gráfico de colunas */}
-      <div className="mt-6 bg-card border border-border rounded-xl p-6 shadow-sm animate-fade-in" style={{ animationDelay: '0.3s', animationDuration: '0.6s', animationFillMode: 'both' }}>
-        <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
-          <BarChart3 className="w-5 h-5 text-primary" />
-          Receitas e Despesas por Mês ({selectedYear})
+      <div className="mt-6 bg-card border border-border rounded-xl p-3 md:p-6 shadow-sm animate-fade-in" style={{ animationDelay: '0.3s', animationDuration: '0.6s', animationFillMode: 'both' }}>
+        <h3 className="text-sm md:text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+          <BarChart3 className="w-4 h-4 md:w-5 md:h-5 text-primary" />
+          <span className="hidden sm:inline">Receitas e Despesas por Mês ({selectedYear})</span>
+          <span className="sm:hidden">Receitas/Despesas ({selectedYear})</span>
         </h3>
-        <div className="h-80">
+        <div className="h-64 md:h-80">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+            <BarChart 
+              data={chartData} 
+              margin={isMobile 
+                ? { top: 10, right: 5, left: -15, bottom: 5 }
+                : { top: 20, right: 30, left: 20, bottom: 5 }
+              }
+            >
               <defs>
                 {/* Gradiente para Receitas */}
                 <linearGradient id="gradientReceitas" x1="0" y1="0" x2="0" y2="1">
@@ -183,19 +206,20 @@ export const Dashboard = ({
                 tick={({ x, y, payload }) => {
                   const monthIndex = MONTHS.indexOf(payload.value);
                   const isCurrentMonthTick = isCurrentYear && monthIndex === currentMonth;
+                  const displayName = isMobile ? MONTHS_SHORT[monthIndex] : payload.value;
                   return (
                     <g>
                       <text 
                         x={x} 
-                        y={y + 16} 
+                        y={y + (isMobile ? 12 : 16)} 
                         textAnchor="middle" 
                         fill={isCurrentMonthTick ? 'hsl(var(--primary))' : 'hsl(var(--muted-foreground))'}
-                        fontSize={12}
+                        fontSize={isMobile ? 9 : 12}
                         fontWeight={isCurrentMonthTick ? 600 : 400}
                       >
-                        {payload.value}
+                        {displayName}
                       </text>
-                      {isCurrentMonthTick && (
+                      {isCurrentMonthTick && !isMobile && (
                         <text x={x} y={y + 28} textAnchor="middle" fontSize={10} fill="hsl(var(--primary))">●</text>
                       )}
                     </g>
@@ -204,13 +228,17 @@ export const Dashboard = ({
                 axisLine={{ stroke: 'hsl(var(--border))' }}
                 tickLine={false}
                 tickMargin={4}
+                interval={0}
               />
               <YAxis 
-                tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
+                tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: isMobile ? 9 : 12 }}
                 axisLine={{ stroke: 'hsl(var(--border))' }}
                 tickLine={{ stroke: 'hsl(var(--border))' }}
-                tickFormatter={(value) => value.toLocaleString('pt-BR')}
-                width={80}
+                tickFormatter={(value) => isMobile 
+                  ? (value >= 1000 ? `${(value/1000).toFixed(0)}k` : value.toString())
+                  : value.toLocaleString('pt-BR')
+                }
+                width={isMobile ? 35 : 80}
               />
               <Tooltip 
                 content={({ active, payload, label }) => {
@@ -248,7 +276,7 @@ export const Dashboard = ({
                 cursor={{ fill: 'hsl(var(--muted))', opacity: 0.3 }}
               />
               <Legend 
-                wrapperStyle={{ paddingTop: '20px' }}
+                wrapperStyle={{ paddingTop: isMobile ? '10px' : '20px', fontSize: isMobile ? '10px' : '14px' }}
                 payload={[
                   { value: 'Receitas', type: 'square', color: 'hsl(142, 71%, 45%)' },
                   { value: 'Despesas', type: 'square', color: 'hsl(0, 84%, 60%)' },
@@ -257,28 +285,30 @@ export const Dashboard = ({
               <Bar 
                 dataKey="receitas" 
                 name="Receitas" 
-                radius={[6, 6, 0, 0]}
+                radius={isMobile ? [3, 3, 0, 0] : [6, 6, 0, 0]}
+                barSize={isMobile ? 8 : undefined}
               >
                 {chartData.map((entry, index) => (
                   <Cell 
                     key={`receitas-${index}`} 
                     fill={entry.isCurrentMonth ? 'url(#gradientReceitasAtual)' : 'url(#gradientReceitas)'}
                     stroke={entry.isCurrentMonth ? 'hsl(var(--primary))' : 'none'}
-                    strokeWidth={entry.isCurrentMonth ? 2 : 0}
+                    strokeWidth={entry.isCurrentMonth ? (isMobile ? 1 : 2) : 0}
                   />
                 ))}
               </Bar>
               <Bar 
                 dataKey="despesas" 
                 name="Despesas" 
-                radius={[6, 6, 0, 0]}
+                radius={isMobile ? [3, 3, 0, 0] : [6, 6, 0, 0]}
+                barSize={isMobile ? 8 : undefined}
               >
                 {chartData.map((entry, index) => (
                   <Cell 
                     key={`despesas-${index}`} 
                     fill={entry.isCurrentMonth ? 'url(#gradientDespesasAtual)' : 'url(#gradientDespesas)'}
                     stroke={entry.isCurrentMonth ? 'hsl(var(--primary))' : 'none'}
-                    strokeWidth={entry.isCurrentMonth ? 2 : 0}
+                    strokeWidth={entry.isCurrentMonth ? (isMobile ? 1 : 2) : 0}
                   />
                 ))}
               </Bar>
