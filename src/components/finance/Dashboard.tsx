@@ -4,7 +4,7 @@ import { DebtTracker } from './DebtTracker';
 import { CategoryCharts } from './CategoryCharts';
 import { Transaction } from '@/types/transaction';
 import { Debt } from '@/types/debt';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, Cell, ReferenceLine } from 'recharts';
 import { useMemo } from 'react';
 
 interface DashboardProps {
@@ -45,6 +45,9 @@ export const Dashboard = ({
 }: DashboardProps) => {
   // Obtém o ano a partir do customRange ou usa o ano atual
   const selectedYear = customRange?.start?.getFullYear() || new Date().getFullYear();
+  const currentMonth = new Date().getMonth();
+  const currentYear = new Date().getFullYear();
+  const isCurrentYear = selectedYear === currentYear;
 
   // Agrupa transações por mês para o gráfico
   const chartData = useMemo(() => {
@@ -54,6 +57,7 @@ export const Dashboard = ({
       receitas: 0,
       despesas: 0,
       month: index,
+      isCurrentMonth: isCurrentYear && index === currentMonth,
     }));
 
     // Agrupa transações por mês do ano selecionado
@@ -72,7 +76,7 @@ export const Dashboard = ({
     });
 
     return monthlyData;
-  }, [allTransactions, selectedYear]);
+  }, [allTransactions, selectedYear, isCurrentYear, currentMonth]);
 
   return (
     <div className="p-8">
@@ -163,13 +167,41 @@ export const Dashboard = ({
                   <stop offset="0%" stopColor="hsl(0, 84%, 65%)" stopOpacity={1} />
                   <stop offset="100%" stopColor="hsl(0, 84%, 45%)" stopOpacity={1} />
                 </linearGradient>
+                {/* Gradientes para mês atual (mais vibrantes) */}
+                <linearGradient id="gradientReceitasAtual" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="hsl(142, 80%, 60%)" stopOpacity={1} />
+                  <stop offset="100%" stopColor="hsl(142, 80%, 40%)" stopOpacity={1} />
+                </linearGradient>
+                <linearGradient id="gradientDespesasAtual" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="hsl(0, 90%, 70%)" stopOpacity={1} />
+                  <stop offset="100%" stopColor="hsl(0, 90%, 50%)" stopOpacity={1} />
+                </linearGradient>
               </defs>
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.5} />
               <XAxis 
                 dataKey="name" 
-                tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
+                tick={({ x, y, payload }) => {
+                  const monthIndex = MONTHS.indexOf(payload.value);
+                  const isCurrentMonthTick = isCurrentYear && monthIndex === currentMonth;
+                  return (
+                    <text 
+                      x={x} 
+                      y={y + 12} 
+                      textAnchor="middle" 
+                      fill={isCurrentMonthTick ? 'hsl(var(--primary))' : 'hsl(var(--muted-foreground))'}
+                      fontSize={12}
+                      fontWeight={isCurrentMonthTick ? 600 : 400}
+                    >
+                      {payload.value}
+                      {isCurrentMonthTick && (
+                        <tspan x={x} y={y + 24} fontSize={10} fill="hsl(var(--primary))">●</tspan>
+                      )}
+                    </text>
+                  );
+                }}
                 axisLine={{ stroke: 'hsl(var(--border))' }}
                 tickLine={{ stroke: 'hsl(var(--border))' }}
+                height={40}
               />
               <YAxis 
                 tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
@@ -181,9 +213,18 @@ export const Dashboard = ({
               <Tooltip 
                 content={({ active, payload, label }) => {
                   if (active && payload && payload.length) {
+                    const monthIndex = MONTHS.indexOf(label);
+                    const isCurrentMonthTooltip = isCurrentYear && monthIndex === currentMonth;
                     return (
                       <div className="bg-card border border-border rounded-xl p-3 shadow-lg">
-                        <p className="font-semibold text-foreground mb-2">{label}</p>
+                        <p className="font-semibold text-foreground mb-2">
+                          {label}
+                          {isCurrentMonthTooltip && (
+                            <span className="ml-2 text-xs bg-primary/20 text-primary px-2 py-0.5 rounded-full">
+                              Mês atual
+                            </span>
+                          )}
+                        </p>
                         {payload.map((entry, index) => (
                           <p key={index} className="text-sm">
                             <span 
@@ -210,15 +251,31 @@ export const Dashboard = ({
               <Bar 
                 dataKey="receitas" 
                 name="Receitas" 
-                fill="url(#gradientReceitas)" 
                 radius={[6, 6, 0, 0]}
-              />
+              >
+                {chartData.map((entry, index) => (
+                  <Cell 
+                    key={`receitas-${index}`} 
+                    fill={entry.isCurrentMonth ? 'url(#gradientReceitasAtual)' : 'url(#gradientReceitas)'}
+                    stroke={entry.isCurrentMonth ? 'hsl(var(--primary))' : 'none'}
+                    strokeWidth={entry.isCurrentMonth ? 2 : 0}
+                  />
+                ))}
+              </Bar>
               <Bar 
                 dataKey="despesas" 
                 name="Despesas" 
-                fill="url(#gradientDespesas)" 
                 radius={[6, 6, 0, 0]}
-              />
+              >
+                {chartData.map((entry, index) => (
+                  <Cell 
+                    key={`despesas-${index}`} 
+                    fill={entry.isCurrentMonth ? 'url(#gradientDespesasAtual)' : 'url(#gradientDespesas)'}
+                    stroke={entry.isCurrentMonth ? 'hsl(var(--primary))' : 'none'}
+                    strokeWidth={entry.isCurrentMonth ? 2 : 0}
+                  />
+                ))}
+              </Bar>
             </BarChart>
           </ResponsiveContainer>
         </div>
