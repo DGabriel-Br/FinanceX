@@ -99,7 +99,10 @@ export const Sidebar = ({
           <button
             onClick={onToggleTheme}
             title={theme === 'dark' ? 'Mudar para modo claro' : 'Mudar para modo escuro'}
-            className="flex items-center gap-3 flex-1"
+            className={cn(
+              "flex items-center gap-3",
+              collapsed ? "justify-center" : "flex-1"
+            )}
           >
             {theme === 'dark' ? (
               <Moon className="w-5 h-5 text-sidebar-foreground/80 flex-shrink-0" />
