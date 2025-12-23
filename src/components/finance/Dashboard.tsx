@@ -1,5 +1,5 @@
 import { TrendingUp, TrendingDown, Wallet, BarChart3 } from 'lucide-react';
-import { PeriodFilter } from './PeriodFilter';
+import { AdvancedPeriodFilter, CustomDateRange } from './AdvancedPeriodFilter';
 import { DebtTracker } from './DebtTracker';
 import { CategoryCharts } from './CategoryCharts';
 import { PeriodFilter as PeriodFilterType, Transaction } from '@/types/transaction';
@@ -15,6 +15,8 @@ interface DashboardProps {
   };
   filter: PeriodFilterType;
   onFilterChange: (filter: PeriodFilterType) => void;
+  customRange: CustomDateRange | null;
+  onCustomRangeChange: (range: CustomDateRange | null) => void;
   transactions: Transaction[];
   allTransactions: Transaction[];
   debts: Debt[];
@@ -34,11 +36,22 @@ const formatCurrency = (value: number): string => {
   }).format(value);
 };
 
-export const Dashboard = ({ totals, filter, onFilterChange, transactions, allTransactions, debts, onNavigateToDebts }: DashboardProps) => {
+export const Dashboard = ({ 
+  totals, 
+  filter, 
+  onFilterChange, 
+  customRange, 
+  onCustomRangeChange, 
+  transactions, 
+  allTransactions, 
+  debts, 
+  onNavigateToDebts 
+}: DashboardProps) => {
+  // Obtém o ano a partir do customRange ou usa o ano atual
+  const selectedYear = customRange?.start?.getFullYear() || new Date().getFullYear();
+
   // Agrupa transações por mês para o gráfico
   const chartData = useMemo(() => {
-    const currentYear = new Date().getFullYear();
-    
     // Inicializa dados de todos os meses
     const monthlyData = MONTHS.map((month, index) => ({
       name: month,
@@ -47,13 +60,13 @@ export const Dashboard = ({ totals, filter, onFilterChange, transactions, allTra
       month: index,
     }));
 
-    // Agrupa transações por mês do ano atual
-    transactions.forEach((transaction) => {
+    // Agrupa transações por mês do ano selecionado
+    allTransactions.forEach((transaction) => {
       const [year, monthStr] = transaction.date.split('-');
       const transactionYear = parseInt(year);
       const monthIndex = parseInt(monthStr) - 1;
 
-      if (transactionYear === currentYear && monthIndex >= 0 && monthIndex < 12) {
+      if (transactionYear === selectedYear && monthIndex >= 0 && monthIndex < 12) {
         if (transaction.type === 'receita') {
           monthlyData[monthIndex].receitas += transaction.value;
         } else {
@@ -63,17 +76,22 @@ export const Dashboard = ({ totals, filter, onFilterChange, transactions, allTra
     });
 
     return monthlyData;
-  }, [transactions]);
+  }, [allTransactions, selectedYear]);
 
   return (
     <div className="p-8">
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col lg:flex-row lg:items-start justify-between mb-8 gap-4">
         <div>
           <h2 className="text-2xl font-bold text-foreground">Dashboard</h2>
           <p className="text-muted-foreground mt-1">Resumo das suas finanças</p>
         </div>
-        <PeriodFilter value={filter} onChange={onFilterChange} />
+        <AdvancedPeriodFilter 
+          value={filter} 
+          onChange={onFilterChange}
+          customRange={customRange}
+          onCustomRangeChange={onCustomRangeChange}
+        />
       </div>
 
       {/* Cards */}
@@ -135,7 +153,7 @@ export const Dashboard = ({ totals, filter, onFilterChange, transactions, allTra
       <div className="mt-6 bg-card border border-border rounded-xl p-6 shadow-sm animate-fade-in" style={{ animationDelay: '0.3s', animationDuration: '0.6s', animationFillMode: 'both' }}>
         <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
           <BarChart3 className="w-5 h-5 text-primary" />
-          Receitas e Despesas por Mês ({new Date().getFullYear()})
+          Receitas e Despesas por Mês ({selectedYear})
         </h3>
         <div className="h-80">
           <ResponsiveContainer width="100%" height="100%">
