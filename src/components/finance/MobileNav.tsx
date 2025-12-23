@@ -30,7 +30,7 @@ export const MobileNav = ({ activeTab, onTabChange, theme, onToggleTheme }: Mobi
 
   return (
     <>
-      <nav className="fixed bottom-0 left-0 right-0 z-50 bg-sidebar border-t border-sidebar-border md:hidden safe-area-bottom">
+      <nav className="fixed bottom-0 left-0 right-0 z-50 bg-card border-t border-border md:hidden safe-area-bottom">
         <div className="flex items-center justify-around h-16 px-2">
           {navItems.map((item) => {
             const isActive = activeTab === item.id;
@@ -44,7 +44,7 @@ export const MobileNav = ({ activeTab, onTabChange, theme, onToggleTheme }: Mobi
                   'flex flex-col items-center justify-center flex-1 h-full gap-1 transition-colors',
                   isActive
                     ? 'text-primary'
-                    : 'text-sidebar-foreground/60 hover:text-sidebar-foreground'
+                    : 'text-muted-foreground hover:text-foreground'
                 )}
               >
                 <Icon className={cn('w-5 h-5', isActive && 'scale-110 transition-transform')} />
@@ -61,7 +61,7 @@ export const MobileNav = ({ activeTab, onTabChange, theme, onToggleTheme }: Mobi
           {/* Botão de configurações */}
           <button
             onClick={() => setSettingsOpen(true)}
-            className="flex flex-col items-center justify-center flex-1 h-full gap-1 transition-colors text-sidebar-foreground/60 hover:text-sidebar-foreground"
+            className="flex flex-col items-center justify-center flex-1 h-full gap-1 transition-colors text-muted-foreground hover:text-foreground"
           >
             <Settings className="w-5 h-5" />
             <span className="text-[10px] font-medium">Config</span>
