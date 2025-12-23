@@ -109,4 +109,13 @@
   body {
     @apply bg-background text-foreground antialiased;
   }
+
+  /* Fix date input calendar icon for dark mode */
+  input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(0);
+  }
+
+  .dark input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+  }
 }
