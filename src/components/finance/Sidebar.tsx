@@ -29,7 +29,7 @@ export const Sidebar = ({
 }: SidebarProps) => {
   return (
     <aside className={cn(
-      "bg-sidebar text-sidebar-foreground flex flex-col transition-all duration-300 relative",
+      "bg-sidebar text-sidebar-foreground flex flex-col transition-all duration-300 relative h-screen sticky top-0",
       collapsed ? "w-[72px]" : "w-64"
     )}>
       {/* Botão de colapso posicionado na borda direita */}
