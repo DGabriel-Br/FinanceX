@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Plus, Trash2, CreditCard, Calendar, TrendingUp } from 'lucide-react';
+import { Plus, Trash2, CreditCard, Calendar, TrendingUp, CheckCircle } from 'lucide-react';
 import { Debt, calculateExpectedEndDate, calculateProgress } from '@/types/debt';
 import { Transaction } from '@/types/transaction';
 import { cn } from '@/lib/utils';
@@ -214,13 +214,22 @@ const DebtCard = ({
         </div>
       </div>
 
-      {/* Previsão de Término */}
-      <div className="flex items-center justify-center gap-2 p-3 bg-primary/5 rounded-lg border border-primary/20">
-        <TrendingUp className="w-4 h-4 text-primary" />
-        <span className="text-sm text-foreground">
-          Previsão de término: <strong>{formatMonthYear(expectedEndDate)}</strong>
-        </span>
-      </div>
+      {/* Previsão de Término / Quitação */}
+      {progress >= 100 ? (
+        <div className="flex items-center justify-center gap-2 p-3 bg-income/10 rounded-lg border border-income/30">
+          <CheckCircle className="w-4 h-4 text-income" />
+          <span className="text-sm text-foreground">
+            Dívida quitada em <strong>{formatMonthYear(expectedEndDate)}</strong>
+          </span>
+        </div>
+      ) : (
+        <div className="flex items-center justify-center gap-2 p-3 bg-primary/5 rounded-lg border border-primary/20">
+          <TrendingUp className="w-4 h-4 text-primary" />
+          <span className="text-sm text-foreground">
+            Previsão de término: <strong>{formatMonthYear(expectedEndDate)}</strong>
+          </span>
+        </div>
+      )}
 
       {/* Dica */}
       <p className="text-xs text-muted-foreground mt-3 text-center">
