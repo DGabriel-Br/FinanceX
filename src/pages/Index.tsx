@@ -2,10 +2,12 @@ import { useState } from 'react';
 import { Sidebar } from '@/components/finance/Sidebar';
 import { Dashboard } from '@/components/finance/Dashboard';
 import { Transactions } from '@/components/finance/Transactions';
+import { Debts } from '@/components/finance/Debts';
 import { useTransactions } from '@/hooks/useTransactions';
+import { useDebts } from '@/hooks/useDebts';
 import { useTheme } from '@/hooks/useTheme';
 
-type Tab = 'dashboard' | 'lancamentos';
+type Tab = 'dashboard' | 'lancamentos' | 'dividas';
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState<Tab>('dashboard');
@@ -21,6 +23,15 @@ const Index = () => {
     getFilteredTransactions,
     getTotals,
   } = useTransactions();
+
+  const {
+    debts,
+    addDebt,
+    deleteDebt,
+    addPayment,
+    deletePayment,
+    getPaymentsForDebt,
+  } = useDebts();
 
   const filteredTransactions = getFilteredTransactions();
   const totals = getTotals();
@@ -45,8 +56,10 @@ const Index = () => {
             filter={filter}
             onFilterChange={setFilter}
             transactions={filteredTransactions}
+            debts={debts}
+            onNavigateToDebts={() => setActiveTab('dividas')}
           />
-        ) : (
+        ) : activeTab === 'lancamentos' ? (
           <Transactions
             transactions={filteredTransactions}
             filter={filter}
@@ -54,6 +67,15 @@ const Index = () => {
             onAdd={addTransaction}
             onUpdate={updateTransaction}
             onDelete={deleteTransaction}
+          />
+        ) : (
+          <Debts
+            debts={debts}
+            onAddDebt={addDebt}
+            onDeleteDebt={deleteDebt}
+            onAddPayment={addPayment}
+            onDeletePayment={deletePayment}
+            getPaymentsForDebt={getPaymentsForDebt}
           />
         )}
       </main>
