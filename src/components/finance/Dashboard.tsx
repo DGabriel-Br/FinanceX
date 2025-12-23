@@ -152,15 +152,29 @@ export const Dashboard = ({
         <div className="h-80">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+              <defs>
+                {/* Gradiente para Receitas */}
+                <linearGradient id="gradientReceitas" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="hsl(142, 71%, 55%)" stopOpacity={1} />
+                  <stop offset="100%" stopColor="hsl(142, 71%, 35%)" stopOpacity={1} />
+                </linearGradient>
+                {/* Gradiente para Despesas */}
+                <linearGradient id="gradientDespesas" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stopColor="hsl(0, 84%, 65%)" stopOpacity={1} />
+                  <stop offset="100%" stopColor="hsl(0, 84%, 45%)" stopOpacity={1} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.5} />
               <XAxis 
                 dataKey="name" 
-                tick={{ fill: 'hsl(var(--muted-foreground))' }}
+                tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
                 axisLine={{ stroke: 'hsl(var(--border))' }}
+                tickLine={{ stroke: 'hsl(var(--border))' }}
               />
               <YAxis 
-                tick={{ fill: 'hsl(var(--muted-foreground))' }}
+                tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
                 axisLine={{ stroke: 'hsl(var(--border))' }}
+                tickLine={{ stroke: 'hsl(var(--border))' }}
                 tickFormatter={(value) => value.toLocaleString('pt-BR')}
                 width={80}
               />
@@ -169,22 +183,26 @@ export const Dashboard = ({
                 contentStyle={{
                   backgroundColor: 'hsl(var(--card))',
                   border: '1px solid hsl(var(--border))',
-                  borderRadius: '8px',
+                  borderRadius: '12px',
+                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
                 }}
-                labelStyle={{ color: 'hsl(var(--foreground))' }}
+                labelStyle={{ color: 'hsl(var(--foreground))', fontWeight: 600 }}
+                cursor={{ fill: 'hsl(var(--muted))', opacity: 0.3 }}
               />
-              <Legend />
+              <Legend 
+                wrapperStyle={{ paddingTop: '20px' }}
+              />
               <Bar 
                 dataKey="receitas" 
                 name="Receitas" 
-                fill="hsl(var(--income))" 
-                radius={[4, 4, 0, 0]}
+                fill="url(#gradientReceitas)" 
+                radius={[6, 6, 0, 0]}
               />
               <Bar 
                 dataKey="despesas" 
                 name="Despesas" 
-                fill="hsl(var(--expense))" 
-                radius={[4, 4, 0, 0]}
+                fill="url(#gradientDespesas)" 
+                radius={[6, 6, 0, 0]}
               />
             </BarChart>
           </ResponsiveContainer>
