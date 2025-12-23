@@ -42,7 +42,9 @@ export const Sidebar = ({
         onClick={onToggleCollapse}
         className="absolute -right-3 top-6 z-10 w-6 h-6 rounded-full bg-primary flex items-center justify-center text-primary-foreground hover:bg-primary/90 transition-colors shadow-md border-2 border-background"
       >
-        {collapsed ? <ChevronRight className="w-3.5 h-3.5" /> : <ChevronLeft className="w-3.5 h-3.5" />}
+        <div className="w-3.5 h-3.5 flex items-center justify-center">
+          {collapsed ? <ChevronRight className="w-3.5 h-3.5" /> : <ChevronLeft className="w-3.5 h-3.5" />}
+        </div>
       </button>
 
       {/* Header com Logo */}
