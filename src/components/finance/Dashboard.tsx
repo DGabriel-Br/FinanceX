@@ -1,6 +1,7 @@
 import { TrendingUp, TrendingDown, Wallet } from 'lucide-react';
 import { PeriodFilter } from './PeriodFilter';
 import { DebtTracker } from './DebtTracker';
+import { CategoryCharts } from './CategoryCharts';
 import { PeriodFilter as PeriodFilterType, Transaction } from '@/types/transaction';
 import { Debt } from '@/types/debt';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
@@ -181,6 +182,9 @@ export const Dashboard = ({ totals, filter, onFilterChange, transactions, allTra
       <div className="mt-6">
         <DebtTracker debts={debts} transactions={allTransactions} onNavigateToDebts={onNavigateToDebts} />
       </div>
+
+      {/* Gráficos de Pizza por Categoria */}
+      <CategoryCharts transactions={transactions} />
     </div>
   );
 };
