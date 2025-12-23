@@ -1,4 +1,4 @@
-import { TrendingUp, TrendingDown, Wallet } from 'lucide-react';
+import { TrendingUp, TrendingDown, Wallet, BarChart3 } from 'lucide-react';
 import { PeriodFilter } from './PeriodFilter';
 import { DebtTracker } from './DebtTracker';
 import { CategoryCharts } from './CategoryCharts';
@@ -133,7 +133,8 @@ export const Dashboard = ({ totals, filter, onFilterChange, transactions, allTra
 
       {/* Gráfico de colunas */}
       <div className="mt-6 bg-card border border-border rounded-xl p-6 shadow-sm animate-fade-in" style={{ animationDelay: '0.3s', animationDuration: '0.6s', animationFillMode: 'both' }}>
-        <h3 className="text-lg font-semibold text-foreground mb-4">
+        <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
+          <BarChart3 className="w-5 h-5 text-primary" />
           Receitas e Despesas por Mês ({new Date().getFullYear()})
         </h3>
         <div className="h-80">
