@@ -118,8 +118,15 @@ export const Dashboard = ({ totals, filter, onFilterChange, transactions }: Dash
         </div>
       </div>
 
+      {/* Dica */}
+      <div className="mt-8 p-4 bg-muted/50 rounded-lg border border-border">
+        <p className="text-sm text-muted-foreground">
+          💡 <strong>Dica:</strong> Vá até a aba "Lançamentos" para adicionar suas receitas e despesas.
+        </p>
+      </div>
+
       {/* Gráfico de colunas */}
-      <div className="mt-8 bg-card border border-border rounded-xl p-6 shadow-sm">
+      <div className="mt-6 bg-card border border-border rounded-xl p-6 shadow-sm">
         <h3 className="text-lg font-semibold text-foreground mb-4">
           Receitas e Despesas por Mês ({new Date().getFullYear()})
         </h3>
@@ -162,13 +169,6 @@ export const Dashboard = ({ totals, filter, onFilterChange, transactions }: Dash
             </BarChart>
           </ResponsiveContainer>
         </div>
-      </div>
-
-      {/* Dica */}
-      <div className="mt-8 p-4 bg-muted/50 rounded-lg border border-border">
-        <p className="text-sm text-muted-foreground">
-          💡 <strong>Dica:</strong> Vá até a aba "Lançamentos" para adicionar suas receitas e despesas.
-        </p>
       </div>
     </div>
   );
