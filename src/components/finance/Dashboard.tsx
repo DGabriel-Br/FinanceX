@@ -184,24 +184,26 @@ export const Dashboard = ({
                   const monthIndex = MONTHS.indexOf(payload.value);
                   const isCurrentMonthTick = isCurrentYear && monthIndex === currentMonth;
                   return (
-                    <text 
-                      x={x} 
-                      y={y + 12} 
-                      textAnchor="middle" 
-                      fill={isCurrentMonthTick ? 'hsl(var(--primary))' : 'hsl(var(--muted-foreground))'}
-                      fontSize={12}
-                      fontWeight={isCurrentMonthTick ? 600 : 400}
-                    >
-                      {payload.value}
+                    <g>
+                      <text 
+                        x={x} 
+                        y={y + 16} 
+                        textAnchor="middle" 
+                        fill={isCurrentMonthTick ? 'hsl(var(--primary))' : 'hsl(var(--muted-foreground))'}
+                        fontSize={12}
+                        fontWeight={isCurrentMonthTick ? 600 : 400}
+                      >
+                        {payload.value}
+                      </text>
                       {isCurrentMonthTick && (
-                        <tspan x={x} y={y + 24} fontSize={10} fill="hsl(var(--primary))">●</tspan>
+                        <text x={x} y={y + 28} textAnchor="middle" fontSize={10} fill="hsl(var(--primary))">●</text>
                       )}
-                    </text>
+                    </g>
                   );
                 }}
                 axisLine={{ stroke: 'hsl(var(--border))' }}
-                tickLine={{ stroke: 'hsl(var(--border))' }}
-                height={40}
+                tickLine={false}
+                tickMargin={4}
               />
               <YAxis 
                 tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
