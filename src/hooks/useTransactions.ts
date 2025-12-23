@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
-import { Transaction } from '@/types/transaction';
+import { Transaction, TransactionCategory } from '@/types/transaction';
 import { CustomDateRange } from '@/components/finance/PeriodFilter';
 import { startOfMonth, endOfMonth } from 'date-fns';
 import { supabase } from '@/integrations/supabase/client';
@@ -45,7 +45,7 @@ export const useTransactions = () => {
       const mappedData: Transaction[] = (data || []).map((t) => ({
         id: t.id,
         type: t.type as 'receita' | 'despesa',
-        category: t.category,
+        category: t.category as TransactionCategory,
         date: t.date,
         description: t.description,
         value: Number(t.value),
@@ -81,7 +81,7 @@ export const useTransactions = () => {
       const newTransaction: Transaction = {
         id: data.id,
         type: data.type as 'receita' | 'despesa',
-        category: data.category,
+        category: data.category as TransactionCategory,
         date: data.date,
         description: data.description,
         value: Number(data.value),

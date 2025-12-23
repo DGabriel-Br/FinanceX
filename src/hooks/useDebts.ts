@@ -26,10 +26,9 @@ export const useDebts = () => {
         id: d.id,
         name: d.name,
         totalValue: Number(d.total_value),
-        paidValue: Number(d.paid_value),
-        dueDate: d.due_date || undefined,
-        isCompleted: d.is_completed,
-        createdAt: new Date(d.created_at).getTime(),
+        monthlyInstallment: Number(d.monthly_installment),
+        startDate: d.start_date,
+        createdAt: Number(d.created_at),
       }));
 
       setDebts(mappedData);
@@ -49,9 +48,8 @@ export const useDebts = () => {
         .insert({
           name: debt.name,
           total_value: debt.totalValue,
-          paid_value: debt.paidValue,
-          due_date: debt.dueDate || null,
-          is_completed: debt.isCompleted,
+          monthly_installment: debt.monthlyInstallment,
+          start_date: debt.startDate,
         })
         .select()
         .single();
@@ -62,10 +60,9 @@ export const useDebts = () => {
         id: data.id,
         name: data.name,
         totalValue: Number(data.total_value),
-        paidValue: Number(data.paid_value),
-        dueDate: data.due_date || undefined,
-        isCompleted: data.is_completed,
-        createdAt: new Date(data.created_at).getTime(),
+        monthlyInstallment: Number(data.monthly_installment),
+        startDate: data.start_date,
+        createdAt: Number(data.created_at),
       };
 
       setDebts(prev => [newDebt, ...prev]);
@@ -84,9 +81,8 @@ export const useDebts = () => {
       const updateData: Record<string, unknown> = {};
       if (updates.name !== undefined) updateData.name = updates.name;
       if (updates.totalValue !== undefined) updateData.total_value = updates.totalValue;
-      if (updates.paidValue !== undefined) updateData.paid_value = updates.paidValue;
-      if (updates.dueDate !== undefined) updateData.due_date = updates.dueDate || null;
-      if (updates.isCompleted !== undefined) updateData.is_completed = updates.isCompleted;
+      if (updates.monthlyInstallment !== undefined) updateData.monthly_installment = updates.monthlyInstallment;
+      if (updates.startDate !== undefined) updateData.start_date = updates.startDate;
 
       const { error } = await supabase
         .from('debts')
