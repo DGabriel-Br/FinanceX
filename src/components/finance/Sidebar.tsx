@@ -32,10 +32,7 @@ export const Sidebar = ({
       collapsed ? "w-[72px]" : "w-64"
     )}>
       {/* Header com Logo */}
-      <div className={cn(
-        "p-4 flex items-center",
-        collapsed ? "flex-col gap-3" : "gap-3"
-      )}>
+      <div className="p-4 flex items-center justify-between gap-2">
         {/* Logo */}
         <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-primary-foreground font-bold text-sm flex-shrink-0">
           FN
