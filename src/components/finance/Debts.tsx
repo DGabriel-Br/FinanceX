@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Plus, Trash2, CreditCard, Calendar as CalendarIcon, TrendingUp, CheckCircle } from 'lucide-react';
+import { Plus, Trash2, CreditCard, Calendar as CalendarIcon, TrendingUp, CheckCircle, Pencil, Save, X } from 'lucide-react';
 import { Debt, calculateExpectedEndDate, calculateProgress } from '@/types/debt';
 import { Transaction } from '@/types/transaction';
 import { cn } from '@/lib/utils';
@@ -21,6 +21,7 @@ interface DebtsProps {
   debts: Debt[];
   transactions: Transaction[];
   onAddDebt: (debt: Omit<Debt, 'id' | 'createdAt'>) => void;
+  onUpdateDebt: (id: string, updates: Partial<Omit<Debt, 'id' | 'createdAt'>>) => void;
   onDeleteDebt: (id: string) => void;
 }
 
@@ -201,15 +202,159 @@ const DebtForm = ({ onSubmit, onClose }: { onSubmit: (debt: Omit<Debt, 'id' | 'c
 const DebtCard = ({ 
   debt, 
   paidValue,
+  onUpdate,
   onDelete,
 }: { 
   debt: Debt; 
   paidValue: number;
+  onUpdate: (updates: Partial<Omit<Debt, 'id' | 'createdAt'>>) => void;
   onDelete: () => void;
 }) => {
+  const [isEditing, setIsEditing] = useState(false);
+  const [editName, setEditName] = useState(debt.name);
+  const [editTotalValue, setEditTotalValue] = useState(formatNumberToCurrency(debt.totalValue));
+  const [editMonthlyInstallment, setEditMonthlyInstallment] = useState(formatNumberToCurrency(debt.monthlyInstallment));
+  const [editPaidValue, setEditPaidValue] = useState(formatNumberToCurrency(debt.paidValue));
+  const [editDate, setEditDate] = useState<Date | undefined>(() => {
+    const [year, month] = debt.startDate.split('-').map(Number);
+    return new Date(year, month - 1);
+  });
+  const [calendarOpen, setCalendarOpen] = useState(false);
+
   const remaining = debt.totalValue - paidValue;
   const progress = calculateProgress(debt.totalValue, paidValue);
   const expectedEndDate = calculateExpectedEndDate(debt.totalValue, debt.monthlyInstallment, debt.startDate, paidValue);
+
+  const handleDateSelect = (date: Date | undefined) => {
+    if (date) {
+      setEditDate(startOfMonth(date));
+      setCalendarOpen(false);
+    }
+  };
+
+  const handleSave = () => {
+    const numericTotal = parseCurrency(editTotalValue);
+    const numericMonthly = parseCurrency(editMonthlyInstallment);
+    const numericPaid = parseCurrency(editPaidValue);
+    
+    if (!editName.trim() || numericTotal <= 0 || numericMonthly <= 0 || !editDate) return;
+
+    onUpdate({
+      name: editName.trim(),
+      totalValue: numericTotal,
+      monthlyInstallment: numericMonthly,
+      paidValue: numericPaid,
+      startDate: format(editDate, 'yyyy-MM'),
+    });
+    setIsEditing(false);
+  };
+
+  const handleCancel = () => {
+    setEditName(debt.name);
+    setEditTotalValue(formatNumberToCurrency(debt.totalValue));
+    setEditMonthlyInstallment(formatNumberToCurrency(debt.monthlyInstallment));
+    setEditPaidValue(formatNumberToCurrency(debt.paidValue));
+    const [year, month] = debt.startDate.split('-').map(Number);
+    setEditDate(new Date(year, month - 1));
+    setIsEditing(false);
+  };
+
+  if (isEditing) {
+    return (
+      <div className="bg-card border border-primary/50 rounded-xl p-6 shadow-sm">
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-2">Nome da Dívida</label>
+            <input
+              type="text"
+              value={editName}
+              onChange={e => setEditName(e.target.value)}
+              className="w-full px-3 py-2 rounded-lg border border-input bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+            />
+          </div>
+
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">Valor Total (R$)</label>
+              <input
+                type="text"
+                inputMode="numeric"
+                value={editTotalValue}
+                onChange={e => setEditTotalValue(formatCurrencyInput(e.target.value))}
+                className="w-full px-3 py-2 rounded-lg border border-input bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-foreground mb-2">Parcela Mensal (R$)</label>
+              <input
+                type="text"
+                inputMode="numeric"
+                value={editMonthlyInstallment}
+                onChange={e => setEditMonthlyInstallment(formatCurrencyInput(e.target.value))}
+                className="w-full px-3 py-2 rounded-lg border border-input bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+              />
+            </div>
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-2">Valor Já Pago (R$)</label>
+            <input
+              type="text"
+              inputMode="numeric"
+              value={editPaidValue}
+              onChange={e => setEditPaidValue(formatCurrencyInput(e.target.value))}
+              className="w-full px-3 py-2 rounded-lg border border-input bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-2">Data de Início</label>
+            <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className={cn(
+                    "w-full justify-start text-left font-normal",
+                    !editDate && "text-muted-foreground"
+                  )}
+                >
+                  <CalendarIcon className="mr-2 h-4 w-4" />
+                  {editDate ? format(editDate, "MMMM 'de' yyyy", { locale: ptBR }) : <span>Selecione o mês</span>}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0 bg-popover border border-border" align="start">
+                <Calendar
+                  mode="single"
+                  selected={editDate}
+                  onSelect={handleDateSelect}
+                  locale={ptBR}
+                  initialFocus
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+
+          <div className="flex gap-2">
+            <button
+              onClick={handleSave}
+              disabled={!editName.trim() || parseCurrency(editTotalValue) <= 0 || parseCurrency(editMonthlyInstallment) <= 0 || !editDate}
+              className="flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg bg-primary text-primary-foreground font-medium text-sm transition-all duration-200 hover:bg-primary/90 disabled:opacity-50"
+            >
+              <Save className="w-4 h-4" />
+              Salvar
+            </button>
+            <button
+              onClick={handleCancel}
+              className="flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg border border-border text-foreground font-medium text-sm transition-all duration-200 hover:bg-muted"
+            >
+              <X className="w-4 h-4" />
+              Cancelar
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
@@ -227,12 +372,20 @@ const DebtCard = ({
             </div>
           </div>
         </div>
-        <button
-          onClick={onDelete}
-          className="p-2 text-muted-foreground hover:text-expense hover:bg-expense/10 rounded-lg transition-colors"
-        >
-          <Trash2 className="w-4 h-4" />
-        </button>
+        <div className="flex gap-1">
+          <button
+            onClick={() => setIsEditing(true)}
+            className="p-2 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-lg transition-colors"
+          >
+            <Pencil className="w-4 h-4" />
+          </button>
+          <button
+            onClick={onDelete}
+            className="p-2 text-muted-foreground hover:text-expense hover:bg-expense/10 rounded-lg transition-colors"
+          >
+            <Trash2 className="w-4 h-4" />
+          </button>
+        </div>
       </div>
 
       {/* Progresso */}
@@ -289,10 +442,19 @@ const DebtCard = ({
   );
 };
 
+// Helper para formatar número para input de moeda
+const formatNumberToCurrency = (value: number): string => {
+  return value.toLocaleString('pt-BR', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+};
+
 export const Debts = ({ 
   debts, 
   transactions,
-  onAddDebt, 
+  onAddDebt,
+  onUpdateDebt,
   onDeleteDebt, 
 }: DebtsProps) => {
   const [isDebtDialogOpen, setIsDebtDialogOpen] = useState(false);
@@ -370,6 +532,7 @@ export const Debts = ({
               key={debt.id}
               debt={debt}
               paidValue={getTotalPaidValue(debt, transactions)}
+              onUpdate={(updates) => onUpdateDebt(debt.id, updates)}
               onDelete={() => onDeleteDebt(debt.id)}
             />
           ))}
