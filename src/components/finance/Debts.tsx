@@ -1,9 +1,14 @@
 import { useState } from 'react';
-import { Plus, Trash2, CreditCard, Calendar, TrendingUp, CheckCircle } from 'lucide-react';
+import { Plus, Trash2, CreditCard, Calendar as CalendarIcon, TrendingUp, CheckCircle } from 'lucide-react';
 import { Debt, calculateExpectedEndDate, calculateProgress } from '@/types/debt';
 import { Transaction } from '@/types/transaction';
 import { cn } from '@/lib/utils';
 import { Progress } from '@/components/ui/progress';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Button } from '@/components/ui/button';
+import { format, startOfMonth } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 import {
   Dialog,
   DialogContent,
@@ -66,13 +71,24 @@ const DebtForm = ({ onSubmit, onClose }: { onSubmit: (debt: Omit<Debt, 'id' | 'c
   const [name, setName] = useState('');
   const [totalValue, setTotalValue] = useState('');
   const [monthlyInstallment, setMonthlyInstallment] = useState('');
-  const [startDate, setStartDate] = useState('');
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
+  const [calendarOpen, setCalendarOpen] = useState(false);
+
+  const handleDateSelect = (date: Date | undefined) => {
+    if (date) {
+      setSelectedDate(startOfMonth(date));
+      setCalendarOpen(false);
+    }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const numericTotal = parseCurrency(totalValue);
     const numericMonthly = parseCurrency(monthlyInstallment);
-    if (!name.trim() || numericTotal <= 0 || numericMonthly <= 0 || !startDate) return;
+    if (!name.trim() || numericTotal <= 0 || numericMonthly <= 0 || !selectedDate) return;
+
+    // Formata a data como YYYY-MM
+    const startDate = format(selectedDate, 'yyyy-MM');
 
     onSubmit({
       name: name.trim(),
@@ -84,7 +100,7 @@ const DebtForm = ({ onSubmit, onClose }: { onSubmit: (debt: Omit<Debt, 'id' | 'c
     setName('');
     setTotalValue('');
     setMonthlyInstallment('');
-    setStartDate('');
+    setSelectedDate(undefined);
     onClose();
   };
 
@@ -127,17 +143,34 @@ const DebtForm = ({ onSubmit, onClose }: { onSubmit: (debt: Omit<Debt, 'id' | 'c
 
       <div>
         <label className="block text-sm font-medium text-foreground mb-2">Data de Início</label>
-        <input
-          type="month"
-          value={startDate}
-          onChange={e => setStartDate(e.target.value)}
-          className="w-full px-3 py-2 rounded-lg border border-input bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-        />
+        <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              className={cn(
+                "w-full justify-start text-left font-normal",
+                !selectedDate && "text-muted-foreground"
+              )}
+            >
+              <CalendarIcon className="mr-2 h-4 w-4" />
+              {selectedDate ? format(selectedDate, "MMMM 'de' yyyy", { locale: ptBR }) : <span>Selecione o mês de início</span>}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0 bg-popover border border-border" align="start">
+            <Calendar
+              mode="single"
+              selected={selectedDate}
+              onSelect={handleDateSelect}
+              locale={ptBR}
+              initialFocus
+            />
+          </PopoverContent>
+        </Popover>
       </div>
 
       <button
         type="submit"
-        disabled={!name.trim() || parseCurrency(totalValue) <= 0 || parseCurrency(monthlyInstallment) <= 0 || !startDate}
+        disabled={!name.trim() || parseCurrency(totalValue) <= 0 || parseCurrency(monthlyInstallment) <= 0 || !selectedDate}
         className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-lg bg-primary text-primary-foreground font-medium text-sm transition-all duration-200 hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
       >
         <Plus className="w-4 h-4" />
@@ -172,7 +205,7 @@ const DebtCard = ({
           <div>
             <h3 className="font-semibold text-foreground">{debt.name}</h3>
             <div className="flex items-center gap-1 text-xs text-muted-foreground">
-              <Calendar className="w-3 h-3" />
+              <CalendarIcon className="w-3 h-3" />
               <span>Início: {formatMonthYear(debt.startDate)}</span>
             </div>
           </div>
