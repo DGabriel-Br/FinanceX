@@ -1,6 +1,8 @@
 import { TrendingUp, TrendingDown, Wallet } from 'lucide-react';
 import { PeriodFilter } from './PeriodFilter';
+import { DebtTracker } from './DebtTracker';
 import { PeriodFilter as PeriodFilterType, Transaction } from '@/types/transaction';
+import { Debt } from '@/types/debt';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { useMemo } from 'react';
 
@@ -13,6 +15,8 @@ interface DashboardProps {
   filter: PeriodFilterType;
   onFilterChange: (filter: PeriodFilterType) => void;
   transactions: Transaction[];
+  debts: Debt[];
+  onNavigateToDebts?: () => void;
 }
 
 const MONTHS = [
@@ -28,7 +32,7 @@ const formatCurrency = (value: number): string => {
   }).format(value);
 };
 
-export const Dashboard = ({ totals, filter, onFilterChange, transactions }: DashboardProps) => {
+export const Dashboard = ({ totals, filter, onFilterChange, transactions, debts, onNavigateToDebts }: DashboardProps) => {
   // Agrupa transações por mês para o gráfico
   const chartData = useMemo(() => {
     const currentYear = new Date().getFullYear();
@@ -118,11 +122,17 @@ export const Dashboard = ({ totals, filter, onFilterChange, transactions }: Dash
         </div>
       </div>
 
-      {/* Dica */}
-      <div className="mt-8 p-4 bg-muted/50 rounded-lg border border-border">
-        <p className="text-sm text-muted-foreground">
-          💡 <strong>Dica:</strong> Vá até a aba "Lançamentos" para adicionar suas receitas e despesas.
-        </p>
+      {/* Grid com Dica e Acompanhamento de Dívidas */}
+      <div className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Dica */}
+        <div className="p-4 bg-muted/50 rounded-lg border border-border h-fit">
+          <p className="text-sm text-muted-foreground">
+            💡 <strong>Dica:</strong> Vá até a aba "Lançamentos" para adicionar suas receitas e despesas.
+          </p>
+        </div>
+
+        {/* Acompanhamento de Dívidas */}
+        <DebtTracker debts={debts} onNavigateToDebts={onNavigateToDebts} />
       </div>
 
       {/* Gráfico de colunas */}
