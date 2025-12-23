@@ -1,8 +1,8 @@
-import { LayoutDashboard, Receipt, ChevronLeft, ChevronRight, Moon, Sun, CreditCard } from 'lucide-react';
+import { LayoutDashboard, Receipt, ChevronLeft, ChevronRight, Moon, Sun, CreditCard, TrendingUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Switch } from '@/components/ui/switch';
 
-type Tab = 'dashboard' | 'lancamentos' | 'dividas';
+type Tab = 'dashboard' | 'lancamentos' | 'dividas' | 'investimentos';
 
 interface SidebarProps {
   activeTab: Tab;
@@ -16,7 +16,8 @@ interface SidebarProps {
 const menuItems = [
   { id: 'dashboard' as Tab, label: 'Dashboard', icon: LayoutDashboard },
   { id: 'lancamentos' as Tab, label: 'Lançamentos', icon: Receipt },
-  { id: 'dividas' as Tab, label: 'Controle de Dívidas', icon: CreditCard },
+  { id: 'investimentos' as Tab, label: 'Investimentos', icon: TrendingUp },
+  { id: 'dividas' as Tab, label: 'Dívidas', icon: CreditCard },
 ];
 
 export const Sidebar = ({ 

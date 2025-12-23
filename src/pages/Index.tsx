@@ -3,11 +3,12 @@ import { Sidebar } from '@/components/finance/Sidebar';
 import { Dashboard } from '@/components/finance/Dashboard';
 import { Transactions } from '@/components/finance/Transactions';
 import { Debts } from '@/components/finance/Debts';
+import { Investments } from '@/components/finance/Investments';
 import { useTransactions } from '@/hooks/useTransactions';
 import { useDebts } from '@/hooks/useDebts';
 import { useTheme } from '@/hooks/useTheme';
 
-type Tab = 'dashboard' | 'lancamentos' | 'dividas';
+type Tab = 'dashboard' | 'lancamentos' | 'dividas' | 'investimentos';
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState<Tab>('dashboard');
@@ -66,6 +67,14 @@ const Index = () => {
             onAdd={addTransaction}
             onUpdate={updateTransaction}
             onDelete={deleteTransaction}
+          />
+        ) : activeTab === 'investimentos' ? (
+          <Investments
+            transactions={filteredTransactions}
+            allTransactions={transactions}
+            customRange={customRange}
+            onCustomRangeChange={setCustomRange}
+            onNavigateToTransactions={() => setActiveTab('lancamentos')}
           />
         ) : (
           <Debts
