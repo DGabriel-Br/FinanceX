@@ -34,7 +34,7 @@ export const Sidebar = ({
 }: SidebarProps) => {
   return (
     <aside className={cn(
-      "bg-sidebar text-sidebar-foreground flex flex-col transition-[width] duration-300 ease-in-out relative h-screen sticky top-0 overflow-hidden",
+      "bg-sidebar text-sidebar-foreground flex flex-col transition-[width] duration-300 ease-in-out relative h-screen sticky top-0",
       collapsed ? "w-[72px]" : "w-64"
     )}>
       {/* Botão de colapso posicionado na borda direita */}
@@ -68,7 +68,7 @@ export const Sidebar = ({
       </div>
 
       {/* Menu */}
-      <nav className="flex-1 px-3 mt-4">
+      <nav className="flex-1 px-3 mt-4 overflow-hidden">
         <ul className="space-y-1">
           {menuItems.map(item => {
             const isActive = activeTab === item.id;
