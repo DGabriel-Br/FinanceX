@@ -31,10 +31,18 @@ export const Sidebar = ({
       "bg-sidebar text-sidebar-foreground flex flex-col transition-all duration-300 relative",
       collapsed ? "w-[72px]" : "w-64"
     )}>
+      {/* Botão de colapso posicionado na borda direita */}
+      <button
+        onClick={onToggleCollapse}
+        className="absolute -right-3 top-6 z-10 w-6 h-6 rounded-full bg-primary flex items-center justify-center text-primary-foreground hover:bg-primary/90 transition-colors shadow-md border-2 border-background"
+      >
+        {collapsed ? <ChevronRight className="w-3.5 h-3.5" /> : <ChevronLeft className="w-3.5 h-3.5" />}
+      </button>
+
       {/* Header com Logo */}
       <div className={cn(
         "p-4 flex items-center",
-        collapsed ? "flex-col gap-3" : "gap-3"
+        collapsed ? "justify-center" : "gap-3"
       )}>
         {/* Logo */}
         <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-primary-foreground font-bold text-sm flex-shrink-0">
@@ -49,14 +57,6 @@ export const Sidebar = ({
             <p className="text-xs text-sidebar-foreground/60 truncate">Controle Pessoal</p>
           </div>
         )}
-        
-        {/* Collapse Toggle */}
-        <button
-          onClick={onToggleCollapse}
-          className="w-6 h-6 rounded-full bg-primary flex items-center justify-center text-primary-foreground hover:bg-primary/90 transition-colors flex-shrink-0"
-        >
-          {collapsed ? <ChevronRight className="w-3.5 h-3.5" /> : <ChevronLeft className="w-3.5 h-3.5" />}
-        </button>
       </div>
 
       {/* Menu */}
@@ -90,9 +90,11 @@ export const Sidebar = ({
 
       {/* Footer com Theme Toggle */}
       <div className="p-3 mt-auto border-t border-sidebar-border">
-        <div
+        <button
+          onClick={onToggleTheme}
+          title={theme === 'dark' ? 'Mudar para modo claro' : 'Mudar para modo escuro'}
           className={cn(
-            'flex items-center gap-3 px-3 py-2.5 rounded-lg',
+            'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-sidebar-accent transition-colors',
             collapsed && 'justify-center px-0'
           )}
         >
@@ -104,7 +106,7 @@ export const Sidebar = ({
           
           {!collapsed && (
             <>
-              <span className="text-sm text-sidebar-foreground/80 flex-1">
+              <span className="text-sm text-sidebar-foreground/80 flex-1 text-left">
                 {theme === 'dark' ? 'Modo Escuro' : 'Modo Claro'}
               </span>
               <Switch 
@@ -114,29 +116,7 @@ export const Sidebar = ({
               />
             </>
           )}
-          
-          {collapsed && (
-            <button
-              onClick={onToggleTheme}
-              className="sr-only"
-              aria-label="Alternar tema"
-            />
-          )}
-        </div>
-        
-        {collapsed && (
-          <button
-            onClick={onToggleTheme}
-            className="w-full flex justify-center mt-1"
-            title={theme === 'dark' ? 'Mudar para modo claro' : 'Mudar para modo escuro'}
-          >
-            <Switch 
-              checked={theme === 'dark'}
-              onCheckedChange={onToggleTheme}
-              className="data-[state=checked]:bg-primary"
-            />
-          </button>
-        )}
+        </button>
       </div>
     </aside>
   );
