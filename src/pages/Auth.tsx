@@ -3,10 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { toast } from 'sonner';
-import { Loader2, TrendingUp, ArrowRight, Shield, Smartphone, BarChart3 } from 'lucide-react';
+import { Loader2, Eye, EyeOff, Shield, Smartphone, BarChart3 } from 'lucide-react';
 import { z } from 'zod';
 
 const emailSchema = z.string().email('Email inválido');
@@ -15,7 +13,9 @@ const passwordSchema = z.string().min(6, 'A senha deve ter pelo menos 6 caracter
 export default function Auth() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isRegister, setIsRegister] = useState(false);
   const { user, loading, signIn, signUp } = useAuth();
   const navigate = useNavigate();
 
@@ -43,45 +43,41 @@ export default function Auth() {
     return true;
   };
 
-  const handleSignIn = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!validateForm()) return;
     
     setIsLoading(true);
-    const { error } = await signIn(email, password);
-    setIsLoading(false);
+    
+    if (isRegister) {
+      const { error } = await signUp(email, password);
+      setIsLoading(false);
 
-    if (error) {
-      if (error.message.includes('Invalid login credentials')) {
-        toast.error('Email ou senha incorretos');
+      if (error) {
+        if (error.message.includes('User already registered')) {
+          toast.error('Este email já está cadastrado. Tente fazer login.');
+        } else {
+          toast.error('Erro ao criar conta: ' + error.message);
+        }
       } else {
-        toast.error('Erro ao fazer login: ' + error.message);
+        toast.success('Conta criada com sucesso!');
+        navigate('/');
       }
     } else {
-      toast.success('Login realizado com sucesso!');
-      navigate('/');
-    }
-  };
+      const { error } = await signIn(email, password);
+      setIsLoading(false);
 
-  const handleSignUp = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!validateForm()) return;
-    
-    setIsLoading(true);
-    const { error } = await signUp(email, password);
-    setIsLoading(false);
-
-    if (error) {
-      if (error.message.includes('User already registered')) {
-        toast.error('Este email já está cadastrado. Tente fazer login.');
+      if (error) {
+        if (error.message.includes('Invalid login credentials')) {
+          toast.error('Email ou senha incorretos');
+        } else {
+          toast.error('Erro ao fazer login: ' + error.message);
+        }
       } else {
-        toast.error('Erro ao criar conta: ' + error.message);
+        toast.success('Login realizado com sucesso!');
+        navigate('/');
       }
-    } else {
-      toast.success('Conta criada com sucesso! Você já está logado.');
-      navigate('/');
     }
   };
 
@@ -159,149 +155,109 @@ export default function Auth() {
       </div>
 
       {/* Right Side - Auth Form */}
-      <div className="flex-1 flex items-center justify-center p-6 bg-background">
-        <div className="w-full max-w-md">
-          {/* Mobile Logo */}
-          <div className="flex lg:hidden flex-col items-center mb-8">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-income to-primary flex items-center justify-center shadow-lg shadow-primary/20 mb-4">
-              <span className="text-white font-bold text-xl">FC</span>
+      <div className="flex-1 flex items-center justify-center p-6 lg:p-12 bg-background">
+        <div className="w-full max-w-sm">
+          {/* Logo */}
+          <div className="flex items-center gap-3 mb-10">
+            <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-income to-primary flex items-center justify-center shadow-lg">
+              <span className="text-white font-bold text-lg">FC</span>
             </div>
-            <h1 className="text-2xl font-bold text-foreground">FluxoCerto</h1>
-            <p className="text-muted-foreground text-sm">Controle Financeiro Pessoal</p>
+            <span className="text-2xl font-bold text-foreground">FluxoCerto</span>
           </div>
 
-          {/* Auth Card */}
-          <div className="bg-card border border-border rounded-2xl p-8 shadow-xl">
-            <div className="hidden lg:block text-center mb-8">
-              <h2 className="text-2xl font-bold text-foreground">Bem-vindo!</h2>
-              <p className="text-muted-foreground mt-1">
-                Entre ou crie sua conta para continuar
+          {/* Heading */}
+          <div className="mb-8">
+            <h2 className="text-2xl font-bold text-foreground mb-2">
+              {isRegister ? 'Crie sua conta' : 'Bem-vindo de volta!'}
+            </h2>
+            <p className="text-muted-foreground">
+              {isRegister 
+                ? 'Preencha os dados abaixo para começar.' 
+                : 'Entre com seu e-mail e senha para começar.'}
+            </p>
+          </div>
+
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div>
+              <Input
+                type="email"
+                placeholder="seu@email.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                disabled={isLoading}
+                className="h-14 px-5 text-base bg-background border-2 border-border rounded-xl focus:border-primary transition-colors"
+              />
+            </div>
+            
+            <div className="relative">
+              <Input
+                type={showPassword ? 'text' : 'password'}
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                disabled={isLoading}
+                className="h-14 px-5 pr-14 text-base bg-background border-2 border-border rounded-xl focus:border-primary transition-colors"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+              >
+                {showPassword ? (
+                  <EyeOff className="w-5 h-5" />
+                ) : (
+                  <Eye className="w-5 h-5" />
+                )}
+              </button>
+            </div>
+
+            {isRegister && (
+              <p className="text-xs text-muted-foreground -mt-2">
+                Mínimo de 6 caracteres
               </p>
-            </div>
+            )}
 
-            <Tabs defaultValue="login" className="w-full">
-              <TabsList className="grid w-full grid-cols-2 mb-6 bg-muted/50">
-                <TabsTrigger value="login" className="data-[state=active]:bg-background">
-                  Entrar
-                </TabsTrigger>
-                <TabsTrigger value="register" className="data-[state=active]:bg-background">
-                  Criar Conta
-                </TabsTrigger>
-              </TabsList>
-              
-              <TabsContent value="login">
-                <form onSubmit={handleSignIn} className="space-y-5">
-                  <div className="space-y-2">
-                    <Label htmlFor="login-email" className="text-foreground">
-                      Email
-                    </Label>
-                    <Input
-                      id="login-email"
-                      type="email"
-                      placeholder="seu@email.com"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      required
-                      disabled={isLoading}
-                      className="h-12 bg-muted/30 border-border/50 focus:border-primary"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="login-password" className="text-foreground">
-                      Senha
-                    </Label>
-                    <Input
-                      id="login-password"
-                      type="password"
-                      placeholder="••••••••"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      required
-                      disabled={isLoading}
-                      className="h-12 bg-muted/30 border-border/50 focus:border-primary"
-                    />
-                  </div>
-                  <Button 
-                    type="submit" 
-                    className="w-full h-12 text-base font-semibold gap-2 bg-gradient-to-r from-income to-primary hover:opacity-90 transition-opacity" 
-                    disabled={isLoading}
-                  >
-                    {isLoading ? (
-                      <>
-                        <Loader2 className="w-5 h-5 animate-spin" />
-                        Entrando...
-                      </>
-                    ) : (
-                      <>
-                        Entrar
-                        <ArrowRight className="w-5 h-5" />
-                      </>
-                    )}
-                  </Button>
-                </form>
-              </TabsContent>
-              
-              <TabsContent value="register">
-                <form onSubmit={handleSignUp} className="space-y-5">
-                  <div className="space-y-2">
-                    <Label htmlFor="register-email" className="text-foreground">
-                      Email
-                    </Label>
-                    <Input
-                      id="register-email"
-                      type="email"
-                      placeholder="seu@email.com"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      required
-                      disabled={isLoading}
-                      className="h-12 bg-muted/30 border-border/50 focus:border-primary"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="register-password" className="text-foreground">
-                      Senha
-                    </Label>
-                    <Input
-                      id="register-password"
-                      type="password"
-                      placeholder="••••••••"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      required
-                      disabled={isLoading}
-                      className="h-12 bg-muted/30 border-border/50 focus:border-primary"
-                    />
-                    <p className="text-xs text-muted-foreground">
-                      Mínimo de 6 caracteres
-                    </p>
-                  </div>
-                  <Button 
-                    type="submit" 
-                    className="w-full h-12 text-base font-semibold gap-2 bg-gradient-to-r from-primary to-income hover:opacity-90 transition-opacity" 
-                    disabled={isLoading}
-                  >
-                    {isLoading ? (
-                      <>
-                        <Loader2 className="w-5 h-5 animate-spin" />
-                        Criando conta...
-                      </>
-                    ) : (
-                      <>
-                        Criar Conta
-                        <ArrowRight className="w-5 h-5" />
-                      </>
-                    )}
-                  </Button>
-                </form>
-              </TabsContent>
-            </Tabs>
+            <Button 
+              type="submit" 
+              className="w-full h-14 text-base font-semibold rounded-xl bg-gradient-to-r from-primary to-[#00a3ff] hover:opacity-90 transition-opacity shadow-lg shadow-primary/30" 
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <Loader2 className="w-5 h-5 animate-spin" />
+              ) : (
+                isRegister ? 'Criar conta' : 'Entrar'
+              )}
+            </Button>
+          </form>
+
+          {/* Links */}
+          <div className="mt-8 space-y-3 text-sm">
+            <p className="text-muted-foreground">
+              {isRegister ? 'Já tem uma conta? ' : 'Não tem uma conta? '}
+              <button
+                type="button"
+                onClick={() => setIsRegister(!isRegister)}
+                className="text-primary hover:underline font-medium"
+              >
+                {isRegister ? 'Entrar' : 'Cadastrar agora'}
+              </button>
+            </p>
+            {!isRegister && (
+              <p className="text-muted-foreground">
+                Esqueceu a senha?{' '}
+                <button
+                  type="button"
+                  onClick={() => toast.info('Função de recuperação de senha será implementada em breve.')}
+                  className="text-primary hover:underline font-medium"
+                >
+                  Clique aqui
+                </button>
+              </p>
+            )}
           </div>
-
-          {/* Footer */}
-          <p className="text-center text-xs text-muted-foreground mt-6">
-            Ao continuar, você concorda com nossos termos de uso e política de privacidade.
-          </p>
         </div>
       </div>
     </div>
