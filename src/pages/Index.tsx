@@ -90,7 +90,12 @@ const Index = () => {
       </main>
 
       {/* Navegação Mobile - apenas mobile */}
-      <MobileNav activeTab={activeTab} onTabChange={setActiveTab} />
+      <MobileNav 
+        activeTab={activeTab} 
+        onTabChange={setActiveTab} 
+        theme={theme}
+        onToggleTheme={toggleTheme}
+      />
     </div>
   );
 };
