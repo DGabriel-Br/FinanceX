@@ -1,6 +1,15 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Pencil, Trash2, Check, X } from 'lucide-react';
-import { Transaction, TransactionType } from '@/types/transaction';
+import { 
+  Transaction, 
+  TransactionType, 
+  TransactionCategory,
+  IncomeCategory,
+  ExpenseCategory,
+  incomeCategoryLabels,
+  expenseCategoryLabels,
+  getCategoryLabel
+} from '@/types/transaction';
 import { parseLocalDate } from '@/hooks/useTransactions';
 import { cn } from '@/lib/utils';
 
@@ -27,19 +36,35 @@ const formatDate = (dateString: string): string => {
   }).format(date);
 };
 
+const incomeCategories: IncomeCategory[] = ['salario', '13_salario', 'ferias', 'freelance', 'outros_receita'];
+const expenseCategories: ExpenseCategory[] = ['contas_fixas', 'investimentos', 'dividas', 'educacao', 'transporte', 'mercado', 'delivery', 'outros_despesa'];
+
 export const TransactionList = ({ transactions, onUpdate, onDelete }: TransactionListProps) => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState({
     type: 'despesa' as TransactionType,
+    category: 'contas_fixas' as TransactionCategory,
     date: '',
     description: '',
     value: '',
   });
 
+  // Atualizar categoria quando tipo mudar na edição
+  useEffect(() => {
+    if (editingId) {
+      if (editForm.type === 'receita' && !incomeCategories.includes(editForm.category as IncomeCategory)) {
+        setEditForm(prev => ({ ...prev, category: 'salario' }));
+      } else if (editForm.type === 'despesa' && !expenseCategories.includes(editForm.category as ExpenseCategory)) {
+        setEditForm(prev => ({ ...prev, category: 'contas_fixas' }));
+      }
+    }
+  }, [editForm.type, editingId, editForm.category]);
+
   const startEditing = (transaction: Transaction) => {
     setEditingId(transaction.id);
     setEditForm({
       type: transaction.type,
+      category: transaction.category || (transaction.type === 'receita' ? 'outros_receita' : 'outros_despesa'),
       date: transaction.date,
       description: transaction.description,
       value: transaction.value.toString(),
@@ -48,7 +73,7 @@ export const TransactionList = ({ transactions, onUpdate, onDelete }: Transactio
 
   const cancelEditing = () => {
     setEditingId(null);
-    setEditForm({ type: 'despesa', date: '', description: '', value: '' });
+    setEditForm({ type: 'despesa', category: 'contas_fixas', date: '', description: '', value: '' });
   };
 
   const saveEditing = (id: string) => {
@@ -58,6 +83,7 @@ export const TransactionList = ({ transactions, onUpdate, onDelete }: Transactio
 
     onUpdate(id, {
       type: editForm.type,
+      category: editForm.category,
       date: editForm.date,
       description: editForm.description.trim(),
       value: parseFloat(editForm.value),
@@ -75,6 +101,9 @@ export const TransactionList = ({ transactions, onUpdate, onDelete }: Transactio
     );
   }
 
+  const currentEditCategories = editForm.type === 'receita' ? incomeCategories : expenseCategories;
+  const editCategoryLabels = editForm.type === 'receita' ? incomeCategoryLabels : expenseCategoryLabels;
+
   return (
     <div className="overflow-hidden rounded-xl border border-border">
       <table className="w-full">
@@ -82,6 +111,9 @@ export const TransactionList = ({ transactions, onUpdate, onDelete }: Transactio
           <tr>
             <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
               Data
+            </th>
+            <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+              Categoria
             </th>
             <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
               Descrição
@@ -110,7 +142,7 @@ export const TransactionList = ({ transactions, onUpdate, onDelete }: Transactio
                     />
                   </td>
                   <td className="px-4 py-3">
-                    <div className="flex gap-2">
+                    <div className="flex flex-col gap-2">
                       <select
                         value={editForm.type}
                         onChange={e => setEditForm(prev => ({ ...prev, type: e.target.value as TransactionType }))}
@@ -119,22 +151,34 @@ export const TransactionList = ({ transactions, onUpdate, onDelete }: Transactio
                         <option value="receita">Receita</option>
                         <option value="despesa">Despesa</option>
                       </select>
-                      <input
-                        type="text"
-                        value={editForm.description}
-                        onChange={e => setEditForm(prev => ({ ...prev, description: e.target.value }))}
-                        className="flex-1 px-2 py-1 rounded border border-input bg-background text-sm"
-                      />
+                      <select
+                        value={editForm.category}
+                        onChange={e => setEditForm(prev => ({ ...prev, category: e.target.value as TransactionCategory }))}
+                        className="px-2 py-1 rounded border border-input bg-background text-sm"
+                      >
+                        {currentEditCategories.map(cat => (
+                          <option key={cat} value={cat}>
+                            {editCategoryLabels[cat as keyof typeof editCategoryLabels]}
+                          </option>
+                        ))}
+                      </select>
                     </div>
                   </td>
                   <td className="px-4 py-3">
                     <input
-                      type="number"
+                      type="text"
+                      value={editForm.description}
+                      onChange={e => setEditForm(prev => ({ ...prev, description: e.target.value }))}
+                      className="w-full px-2 py-1 rounded border border-input bg-background text-sm"
+                    />
+                  </td>
+                  <td className="px-4 py-3">
+                    <input
+                      type="text"
+                      inputMode="numeric"
                       value={editForm.value}
                       onChange={e => setEditForm(prev => ({ ...prev, value: e.target.value }))}
                       className="w-full px-2 py-1 rounded border border-input bg-background text-sm text-right"
-                      min="0.01"
-                      step="0.01"
                     />
                   </td>
                   <td className="px-4 py-3">
@@ -161,6 +205,16 @@ export const TransactionList = ({ transactions, onUpdate, onDelete }: Transactio
                 <>
                   <td className="px-4 py-3 text-sm text-muted-foreground">
                     {formatDate(transaction.date)}
+                  </td>
+                  <td className="px-4 py-3">
+                    <span className={cn(
+                      "text-xs font-medium px-2 py-1 rounded-full",
+                      transaction.type === 'receita' 
+                        ? 'bg-income/10 text-income' 
+                        : 'bg-expense/10 text-expense'
+                    )}>
+                      {getCategoryLabel(transaction.category || (transaction.type === 'receita' ? 'outros_receita' : 'outros_despesa'), transaction.type)}
+                    </span>
                   </td>
                   <td className="px-4 py-3">
                     <span className="text-sm text-foreground">{transaction.description}</span>
