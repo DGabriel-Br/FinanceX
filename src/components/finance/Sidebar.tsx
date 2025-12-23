@@ -47,16 +47,16 @@ export const Sidebar = ({
         collapsed ? "justify-center" : "gap-3"
       )}>
         {/* Logo */}
-        <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-primary-foreground font-bold text-sm flex-shrink-0">
-          FN
+        <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-income to-primary flex items-center justify-center text-primary-foreground font-bold text-sm flex-shrink-0">
+          FC
         </div>
         
         {!collapsed && (
           <div className="flex-1 min-w-0">
             <h1 className="text-sm font-semibold text-sidebar-primary-foreground truncate">
-              Finanças
+              FluxoCerto
             </h1>
-            <p className="text-xs text-sidebar-foreground/60 truncate">Controle Pessoal</p>
+            <p className="text-xs text-sidebar-foreground/60 truncate">Controle Financeiro</p>
           </div>
         )}
       </div>
