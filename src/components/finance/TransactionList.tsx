@@ -28,12 +28,13 @@ const formatCurrency = (value: number): string => {
   }).format(value);
 };
 
-// Formatar data para exibição
+// Formatar data para exibição (dd/MM/yyyy)
 const formatDate = (dateString: string): string => {
   const date = parseLocalDate(dateString);
   return new Intl.DateTimeFormat('pt-BR', {
     day: '2-digit',
-    month: 'short',
+    month: '2-digit',
+    year: 'numeric',
   }).format(date);
 };
 
