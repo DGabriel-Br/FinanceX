@@ -236,10 +236,10 @@ export const Investments = ({
   return (
     <div className="p-4 md:p-8">
       {/* Header */}
-      <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 mb-6 md:mb-8">
-        <div>
-          <h2 className="text-xl md:text-2xl font-bold text-foreground">Controle de Investimentos</h2>
-          <p className="text-sm md:text-base text-muted-foreground mt-1">Acompanhe seus aportes e a distribuição</p>
+      <div className="flex items-start justify-between gap-3 mb-6 md:mb-8">
+        <div className="min-w-0 flex-1">
+          <h2 className="text-xl md:text-2xl font-bold text-foreground">Investimentos</h2>
+          <p className="text-sm md:text-base text-muted-foreground mt-1 hidden sm:block">Acompanhe seus aportes</p>
         </div>
         <PeriodFilter 
           customRange={customRange}
