@@ -1,12 +1,20 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Plus } from 'lucide-react';
-import { TransactionType } from '@/types/transaction';
+import { 
+  TransactionType, 
+  TransactionCategory, 
+  IncomeCategory, 
+  ExpenseCategory,
+  incomeCategoryLabels,
+  expenseCategoryLabels 
+} from '@/types/transaction';
 import { getLocalDateString } from '@/hooks/useTransactions';
 import { cn } from '@/lib/utils';
 
 interface TransactionFormProps {
   onSubmit: (transaction: {
     type: TransactionType;
+    category: TransactionCategory;
     date: string;
     description: string;
     value: number;
@@ -38,11 +46,24 @@ const parseCurrency = (value: string): number => {
   return parseFloat(normalized) || 0;
 };
 
+const incomeCategories: IncomeCategory[] = ['salario', '13_salario', 'ferias', 'freelance', 'outros_receita'];
+const expenseCategories: ExpenseCategory[] = ['contas_fixas', 'investimentos', 'dividas', 'educacao', 'transporte', 'mercado', 'delivery', 'outros_despesa'];
+
 export const TransactionForm = ({ onSubmit }: TransactionFormProps) => {
   const [type, setType] = useState<TransactionType>('despesa');
+  const [category, setCategory] = useState<TransactionCategory>('contas_fixas');
   const [date, setDate] = useState(getLocalDateString());
   const [description, setDescription] = useState('');
   const [value, setValue] = useState('');
+
+  // Atualizar categoria quando tipo mudar
+  useEffect(() => {
+    if (type === 'receita') {
+      setCategory('salario');
+    } else {
+      setCategory('contas_fixas');
+    }
+  }, [type]);
 
   const handleValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const formatted = formatCurrency(e.target.value);
@@ -61,6 +82,7 @@ export const TransactionForm = ({ onSubmit }: TransactionFormProps) => {
 
     onSubmit({
       type,
+      category,
       date,
       description: description.trim(),
       value: numericValue,
@@ -72,6 +94,8 @@ export const TransactionForm = ({ onSubmit }: TransactionFormProps) => {
   };
 
   const numericValue = parseCurrency(value);
+  const currentCategories = type === 'receita' ? incomeCategories : expenseCategories;
+  const categoryLabels = type === 'receita' ? incomeCategoryLabels : expenseCategoryLabels;
 
   return (
     <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
@@ -107,6 +131,22 @@ export const TransactionForm = ({ onSubmit }: TransactionFormProps) => {
               Despesa
             </button>
           </div>
+        </div>
+
+        {/* Categoria */}
+        <div>
+          <label className="block text-sm font-medium text-foreground mb-2">Categoria</label>
+          <select
+            value={category}
+            onChange={e => setCategory(e.target.value as TransactionCategory)}
+            className="w-full px-3 py-2 rounded-lg border border-input bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+          >
+            {currentCategories.map(cat => (
+              <option key={cat} value={cat}>
+                {categoryLabels[cat as keyof typeof categoryLabels]}
+              </option>
+            ))}
+          </select>
         </div>
 
         {/* Data */}
