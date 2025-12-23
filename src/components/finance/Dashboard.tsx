@@ -142,7 +142,8 @@ export const Dashboard = ({ totals, filter, onFilterChange, transactions }: Dash
               <YAxis 
                 tick={{ fill: 'hsl(var(--muted-foreground))' }}
                 axisLine={{ stroke: 'hsl(var(--border))' }}
-                tickFormatter={(value) => `R$ ${value}`}
+                tickFormatter={(value) => value.toLocaleString('pt-BR')}
+                width={80}
               />
               <Tooltip 
                 formatter={(value: number) => formatCurrency(value)}
