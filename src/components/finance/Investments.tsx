@@ -234,12 +234,12 @@ export const Investments = ({
   const overallProgress = totalGoalsTarget > 0 ? (totalGoalsInvested / totalGoalsTarget) * 100 : 0;
 
   return (
-    <div className="p-8">
+    <div className="p-4 md:p-8">
       {/* Header */}
-      <div className="flex flex-col lg:flex-row lg:items-start justify-between mb-8 gap-4">
+      <div className="flex flex-col gap-4 mb-6 md:mb-8">
         <div>
-          <h2 className="text-2xl font-bold text-foreground">Controle de Investimentos</h2>
-          <p className="text-muted-foreground mt-1">Acompanhe seus aportes e a distribuição dos investimentos</p>
+          <h2 className="text-xl md:text-2xl font-bold text-foreground">Controle de Investimentos</h2>
+          <p className="text-sm md:text-base text-muted-foreground mt-1">Acompanhe seus aportes e a distribuição</p>
         </div>
         <PeriodFilter 
           customRange={customRange}
@@ -248,57 +248,57 @@ export const Investments = ({
       </div>
 
       {/* Cards de resumo */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-        <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-              <TrendingUp className="w-6 h-6 text-primary" />
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6 mb-6 md:mb-8">
+        <div className="bg-card border border-border rounded-xl p-3 md:p-6 shadow-sm">
+          <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-4">
+            <div className="w-8 h-8 md:w-12 md:h-12 rounded-full bg-primary/10 flex items-center justify-center">
+              <TrendingUp className="w-4 h-4 md:w-6 md:h-6 text-primary" />
             </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Investido no Período</p>
-              <p className="text-2xl font-bold text-primary">
+            <div className="min-w-0">
+              <p className="text-xs md:text-sm text-muted-foreground truncate">No Período</p>
+              <p className="text-sm md:text-2xl font-bold text-primary truncate">
                 {formatCurrency(totalInvested)}
               </p>
             </div>
           </div>
         </div>
 
-        <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-full bg-income/10 flex items-center justify-center">
-              <Wallet className="w-6 h-6 text-income" />
+        <div className="bg-card border border-border rounded-xl p-3 md:p-6 shadow-sm">
+          <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-4">
+            <div className="w-8 h-8 md:w-12 md:h-12 rounded-full bg-income/10 flex items-center justify-center">
+              <Wallet className="w-4 h-4 md:w-6 md:h-6 text-income" />
             </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Total Investido</p>
-              <p className="text-2xl font-bold text-income">
+            <div className="min-w-0">
+              <p className="text-xs md:text-sm text-muted-foreground truncate">Total</p>
+              <p className="text-sm md:text-2xl font-bold text-income truncate">
                 {formatCurrency(totalInvestedAllTime)}
               </p>
             </div>
           </div>
         </div>
 
-        <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-full bg-secondary flex items-center justify-center">
-              <PieChart className="w-6 h-6 text-muted-foreground" />
+        <div className="bg-card border border-border rounded-xl p-3 md:p-6 shadow-sm">
+          <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-4">
+            <div className="w-8 h-8 md:w-12 md:h-12 rounded-full bg-secondary flex items-center justify-center">
+              <PieChart className="w-4 h-4 md:w-6 md:h-6 text-muted-foreground" />
             </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Tipos Ativos</p>
-              <p className="text-2xl font-bold text-foreground">
+            <div className="min-w-0">
+              <p className="text-xs md:text-sm text-muted-foreground truncate">Tipos Ativos</p>
+              <p className="text-sm md:text-2xl font-bold text-foreground">
                 {investmentsByType.length}
               </p>
             </div>
           </div>
         </div>
 
-        <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-              <Target className="w-6 h-6 text-primary" />
+        <div className="bg-card border border-border rounded-xl p-3 md:p-6 shadow-sm">
+          <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-4">
+            <div className="w-8 h-8 md:w-12 md:h-12 rounded-full bg-primary/10 flex items-center justify-center">
+              <Target className="w-4 h-4 md:w-6 md:h-6 text-primary" />
             </div>
-            <div>
-              <p className="text-sm text-muted-foreground">Progresso Metas</p>
-              <p className="text-2xl font-bold text-foreground">
+            <div className="min-w-0">
+              <p className="text-xs md:text-sm text-muted-foreground truncate">Metas</p>
+              <p className="text-sm md:text-2xl font-bold text-foreground">
                 {overallProgress.toFixed(0)}%
               </p>
             </div>

@@ -21,12 +21,12 @@ export const Transactions = ({
   onDelete,
 }: TransactionsProps) => {
   return (
-    <div className="p-8">
+    <div className="p-4 md:p-8">
       {/* Header */}
-      <div className="flex flex-col lg:flex-row lg:items-start justify-between mb-8 gap-4">
+      <div className="flex flex-col gap-4 mb-6 md:mb-8">
         <div>
-          <h2 className="text-2xl font-bold text-foreground">Lançamentos</h2>
-          <p className="text-muted-foreground mt-1">Gerencie suas receitas e despesas</p>
+          <h2 className="text-xl md:text-2xl font-bold text-foreground">Lançamentos</h2>
+          <p className="text-sm md:text-base text-muted-foreground mt-1">Gerencie suas receitas e despesas</p>
         </div>
         <PeriodFilter 
           customRange={customRange}
@@ -35,7 +35,7 @@ export const Transactions = ({
       </div>
 
       {/* Layout em duas colunas */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
         {/* Formulário */}
         <div className="lg:col-span-1">
           <TransactionForm onSubmit={onAdd} />

@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Sidebar } from '@/components/finance/Sidebar';
+import { MobileNav } from '@/components/finance/MobileNav';
 import { Dashboard } from '@/components/finance/Dashboard';
 import { Transactions } from '@/components/finance/Transactions';
 import { Debts } from '@/components/finance/Debts';
@@ -37,18 +38,20 @@ const Index = () => {
 
   return (
     <div className="flex min-h-screen w-full relative">
-      {/* Sidebar fixa */}
-      <Sidebar 
-        activeTab={activeTab} 
-        onTabChange={setActiveTab} 
-        collapsed={sidebarCollapsed}
-        onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
-        theme={theme}
-        onToggleTheme={toggleTheme}
-      />
+      {/* Sidebar - apenas desktop */}
+      <div className="hidden md:block">
+        <Sidebar 
+          activeTab={activeTab} 
+          onTabChange={setActiveTab} 
+          collapsed={sidebarCollapsed}
+          onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
+          theme={theme}
+          onToggleTheme={toggleTheme}
+        />
+      </div>
 
       {/* Conteúdo principal */}
-      <main className="flex-1 overflow-auto bg-background">
+      <main className="flex-1 overflow-auto bg-background pb-20 md:pb-0">
         {activeTab === 'dashboard' ? (
           <Dashboard
             totals={totals}
@@ -85,6 +88,9 @@ const Index = () => {
           />
         )}
       </main>
+
+      {/* Navegação Mobile - apenas mobile */}
+      <MobileNav activeTab={activeTab} onTabChange={setActiveTab} />
     </div>
   );
 };
