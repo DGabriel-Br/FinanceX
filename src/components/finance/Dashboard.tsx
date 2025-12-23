@@ -179,14 +179,29 @@ export const Dashboard = ({
                 width={80}
               />
               <Tooltip 
-                formatter={(value: number) => formatCurrency(value)}
-                contentStyle={{
-                  backgroundColor: 'hsl(var(--card))',
-                  border: '1px solid hsl(var(--border))',
-                  borderRadius: '12px',
-                  boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                content={({ active, payload, label }) => {
+                  if (active && payload && payload.length) {
+                    return (
+                      <div className="bg-card border border-border rounded-xl p-3 shadow-lg">
+                        <p className="font-semibold text-foreground mb-2">{label}</p>
+                        {payload.map((entry, index) => (
+                          <p key={index} className="text-sm">
+                            <span 
+                              className="font-medium"
+                              style={{ color: entry.dataKey === 'receitas' ? 'hsl(142, 71%, 45%)' : 'hsl(0, 84%, 60%)' }}
+                            >
+                              {entry.name}:
+                            </span>
+                            <span className="text-foreground ml-1">
+                              {formatCurrency(entry.value as number)}
+                            </span>
+                          </p>
+                        ))}
+                      </div>
+                    );
+                  }
+                  return null;
                 }}
-                labelStyle={{ color: 'hsl(var(--foreground))', fontWeight: 600 }}
                 cursor={{ fill: 'hsl(var(--muted))', opacity: 0.3 }}
               />
               <Legend 
