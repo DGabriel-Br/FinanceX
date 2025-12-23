@@ -5,6 +5,7 @@ export interface Debt {
   totalValue: number;
   monthlyInstallment: number;
   startDate: string; // formato YYYY-MM
+  paidValue: number; // valor já pago
   createdAt: number;
 }
 

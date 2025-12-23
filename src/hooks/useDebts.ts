@@ -28,6 +28,7 @@ export const useDebts = () => {
         totalValue: Number(d.total_value),
         monthlyInstallment: Number(d.monthly_installment),
         startDate: d.start_date,
+        paidValue: Number(d.paid_value || 0),
         createdAt: Number(d.created_at),
       }));
 
@@ -53,6 +54,7 @@ export const useDebts = () => {
           total_value: debt.totalValue,
           monthly_installment: debt.monthlyInstallment,
           start_date: debt.startDate,
+          paid_value: debt.paidValue || 0,
           user_id: user.id,
         })
         .select()
@@ -66,6 +68,7 @@ export const useDebts = () => {
         totalValue: Number(data.total_value),
         monthlyInstallment: Number(data.monthly_installment),
         startDate: data.start_date,
+        paidValue: Number(data.paid_value || 0),
         createdAt: Number(data.created_at),
       };
 
@@ -87,6 +90,7 @@ export const useDebts = () => {
       if (updates.totalValue !== undefined) updateData.total_value = updates.totalValue;
       if (updates.monthlyInstallment !== undefined) updateData.monthly_installment = updates.monthlyInstallment;
       if (updates.startDate !== undefined) updateData.start_date = updates.startDate;
+      if (updates.paidValue !== undefined) updateData.paid_value = updates.paidValue;
 
       const { error } = await supabase
         .from('debts')
