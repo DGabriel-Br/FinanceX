@@ -111,9 +111,9 @@ export const Dashboard = ({
       {/* Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-6">
         {/* Receitas */}
-        <div className="bg-card border border-border rounded-xl p-4 md:p-6 shadow-sm">
+        <div className="bg-card border border-border rounded-xl p-4 md:p-6 shadow-sm animate-fade-in hover:shadow-lg hover:scale-[1.02] transition-all duration-300" style={{ animationDelay: '0.1s', animationDuration: '0.5s', animationFillMode: 'both' }}>
           <div className="flex items-center gap-3 md:gap-4">
-            <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-income/10 flex items-center justify-center">
+            <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-income/10 flex items-center justify-center animate-scale-in" style={{ animationDelay: '0.2s', animationDuration: '0.4s', animationFillMode: 'both' }}>
               <TrendingUp className="w-5 h-5 md:w-6 md:h-6 text-income" />
             </div>
             <div className="min-w-0 flex-1">
@@ -126,9 +126,9 @@ export const Dashboard = ({
         </div>
 
         {/* Despesas */}
-        <div className="bg-card border border-border rounded-xl p-4 md:p-6 shadow-sm">
+        <div className="bg-card border border-border rounded-xl p-4 md:p-6 shadow-sm animate-fade-in hover:shadow-lg hover:scale-[1.02] transition-all duration-300" style={{ animationDelay: '0.15s', animationDuration: '0.5s', animationFillMode: 'both' }}>
           <div className="flex items-center gap-3 md:gap-4">
-            <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-expense/10 flex items-center justify-center">
+            <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-expense/10 flex items-center justify-center animate-scale-in" style={{ animationDelay: '0.25s', animationDuration: '0.4s', animationFillMode: 'both' }}>
               <TrendingDown className="w-5 h-5 md:w-6 md:h-6 text-expense" />
             </div>
             <div className="min-w-0 flex-1">
@@ -141,9 +141,9 @@ export const Dashboard = ({
         </div>
 
         {/* Saldo */}
-        <div className="bg-card border border-border rounded-xl p-4 md:p-6 shadow-sm">
+        <div className="bg-card border border-border rounded-xl p-4 md:p-6 shadow-sm animate-fade-in hover:shadow-lg hover:scale-[1.02] transition-all duration-300" style={{ animationDelay: '0.2s', animationDuration: '0.5s', animationFillMode: 'both' }}>
           <div className="flex items-center gap-3 md:gap-4">
-            <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-primary/10 flex items-center justify-center">
+            <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-primary/10 flex items-center justify-center animate-scale-in" style={{ animationDelay: '0.3s', animationDuration: '0.4s', animationFillMode: 'both' }}>
               <Wallet className="w-5 h-5 md:w-6 md:h-6 text-primary" />
             </div>
             <div className="min-w-0 flex-1">
@@ -287,6 +287,10 @@ export const Dashboard = ({
                 name="Receitas" 
                 radius={isMobile ? [3, 3, 0, 0] : [6, 6, 0, 0]}
                 barSize={isMobile ? 8 : undefined}
+                isAnimationActive={true}
+                animationBegin={300}
+                animationDuration={800}
+                animationEasing="ease-out"
               >
                 {chartData.map((entry, index) => (
                   <Cell 
@@ -302,6 +306,10 @@ export const Dashboard = ({
                 name="Despesas" 
                 radius={isMobile ? [3, 3, 0, 0] : [6, 6, 0, 0]}
                 barSize={isMobile ? 8 : undefined}
+                isAnimationActive={true}
+                animationBegin={500}
+                animationDuration={800}
+                animationEasing="ease-out"
               >
                 {chartData.map((entry, index) => (
                   <Cell 
