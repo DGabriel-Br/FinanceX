@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { Plus, Trash2, CreditCard, Calendar, DollarSign } from 'lucide-react';
-import { Debt, DebtPayment } from '@/types/debt';
+import { Plus, Trash2, CreditCard, Calendar, TrendingUp } from 'lucide-react';
+import { Debt, calculateExpectedEndDate, calculateProgress } from '@/types/debt';
+import { Transaction } from '@/types/transaction';
 import { cn } from '@/lib/utils';
 import { Progress } from '@/components/ui/progress';
 import {
@@ -13,11 +14,9 @@ import {
 
 interface DebtsProps {
   debts: Debt[];
-  onAddDebt: (debt: Omit<Debt, 'id' | 'createdAt' | 'paidValue'>) => void;
+  transactions: Transaction[];
+  onAddDebt: (debt: Omit<Debt, 'id' | 'createdAt'>) => void;
   onDeleteDebt: (id: string) => void;
-  onAddPayment: (payment: Omit<DebtPayment, 'id' | 'createdAt'>) => void;
-  getPaymentsForDebt: (debtId: string) => DebtPayment[];
-  onDeletePayment: (id: string) => void;
 }
 
 // Formatar valor em Real brasileiro
@@ -54,26 +53,38 @@ const formatMonthYear = (date: string): string => {
   return `${months[parseInt(month) - 1]}/${year}`;
 };
 
+// Calcula valor pago de uma dívida com base nas transações
+const getPaidValueForDebt = (debtName: string, transactions: Transaction[]): number => {
+  return transactions
+    .filter(t => t.type === 'despesa' && t.category === 'dividas' && 
+            t.description.toLowerCase().includes(debtName.toLowerCase()))
+    .reduce((sum, t) => sum + t.value, 0);
+};
+
 // Formulário de Nova Dívida
-const DebtForm = ({ onSubmit, onClose }: { onSubmit: (debt: Omit<Debt, 'id' | 'createdAt' | 'paidValue'>) => void; onClose: () => void }) => {
+const DebtForm = ({ onSubmit, onClose }: { onSubmit: (debt: Omit<Debt, 'id' | 'createdAt'>) => void; onClose: () => void }) => {
   const [name, setName] = useState('');
   const [totalValue, setTotalValue] = useState('');
-  const [expectedEndDate, setExpectedEndDate] = useState('');
+  const [monthlyInstallment, setMonthlyInstallment] = useState('');
+  const [startDate, setStartDate] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const numericValue = parseCurrency(totalValue);
-    if (!name.trim() || numericValue <= 0 || !expectedEndDate) return;
+    const numericTotal = parseCurrency(totalValue);
+    const numericMonthly = parseCurrency(monthlyInstallment);
+    if (!name.trim() || numericTotal <= 0 || numericMonthly <= 0 || !startDate) return;
 
     onSubmit({
       name: name.trim(),
-      totalValue: numericValue,
-      expectedEndDate,
+      totalValue: numericTotal,
+      monthlyInstallment: numericMonthly,
+      startDate,
     });
 
     setName('');
     setTotalValue('');
-    setExpectedEndDate('');
+    setMonthlyInstallment('');
+    setStartDate('');
     onClose();
   };
 
@@ -103,18 +114,30 @@ const DebtForm = ({ onSubmit, onClose }: { onSubmit: (debt: Omit<Debt, 'id' | 'c
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-foreground mb-2">Previsão de Término</label>
+        <label className="block text-sm font-medium text-foreground mb-2">Parcela Mensal (R$)</label>
+        <input
+          type="text"
+          inputMode="numeric"
+          value={monthlyInstallment}
+          onChange={e => setMonthlyInstallment(formatCurrencyInput(e.target.value))}
+          placeholder="0,00"
+          className="w-full px-3 py-2 rounded-lg border border-input bg-background text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-foreground mb-2">Data de Início</label>
         <input
           type="month"
-          value={expectedEndDate}
-          onChange={e => setExpectedEndDate(e.target.value)}
+          value={startDate}
+          onChange={e => setStartDate(e.target.value)}
           className="w-full px-3 py-2 rounded-lg border border-input bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring"
         />
       </div>
 
       <button
         type="submit"
-        disabled={!name.trim() || parseCurrency(totalValue) <= 0 || !expectedEndDate}
+        disabled={!name.trim() || parseCurrency(totalValue) <= 0 || parseCurrency(monthlyInstallment) <= 0 || !startDate}
         className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-lg bg-primary text-primary-foreground font-medium text-sm transition-all duration-200 hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
       >
         <Plus className="w-4 h-4" />
@@ -124,79 +147,19 @@ const DebtForm = ({ onSubmit, onClose }: { onSubmit: (debt: Omit<Debt, 'id' | 'c
   );
 };
 
-// Formulário de Pagamento
-const PaymentForm = ({ debtId, onSubmit, onClose }: { debtId: string; onSubmit: (payment: Omit<DebtPayment, 'id' | 'createdAt'>) => void; onClose: () => void }) => {
-  const [value, setValue] = useState('');
-  const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    const numericValue = parseCurrency(value);
-    if (numericValue <= 0 || !date) return;
-
-    onSubmit({
-      debtId,
-      value: numericValue,
-      date,
-    });
-
-    setValue('');
-    onClose();
-  };
-
-  return (
-    <form onSubmit={handleSubmit} className="space-y-4">
-      <div>
-        <label className="block text-sm font-medium text-foreground mb-2">Valor do Pagamento (R$)</label>
-        <input
-          type="text"
-          inputMode="numeric"
-          value={value}
-          onChange={e => setValue(formatCurrencyInput(e.target.value))}
-          placeholder="0,00"
-          className="w-full px-3 py-2 rounded-lg border border-input bg-background text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-        />
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-foreground mb-2">Data</label>
-        <input
-          type="date"
-          value={date}
-          onChange={e => setDate(e.target.value)}
-          className="w-full px-3 py-2 rounded-lg border border-input bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-        />
-      </div>
-
-      <button
-        type="submit"
-        disabled={parseCurrency(value) <= 0 || !date}
-        className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-lg bg-income text-primary-foreground font-medium text-sm transition-all duration-200 hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed"
-      >
-        <DollarSign className="w-4 h-4" />
-        Registrar Pagamento
-      </button>
-    </form>
-  );
-};
-
 // Card de Dívida Individual
 const DebtCard = ({ 
   debt, 
-  payments, 
-  onDelete, 
-  onAddPayment,
-  onDeletePayment 
+  paidValue,
+  onDelete,
 }: { 
   debt: Debt; 
-  payments: DebtPayment[];
+  paidValue: number;
   onDelete: () => void;
-  onAddPayment: (payment: Omit<DebtPayment, 'id' | 'createdAt'>) => void;
-  onDeletePayment: (id: string) => void;
 }) => {
-  const [isPaymentDialogOpen, setIsPaymentDialogOpen] = useState(false);
-  const remaining = debt.totalValue - debt.paidValue;
-  const progress = debt.totalValue > 0 ? (debt.paidValue / debt.totalValue) * 100 : 0;
+  const remaining = debt.totalValue - paidValue;
+  const progress = calculateProgress(debt.totalValue, paidValue);
+  const expectedEndDate = calculateExpectedEndDate(debt.totalValue, debt.monthlyInstallment, debt.startDate, paidValue);
 
   return (
     <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
@@ -210,7 +173,7 @@ const DebtCard = ({
             <h3 className="font-semibold text-foreground">{debt.name}</h3>
             <div className="flex items-center gap-1 text-xs text-muted-foreground">
               <Calendar className="w-3 h-3" />
-              <span>Previsão: {formatMonthYear(debt.expectedEndDate)}</span>
+              <span>Início: {formatMonthYear(debt.startDate)}</span>
             </div>
           </div>
         </div>
@@ -232,91 +195,65 @@ const DebtCard = ({
       </div>
 
       {/* Valores */}
-      <div className="grid grid-cols-3 gap-4 mb-4">
+      <div className="grid grid-cols-2 gap-3 mb-4">
         <div className="text-center p-3 bg-muted/30 rounded-lg">
-          <p className="text-xs text-muted-foreground mb-1">Pago</p>
-          <p className="font-semibold text-income text-sm">{formatCurrency(debt.paidValue)}</p>
+          <p className="text-xs text-muted-foreground mb-1">Pago até agora</p>
+          <p className="font-semibold text-income text-sm">{formatCurrency(paidValue)}</p>
         </div>
         <div className="text-center p-3 bg-muted/30 rounded-lg">
-          <p className="text-xs text-muted-foreground mb-1">Restante</p>
-          <p className="font-semibold text-expense text-sm">{formatCurrency(remaining)}</p>
+          <p className="text-xs text-muted-foreground mb-1">Falta pagar</p>
+          <p className="font-semibold text-expense text-sm">{formatCurrency(Math.max(0, remaining))}</p>
         </div>
         <div className="text-center p-3 bg-muted/30 rounded-lg">
-          <p className="text-xs text-muted-foreground mb-1">Total</p>
+          <p className="text-xs text-muted-foreground mb-1">Valor Total</p>
           <p className="font-semibold text-foreground text-sm">{formatCurrency(debt.totalValue)}</p>
+        </div>
+        <div className="text-center p-3 bg-muted/30 rounded-lg">
+          <p className="text-xs text-muted-foreground mb-1">Parcela Mensal</p>
+          <p className="font-semibold text-primary text-sm">{formatCurrency(debt.monthlyInstallment)}</p>
         </div>
       </div>
 
-      {/* Botão de Pagamento */}
-      <Dialog open={isPaymentDialogOpen} onOpenChange={setIsPaymentDialogOpen}>
-        <DialogTrigger asChild>
-          <button className="w-full flex items-center justify-center gap-2 py-2 px-4 rounded-lg border border-primary text-primary font-medium text-sm transition-all duration-200 hover:bg-primary/10">
-            <Plus className="w-4 h-4" />
-            Registrar Pagamento
-          </button>
-        </DialogTrigger>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Novo Pagamento - {debt.name}</DialogTitle>
-          </DialogHeader>
-          <PaymentForm 
-            debtId={debt.id} 
-            onSubmit={onAddPayment} 
-            onClose={() => setIsPaymentDialogOpen(false)} 
-          />
-        </DialogContent>
-      </Dialog>
+      {/* Previsão de Término */}
+      <div className="flex items-center justify-center gap-2 p-3 bg-primary/5 rounded-lg border border-primary/20">
+        <TrendingUp className="w-4 h-4 text-primary" />
+        <span className="text-sm text-foreground">
+          Previsão de término: <strong>{formatMonthYear(expectedEndDate)}</strong>
+        </span>
+      </div>
 
-      {/* Histórico de Pagamentos */}
-      {payments.length > 0 && (
-        <div className="mt-4 pt-4 border-t border-border">
-          <p className="text-xs font-medium text-muted-foreground mb-2">Últimos pagamentos</p>
-          <div className="space-y-2 max-h-32 overflow-y-auto">
-            {payments.slice(0, 5).map(payment => (
-              <div key={payment.id} className="flex items-center justify-between text-sm p-2 bg-muted/20 rounded-lg">
-                <span className="text-muted-foreground">
-                  {new Date(payment.date + 'T00:00:00').toLocaleDateString('pt-BR')}
-                </span>
-                <div className="flex items-center gap-2">
-                  <span className="font-medium text-income">{formatCurrency(payment.value)}</span>
-                  <button
-                    onClick={() => onDeletePayment(payment.id)}
-                    className="p-1 text-muted-foreground hover:text-expense transition-colors"
-                  >
-                    <Trash2 className="w-3 h-3" />
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
+      {/* Dica */}
+      <p className="text-xs text-muted-foreground mt-3 text-center">
+        💡 Registre pagamentos na aba Lançamentos com categoria "Dívidas" e inclua "{debt.name}" na descrição.
+      </p>
     </div>
   );
 };
 
 export const Debts = ({ 
   debts, 
+  transactions,
   onAddDebt, 
   onDeleteDebt, 
-  onAddPayment,
-  getPaymentsForDebt,
-  onDeletePayment
 }: DebtsProps) => {
   const [isDebtDialogOpen, setIsDebtDialogOpen] = useState(false);
 
-  const stats = {
-    totalDebt: debts.reduce((sum, d) => sum + d.totalValue, 0),
-    totalPaid: debts.reduce((sum, d) => sum + d.paidValue, 0),
-    totalRemaining: debts.reduce((sum, d) => sum + (d.totalValue - d.paidValue), 0),
-  };
+  // Calcula estatísticas gerais
+  const stats = debts.reduce((acc, debt) => {
+    const paidValue = getPaidValueForDebt(debt.name, transactions);
+    return {
+      totalDebt: acc.totalDebt + debt.totalValue,
+      totalPaid: acc.totalPaid + paidValue,
+      totalRemaining: acc.totalRemaining + Math.max(0, debt.totalValue - paidValue),
+    };
+  }, { totalDebt: 0, totalPaid: 0, totalRemaining: 0 });
 
   return (
     <div className="p-8">
       {/* Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h2 className="text-2xl font-bold text-foreground">Dívidas</h2>
+          <h2 className="text-2xl font-bold text-foreground">Controle de Dívidas</h2>
           <p className="text-muted-foreground mt-1">Gerencie e acompanhe suas dívidas</p>
         </div>
         
@@ -352,6 +289,14 @@ export const Debts = ({
         </div>
       </div>
 
+      {/* Aviso sobre como registrar pagamentos */}
+      <div className="mb-6 p-4 bg-muted/50 rounded-lg border border-border">
+        <p className="text-sm text-muted-foreground">
+          💡 <strong>Como funciona:</strong> Os valores pagos são calculados automaticamente a partir dos lançamentos com categoria "Dívidas". 
+          Na descrição do lançamento, inclua o nome da dívida para que o sistema identifique corretamente.
+        </p>
+      </div>
+
       {/* Lista de Dívidas */}
       {debts.length === 0 ? (
         <div className="text-center py-12 bg-card border border-border rounded-xl">
@@ -365,10 +310,8 @@ export const Debts = ({
             <DebtCard
               key={debt.id}
               debt={debt}
-              payments={getPaymentsForDebt(debt.id)}
+              paidValue={getPaidValueForDebt(debt.name, transactions)}
               onDelete={() => onDeleteDebt(debt.id)}
-              onAddPayment={onAddPayment}
-              onDeletePayment={onDeletePayment}
             />
           ))}
         </div>

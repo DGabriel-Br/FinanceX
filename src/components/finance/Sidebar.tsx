@@ -16,7 +16,7 @@ interface SidebarProps {
 const menuItems = [
   { id: 'dashboard' as Tab, label: 'Dashboard', icon: LayoutDashboard },
   { id: 'lancamentos' as Tab, label: 'Lançamentos', icon: Receipt },
-  { id: 'dividas' as Tab, label: 'Dívidas', icon: CreditCard },
+  { id: 'dividas' as Tab, label: 'Controle de Dívidas', icon: CreditCard },
 ];
 
 export const Sidebar = ({ 
