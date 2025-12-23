@@ -26,7 +26,7 @@ export type TransactionCategory = IncomeCategory | ExpenseCategory;
 // Labels para exibição
 export const incomeCategoryLabels: Record<IncomeCategory, string> = {
   salario: 'Salário',
-  '13_salario': '13º Salário',
+  '13_salario': '13\u00BA Salário',
   ferias: 'Férias',
   freelance: 'Freelance',
   outros_receita: 'Outros',
