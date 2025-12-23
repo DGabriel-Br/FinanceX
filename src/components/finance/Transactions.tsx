@@ -1,5 +1,5 @@
 import { Transaction, PeriodFilter as PeriodFilterType, TransactionType } from '@/types/transaction';
-import { PeriodFilter } from './PeriodFilter';
+import { AdvancedPeriodFilter, CustomDateRange } from './AdvancedPeriodFilter';
 import { TransactionForm } from './TransactionForm';
 import { TransactionList } from './TransactionList';
 
@@ -7,6 +7,8 @@ interface TransactionsProps {
   transactions: Transaction[];
   filter: PeriodFilterType;
   onFilterChange: (filter: PeriodFilterType) => void;
+  customRange: CustomDateRange | null;
+  onCustomRangeChange: (range: CustomDateRange | null) => void;
   onAdd: (transaction: { type: TransactionType; date: string; description: string; value: number }) => void;
   onUpdate: (id: string, updates: Partial<Omit<Transaction, 'id' | 'createdAt'>>) => void;
   onDelete: (id: string) => void;
@@ -16,6 +18,8 @@ export const Transactions = ({
   transactions,
   filter,
   onFilterChange,
+  customRange,
+  onCustomRangeChange,
   onAdd,
   onUpdate,
   onDelete,
@@ -23,12 +27,17 @@ export const Transactions = ({
   return (
     <div className="p-8">
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col lg:flex-row lg:items-start justify-between mb-8 gap-4">
         <div>
           <h2 className="text-2xl font-bold text-foreground">Lançamentos</h2>
           <p className="text-muted-foreground mt-1">Gerencie suas receitas e despesas</p>
         </div>
-        <PeriodFilter value={filter} onChange={onFilterChange} />
+        <AdvancedPeriodFilter 
+          value={filter} 
+          onChange={onFilterChange}
+          customRange={customRange}
+          onCustomRangeChange={onCustomRangeChange}
+        />
       </div>
 
       {/* Layout em duas colunas */}

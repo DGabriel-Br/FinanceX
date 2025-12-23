@@ -18,6 +18,8 @@ const Index = () => {
     transactions,
     filter,
     setFilter,
+    customRange,
+    setCustomRange,
     addTransaction,
     updateTransaction,
     deleteTransaction,
@@ -53,6 +55,8 @@ const Index = () => {
             totals={totals}
             filter={filter}
             onFilterChange={setFilter}
+            customRange={customRange}
+            onCustomRangeChange={setCustomRange}
             transactions={filteredTransactions}
             allTransactions={transactions}
             debts={debts}
@@ -63,6 +67,8 @@ const Index = () => {
             transactions={filteredTransactions}
             filter={filter}
             onFilterChange={setFilter}
+            customRange={customRange}
+            onCustomRangeChange={setCustomRange}
             onAdd={addTransaction}
             onUpdate={updateTransaction}
             onDelete={deleteTransaction}
