@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
 import { Loader2, Eye, EyeOff, Shield, Smartphone, BarChart3 } from 'lucide-react';
 import { z } from 'zod';
+import { cn } from '@/lib/utils';
 
 const emailSchema = z.string().email('Email inválido');
 const passwordSchema = z.string().min(6, 'A senha deve ter pelo menos 6 caracteres');
@@ -16,8 +17,13 @@ export default function Auth() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isRegister, setIsRegister] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const { user, loading, signIn, signUp } = useAuth();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (!loading && user) {
@@ -98,15 +104,30 @@ export default function Auth() {
     <div className="min-h-screen flex flex-col lg:flex-row">
       {/* Left Side - Branding (hidden on mobile) */}
       <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-sidebar via-sidebar to-primary/20 relative overflow-hidden">
-        {/* Background Pattern */}
-        <div className="absolute inset-0 opacity-5">
-          <div className="absolute top-20 left-20 w-72 h-72 bg-income rounded-full blur-3xl" />
-          <div className="absolute bottom-20 right-20 w-96 h-96 bg-primary rounded-full blur-3xl" />
+        {/* Animated Background Pattern */}
+        <div className="absolute inset-0">
+          <div 
+            className={cn(
+              "absolute top-20 left-20 w-72 h-72 bg-income/10 rounded-full blur-3xl transition-all duration-1000",
+              mounted ? "opacity-100 scale-100" : "opacity-0 scale-50"
+            )} 
+          />
+          <div 
+            className={cn(
+              "absolute bottom-20 right-20 w-96 h-96 bg-primary/10 rounded-full blur-3xl transition-all duration-1000 delay-300",
+              mounted ? "opacity-100 scale-100" : "opacity-0 scale-50"
+            )} 
+          />
         </div>
         
         <div className="relative z-10 flex flex-col justify-center px-12 xl:px-20 text-white">
           {/* Logo */}
-          <div className="flex items-center gap-4 mb-12">
+          <div 
+            className={cn(
+              "flex items-center gap-4 mb-12 transition-all duration-700",
+              mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+            )}
+          >
             <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-income to-primary flex items-center justify-center shadow-lg shadow-primary/30">
               <span className="text-white font-bold text-lg">FC</span>
             </div>
@@ -117,7 +138,12 @@ export default function Auth() {
           </div>
 
           {/* Headline */}
-          <h2 className="text-4xl xl:text-5xl font-bold leading-tight mb-6">
+          <h2 
+            className={cn(
+              "text-4xl xl:text-5xl font-bold leading-tight mb-6 transition-all duration-700 delay-100",
+              mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+            )}
+          >
             Suas finanças,
             <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-income to-primary">
@@ -125,31 +151,37 @@ export default function Auth() {
             </span>
           </h2>
           
-          <p className="text-white/70 text-lg mb-12 max-w-md">
+          <p 
+            className={cn(
+              "text-white/70 text-lg mb-12 max-w-md transition-all duration-700 delay-200",
+              mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+            )}
+          >
             Acompanhe receitas, despesas, investimentos e dívidas em um só lugar. 
             Simples, rápido e seguro.
           </p>
 
           {/* Features */}
           <div className="space-y-4">
-            <div className="flex items-center gap-4">
-              <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center">
-                <BarChart3 className="w-5 h-5 text-income" />
+            {[
+              { icon: BarChart3, text: "Dashboard completo com gráficos", delay: "delay-300" },
+              { icon: Smartphone, text: "Acesse de qualquer dispositivo", delay: "delay-[400ms]" },
+              { icon: Shield, text: "Seus dados sempre protegidos", delay: "delay-500" },
+            ].map((feature, index) => (
+              <div 
+                key={index}
+                className={cn(
+                  "flex items-center gap-4 transition-all duration-700",
+                  feature.delay,
+                  mounted ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-4"
+                )}
+              >
+                <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center">
+                  <feature.icon className={cn("w-5 h-5", index % 2 === 0 ? "text-income" : "text-primary")} />
+                </div>
+                <span className="text-white/80">{feature.text}</span>
               </div>
-              <span className="text-white/80">Dashboard completo com gráficos</span>
-            </div>
-            <div className="flex items-center gap-4">
-              <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center">
-                <Smartphone className="w-5 h-5 text-primary" />
-              </div>
-              <span className="text-white/80">Acesse de qualquer dispositivo</span>
-            </div>
-            <div className="flex items-center gap-4">
-              <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center">
-                <Shield className="w-5 h-5 text-income" />
-              </div>
-              <span className="text-white/80">Seus dados sempre protegidos</span>
-            </div>
+            ))}
           </div>
         </div>
       </div>
@@ -158,7 +190,12 @@ export default function Auth() {
       <div className="flex-1 flex items-center justify-center p-6 lg:p-12 bg-background">
         <div className="w-full max-w-sm">
           {/* Logo */}
-          <div className="flex items-center gap-3 mb-10">
+          <div 
+            className={cn(
+              "flex items-center gap-3 mb-10 transition-all duration-500",
+              mounted ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4"
+            )}
+          >
             <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-income to-primary flex items-center justify-center shadow-lg">
               <span className="text-white font-bold text-lg">FC</span>
             </div>
@@ -166,7 +203,12 @@ export default function Auth() {
           </div>
 
           {/* Heading */}
-          <div className="mb-8">
+          <div 
+            className={cn(
+              "mb-8 transition-all duration-500 delay-100",
+              mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+            )}
+          >
             <h2 className="text-2xl font-bold text-foreground mb-2">
               {isRegister ? 'Crie sua conta' : 'Bem-vindo de volta!'}
             </h2>
@@ -179,7 +221,12 @@ export default function Auth() {
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-5">
-            <div>
+            <div 
+              className={cn(
+                "transition-all duration-500 delay-200",
+                mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+              )}
+            >
               <Input
                 type="email"
                 placeholder="seu@email.com"
@@ -187,11 +234,16 @@ export default function Auth() {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 disabled={isLoading}
-                className="h-14 px-5 text-base bg-background border-2 border-border rounded-xl focus:border-primary transition-colors"
+                className="h-14 px-5 text-base bg-background border-2 border-border rounded-xl focus:border-primary transition-all duration-300 hover:border-primary/50"
               />
             </div>
             
-            <div className="relative">
+            <div 
+              className={cn(
+                "relative transition-all duration-500 delay-300",
+                mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+              )}
+            >
               <Input
                 type={showPassword ? 'text' : 'password'}
                 placeholder="••••••••"
@@ -199,7 +251,7 @@ export default function Auth() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 disabled={isLoading}
-                className="h-14 px-5 pr-14 text-base bg-background border-2 border-border rounded-xl focus:border-primary transition-colors"
+                className="h-14 px-5 pr-14 text-base bg-background border-2 border-border rounded-xl focus:border-primary transition-all duration-300 hover:border-primary/50"
               />
               <button
                 type="button"
@@ -215,32 +267,49 @@ export default function Auth() {
             </div>
 
             {isRegister && (
-              <p className="text-xs text-muted-foreground -mt-2">
+              <p 
+                className={cn(
+                  "text-xs text-muted-foreground -mt-2 transition-all duration-300",
+                  mounted ? "opacity-100" : "opacity-0"
+                )}
+              >
                 Mínimo de 6 caracteres
               </p>
             )}
 
-            <Button 
-              type="submit" 
-              className="w-full h-14 text-base font-semibold rounded-xl bg-gradient-to-r from-primary to-[#00a3ff] hover:opacity-90 transition-opacity shadow-lg shadow-primary/30" 
-              disabled={isLoading}
-            >
-              {isLoading ? (
-                <Loader2 className="w-5 h-5 animate-spin" />
-              ) : (
-                isRegister ? 'Criar conta' : 'Entrar'
+            <div 
+              className={cn(
+                "transition-all duration-500 delay-[400ms]",
+                mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
               )}
-            </Button>
+            >
+              <Button 
+                type="submit" 
+                className="w-full h-14 text-base font-semibold rounded-xl bg-gradient-to-r from-primary to-[#00a3ff] hover:opacity-90 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 shadow-lg shadow-primary/30" 
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                ) : (
+                  isRegister ? 'Criar conta' : 'Entrar'
+                )}
+              </Button>
+            </div>
           </form>
 
           {/* Links */}
-          <div className="mt-8 space-y-3 text-sm">
+          <div 
+            className={cn(
+              "mt-8 space-y-3 text-sm transition-all duration-500 delay-500",
+              mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+            )}
+          >
             <p className="text-muted-foreground">
               {isRegister ? 'Já tem uma conta? ' : 'Não tem uma conta? '}
               <button
                 type="button"
                 onClick={() => setIsRegister(!isRegister)}
-                className="text-primary hover:underline font-medium"
+                className="text-primary hover:underline font-medium transition-colors"
               >
                 {isRegister ? 'Entrar' : 'Cadastrar agora'}
               </button>
@@ -251,7 +320,7 @@ export default function Auth() {
                 <button
                   type="button"
                   onClick={() => toast.info('Função de recuperação de senha será implementada em breve.')}
-                  className="text-primary hover:underline font-medium"
+                  className="text-primary hover:underline font-medium transition-colors"
                 >
                   Clique aqui
                 </button>
