@@ -144,18 +144,27 @@ export const useTransactions = () => {
     }
   }, []);
 
-  // Filtrar transações por período
+  // Filtrar transações por período e ordenar por data (mais recente primeiro)
   const getFilteredTransactions = useCallback(() => {
-    if (!customRange) return transactions;
+    let filtered = transactions;
+    
+    if (customRange) {
+      filtered = transactions.filter(t => {
+        const transactionDate = parseLocalDate(t.date);
+        const startDate = new Date(customRange.start);
+        startDate.setHours(0, 0, 0, 0);
+        const endDate = new Date(customRange.end);
+        endDate.setHours(23, 59, 59, 999);
+        
+        return transactionDate >= startDate && transactionDate <= endDate;
+      });
+    }
 
-    return transactions.filter(t => {
-      const transactionDate = parseLocalDate(t.date);
-      const startDate = new Date(customRange.start);
-      startDate.setHours(0, 0, 0, 0);
-      const endDate = new Date(customRange.end);
-      endDate.setHours(23, 59, 59, 999);
-      
-      return transactionDate >= startDate && transactionDate <= endDate;
+    // Ordenar por data (mais recente primeiro)
+    return filtered.sort((a, b) => {
+      const dateA = parseLocalDate(a.date);
+      const dateB = parseLocalDate(b.date);
+      return dateB.getTime() - dateA.getTime();
     });
   }, [transactions, customRange]);
 
