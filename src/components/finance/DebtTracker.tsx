@@ -25,18 +25,20 @@ const formatMonthYear = (date: string): string => {
   return `${months[parseInt(month) - 1]}/${year}`;
 };
 
-// Calcula valor pago de uma dívida com base nas transações
-const getPaidValueForDebt = (debtName: string, transactions: Transaction[]): number => {
-  return transactions
+// Calcula valor total pago de uma dívida (valor cadastrado + transações relacionadas)
+const getTotalPaidValue = (debt: Debt, transactions: Transaction[]): number => {
+  const transactionsPaid = transactions
     .filter(t => t.type === 'despesa' && t.category === 'dividas' && 
-            t.description.toLowerCase().includes(debtName.toLowerCase()))
+            t.description.toLowerCase().includes(debt.name.toLowerCase()))
     .reduce((sum, t) => sum + t.value, 0);
+  
+  return (debt.paidValue || 0) + transactionsPaid;
 };
 
 export const DebtTracker = ({ debts, transactions, onNavigateToDebts }: DebtTrackerProps) => {
   // Filtra apenas dívidas não quitadas para verificar se deve mostrar o componente
   const hasActiveDebts = debts.some(debt => {
-    const paidValue = getPaidValueForDebt(debt.name, transactions);
+    const paidValue = getTotalPaidValue(debt, transactions);
     return calculateProgress(debt.totalValue, paidValue) < 100;
   });
 
@@ -67,13 +69,13 @@ export const DebtTracker = ({ debts, transactions, onNavigateToDebts }: DebtTrac
 
   // Filtra apenas dívidas não quitadas (progresso < 100%)
   const activeDebts = debts.filter(debt => {
-    const paidValue = getPaidValueForDebt(debt.name, transactions);
+    const paidValue = getTotalPaidValue(debt, transactions);
     return calculateProgress(debt.totalValue, paidValue) < 100;
   });
 
   // Calcula totais apenas das dívidas ativas
   const totals = activeDebts.reduce((acc, debt) => {
-    const paidValue = getPaidValueForDebt(debt.name, transactions);
+    const paidValue = getTotalPaidValue(debt, transactions);
     return {
       totalDebt: acc.totalDebt + debt.totalValue,
       totalPaid: acc.totalPaid + paidValue,
@@ -118,8 +120,8 @@ export const DebtTracker = ({ debts, transactions, onNavigateToDebts }: DebtTrac
 
       {/* Lista de Dívidas Ativas */}
       <div className="space-y-4">
-        {activeDebts.slice(0, 3).map(debt => {
-          const paidValue = getPaidValueForDebt(debt.name, transactions);
+      {activeDebts.slice(0, 3).map(debt => {
+          const paidValue = getTotalPaidValue(debt, transactions);
           const remaining = debt.totalValue - paidValue;
           const progress = calculateProgress(debt.totalValue, paidValue);
           const expectedEndDate = calculateExpectedEndDate(debt.totalValue, debt.monthlyInstallment, debt.startDate, paidValue);
