@@ -2,8 +2,8 @@ import { useState, useEffect, useCallback } from 'react';
 import { Transaction } from '@/types/transaction';
 import { CustomDateRange } from '@/components/finance/PeriodFilter';
 import { startOfMonth, endOfMonth } from 'date-fns';
-
-const STORAGE_KEY = 'financeiro-pessoal-transactions';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 // Função para obter data local no formato YYYY-MM-DD
 export const getLocalDateString = (date: Date = new Date()): string => {
@@ -21,54 +21,127 @@ export const parseLocalDate = (dateString: string): Date => {
 
 export const useTransactions = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [loading, setLoading] = useState(true);
   const [customRange, setCustomRange] = useState<CustomDateRange | null>(() => {
     const today = new Date();
     return { start: startOfMonth(today), end: endOfMonth(today) };
   });
 
-  // Carregar do localStorage ao iniciar
+  // Carregar do Supabase ao iniciar
   useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      try {
-        const parsed = JSON.parse(stored);
-        setTransactions(parsed);
-      } catch (error) {
-        console.error('Erro ao carregar transações:', error);
-      }
+    fetchTransactions();
+  }, []);
+
+  const fetchTransactions = async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('transactions')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      const mappedData: Transaction[] = (data || []).map((t) => ({
+        id: t.id,
+        type: t.type as 'receita' | 'despesa',
+        category: t.category,
+        date: t.date,
+        description: t.description,
+        value: Number(t.value),
+        createdAt: Number(t.created_at),
+      }));
+
+      setTransactions(mappedData);
+    } catch (error) {
+      console.error('Erro ao carregar transações:', error);
+      toast.error('Erro ao carregar transações');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Adicionar nova transação
+  const addTransaction = useCallback(async (transaction: Omit<Transaction, 'id' | 'createdAt'>) => {
+    try {
+      const { data, error } = await supabase
+        .from('transactions')
+        .insert({
+          type: transaction.type,
+          category: transaction.category,
+          date: transaction.date,
+          description: transaction.description,
+          value: transaction.value,
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      const newTransaction: Transaction = {
+        id: data.id,
+        type: data.type as 'receita' | 'despesa',
+        category: data.category,
+        date: data.date,
+        description: data.description,
+        value: Number(data.value),
+        createdAt: Number(data.created_at),
+      };
+
+      setTransactions(prev => [newTransaction, ...prev]);
+      toast.success('Transação adicionada!');
+    } catch (error) {
+      console.error('Erro ao adicionar transação:', error);
+      toast.error('Erro ao adicionar transação');
     }
   }, []);
 
-  // Salvar no localStorage quando mudar
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(transactions));
-  }, [transactions]);
-
-  // Adicionar nova transação
-  const addTransaction = useCallback((transaction: Omit<Transaction, 'id' | 'createdAt'>) => {
-    const newTransaction: Transaction = {
-      ...transaction,
-      id: crypto.randomUUID(),
-      createdAt: Date.now(),
-    };
-    setTransactions(prev => [newTransaction, ...prev]);
-  }, []);
-
   // Atualizar transação existente
-  const updateTransaction = useCallback((id: string, updates: Partial<Omit<Transaction, 'id' | 'createdAt'>>) => {
-    setTransactions(prev =>
-      prev.map(t => (t.id === id ? { ...t, ...updates } : t))
-    );
+  const updateTransaction = useCallback(async (id: string, updates: Partial<Omit<Transaction, 'id' | 'createdAt'>>) => {
+    try {
+      const { error } = await supabase
+        .from('transactions')
+        .update({
+          type: updates.type,
+          category: updates.category,
+          date: updates.date,
+          description: updates.description,
+          value: updates.value,
+        })
+        .eq('id', id);
+
+      if (error) throw error;
+
+      setTransactions(prev =>
+        prev.map(t => (t.id === id ? { ...t, ...updates } : t))
+      );
+      toast.success('Transação atualizada!');
+    } catch (error) {
+      console.error('Erro ao atualizar transação:', error);
+      toast.error('Erro ao atualizar transação');
+    }
   }, []);
 
   // Excluir transação
-  const deleteTransaction = useCallback((id: string) => {
-    setTransactions(prev => prev.filter(t => t.id !== id));
+  const deleteTransaction = useCallback(async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from('transactions')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+
+      setTransactions(prev => prev.filter(t => t.id !== id));
+      toast.success('Transação excluída!');
+    } catch (error) {
+      console.error('Erro ao excluir transação:', error);
+      toast.error('Erro ao excluir transação');
+    }
   }, []);
 
   // Filtrar transações por período
   const getFilteredTransactions = useCallback(() => {
-    // Se não há customRange, retorna todas as transações (máximo)
     if (!customRange) return transactions;
 
     return transactions.filter(t => {
@@ -103,6 +176,7 @@ export const useTransactions = () => {
 
   return {
     transactions,
+    loading,
     customRange,
     setCustomRange,
     addTransaction,
@@ -110,5 +184,6 @@ export const useTransactions = () => {
     deleteTransaction,
     getFilteredTransactions,
     getTotals,
+    refetch: fetchTransactions,
   };
 };

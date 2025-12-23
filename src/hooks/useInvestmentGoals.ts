@@ -1,61 +1,149 @@
 import { useState, useEffect, useCallback } from 'react';
-import { InvestmentType } from '@/types/investment';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 export interface InvestmentGoal {
-  type: InvestmentType;
+  id: string;
+  name: string;
   targetValue: number;
+  currentValue: number;
+  deadline?: string;
+  isCompleted: boolean;
+  createdAt: number;
 }
-
-const STORAGE_KEY = 'financeiro-pessoal-investment-goals';
 
 export const useInvestmentGoals = () => {
   const [goals, setGoals] = useState<InvestmentGoal[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // Carregar do localStorage ao iniciar
+  // Carregar do Supabase ao iniciar
   useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      try {
-        const parsed = JSON.parse(stored);
-        setGoals(parsed);
-      } catch (error) {
-        console.error('Erro ao carregar metas:', error);
-      }
+    fetchGoals();
+  }, []);
+
+  const fetchGoals = async () => {
+    try {
+      setLoading(true);
+      const { data, error } = await supabase
+        .from('investment_goals')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      const mappedData: InvestmentGoal[] = (data || []).map((g) => ({
+        id: g.id,
+        name: g.name,
+        targetValue: Number(g.target_value),
+        currentValue: Number(g.current_value),
+        deadline: g.deadline || undefined,
+        isCompleted: g.is_completed,
+        createdAt: new Date(g.created_at).getTime(),
+      }));
+
+      setGoals(mappedData);
+    } catch (error) {
+      console.error('Erro ao carregar metas:', error);
+      toast.error('Erro ao carregar metas');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Adicionar meta
+  const addGoal = useCallback(async (goal: Omit<InvestmentGoal, 'id' | 'createdAt'>) => {
+    try {
+      const { data, error } = await supabase
+        .from('investment_goals')
+        .insert({
+          name: goal.name,
+          target_value: goal.targetValue,
+          current_value: goal.currentValue,
+          deadline: goal.deadline || null,
+          is_completed: goal.isCompleted,
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      const newGoal: InvestmentGoal = {
+        id: data.id,
+        name: data.name,
+        targetValue: Number(data.target_value),
+        currentValue: Number(data.current_value),
+        deadline: data.deadline || undefined,
+        isCompleted: data.is_completed,
+        createdAt: new Date(data.created_at).getTime(),
+      };
+
+      setGoals(prev => [newGoal, ...prev]);
+      toast.success('Meta adicionada!');
+      return newGoal;
+    } catch (error) {
+      console.error('Erro ao adicionar meta:', error);
+      toast.error('Erro ao adicionar meta');
+      return null;
     }
   }, []);
 
-  // Salvar no localStorage quando mudar
-  useEffect(() => {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(goals));
-  }, [goals]);
+  // Atualizar meta
+  const updateGoal = useCallback(async (id: string, updates: Partial<Omit<InvestmentGoal, 'id' | 'createdAt'>>) => {
+    try {
+      const updateData: Record<string, unknown> = {};
+      if (updates.name !== undefined) updateData.name = updates.name;
+      if (updates.targetValue !== undefined) updateData.target_value = updates.targetValue;
+      if (updates.currentValue !== undefined) updateData.current_value = updates.currentValue;
+      if (updates.deadline !== undefined) updateData.deadline = updates.deadline || null;
+      if (updates.isCompleted !== undefined) updateData.is_completed = updates.isCompleted;
 
-  // Adicionar ou atualizar meta
-  const setGoal = useCallback((type: InvestmentType, targetValue: number) => {
-    setGoals(prev => {
-      const existing = prev.findIndex(g => g.type === type);
-      if (existing >= 0) {
-        const updated = [...prev];
-        updated[existing] = { type, targetValue };
-        return updated;
-      }
-      return [...prev, { type, targetValue }];
-    });
+      const { error } = await supabase
+        .from('investment_goals')
+        .update(updateData)
+        .eq('id', id);
+
+      if (error) throw error;
+
+      setGoals(prev => prev.map(goal => 
+        goal.id === id ? { ...goal, ...updates } : goal
+      ));
+      toast.success('Meta atualizada!');
+    } catch (error) {
+      console.error('Erro ao atualizar meta:', error);
+      toast.error('Erro ao atualizar meta');
+    }
   }, []);
 
   // Remover meta
-  const removeGoal = useCallback((type: InvestmentType) => {
-    setGoals(prev => prev.filter(g => g.type !== type));
+  const deleteGoal = useCallback(async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from('investment_goals')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+
+      setGoals(prev => prev.filter(goal => goal.id !== id));
+      toast.success('Meta excluída!');
+    } catch (error) {
+      console.error('Erro ao excluir meta:', error);
+      toast.error('Erro ao excluir meta');
+    }
   }, []);
 
-  // Obter meta por tipo
-  const getGoal = useCallback((type: InvestmentType): number | undefined => {
-    return goals.find(g => g.type === type)?.targetValue;
+  // Obter meta por nome (mantendo compatibilidade)
+  const getGoal = useCallback((name: string): number | undefined => {
+    return goals.find(g => g.name === name)?.targetValue;
   }, [goals]);
 
   return {
     goals,
-    setGoal,
-    removeGoal,
+    loading,
+    addGoal,
+    updateGoal,
+    deleteGoal,
     getGoal,
+    refetch: fetchGoals,
   };
 };
