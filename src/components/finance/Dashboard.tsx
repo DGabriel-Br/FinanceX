@@ -247,6 +247,10 @@ export const Dashboard = ({
               />
               <Legend 
                 wrapperStyle={{ paddingTop: '20px' }}
+                payload={[
+                  { value: 'Receitas', type: 'square', color: 'hsl(142, 71%, 45%)' },
+                  { value: 'Despesas', type: 'square', color: 'hsl(0, 84%, 60%)' },
+                ]}
               />
               <Bar 
                 dataKey="receitas" 
