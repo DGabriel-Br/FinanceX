@@ -31,8 +31,11 @@ export const Sidebar = ({
       "bg-sidebar text-sidebar-foreground flex flex-col transition-all duration-300 relative",
       collapsed ? "w-[72px]" : "w-64"
     )}>
-      {/* Header com Logo e Toggle */}
-      <div className="p-4 flex items-center gap-3">
+      {/* Header com Logo */}
+      <div className={cn(
+        "p-4 flex items-center",
+        collapsed ? "flex-col gap-3" : "gap-3"
+      )}>
         {/* Logo */}
         <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center text-primary-foreground font-bold text-sm flex-shrink-0">
           FN
@@ -50,10 +53,7 @@ export const Sidebar = ({
         {/* Collapse Toggle */}
         <button
           onClick={onToggleCollapse}
-          className={cn(
-            "w-6 h-6 rounded-full bg-primary flex items-center justify-center text-primary-foreground hover:bg-primary/90 transition-colors flex-shrink-0",
-            collapsed && "absolute right-2 top-4"
-          )}
+          className="w-6 h-6 rounded-full bg-primary flex items-center justify-center text-primary-foreground hover:bg-primary/90 transition-colors flex-shrink-0"
         >
           {collapsed ? <ChevronRight className="w-3.5 h-3.5" /> : <ChevronLeft className="w-3.5 h-3.5" />}
         </button>
