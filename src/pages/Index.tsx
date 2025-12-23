@@ -26,7 +26,7 @@ const Index = () => {
   const totals = getTotals();
 
   return (
-    <div className="flex min-h-screen w-full">
+    <div className="flex min-h-screen w-full relative">
       {/* Sidebar fixa */}
       <Sidebar 
         activeTab={activeTab} 

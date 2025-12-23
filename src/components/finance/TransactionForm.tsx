@@ -13,17 +13,49 @@ interface TransactionFormProps {
   }) => void;
 }
 
+// Formata número para moeda brasileira (ex: 1.234,56)
+const formatCurrency = (value: string): string => {
+  // Remove tudo que não é número
+  const numbers = value.replace(/\D/g, '');
+  
+  if (!numbers) return '';
+  
+  // Converte para número e divide por 100 para ter centavos
+  const amount = parseInt(numbers, 10) / 100;
+  
+  // Formata com separadores brasileiros
+  return amount.toLocaleString('pt-BR', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+};
+
+// Converte string formatada para número
+const parseCurrency = (value: string): number => {
+  if (!value) return 0;
+  // Remove pontos de milhar e troca vírgula por ponto
+  const normalized = value.replace(/\./g, '').replace(',', '.');
+  return parseFloat(normalized) || 0;
+};
+
 export const TransactionForm = ({ onSubmit }: TransactionFormProps) => {
   const [type, setType] = useState<TransactionType>('despesa');
   const [date, setDate] = useState(getLocalDateString());
   const [description, setDescription] = useState('');
   const [value, setValue] = useState('');
 
+  const handleValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const formatted = formatCurrency(e.target.value);
+    setValue(formatted);
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
+    const numericValue = parseCurrency(value);
+    
     // Validação básica
-    if (!description.trim() || !value || parseFloat(value) <= 0) {
+    if (!description.trim() || numericValue <= 0) {
       return;
     }
 
@@ -31,13 +63,15 @@ export const TransactionForm = ({ onSubmit }: TransactionFormProps) => {
       type,
       date,
       description: description.trim(),
-      value: parseFloat(value),
+      value: numericValue,
     });
 
     // Limpar formulário
     setDescription('');
     setValue('');
   };
+
+  const numericValue = parseCurrency(value);
 
   return (
     <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
@@ -102,12 +136,11 @@ export const TransactionForm = ({ onSubmit }: TransactionFormProps) => {
         <div>
           <label className="block text-sm font-medium text-foreground mb-2">Valor (R$)</label>
           <input
-            type="number"
+            type="text"
+            inputMode="numeric"
             value={value}
-            onChange={e => setValue(e.target.value)}
+            onChange={handleValueChange}
             placeholder="0,00"
-            min="0.01"
-            step="0.01"
             className="w-full px-3 py-2 rounded-lg border border-input bg-background text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
           />
         </div>
@@ -115,7 +148,7 @@ export const TransactionForm = ({ onSubmit }: TransactionFormProps) => {
         {/* Botão */}
         <button
           type="submit"
-          disabled={!description.trim() || !value || parseFloat(value) <= 0}
+          disabled={!description.trim() || numericValue <= 0}
           className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-lg bg-primary text-primary-foreground font-medium text-sm transition-all duration-200 hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <Plus className="w-4 h-4" />
