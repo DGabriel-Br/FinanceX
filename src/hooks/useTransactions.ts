@@ -64,6 +64,9 @@ export const useTransactions = () => {
   // Adicionar nova transação
   const addTransaction = useCallback(async (transaction: Omit<Transaction, 'id' | 'createdAt'>) => {
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Usuário não autenticado');
+
       const { data, error } = await supabase
         .from('transactions')
         .insert({
@@ -72,6 +75,7 @@ export const useTransactions = () => {
           date: transaction.date,
           description: transaction.description,
           value: transaction.value,
+          user_id: user.id,
         })
         .select()
         .single();

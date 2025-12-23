@@ -1,16 +1,18 @@
-import { LayoutDashboard, Receipt, ChevronLeft, ChevronRight, Moon, Sun, CreditCard, TrendingUp } from 'lucide-react';
+import { LayoutDashboard, Receipt, ChevronLeft, ChevronRight, Moon, Sun, CreditCard, TrendingUp, LogOut, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Switch } from '@/components/ui/switch';
 
 type Tab = 'dashboard' | 'lancamentos' | 'dividas' | 'investimentos';
 
-interface SidebarProps {
+export interface SidebarProps {
   activeTab: Tab;
   onTabChange: (tab: Tab) => void;
   collapsed: boolean;
   onToggleCollapse: () => void;
   theme: 'light' | 'dark';
   onToggleTheme: () => void;
+  userEmail?: string;
+  onSignOut?: () => void;
 }
 
 const menuItems = [
@@ -26,7 +28,9 @@ export const Sidebar = ({
   collapsed, 
   onToggleCollapse,
   theme,
-  onToggleTheme
+  onToggleTheme,
+  userEmail,
+  onSignOut
 }: SidebarProps) => {
   return (
     <aside className={cn(
@@ -90,8 +94,28 @@ export const Sidebar = ({
         </ul>
       </nav>
 
-      {/* Footer com Theme Toggle */}
-      <div className="p-3 mt-auto border-t border-sidebar-border">
+      {/* Footer com User e Theme Toggle */}
+      <div className="p-3 mt-auto border-t border-sidebar-border space-y-2">
+        {/* User Info */}
+        {userEmail && (
+          <div
+            className={cn(
+              'flex items-center gap-3 px-3 py-2.5 rounded-lg bg-sidebar-accent/50',
+              collapsed && 'justify-center px-0'
+            )}
+          >
+            <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
+              <User className="w-4 h-4 text-primary" />
+            </div>
+            {!collapsed && (
+              <div className="flex-1 min-w-0">
+                <p className="text-xs text-sidebar-foreground/60 truncate">{userEmail}</p>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Theme Toggle */}
         <div
           className={cn(
             'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-sidebar-accent transition-colors',
@@ -127,6 +151,21 @@ export const Sidebar = ({
             />
           )}
         </div>
+
+        {/* Logout Button */}
+        {onSignOut && (
+          <button
+            onClick={onSignOut}
+            title="Sair"
+            className={cn(
+              'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors text-sidebar-foreground/80 hover:bg-expense/10 hover:text-expense',
+              collapsed && 'justify-center px-0'
+            )}
+          >
+            <LogOut className="w-5 h-5 flex-shrink-0" />
+            {!collapsed && <span>Sair</span>}
+          </button>
+        )}
       </div>
     </aside>
   );

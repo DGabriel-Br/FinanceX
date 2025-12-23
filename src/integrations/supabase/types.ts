@@ -22,6 +22,7 @@ export type Database = {
           name: string
           start_date: string
           total_value: number
+          user_id: string | null
         }
         Insert: {
           created_at?: number
@@ -30,6 +31,7 @@ export type Database = {
           name: string
           start_date: string
           total_value: number
+          user_id?: string | null
         }
         Update: {
           created_at?: number
@@ -38,6 +40,7 @@ export type Database = {
           name?: string
           start_date?: string
           total_value?: number
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -47,18 +50,21 @@ export type Database = {
           id: string
           target_value: number
           type: string
+          user_id: string | null
         }
         Insert: {
           created_at?: string
           id?: string
           target_value: number
           type: string
+          user_id?: string | null
         }
         Update: {
           created_at?: string
           id?: string
           target_value?: number
           type?: string
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -70,6 +76,7 @@ export type Database = {
           description: string
           id: string
           type: string
+          user_id: string | null
           value: number
         }
         Insert: {
@@ -79,6 +86,7 @@ export type Database = {
           description: string
           id?: string
           type: string
+          user_id?: string | null
           value: number
         }
         Update: {
@@ -88,6 +96,7 @@ export type Database = {
           description?: string
           id?: string
           type?: string
+          user_id?: string | null
           value?: number
         }
         Relationships: []

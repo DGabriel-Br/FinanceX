@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { LayoutDashboard, Receipt, CreditCard, TrendingUp, Settings, Moon, Sun, X } from 'lucide-react';
+import { LayoutDashboard, Receipt, CreditCard, TrendingUp, Settings, Moon, Sun, LogOut, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Switch } from '@/components/ui/switch';
 import {
@@ -8,14 +8,17 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet';
+import { Button } from '@/components/ui/button';
 
 type Tab = 'dashboard' | 'lancamentos' | 'dividas' | 'investimentos';
 
-interface MobileNavProps {
+export interface MobileNavProps {
   activeTab: Tab;
   onTabChange: (tab: Tab) => void;
   theme: 'light' | 'dark';
   onToggleTheme: () => void;
+  userEmail?: string;
+  onSignOut?: () => void;
 }
 
 const navItems = [
@@ -25,7 +28,7 @@ const navItems = [
   { id: 'dividas' as Tab, label: 'Dívidas', icon: CreditCard },
 ];
 
-export const MobileNav = ({ activeTab, onTabChange, theme, onToggleTheme }: MobileNavProps) => {
+export const MobileNav = ({ activeTab, onTabChange, theme, onToggleTheme, userEmail, onSignOut }: MobileNavProps) => {
   const [settingsOpen, setSettingsOpen] = useState(false);
 
   return (
@@ -80,6 +83,19 @@ export const MobileNav = ({ activeTab, onTabChange, theme, onToggleTheme }: Mobi
           </SheetHeader>
           
           <div className="py-6 space-y-4">
+            {/* User Info */}
+            {userEmail && (
+              <div className="flex items-center gap-3 p-4 bg-muted/30 rounded-xl">
+                <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+                  <User className="w-5 h-5 text-primary" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="font-medium text-foreground">Conectado</p>
+                  <p className="text-xs text-muted-foreground truncate">{userEmail}</p>
+                </div>
+              </div>
+            )}
+
             {/* Tema */}
             <div className="flex items-center justify-between p-4 bg-muted/30 rounded-xl">
               <div className="flex items-center gap-3">
@@ -112,6 +128,21 @@ export const MobileNav = ({ activeTab, onTabChange, theme, onToggleTheme }: Mobi
                 <span className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded">v1.0.0</span>
               </div>
             </div>
+
+            {/* Logout Button */}
+            {onSignOut && (
+              <Button
+                variant="outline"
+                onClick={() => {
+                  onSignOut();
+                  setSettingsOpen(false);
+                }}
+                className="w-full gap-2 text-expense border-expense/30 hover:bg-expense/10 hover:text-expense"
+              >
+                <LogOut className="w-4 h-4" />
+                Sair da conta
+              </Button>
+            )}
           </div>
         </SheetContent>
       </Sheet>

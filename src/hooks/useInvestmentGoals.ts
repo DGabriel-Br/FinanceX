@@ -43,6 +43,9 @@ export const useInvestmentGoals = () => {
   // Adicionar ou atualizar meta
   const setGoal = useCallback(async (type: InvestmentType, targetValue: number) => {
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Usuário não autenticado');
+
       // Verifica se já existe
       const existingGoal = goals.find(g => g.type === type);
       
@@ -51,14 +54,15 @@ export const useInvestmentGoals = () => {
         const { error } = await supabase
           .from('investment_goals')
           .update({ target_value: targetValue })
-          .eq('type', type);
+          .eq('type', type)
+          .eq('user_id', user.id);
 
         if (error) throw error;
       } else {
         // Inserir
         const { error } = await supabase
           .from('investment_goals')
-          .insert({ type, target_value: targetValue });
+          .insert({ type, target_value: targetValue, user_id: user.id });
 
         if (error) throw error;
       }
@@ -83,10 +87,14 @@ export const useInvestmentGoals = () => {
   // Remover meta
   const removeGoal = useCallback(async (type: InvestmentType) => {
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Usuário não autenticado');
+
       const { error } = await supabase
         .from('investment_goals')
         .delete()
-        .eq('type', type);
+        .eq('type', type)
+        .eq('user_id', user.id);
 
       if (error) throw error;
 
