@@ -90,33 +90,38 @@ export const Sidebar = ({
 
       {/* Footer com Theme Toggle */}
       <div className="p-3 mt-auto border-t border-sidebar-border">
-        <button
-          onClick={onToggleTheme}
-          title={theme === 'dark' ? 'Mudar para modo claro' : 'Mudar para modo escuro'}
+        <div
           className={cn(
             'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-sidebar-accent transition-colors',
             collapsed && 'justify-center px-0'
           )}
         >
-          {theme === 'dark' ? (
-            <Moon className="w-5 h-5 text-sidebar-foreground/80 flex-shrink-0" />
-          ) : (
-            <Sun className="w-5 h-5 text-sidebar-foreground/80 flex-shrink-0" />
-          )}
-          
-          {!collapsed && (
-            <>
+          <button
+            onClick={onToggleTheme}
+            title={theme === 'dark' ? 'Mudar para modo claro' : 'Mudar para modo escuro'}
+            className="flex items-center gap-3 flex-1"
+          >
+            {theme === 'dark' ? (
+              <Moon className="w-5 h-5 text-sidebar-foreground/80 flex-shrink-0" />
+            ) : (
+              <Sun className="w-5 h-5 text-sidebar-foreground/80 flex-shrink-0" />
+            )}
+            
+            {!collapsed && (
               <span className="text-sm text-sidebar-foreground/80 flex-1 text-left">
                 {theme === 'dark' ? 'Modo Escuro' : 'Modo Claro'}
               </span>
-              <Switch 
-                checked={theme === 'dark'}
-                onCheckedChange={onToggleTheme}
-                className="data-[state=checked]:bg-primary"
-              />
-            </>
+            )}
+          </button>
+          
+          {!collapsed && (
+            <Switch 
+              checked={theme === 'dark'}
+              onCheckedChange={onToggleTheme}
+              className="data-[state=checked]:bg-primary"
+            />
           )}
-        </button>
+        </div>
       </div>
     </aside>
   );
