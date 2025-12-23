@@ -8,6 +8,7 @@ type Tab = 'dashboard' | 'lancamentos';
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState<Tab>('dashboard');
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   
   const {
     filter,
@@ -25,7 +26,12 @@ const Index = () => {
   return (
     <div className="flex min-h-screen w-full">
       {/* Sidebar fixa */}
-      <Sidebar activeTab={activeTab} onTabChange={setActiveTab} />
+      <Sidebar 
+        activeTab={activeTab} 
+        onTabChange={setActiveTab} 
+        collapsed={sidebarCollapsed}
+        onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
+      />
 
       {/* Conteúdo principal */}
       <main className="flex-1 overflow-auto bg-background">
