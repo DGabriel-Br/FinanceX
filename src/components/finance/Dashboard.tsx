@@ -1,6 +1,8 @@
 import { TrendingUp, TrendingDown, Wallet } from 'lucide-react';
 import { PeriodFilter } from './PeriodFilter';
-import { PeriodFilter as PeriodFilterType } from '@/types/transaction';
+import { PeriodFilter as PeriodFilterType, Transaction } from '@/types/transaction';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import { useMemo } from 'react';
 
 interface DashboardProps {
   totals: {
@@ -10,7 +12,13 @@ interface DashboardProps {
   };
   filter: PeriodFilterType;
   onFilterChange: (filter: PeriodFilterType) => void;
+  transactions: Transaction[];
 }
+
+const MONTHS = [
+  'Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun',
+  'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'
+];
 
 // Formatar valor em Real brasileiro
 const formatCurrency = (value: number): string => {
@@ -20,7 +28,37 @@ const formatCurrency = (value: number): string => {
   }).format(value);
 };
 
-export const Dashboard = ({ totals, filter, onFilterChange }: DashboardProps) => {
+export const Dashboard = ({ totals, filter, onFilterChange, transactions }: DashboardProps) => {
+  // Agrupa transações por mês para o gráfico
+  const chartData = useMemo(() => {
+    const currentYear = new Date().getFullYear();
+    
+    // Inicializa dados de todos os meses
+    const monthlyData = MONTHS.map((month, index) => ({
+      name: month,
+      receitas: 0,
+      despesas: 0,
+      month: index,
+    }));
+
+    // Agrupa transações por mês do ano atual
+    transactions.forEach((transaction) => {
+      const [year, monthStr] = transaction.date.split('-');
+      const transactionYear = parseInt(year);
+      const monthIndex = parseInt(monthStr) - 1;
+
+      if (transactionYear === currentYear && monthIndex >= 0 && monthIndex < 12) {
+        if (transaction.type === 'receita') {
+          monthlyData[monthIndex].receitas += transaction.value;
+        } else {
+          monthlyData[monthIndex].despesas += transaction.value;
+        }
+      }
+    });
+
+    return monthlyData;
+  }, [transactions]);
+
   return (
     <div className="p-8">
       {/* Header */}
@@ -77,6 +115,52 @@ export const Dashboard = ({ totals, filter, onFilterChange }: DashboardProps) =>
               </p>
             </div>
           </div>
+        </div>
+      </div>
+
+      {/* Gráfico de colunas */}
+      <div className="mt-8 bg-card border border-border rounded-xl p-6 shadow-sm">
+        <h3 className="text-lg font-semibold text-foreground mb-4">
+          Receitas e Despesas por Mês ({new Date().getFullYear()})
+        </h3>
+        <div className="h-80">
+          <ResponsiveContainer width="100%" height="100%">
+            <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+              <XAxis 
+                dataKey="name" 
+                tick={{ fill: 'hsl(var(--muted-foreground))' }}
+                axisLine={{ stroke: 'hsl(var(--border))' }}
+              />
+              <YAxis 
+                tick={{ fill: 'hsl(var(--muted-foreground))' }}
+                axisLine={{ stroke: 'hsl(var(--border))' }}
+                tickFormatter={(value) => `R$ ${value}`}
+              />
+              <Tooltip 
+                formatter={(value: number) => formatCurrency(value)}
+                contentStyle={{
+                  backgroundColor: 'hsl(var(--card))',
+                  border: '1px solid hsl(var(--border))',
+                  borderRadius: '8px',
+                }}
+                labelStyle={{ color: 'hsl(var(--foreground))' }}
+              />
+              <Legend />
+              <Bar 
+                dataKey="receitas" 
+                name="Receitas" 
+                fill="hsl(var(--income))" 
+                radius={[4, 4, 0, 0]}
+              />
+              <Bar 
+                dataKey="despesas" 
+                name="Despesas" 
+                fill="hsl(var(--expense))" 
+                radius={[4, 4, 0, 0]}
+              />
+            </BarChart>
+          </ResponsiveContainer>
         </div>
       </div>
 

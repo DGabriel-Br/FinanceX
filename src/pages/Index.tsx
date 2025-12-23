@@ -34,6 +34,7 @@ const Index = () => {
             totals={totals}
             filter={filter}
             onFilterChange={setFilter}
+            transactions={filteredTransactions}
           />
         ) : (
           <Transactions
