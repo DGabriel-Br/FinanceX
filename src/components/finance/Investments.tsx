@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback } from 'react';
-import { Plus, TrendingUp, PieChart, CalendarIcon, Wallet } from 'lucide-react';
+import { Plus, TrendingUp, PieChart, CalendarIcon, Wallet, Target, Pencil, X, Check } from 'lucide-react';
 import { Transaction } from '@/types/transaction';
 import { 
   InvestmentType, 
@@ -8,10 +8,18 @@ import {
   investmentTypeColors,
   extractInvestmentType 
 } from '@/types/investment';
+import { useInvestmentGoals } from '@/hooks/useInvestmentGoals';
 import { PeriodFilter, CustomDateRange } from './PeriodFilter';
 import { cn } from '@/lib/utils';
 import { PieChart as RechartsPieChart, Pie, Cell, ResponsiveContainer, Sector } from 'recharts';
-import { Progress } from '@/components/ui/progress';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
 
 interface InvestmentsProps {
   transactions: Transaction[];
@@ -27,6 +35,24 @@ const formatCurrency = (value: number): string => {
     style: 'currency',
     currency: 'BRL',
   }).format(value);
+};
+
+// Formata número para moeda brasileira (ex: 1.234,56)
+const formatCurrencyInput = (value: string): string => {
+  const numbers = value.replace(/\D/g, '');
+  if (!numbers) return '';
+  const amount = parseInt(numbers, 10) / 100;
+  return amount.toLocaleString('pt-BR', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+};
+
+// Converte string formatada para número
+const parseCurrency = (value: string): number => {
+  if (!value) return 0;
+  const normalized = value.replace(/\./g, '').replace(',', '.');
+  return parseFloat(normalized) || 0;
 };
 
 // Componente de fatia ativa (expandida)
@@ -64,6 +90,17 @@ const renderActiveShape = (props: any) => {
   );
 };
 
+// Todos os tipos de investimento disponíveis
+const allInvestmentTypes: InvestmentType[] = [
+  'reserva_emergencia',
+  'acoes',
+  'fundos_imobiliarios',
+  'renda_fixa',
+  'tesouro_direto',
+  'criptomoedas',
+  'outros_investimentos',
+];
+
 export const Investments = ({ 
   transactions, 
   allTransactions,
@@ -72,6 +109,11 @@ export const Investments = ({
   onNavigateToTransactions 
 }: InvestmentsProps) => {
   const [activeIndex, setActiveIndex] = useState<number | undefined>(undefined);
+  const [isGoalsDialogOpen, setIsGoalsDialogOpen] = useState(false);
+  const [editingGoal, setEditingGoal] = useState<InvestmentType | null>(null);
+  const [goalInputValue, setGoalInputValue] = useState('');
+  
+  const { goals, setGoal, removeGoal, getGoal } = useInvestmentGoals();
 
   // Filtra apenas transações de investimento
   const investmentTransactions = useMemo(() => {
@@ -83,7 +125,20 @@ export const Investments = ({
     return allTransactions.filter(t => t.type === 'despesa' && t.category === 'investimentos');
   }, [allTransactions]);
 
-  // Agrupa investimentos por tipo
+  // Agrupa investimentos por tipo (histórico completo para metas)
+  const investmentsByTypeAllTime = useMemo(() => {
+    const grouped = new Map<InvestmentType, number>();
+    
+    allInvestmentTransactions.forEach(t => {
+      const type = extractInvestmentType(t.description);
+      const current = grouped.get(type) || 0;
+      grouped.set(type, current + t.value);
+    });
+
+    return grouped;
+  }, [allInvestmentTransactions]);
+
+  // Agrupa investimentos por tipo (período selecionado)
   const investmentsByType = useMemo(() => {
     const grouped = new Map<InvestmentType, number>();
     
@@ -118,30 +173,6 @@ export const Investments = ({
       .slice(0, 5);
   }, [investmentTransactions]);
 
-  // Investimento por mês (para o gráfico de evolução)
-  const monthlyData = useMemo(() => {
-    const months = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
-    const currentYear = customRange?.start?.getFullYear() || new Date().getFullYear();
-    
-    const data = months.map((month, index) => ({
-      name: month,
-      value: 0,
-      month: index,
-    }));
-
-    allInvestmentTransactions.forEach(t => {
-      const [year, monthStr] = t.date.split('-');
-      const transactionYear = parseInt(year);
-      const monthIndex = parseInt(monthStr) - 1;
-
-      if (transactionYear === currentYear && monthIndex >= 0 && monthIndex < 12) {
-        data[monthIndex].value += t.value;
-      }
-    });
-
-    return data;
-  }, [allInvestmentTransactions, customRange]);
-
   const onPieEnter = useCallback((_: any, index: number) => {
     setActiveIndex(index);
   }, []);
@@ -149,6 +180,58 @@ export const Investments = ({
   const onPieLeave = useCallback(() => {
     setActiveIndex(undefined);
   }, []);
+
+  const handleEditGoal = (type: InvestmentType) => {
+    const currentGoal = getGoal(type);
+    setEditingGoal(type);
+    setGoalInputValue(currentGoal ? formatCurrencyInput((currentGoal * 100).toString()) : '');
+  };
+
+  const handleSaveGoal = () => {
+    if (editingGoal) {
+      const value = parseCurrency(goalInputValue);
+      if (value > 0) {
+        setGoal(editingGoal, value);
+      } else {
+        removeGoal(editingGoal);
+      }
+      setEditingGoal(null);
+      setGoalInputValue('');
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setEditingGoal(null);
+    setGoalInputValue('');
+  };
+
+  // Dados das metas com progresso
+  const goalsWithProgress = useMemo(() => {
+    return allInvestmentTypes.map(type => {
+      const invested = investmentsByTypeAllTime.get(type) || 0;
+      const target = getGoal(type) || 0;
+      const progress = target > 0 ? Math.min((invested / target) * 100, 100) : 0;
+      const Icon = investmentTypeIcons[type];
+      const color = investmentTypeColors[type];
+      
+      return {
+        type,
+        name: investmentTypeLabels[type],
+        invested,
+        target,
+        progress,
+        remaining: Math.max(target - invested, 0),
+        Icon,
+        color,
+        hasGoal: target > 0,
+      };
+    });
+  }, [investmentsByTypeAllTime, getGoal]);
+
+  const goalsConfigured = goalsWithProgress.filter(g => g.hasGoal);
+  const totalGoalsTarget = goalsConfigured.reduce((sum, g) => sum + g.target, 0);
+  const totalGoalsInvested = goalsConfigured.reduce((sum, g) => sum + g.invested, 0);
+  const overallProgress = totalGoalsTarget > 0 ? (totalGoalsInvested / totalGoalsTarget) * 100 : 0;
 
   return (
     <div className="p-8">
@@ -165,7 +248,7 @@ export const Investments = ({
       </div>
 
       {/* Cards de resumo */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
         <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
           <div className="flex items-center gap-4">
             <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
@@ -186,7 +269,7 @@ export const Investments = ({
               <Wallet className="w-6 h-6 text-income" />
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Total Investido (Histórico)</p>
+              <p className="text-sm text-muted-foreground">Total Investido</p>
               <p className="text-2xl font-bold text-income">
                 {formatCurrency(totalInvestedAllTime)}
               </p>
@@ -200,9 +283,23 @@ export const Investments = ({
               <PieChart className="w-6 h-6 text-muted-foreground" />
             </div>
             <div>
-              <p className="text-sm text-muted-foreground">Tipos de Investimento</p>
+              <p className="text-sm text-muted-foreground">Tipos Ativos</p>
               <p className="text-2xl font-bold text-foreground">
                 {investmentsByType.length}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+              <Target className="w-6 h-6 text-primary" />
+            </div>
+            <div>
+              <p className="text-sm text-muted-foreground">Progresso Metas</p>
+              <p className="text-2xl font-bold text-foreground">
+                {overallProgress.toFixed(0)}%
               </p>
             </div>
           </div>
@@ -215,6 +312,150 @@ export const Investments = ({
           💡 <strong>Como funciona:</strong> Os investimentos são identificados automaticamente a partir dos lançamentos com categoria "Investimentos". 
           Na descrição, inclua palavras-chave como "Reserva", "Ações", "FII", "Tesouro", "CDB", "Cripto" para classificação automática.
         </p>
+      </div>
+
+      {/* Metas de Investimento */}
+      <div className="mb-6 bg-card border border-border rounded-xl p-6 shadow-sm">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <Target className="w-5 h-5 text-primary" />
+            <h3 className="text-lg font-semibold text-foreground">Metas de Investimento</h3>
+          </div>
+          <Dialog open={isGoalsDialogOpen} onOpenChange={setIsGoalsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button variant="outline" size="sm" className="gap-2">
+                <Pencil className="w-4 h-4" />
+                Editar Metas
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-lg">
+              <DialogHeader>
+                <DialogTitle>Configurar Metas de Investimento</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4 mt-4 max-h-96 overflow-y-auto">
+                {allInvestmentTypes.map(type => {
+                  const Icon = investmentTypeIcons[type];
+                  const color = investmentTypeColors[type];
+                  const currentGoal = getGoal(type);
+                  const isEditing = editingGoal === type;
+                  
+                  return (
+                    <div key={type} className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
+                      <div className="flex items-center gap-3">
+                        <div 
+                          className="w-10 h-10 rounded-lg flex items-center justify-center"
+                          style={{ backgroundColor: `${color}20` }}
+                        >
+                          <Icon className="w-5 h-5" style={{ color }} />
+                        </div>
+                        <span className="font-medium text-foreground">{investmentTypeLabels[type]}</span>
+                      </div>
+                      
+                      {isEditing ? (
+                        <div className="flex items-center gap-2">
+                          <div className="relative">
+                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground text-sm">R$</span>
+                            <input
+                              type="text"
+                              inputMode="numeric"
+                              value={goalInputValue}
+                              onChange={e => setGoalInputValue(formatCurrencyInput(e.target.value))}
+                              placeholder="0,00"
+                              className="w-32 pl-9 pr-3 py-1.5 rounded-lg border border-input bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                              autoFocus
+                            />
+                          </div>
+                          <button
+                            onClick={handleSaveGoal}
+                            className="p-1.5 text-income hover:bg-income/10 rounded-lg transition-colors"
+                          >
+                            <Check className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={handleCancelEdit}
+                            className="p-1.5 text-muted-foreground hover:bg-muted rounded-lg transition-colors"
+                          >
+                            <X className="w-4 h-4" />
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm text-muted-foreground">
+                            {currentGoal ? formatCurrency(currentGoal) : 'Sem meta'}
+                          </span>
+                          <button
+                            onClick={() => handleEditGoal(type)}
+                            className="p-1.5 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-lg transition-colors"
+                          >
+                            <Pencil className="w-4 h-4" />
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            </DialogContent>
+          </Dialog>
+        </div>
+
+        {goalsConfigured.length > 0 ? (
+          <div className="space-y-4">
+            {goalsConfigured.map((goal) => {
+              const Icon = goal.Icon;
+              return (
+                <div key={goal.type}>
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-2">
+                      <Icon className="w-4 h-4" style={{ color: goal.color }} />
+                      <span className="text-sm font-medium text-foreground">{goal.name}</span>
+                    </div>
+                    <div className="flex items-center gap-3 text-sm">
+                      <span className="text-muted-foreground">
+                        {formatCurrency(goal.invested)} / {formatCurrency(goal.target)}
+                      </span>
+                      <span 
+                        className={cn(
+                          "font-semibold",
+                          goal.progress >= 100 ? "text-income" : "text-primary"
+                        )}
+                      >
+                        {goal.progress.toFixed(1)}%
+                      </span>
+                    </div>
+                  </div>
+                  <div className="h-3 bg-muted rounded-full overflow-hidden">
+                    <div 
+                      className="h-full rounded-full transition-all duration-500"
+                      style={{ 
+                        width: `${goal.progress}%`,
+                        backgroundColor: goal.progress >= 100 ? 'hsl(var(--income))' : goal.color,
+                      }}
+                    />
+                  </div>
+                  {goal.progress < 100 && (
+                    <p className="text-xs text-muted-foreground mt-1">
+                      Faltam {formatCurrency(goal.remaining)} para atingir a meta
+                    </p>
+                  )}
+                  {goal.progress >= 100 && (
+                    <p className="text-xs text-income mt-1 font-medium">
+                      ✓ Meta atingida!
+                    </p>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="text-center py-8">
+            <Target className="w-12 h-12 text-muted-foreground mx-auto mb-3" />
+            <p className="text-muted-foreground">Nenhuma meta configurada</p>
+            <p className="text-sm text-muted-foreground mt-1">
+              Clique em "Editar Metas" para definir seus objetivos
+            </p>
+          </div>
+        )}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -354,41 +595,6 @@ export const Investments = ({
           )}
         </div>
       </div>
-
-      {/* Progresso por tipo de investimento */}
-      {investmentsByType.length > 0 && (
-        <div className="mt-6 bg-card border border-border rounded-xl p-6 shadow-sm">
-          <h3 className="text-lg font-semibold text-foreground mb-4">Progresso dos Aportes</h3>
-          <div className="space-y-4">
-            {investmentsByType.map((item, index) => {
-              const Icon = item.Icon;
-              const percentage = (item.value / totalInvested) * 100;
-              return (
-                <div key={index}>
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-2">
-                      <Icon className="w-4 h-4" style={{ color: item.color }} />
-                      <span className="text-sm font-medium text-foreground">{item.name}</span>
-                    </div>
-                    <span className="text-sm text-muted-foreground">
-                      {formatCurrency(item.value)} ({percentage.toFixed(1)}%)
-                    </span>
-                  </div>
-                  <div className="h-2 bg-muted rounded-full overflow-hidden">
-                    <div 
-                      className="h-full rounded-full transition-all duration-500"
-                      style={{ 
-                        width: `${percentage}%`,
-                        backgroundColor: item.color,
-                      }}
-                    />
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      )}
     </div>
   );
 };
