@@ -16,30 +16,27 @@ export type Database = {
     Tables: {
       debts: {
         Row: {
-          created_at: string
-          due_date: string | null
+          created_at: number
           id: string
-          is_completed: boolean
+          monthly_installment: number
           name: string
-          paid_value: number
+          start_date: string
           total_value: number
         }
         Insert: {
-          created_at?: string
-          due_date?: string | null
+          created_at?: number
           id?: string
-          is_completed?: boolean
+          monthly_installment: number
           name: string
-          paid_value?: number
+          start_date: string
           total_value: number
         }
         Update: {
-          created_at?: string
-          due_date?: string | null
+          created_at?: number
           id?: string
-          is_completed?: boolean
+          monthly_installment?: number
           name?: string
-          paid_value?: number
+          start_date?: string
           total_value?: number
         }
         Relationships: []
@@ -47,30 +44,21 @@ export type Database = {
       investment_goals: {
         Row: {
           created_at: string
-          current_value: number
-          deadline: string | null
           id: string
-          is_completed: boolean
-          name: string
           target_value: number
+          type: string
         }
         Insert: {
           created_at?: string
-          current_value?: number
-          deadline?: string | null
           id?: string
-          is_completed?: boolean
-          name: string
           target_value: number
+          type: string
         }
         Update: {
           created_at?: string
-          current_value?: number
-          deadline?: string | null
           id?: string
-          is_completed?: boolean
-          name?: string
           target_value?: number
+          type?: string
         }
         Relationships: []
       }
