@@ -291,22 +291,22 @@ export const Debts = ({
   }, { totalDebt: 0, totalPaid: 0, totalRemaining: 0 });
 
   return (
-    <div className="p-8">
+    <div className="p-4 md:p-8">
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 md:mb-8">
         <div>
-          <h2 className="text-2xl font-bold text-foreground">Controle de Dívidas</h2>
-          <p className="text-muted-foreground mt-1">Gerencie e acompanhe suas dívidas</p>
+          <h2 className="text-xl md:text-2xl font-bold text-foreground">Controle de Dívidas</h2>
+          <p className="text-sm md:text-base text-muted-foreground mt-1">Gerencie e acompanhe suas dívidas</p>
         </div>
         
         <Dialog open={isDebtDialogOpen} onOpenChange={setIsDebtDialogOpen}>
           <DialogTrigger asChild>
-            <button className="flex items-center gap-2 py-2 px-4 rounded-lg bg-primary text-primary-foreground font-medium text-sm transition-all duration-200 hover:bg-primary/90">
+            <button className="flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg bg-primary text-primary-foreground font-medium text-sm transition-all duration-200 hover:bg-primary/90 w-full sm:w-auto">
               <Plus className="w-4 h-4" />
               Nova Dívida
             </button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="max-w-[95vw] sm:max-w-md mx-auto">
             <DialogHeader>
               <DialogTitle>Adicionar Nova Dívida</DialogTitle>
             </DialogHeader>
@@ -316,18 +316,18 @@ export const Debts = ({
       </div>
 
       {/* Resumo */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-        <div className="bg-card border border-border rounded-xl p-4 shadow-sm">
-          <p className="text-sm text-muted-foreground">Total em Dívidas</p>
-          <p className="text-xl font-bold text-foreground">{formatCurrency(stats.totalDebt)}</p>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4 mb-6 md:mb-8">
+        <div className="bg-card border border-border rounded-xl p-3 md:p-4 shadow-sm">
+          <p className="text-xs md:text-sm text-muted-foreground">Total em Dívidas</p>
+          <p className="text-lg md:text-xl font-bold text-foreground">{formatCurrency(stats.totalDebt)}</p>
         </div>
-        <div className="bg-card border border-border rounded-xl p-4 shadow-sm">
-          <p className="text-sm text-muted-foreground">Total Pago</p>
-          <p className="text-xl font-bold text-income">{formatCurrency(stats.totalPaid)}</p>
+        <div className="bg-card border border-border rounded-xl p-3 md:p-4 shadow-sm">
+          <p className="text-xs md:text-sm text-muted-foreground">Total Pago</p>
+          <p className="text-lg md:text-xl font-bold text-income">{formatCurrency(stats.totalPaid)}</p>
         </div>
-        <div className="bg-card border border-border rounded-xl p-4 shadow-sm">
-          <p className="text-sm text-muted-foreground">Falta Pagar</p>
-          <p className="text-xl font-bold text-expense">{formatCurrency(stats.totalRemaining)}</p>
+        <div className="bg-card border border-border rounded-xl p-3 md:p-4 shadow-sm">
+          <p className="text-xs md:text-sm text-muted-foreground">Falta Pagar</p>
+          <p className="text-lg md:text-xl font-bold text-expense">{formatCurrency(stats.totalRemaining)}</p>
         </div>
       </div>
 
