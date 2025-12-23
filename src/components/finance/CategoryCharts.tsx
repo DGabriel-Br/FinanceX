@@ -163,6 +163,10 @@ export const CategoryCharts = ({ transactions }: CategoryChartsProps) => {
                     activeShape={renderActiveShape}
                     onMouseEnter={onExpensePieEnter}
                     onMouseLeave={onExpensePieLeave}
+                    isAnimationActive={true}
+                    animationBegin={200}
+                    animationDuration={1000}
+                    animationEasing="ease-out"
                   >
                     {expenseData.map((entry, index) => (
                       <Cell 
@@ -241,6 +245,10 @@ export const CategoryCharts = ({ transactions }: CategoryChartsProps) => {
                     activeShape={renderActiveShape}
                     onMouseEnter={onIncomePieEnter}
                     onMouseLeave={onIncomePieLeave}
+                    isAnimationActive={true}
+                    animationBegin={400}
+                    animationDuration={1000}
+                    animationEasing="ease-out"
                   >
                     {incomeData.map((entry, index) => (
                       <Cell 
