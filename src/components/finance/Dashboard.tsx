@@ -122,17 +122,11 @@ export const Dashboard = ({ totals, filter, onFilterChange, transactions, debts,
         </div>
       </div>
 
-      {/* Grid com Dica e Acompanhamento de Dívidas */}
-      <div className="mt-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Dica */}
-        <div className="p-4 bg-muted/50 rounded-lg border border-border h-fit">
-          <p className="text-sm text-muted-foreground">
-            💡 <strong>Dica:</strong> Vá até a aba "Lançamentos" para adicionar suas receitas e despesas.
-          </p>
-        </div>
-
-        {/* Acompanhamento de Dívidas */}
-        <DebtTracker debts={debts} onNavigateToDebts={onNavigateToDebts} />
+      {/* Dica */}
+      <div className="mt-8 p-4 bg-muted/50 rounded-lg border border-border">
+        <p className="text-sm text-muted-foreground">
+          💡 <strong>Dica:</strong> Vá até a aba "Lançamentos" para adicionar suas receitas e despesas.
+        </p>
       </div>
 
       {/* Gráfico de colunas */}
@@ -180,6 +174,11 @@ export const Dashboard = ({ totals, filter, onFilterChange, transactions, debts,
             </BarChart>
           </ResponsiveContainer>
         </div>
+      </div>
+
+      {/* Acompanhamento de Dívidas */}
+      <div className="mt-6">
+        <DebtTracker debts={debts} onNavigateToDebts={onNavigateToDebts} />
       </div>
     </div>
   );
