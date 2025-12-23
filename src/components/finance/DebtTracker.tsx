@@ -34,7 +34,13 @@ const getPaidValueForDebt = (debtName: string, transactions: Transaction[]): num
 };
 
 export const DebtTracker = ({ debts, transactions, onNavigateToDebts }: DebtTrackerProps) => {
-  if (debts.length === 0) {
+  // Filtra apenas dívidas não quitadas para verificar se deve mostrar o componente
+  const hasActiveDebts = debts.some(debt => {
+    const paidValue = getPaidValueForDebt(debt.name, transactions);
+    return calculateProgress(debt.totalValue, paidValue) < 100;
+  });
+
+  if (debts.length === 0 || !hasActiveDebts) {
     return (
       <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
         <div className="flex items-center justify-between mb-4">
@@ -59,8 +65,14 @@ export const DebtTracker = ({ debts, transactions, onNavigateToDebts }: DebtTrac
     );
   }
 
-  // Calcula totais
-  const totals = debts.reduce((acc, debt) => {
+  // Filtra apenas dívidas não quitadas (progresso < 100%)
+  const activeDebts = debts.filter(debt => {
+    const paidValue = getPaidValueForDebt(debt.name, transactions);
+    return calculateProgress(debt.totalValue, paidValue) < 100;
+  });
+
+  // Calcula totais apenas das dívidas ativas
+  const totals = activeDebts.reduce((acc, debt) => {
     const paidValue = getPaidValueForDebt(debt.name, transactions);
     return {
       totalDebt: acc.totalDebt + debt.totalValue,
@@ -104,9 +116,9 @@ export const DebtTracker = ({ debts, transactions, onNavigateToDebts }: DebtTrac
         </div>
       </div>
 
-      {/* Lista de Dívidas */}
+      {/* Lista de Dívidas Ativas */}
       <div className="space-y-4">
-        {debts.slice(0, 3).map(debt => {
+        {activeDebts.slice(0, 3).map(debt => {
           const paidValue = getPaidValueForDebt(debt.name, transactions);
           const remaining = debt.totalValue - paidValue;
           const progress = calculateProgress(debt.totalValue, paidValue);
@@ -153,10 +165,16 @@ export const DebtTracker = ({ debts, transactions, onNavigateToDebts }: DebtTrac
         })}
       </div>
 
-      {debts.length > 3 && (
+      {activeDebts.length > 3 && (
         <p className="text-center text-sm text-muted-foreground mt-4">
-          +{debts.length - 3} dívida(s) não exibida(s)
+          +{activeDebts.length - 3} dívida(s) não exibida(s)
         </p>
+      )}
+
+      {activeDebts.length === 0 && debts.length > 0 && (
+        <div className="text-center py-4">
+          <p className="text-income font-medium text-sm">🎉 Todas as dívidas foram quitadas!</p>
+        </div>
       )}
     </div>
   );
