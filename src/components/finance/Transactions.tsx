@@ -1,12 +1,10 @@
-import { Transaction, PeriodFilter as PeriodFilterType, TransactionType } from '@/types/transaction';
-import { AdvancedPeriodFilter, CustomDateRange } from './AdvancedPeriodFilter';
+import { Transaction, TransactionType } from '@/types/transaction';
+import { PeriodFilter, CustomDateRange } from './PeriodFilter';
 import { TransactionForm } from './TransactionForm';
 import { TransactionList } from './TransactionList';
 
 interface TransactionsProps {
   transactions: Transaction[];
-  filter: PeriodFilterType;
-  onFilterChange: (filter: PeriodFilterType) => void;
   customRange: CustomDateRange | null;
   onCustomRangeChange: (range: CustomDateRange | null) => void;
   onAdd: (transaction: { type: TransactionType; date: string; description: string; value: number }) => void;
@@ -16,8 +14,6 @@ interface TransactionsProps {
 
 export const Transactions = ({
   transactions,
-  filter,
-  onFilterChange,
   customRange,
   onCustomRangeChange,
   onAdd,
@@ -32,9 +28,7 @@ export const Transactions = ({
           <h2 className="text-2xl font-bold text-foreground">Lançamentos</h2>
           <p className="text-muted-foreground mt-1">Gerencie suas receitas e despesas</p>
         </div>
-        <AdvancedPeriodFilter 
-          value={filter} 
-          onChange={onFilterChange}
+        <PeriodFilter 
           customRange={customRange}
           onCustomRangeChange={onCustomRangeChange}
         />
