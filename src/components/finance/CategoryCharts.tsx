@@ -1,5 +1,5 @@
-import { useMemo } from 'react';
-import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
+import { useMemo, useState, useCallback } from 'react';
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Sector } from 'recharts';
 import { TrendingUp, TrendingDown } from 'lucide-react';
 import { Transaction, expenseCategoryLabels, incomeCategoryLabels, ExpenseCategory, IncomeCategory } from '@/types/transaction';
 
@@ -35,7 +35,47 @@ const formatCurrency = (value: number): string => {
   }).format(value);
 };
 
+// Componente de fatia ativa (expandida)
+const renderActiveShape = (props: any) => {
+  const {
+    cx, cy, innerRadius, outerRadius, startAngle, endAngle,
+    fill, payload, percent, value
+  } = props;
+
+  return (
+    <g>
+      {/* Fatia expandida */}
+      <Sector
+        cx={cx}
+        cy={cy}
+        innerRadius={innerRadius - 2}
+        outerRadius={outerRadius + 10}
+        startAngle={startAngle}
+        endAngle={endAngle}
+        fill={fill}
+        style={{
+          filter: 'drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2))',
+          transition: 'all 0.3s ease',
+        }}
+      />
+      {/* Texto no centro */}
+      <text x={cx} y={cy - 8} textAnchor="middle" fill="hsl(var(--foreground))" fontSize={14} fontWeight={600}>
+        {payload.name}
+      </text>
+      <text x={cx} y={cy + 10} textAnchor="middle" fill="hsl(var(--muted-foreground))" fontSize={12}>
+        {formatCurrency(value)}
+      </text>
+      <text x={cx} y={cy + 26} textAnchor="middle" fill="hsl(var(--muted-foreground))" fontSize={11}>
+        {`${(percent * 100).toFixed(1)}%`}
+      </text>
+    </g>
+  );
+};
+
 export const CategoryCharts = ({ transactions }: CategoryChartsProps) => {
+  const [activeExpenseIndex, setActiveExpenseIndex] = useState<number | undefined>(undefined);
+  const [activeIncomeIndex, setActiveIncomeIndex] = useState<number | undefined>(undefined);
+
   // Agrupa despesas por categoria
   const expenseData = useMemo(() => {
     const categoryTotals = new Map<ExpenseCategory, number>();
@@ -81,18 +121,21 @@ export const CategoryCharts = ({ transactions }: CategoryChartsProps) => {
   const totalExpenses = expenseData.reduce((sum, item) => sum + item.value, 0);
   const totalIncome = incomeData.reduce((sum, item) => sum + item.value, 0);
 
-  const CustomTooltip = ({ active, payload }: any) => {
-    if (active && payload && payload.length) {
-      const data = payload[0].payload;
-      return (
-        <div className="bg-card border border-border rounded-lg p-3 shadow-lg">
-          <p className="font-medium text-foreground">{data.name}</p>
-          <p className="text-sm text-muted-foreground">{formatCurrency(data.value)}</p>
-        </div>
-      );
-    }
-    return null;
-  };
+  const onExpensePieEnter = useCallback((_: any, index: number) => {
+    setActiveExpenseIndex(index);
+  }, []);
+
+  const onExpensePieLeave = useCallback(() => {
+    setActiveExpenseIndex(undefined);
+  }, []);
+
+  const onIncomePieEnter = useCallback((_: any, index: number) => {
+    setActiveIncomeIndex(index);
+  }, []);
+
+  const onIncomePieLeave = useCallback(() => {
+    setActiveIncomeIndex(undefined);
+  }, []);
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
@@ -116,22 +159,44 @@ export const CategoryCharts = ({ transactions }: CategoryChartsProps) => {
                     outerRadius={80}
                     paddingAngle={2}
                     dataKey="value"
+                    activeIndex={activeExpenseIndex}
+                    activeShape={renderActiveShape}
+                    onMouseEnter={onExpensePieEnter}
+                    onMouseLeave={onExpensePieLeave}
                   >
                     {expenseData.map((entry, index) => (
-                      <Cell key={`expense-cell-${index}`} fill={entry.color} />
+                      <Cell 
+                        key={`expense-cell-${index}`} 
+                        fill={entry.color}
+                        style={{ 
+                          cursor: 'pointer',
+                          transition: 'all 0.3s ease',
+                          opacity: activeExpenseIndex !== undefined && activeExpenseIndex !== index ? 0.6 : 1,
+                        }}
+                      />
                     ))}
                   </Pie>
-                  <Tooltip content={<CustomTooltip />} />
                 </PieChart>
               </ResponsiveContainer>
             </div>
             <div className="mt-4 space-y-2">
               {expenseData.map((item, index) => (
-                <div key={index} className="flex items-center justify-between text-sm">
+                <div 
+                  key={index} 
+                  className="flex items-center justify-between text-sm p-2 rounded-lg transition-colors cursor-pointer hover:bg-muted/50"
+                  onMouseEnter={() => setActiveExpenseIndex(index)}
+                  onMouseLeave={() => setActiveExpenseIndex(undefined)}
+                  style={{
+                    backgroundColor: activeExpenseIndex === index ? 'hsl(var(--muted))' : 'transparent',
+                  }}
+                >
                   <div className="flex items-center gap-2">
                     <div 
-                      className="w-3 h-3 rounded-full" 
-                      style={{ backgroundColor: item.color }}
+                      className="w-3 h-3 rounded-full transition-transform"
+                      style={{ 
+                        backgroundColor: item.color,
+                        transform: activeExpenseIndex === index ? 'scale(1.3)' : 'scale(1)',
+                      }}
                     />
                     <span className="text-muted-foreground">{item.name}</span>
                   </div>
@@ -172,22 +237,44 @@ export const CategoryCharts = ({ transactions }: CategoryChartsProps) => {
                     outerRadius={80}
                     paddingAngle={2}
                     dataKey="value"
+                    activeIndex={activeIncomeIndex}
+                    activeShape={renderActiveShape}
+                    onMouseEnter={onIncomePieEnter}
+                    onMouseLeave={onIncomePieLeave}
                   >
                     {incomeData.map((entry, index) => (
-                      <Cell key={`income-cell-${index}`} fill={entry.color} />
+                      <Cell 
+                        key={`income-cell-${index}`} 
+                        fill={entry.color}
+                        style={{ 
+                          cursor: 'pointer',
+                          transition: 'all 0.3s ease',
+                          opacity: activeIncomeIndex !== undefined && activeIncomeIndex !== index ? 0.6 : 1,
+                        }}
+                      />
                     ))}
                   </Pie>
-                  <Tooltip content={<CustomTooltip />} />
                 </PieChart>
               </ResponsiveContainer>
             </div>
             <div className="mt-4 space-y-2">
               {incomeData.map((item, index) => (
-                <div key={index} className="flex items-center justify-between text-sm">
+                <div 
+                  key={index} 
+                  className="flex items-center justify-between text-sm p-2 rounded-lg transition-colors cursor-pointer hover:bg-muted/50"
+                  onMouseEnter={() => setActiveIncomeIndex(index)}
+                  onMouseLeave={() => setActiveIncomeIndex(undefined)}
+                  style={{
+                    backgroundColor: activeIncomeIndex === index ? 'hsl(var(--muted))' : 'transparent',
+                  }}
+                >
                   <div className="flex items-center gap-2">
                     <div 
-                      className="w-3 h-3 rounded-full" 
-                      style={{ backgroundColor: item.color }}
+                      className="w-3 h-3 rounded-full transition-transform"
+                      style={{ 
+                        backgroundColor: item.color,
+                        transform: activeIncomeIndex === index ? 'scale(1.3)' : 'scale(1)',
+                      }}
                     />
                     <span className="text-muted-foreground">{item.name}</span>
                   </div>
