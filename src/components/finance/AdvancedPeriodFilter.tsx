@@ -5,14 +5,17 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { CalendarIcon, ChevronLeft, ChevronRight } from 'lucide-react';
-import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth, startOfYear, endOfYear } from 'date-fns';
+import { CalendarIcon } from 'lucide-react';
+import { format, startOfDay, endOfDay, subDays, startOfMonth, endOfMonth, subMonths } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { DateRange } from 'react-day-picker';
 
 export interface CustomDateRange {
   start: Date;
   end: Date;
 }
+
+type PeriodOption = 'maximo' | 'hoje' | 'ontem' | 'ultimos7dias' | 'essemes' | 'mespassado' | 'personalizado';
 
 interface AdvancedPeriodFilterProps {
   value: PeriodFilterType;
@@ -21,9 +24,14 @@ interface AdvancedPeriodFilterProps {
   onCustomRangeChange: (range: CustomDateRange | null) => void;
 }
 
-const months = [
-  'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
-  'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
+const periodOptions: { value: PeriodOption; label: string }[] = [
+  { value: 'maximo', label: 'Máximo' },
+  { value: 'hoje', label: 'Hoje' },
+  { value: 'ontem', label: 'Ontem' },
+  { value: 'ultimos7dias', label: 'Últimos 7 dias' },
+  { value: 'essemes', label: 'Esse mês' },
+  { value: 'mespassado', label: 'Mês passado' },
+  { value: 'personalizado', label: 'Personalizado' },
 ];
 
 export const AdvancedPeriodFilter = ({ 
@@ -32,200 +40,162 @@ export const AdvancedPeriodFilter = ({
   customRange, 
   onCustomRangeChange 
 }: AdvancedPeriodFilterProps) => {
-  const [selectedDate, setSelectedDate] = useState<Date>(customRange?.start || new Date());
+  const [selectedOption, setSelectedOption] = useState<PeriodOption>('essemes');
   const [calendarOpen, setCalendarOpen] = useState(false);
+  const [dateRange, setDateRange] = useState<DateRange | undefined>(
+    customRange ? { from: customRange.start, to: customRange.end } : undefined
+  );
 
-  const currentYear = new Date().getFullYear();
-  const years = Array.from({ length: 10 }, (_, i) => currentYear - 5 + i);
+  const handleOptionChange = (option: PeriodOption) => {
+    setSelectedOption(option);
+    const today = new Date();
 
-  const handlePeriodChange = (newPeriod: PeriodFilterType) => {
-    onChange(newPeriod);
-    updateCustomRange(selectedDate, newPeriod);
-  };
-
-  const updateCustomRange = (date: Date, period: PeriodFilterType) => {
     let range: CustomDateRange | null = null;
 
-    switch (period) {
-      case 'dia':
-        range = { start: date, end: date };
-        break;
-      case 'semana':
+    switch (option) {
+      case 'maximo':
+        onChange('todos');
+        onCustomRangeChange(null);
+        return;
+      case 'hoje':
         range = { 
-          start: startOfWeek(date, { weekStartsOn: 0 }), 
-          end: endOfWeek(date, { weekStartsOn: 0 }) 
+          start: startOfDay(today), 
+          end: endOfDay(today) 
         };
         break;
-      case 'mes':
+      case 'ontem':
+        const yesterday = subDays(today, 1);
         range = { 
-          start: startOfMonth(date), 
-          end: endOfMonth(date) 
+          start: startOfDay(yesterday), 
+          end: endOfDay(yesterday) 
         };
         break;
-      case 'ano':
+      case 'ultimos7dias':
         range = { 
-          start: startOfYear(date), 
-          end: endOfYear(date) 
+          start: startOfDay(subDays(today, 6)), 
+          end: endOfDay(today) 
         };
         break;
-      case 'todos':
-        range = null;
+      case 'essemes':
+        range = { 
+          start: startOfMonth(today), 
+          end: endOfMonth(today) 
+        };
         break;
+      case 'mespassado':
+        const lastMonth = subMonths(today, 1);
+        range = { 
+          start: startOfMonth(lastMonth), 
+          end: endOfMonth(lastMonth) 
+        };
+        break;
+      case 'personalizado':
+        setCalendarOpen(true);
+        return;
     }
 
-    onCustomRangeChange(range);
-  };
-
-  const handleDateSelect = (date: Date | undefined) => {
-    if (date) {
-      setSelectedDate(date);
-      updateCustomRange(date, value);
-      setCalendarOpen(false);
+    if (range) {
+      onChange('mes');
+      onCustomRangeChange(range);
+      setDateRange({ from: range.start, to: range.end });
     }
   };
 
-  const handleMonthChange = (monthIndex: string) => {
-    const newDate = new Date(selectedDate);
-    newDate.setMonth(parseInt(monthIndex));
-    setSelectedDate(newDate);
-    updateCustomRange(newDate, value);
-  };
-
-  const handleYearChange = (year: string) => {
-    const newDate = new Date(selectedDate);
-    newDate.setFullYear(parseInt(year));
-    setSelectedDate(newDate);
-    updateCustomRange(newDate, value);
-  };
-
-  const navigatePeriod = (direction: 'prev' | 'next') => {
-    const newDate = new Date(selectedDate);
-    const delta = direction === 'prev' ? -1 : 1;
-
-    switch (value) {
-      case 'dia':
-        newDate.setDate(newDate.getDate() + delta);
-        break;
-      case 'semana':
-        newDate.setDate(newDate.getDate() + (delta * 7));
-        break;
-      case 'mes':
-        newDate.setMonth(newDate.getMonth() + delta);
-        break;
-      case 'ano':
-        newDate.setFullYear(newDate.getFullYear() + delta);
-        break;
+  const handleDateRangeSelect = (range: DateRange | undefined) => {
+    setDateRange(range);
+    if (range?.from && range?.to) {
+      const customRange: CustomDateRange = {
+        start: startOfDay(range.from),
+        end: endOfDay(range.to)
+      };
+      onChange('mes');
+      onCustomRangeChange(customRange);
     }
-
-    setSelectedDate(newDate);
-    updateCustomRange(newDate, value);
   };
 
   const getDisplayLabel = (): string => {
-    if (value === 'todos') return 'Todos os períodos';
-    
-    switch (value) {
-      case 'dia':
-        return format(selectedDate, "dd 'de' MMMM 'de' yyyy", { locale: ptBR });
-      case 'semana': {
-        const start = startOfWeek(selectedDate, { weekStartsOn: 0 });
-        const end = endOfWeek(selectedDate, { weekStartsOn: 0 });
-        return `${format(start, 'dd/MM', { locale: ptBR })} - ${format(end, 'dd/MM/yyyy', { locale: ptBR })}`;
-      }
-      case 'mes':
-        return format(selectedDate, "MMMM 'de' yyyy", { locale: ptBR });
-      case 'ano':
-        return format(selectedDate, 'yyyy', { locale: ptBR });
-      default:
-        return '';
+    if (selectedOption === 'maximo' || !customRange) {
+      return 'Todos os períodos';
     }
+    
+    const startFormatted = format(customRange.start, "dd/MM/yyyy", { locale: ptBR });
+    const endFormatted = format(customRange.end, "dd/MM/yyyy", { locale: ptBR });
+    
+    if (startFormatted === endFormatted) {
+      return startFormatted;
+    }
+    
+    return `${startFormatted} - ${endFormatted}`;
   };
 
   return (
-    <div className="flex flex-col gap-2">
-      {/* Navigation and date selector */}
-      <div className="flex items-center gap-2">
-        {/* Previous button */}
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={() => navigatePeriod('prev')}
-          className="h-9 w-9"
-        >
-          <ChevronLeft className="h-4 w-4" />
-        </Button>
+    <div className="flex flex-col gap-2 w-full max-w-[280px]">
+      <label className="text-sm text-muted-foreground flex items-center gap-1">
+        Período de Visualização
+      </label>
+      
+      {/* Period selector dropdown */}
+      <Select
+        value={selectedOption}
+        onValueChange={(value) => handleOptionChange(value as PeriodOption)}
+      >
+        <SelectTrigger className="w-full">
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          {periodOptions.map((option) => (
+            <SelectItem key={option.value} value={option.value}>
+              {option.label}
+            </SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
 
-        {/* Date display with selectors */}
-        <div className="flex items-center gap-2">
-          {/* Month selector */}
-          <Select
-            value={selectedDate.getMonth().toString()}
-            onValueChange={handleMonthChange}
-          >
-            <SelectTrigger className="w-[140px]">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {months.map((month, index) => (
-                <SelectItem key={month} value={index.toString()}>
-                  {month}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+      {/* Custom date range picker */}
+      {selectedOption === 'personalizado' && (
+        <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
+          <PopoverTrigger asChild>
+            <Button 
+              variant="outline" 
+              className={cn(
+                "w-full justify-start text-left font-normal",
+                !dateRange && "text-muted-foreground"
+              )}
+            >
+              <CalendarIcon className="mr-2 h-4 w-4" />
+              {dateRange?.from ? (
+                dateRange.to ? (
+                  <>
+                    {format(dateRange.from, "dd/MM/yyyy", { locale: ptBR })} - {format(dateRange.to, "dd/MM/yyyy", { locale: ptBR })}
+                  </>
+                ) : (
+                  format(dateRange.from, "dd/MM/yyyy", { locale: ptBR })
+                )
+              ) : (
+                <span>Selecione um período</span>
+              )}
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-auto p-0" align="start">
+            <Calendar
+              mode="range"
+              selected={dateRange}
+              onSelect={handleDateRangeSelect}
+              numberOfMonths={1}
+              initialFocus
+              className="p-3 pointer-events-auto"
+              locale={ptBR}
+            />
+          </PopoverContent>
+        </Popover>
+      )}
 
-          {/* Year selector */}
-          <Select
-            value={selectedDate.getFullYear().toString()}
-            onValueChange={handleYearChange}
-          >
-            <SelectTrigger className="w-[100px]">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              {years.map(year => (
-                <SelectItem key={year} value={year.toString()}>
-                  {year}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-
-          {/* Calendar picker */}
-          <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
-            <PopoverTrigger asChild>
-              <Button variant="outline" size="icon" className="h-9 w-9">
-                <CalendarIcon className="h-4 w-4" />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="end">
-              <Calendar
-                mode="single"
-                selected={selectedDate}
-                onSelect={handleDateSelect}
-                initialFocus
-                className="p-3 pointer-events-auto"
-                locale={ptBR}
-              />
-            </PopoverContent>
-          </Popover>
-        </div>
-
-        {/* Next button */}
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={() => navigatePeriod('next')}
-          className="h-9 w-9"
-        >
-          <ChevronRight className="h-4 w-4" />
-        </Button>
-      </div>
-
-      {/* Display current range */}
-      <p className="text-sm text-muted-foreground text-right">
-        {getDisplayLabel()}
-      </p>
+      {/* Display current range (for non-custom options) */}
+      {selectedOption !== 'personalizado' && selectedOption !== 'maximo' && customRange && (
+        <p className="text-sm text-muted-foreground">
+          {getDisplayLabel()}
+        </p>
+      )}
     </div>
   );
 };
