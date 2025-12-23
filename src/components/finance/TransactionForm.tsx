@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus } from 'lucide-react';
+import { Plus, CalendarIcon } from 'lucide-react';
 import { 
   TransactionType, 
   TransactionCategory, 
@@ -10,8 +10,13 @@ import {
   incomeCategoryIcons,
   expenseCategoryIcons
 } from '@/types/transaction';
-import { getLocalDateString } from '@/hooks/useTransactions';
+import { getLocalDateString, parseLocalDate } from '@/hooks/useTransactions';
 import { cn } from '@/lib/utils';
+import { Calendar } from '@/components/ui/calendar';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Button } from '@/components/ui/button';
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 
 interface TransactionFormProps {
   onSubmit: (transaction: {
@@ -54,9 +59,10 @@ const expenseCategories: ExpenseCategory[] = ['contas_fixas', 'investimentos', '
 export const TransactionForm = ({ onSubmit }: TransactionFormProps) => {
   const [type, setType] = useState<TransactionType>('despesa');
   const [category, setCategory] = useState<TransactionCategory>('contas_fixas');
-  const [date, setDate] = useState(getLocalDateString());
+  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [description, setDescription] = useState('');
   const [value, setValue] = useState('');
+  const [calendarOpen, setCalendarOpen] = useState(false);
 
   // Atualizar categoria quando tipo mudar
   useEffect(() => {
@@ -72,6 +78,13 @@ export const TransactionForm = ({ onSubmit }: TransactionFormProps) => {
     setValue(formatted);
   };
 
+  const handleDateSelect = (date: Date | undefined) => {
+    if (date) {
+      setSelectedDate(date);
+      setCalendarOpen(false);
+    }
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -85,7 +98,7 @@ export const TransactionForm = ({ onSubmit }: TransactionFormProps) => {
     onSubmit({
       type,
       category,
-      date,
+      date: getLocalDateString(selectedDate),
       description: description.trim(),
       value: numericValue,
     });
@@ -169,12 +182,29 @@ export const TransactionForm = ({ onSubmit }: TransactionFormProps) => {
         {/* Data */}
         <div>
           <label className="block text-sm font-medium text-foreground mb-2">Data</label>
-          <input
-            type="date"
-            value={date}
-            onChange={e => setDate(e.target.value)}
-            className="w-full px-3 py-2 rounded-lg border border-input bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-          />
+          <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
+            <PopoverTrigger asChild>
+              <Button
+                variant="outline"
+                className={cn(
+                  "w-full justify-start text-left font-normal",
+                  !selectedDate && "text-muted-foreground"
+                )}
+              >
+                <CalendarIcon className="mr-2 h-4 w-4" />
+                {selectedDate ? format(selectedDate, "dd 'de' MMMM 'de' yyyy", { locale: ptBR }) : <span>Selecione uma data</span>}
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0 bg-popover border border-border" align="start">
+              <Calendar
+                mode="single"
+                selected={selectedDate}
+                onSelect={handleDateSelect}
+                locale={ptBR}
+                initialFocus
+              />
+            </PopoverContent>
+          </Popover>
         </div>
 
         {/* Descrição */}
