@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Sidebar } from '@/components/finance/Sidebar';
 import { MobileNav } from '@/components/finance/MobileNav';
 import { Dashboard } from '@/components/finance/Dashboard';
@@ -8,6 +9,8 @@ import { Investments } from '@/components/finance/Investments';
 import { useTransactions } from '@/hooks/useTransactions';
 import { useDebts } from '@/hooks/useDebts';
 import { useTheme } from '@/hooks/useTheme';
+import { useAuth } from '@/hooks/useAuth';
+import { Loader2 } from 'lucide-react';
 
 type Tab = 'dashboard' | 'lancamentos' | 'dividas' | 'investimentos';
 
@@ -15,9 +18,12 @@ const Index = () => {
   const [activeTab, setActiveTab] = useState<Tab>('dashboard');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const { theme, toggleTheme } = useTheme();
+  const { user, loading: authLoading, signOut } = useAuth();
+  const navigate = useNavigate();
   
   const {
     transactions,
+    loading: transactionsLoading,
     customRange,
     setCustomRange,
     addTransaction,
@@ -25,13 +31,48 @@ const Index = () => {
     deleteTransaction,
     getFilteredTransactions,
     getTotals,
+    refetch: refetchTransactions,
   } = useTransactions();
 
   const {
     debts,
+    loading: debtsLoading,
     addDebt,
     deleteDebt,
+    refetch: refetchDebts,
   } = useDebts();
+
+  // Redirecionar para login se não autenticado
+  useEffect(() => {
+    if (!authLoading && !user) {
+      navigate('/auth');
+    }
+  }, [user, authLoading, navigate]);
+
+  // Recarregar dados quando o usuário mudar
+  useEffect(() => {
+    if (user) {
+      refetchTransactions();
+      refetchDebts();
+    }
+  }, [user]);
+
+  const handleSignOut = async () => {
+    await signOut();
+    navigate('/auth');
+  };
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null;
+  }
 
   const filteredTransactions = getFilteredTransactions();
   const totals = getTotals();
@@ -47,6 +88,8 @@ const Index = () => {
           onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
           theme={theme}
           onToggleTheme={toggleTheme}
+          userEmail={user.email}
+          onSignOut={handleSignOut}
         />
       </div>
 
@@ -95,6 +138,8 @@ const Index = () => {
         onTabChange={setActiveTab} 
         theme={theme}
         onToggleTheme={toggleTheme}
+        userEmail={user.email}
+        onSignOut={handleSignOut}
       />
     </div>
   );

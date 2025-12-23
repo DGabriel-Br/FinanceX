@@ -43,6 +43,9 @@ export const useDebts = () => {
   // Adicionar dívida
   const addDebt = useCallback(async (debt: Omit<Debt, 'id' | 'createdAt'>) => {
     try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Usuário não autenticado');
+
       const { data, error } = await supabase
         .from('debts')
         .insert({
@@ -50,6 +53,7 @@ export const useDebts = () => {
           total_value: debt.totalValue,
           monthly_installment: debt.monthlyInstallment,
           start_date: debt.startDate,
+          user_id: user.id,
         })
         .select()
         .single();
