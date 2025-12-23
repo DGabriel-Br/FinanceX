@@ -97,7 +97,7 @@ export const CategoryCharts = ({ transactions }: CategoryChartsProps) => {
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
       {/* Gráfico de Despesas */}
-      <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
+      <div className="bg-card border border-border rounded-xl p-6 shadow-sm animate-fade-in" style={{ animationDelay: '0.1s', animationFillMode: 'both' }}>
         <div className="flex items-center gap-2 mb-4">
           <TrendingDown className="w-5 h-5 text-expense" />
           <h3 className="text-lg font-semibold text-foreground">Despesas por Categoria</h3>
@@ -153,7 +153,7 @@ export const CategoryCharts = ({ transactions }: CategoryChartsProps) => {
       </div>
 
       {/* Gráfico de Receitas */}
-      <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
+      <div className="bg-card border border-border rounded-xl p-6 shadow-sm animate-fade-in" style={{ animationDelay: '0.2s', animationFillMode: 'both' }}>
         <div className="flex items-center gap-2 mb-4">
           <TrendingUp className="w-5 h-5 text-income" />
           <h3 className="text-lg font-semibold text-foreground">Receitas por Categoria</h3>
