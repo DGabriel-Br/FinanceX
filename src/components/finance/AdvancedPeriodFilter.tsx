@@ -21,14 +21,6 @@ interface AdvancedPeriodFilterProps {
   onCustomRangeChange: (range: CustomDateRange | null) => void;
 }
 
-const periods: { value: PeriodFilterType; label: string }[] = [
-  { value: 'dia', label: 'Dia' },
-  { value: 'semana', label: 'Semana' },
-  { value: 'mes', label: 'Mês' },
-  { value: 'ano', label: 'Ano' },
-  { value: 'todos', label: 'Todos' },
-];
-
 const months = [
   'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
   'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
@@ -150,116 +142,90 @@ export const AdvancedPeriodFilter = ({
   };
 
   return (
-    <div className="flex flex-col gap-3">
-      {/* Period selector buttons */}
-      <div className="flex gap-1 bg-muted p-1 rounded-lg">
-        {periods.map(period => (
-          <button
-            key={period.value}
-            onClick={() => handlePeriodChange(period.value)}
-            className={cn(
-              'px-4 py-2 text-sm font-medium rounded-md transition-all duration-200',
-              value === period.value
-                ? 'bg-background text-foreground shadow-sm'
-                : 'text-muted-foreground hover:text-foreground'
-            )}
+    <div className="flex flex-col gap-2">
+      {/* Navigation and date selector */}
+      <div className="flex items-center gap-2">
+        {/* Previous button */}
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => navigatePeriod('prev')}
+          className="h-9 w-9"
+        >
+          <ChevronLeft className="h-4 w-4" />
+        </Button>
+
+        {/* Date display with selectors */}
+        <div className="flex items-center gap-2">
+          {/* Month selector */}
+          <Select
+            value={selectedDate.getMonth().toString()}
+            onValueChange={handleMonthChange}
           >
-            {period.label}
-          </button>
-        ))}
+            <SelectTrigger className="w-[140px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {months.map((month, index) => (
+                <SelectItem key={month} value={index.toString()}>
+                  {month}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          {/* Year selector */}
+          <Select
+            value={selectedDate.getFullYear().toString()}
+            onValueChange={handleYearChange}
+          >
+            <SelectTrigger className="w-[100px]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              {years.map(year => (
+                <SelectItem key={year} value={year.toString()}>
+                  {year}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+
+          {/* Calendar picker */}
+          <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
+            <PopoverTrigger asChild>
+              <Button variant="outline" size="icon" className="h-9 w-9">
+                <CalendarIcon className="h-4 w-4" />
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent className="w-auto p-0" align="end">
+              <Calendar
+                mode="single"
+                selected={selectedDate}
+                onSelect={handleDateSelect}
+                initialFocus
+                className="p-3 pointer-events-auto"
+                locale={ptBR}
+              />
+            </PopoverContent>
+          </Popover>
+        </div>
+
+        {/* Next button */}
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => navigatePeriod('next')}
+          className="h-9 w-9"
+        >
+          <ChevronRight className="h-4 w-4" />
+        </Button>
       </div>
 
-      {/* Navigation and date selector */}
-      {value !== 'todos' && (
-        <div className="flex items-center gap-2">
-          {/* Previous button */}
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => navigatePeriod('prev')}
-            className="h-9 w-9"
-          >
-            <ChevronLeft className="h-4 w-4" />
-          </Button>
-
-          {/* Date display with selectors */}
-          <div className="flex items-center gap-2 flex-1">
-            {/* Month selector (visible for month/week/day) */}
-            {(value === 'mes' || value === 'semana' || value === 'dia') && (
-              <Select
-                value={selectedDate.getMonth().toString()}
-                onValueChange={handleMonthChange}
-              >
-                <SelectTrigger className="w-[140px]">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {months.map((month, index) => (
-                    <SelectItem key={month} value={index.toString()}>
-                      {month}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            )}
-
-            {/* Year selector */}
-            <Select
-              value={selectedDate.getFullYear().toString()}
-              onValueChange={handleYearChange}
-            >
-              <SelectTrigger className="w-[100px]">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                {years.map(year => (
-                  <SelectItem key={year} value={year.toString()}>
-                    {year}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-
-            {/* Calendar picker (for day/week) */}
-            {(value === 'dia' || value === 'semana') && (
-              <Popover open={calendarOpen} onOpenChange={setCalendarOpen}>
-                <PopoverTrigger asChild>
-                  <Button variant="outline" size="icon" className="h-9 w-9">
-                    <CalendarIcon className="h-4 w-4" />
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0" align="end">
-                  <Calendar
-                    mode="single"
-                    selected={selectedDate}
-                    onSelect={handleDateSelect}
-                    initialFocus
-                    className="p-3 pointer-events-auto"
-                    locale={ptBR}
-                  />
-                </PopoverContent>
-              </Popover>
-            )}
-          </div>
-
-          {/* Next button */}
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => navigatePeriod('next')}
-            className="h-9 w-9"
-          >
-            <ChevronRight className="h-4 w-4" />
-          </Button>
-        </div>
-      )}
-
       {/* Display current range */}
-      {value !== 'todos' && (
-        <p className="text-sm text-muted-foreground text-center">
-          {getDisplayLabel()}
-        </p>
-      )}
+      <p className="text-sm text-muted-foreground text-right">
+        {getDisplayLabel()}
+      </p>
     </div>
   );
 };
