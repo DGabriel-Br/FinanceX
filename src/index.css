@@ -110,6 +110,13 @@
     @apply bg-background text-foreground antialiased;
   }
 
+  /* Transição suave ao alternar tema */
+  *,
+  *::before,
+  *::after {
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.2s ease;
+  }
+
   /* Fix date input calendar icon for dark mode */
   input[type="date"]::-webkit-calendar-picker-indicator {
     filter: invert(0);
