@@ -38,6 +38,7 @@ const Index = () => {
     debts,
     loading: debtsLoading,
     addDebt,
+    updateDebt,
     deleteDebt,
     refetch: refetchDebts,
   } = useDebts();
@@ -127,6 +128,7 @@ const Index = () => {
             debts={debts}
             transactions={transactions}
             onAddDebt={addDebt}
+            onUpdateDebt={updateDebt}
             onDeleteDebt={deleteDebt}
           />
         )}
