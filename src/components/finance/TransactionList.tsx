@@ -8,7 +8,8 @@ import {
   ExpenseCategory,
   incomeCategoryLabels,
   expenseCategoryLabels,
-  getCategoryLabel
+  getCategoryLabel,
+  getCategoryIcon
 } from '@/types/transaction';
 import { parseLocalDate } from '@/hooks/useTransactions';
 import { cn } from '@/lib/utils';
@@ -207,14 +208,21 @@ export const TransactionList = ({ transactions, onUpdate, onDelete }: Transactio
                     {formatDate(transaction.date)}
                   </td>
                   <td className="px-4 py-3">
-                    <span className={cn(
-                      "text-xs font-medium px-2 py-1 rounded-full",
-                      transaction.type === 'receita' 
-                        ? 'bg-income/10 text-income' 
-                        : 'bg-expense/10 text-expense'
-                    )}>
-                      {getCategoryLabel(transaction.category || (transaction.type === 'receita' ? 'outros_receita' : 'outros_despesa'), transaction.type)}
-                    </span>
+                    {(() => {
+                      const categoryKey = transaction.category || (transaction.type === 'receita' ? 'outros_receita' : 'outros_despesa');
+                      const Icon = getCategoryIcon(categoryKey, transaction.type);
+                      return (
+                        <span className={cn(
+                          "inline-flex items-center gap-1.5 text-xs font-medium px-2 py-1 rounded-full",
+                          transaction.type === 'receita' 
+                            ? 'bg-income/10 text-income' 
+                            : 'bg-expense/10 text-expense'
+                        )}>
+                          <Icon className="w-3 h-3" />
+                          {getCategoryLabel(categoryKey, transaction.type)}
+                        </span>
+                      );
+                    })()}
                   </td>
                   <td className="px-4 py-3">
                     <span className="text-sm text-foreground">{transaction.description}</span>

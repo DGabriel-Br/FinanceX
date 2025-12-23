@@ -6,7 +6,9 @@ import {
   IncomeCategory, 
   ExpenseCategory,
   incomeCategoryLabels,
-  expenseCategoryLabels 
+  expenseCategoryLabels,
+  incomeCategoryIcons,
+  expenseCategoryIcons
 } from '@/types/transaction';
 import { getLocalDateString } from '@/hooks/useTransactions';
 import { cn } from '@/lib/utils';
@@ -136,17 +138,32 @@ export const TransactionForm = ({ onSubmit }: TransactionFormProps) => {
         {/* Categoria */}
         <div>
           <label className="block text-sm font-medium text-foreground mb-2">Categoria</label>
-          <select
-            value={category}
-            onChange={e => setCategory(e.target.value as TransactionCategory)}
-            className="w-full px-3 py-2 rounded-lg border border-input bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring"
-          >
-            {currentCategories.map(cat => (
-              <option key={cat} value={cat}>
-                {categoryLabels[cat as keyof typeof categoryLabels]}
-              </option>
-            ))}
-          </select>
+          <div className="grid grid-cols-2 gap-2">
+            {currentCategories.map(cat => {
+              const Icon = type === 'receita' 
+                ? incomeCategoryIcons[cat as IncomeCategory]
+                : expenseCategoryIcons[cat as ExpenseCategory];
+              const isSelected = category === cat;
+              return (
+                <button
+                  key={cat}
+                  type="button"
+                  onClick={() => setCategory(cat)}
+                  className={cn(
+                    'flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 border text-left',
+                    isSelected
+                      ? type === 'receita'
+                        ? 'bg-income/10 text-income border-income'
+                        : 'bg-expense/10 text-expense border-expense'
+                      : 'bg-muted text-muted-foreground border-transparent hover:bg-muted/80'
+                  )}
+                >
+                  <Icon className="w-4 h-4 flex-shrink-0" />
+                  <span className="truncate">{categoryLabels[cat as keyof typeof categoryLabels]}</span>
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         {/* Data */}
