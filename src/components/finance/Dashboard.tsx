@@ -176,7 +176,7 @@ export const Dashboard = ({
               data={chartData} 
               margin={isMobile 
                 ? { top: 10, right: 5, left: -15, bottom: 5 }
-                : { top: 20, right: 10, left: 10, bottom: 5 }
+                : { top: 20, right: 20, left: 0, bottom: 5 }
               }
             >
               <defs>
@@ -238,7 +238,7 @@ export const Dashboard = ({
                   ? (value >= 1000 ? `${(value/1000).toFixed(0)}k` : value.toString())
                   : value.toLocaleString('pt-BR')
                 }
-                width={isMobile ? 35 : 80}
+                width={isMobile ? 35 : 60}
               />
               <Tooltip 
                 content={({ active, payload, label }) => {
