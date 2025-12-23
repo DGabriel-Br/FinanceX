@@ -81,7 +81,7 @@ export const Dashboard = ({
   return (
     <div className="p-4 md:p-8">
       {/* Header */}
-      <div className="flex flex-col gap-4 mb-6 md:mb-8">
+      <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4 mb-6 md:mb-8">
         <div>
           <h2 className="text-xl md:text-2xl font-bold text-foreground">Dashboard</h2>
           <p className="text-sm md:text-base text-muted-foreground mt-1">Resumo das suas finanças</p>
