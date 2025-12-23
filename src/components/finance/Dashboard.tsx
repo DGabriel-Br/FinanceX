@@ -15,6 +15,7 @@ interface DashboardProps {
   filter: PeriodFilterType;
   onFilterChange: (filter: PeriodFilterType) => void;
   transactions: Transaction[];
+  allTransactions: Transaction[];
   debts: Debt[];
   onNavigateToDebts?: () => void;
 }
@@ -32,7 +33,7 @@ const formatCurrency = (value: number): string => {
   }).format(value);
 };
 
-export const Dashboard = ({ totals, filter, onFilterChange, transactions, debts, onNavigateToDebts }: DashboardProps) => {
+export const Dashboard = ({ totals, filter, onFilterChange, transactions, allTransactions, debts, onNavigateToDebts }: DashboardProps) => {
   // Agrupa transações por mês para o gráfico
   const chartData = useMemo(() => {
     const currentYear = new Date().getFullYear();
@@ -178,7 +179,7 @@ export const Dashboard = ({ totals, filter, onFilterChange, transactions, debts,
 
       {/* Acompanhamento de Dívidas */}
       <div className="mt-6">
-        <DebtTracker debts={debts} onNavigateToDebts={onNavigateToDebts} />
+        <DebtTracker debts={debts} transactions={allTransactions} onNavigateToDebts={onNavigateToDebts} />
       </div>
     </div>
   );

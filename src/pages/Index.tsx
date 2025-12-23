@@ -15,6 +15,7 @@ const Index = () => {
   const { theme, toggleTheme } = useTheme();
   
   const {
+    transactions,
     filter,
     setFilter,
     addTransaction,
@@ -28,9 +29,6 @@ const Index = () => {
     debts,
     addDebt,
     deleteDebt,
-    addPayment,
-    deletePayment,
-    getPaymentsForDebt,
   } = useDebts();
 
   const filteredTransactions = getFilteredTransactions();
@@ -56,6 +54,7 @@ const Index = () => {
             filter={filter}
             onFilterChange={setFilter}
             transactions={filteredTransactions}
+            allTransactions={transactions}
             debts={debts}
             onNavigateToDebts={() => setActiveTab('dividas')}
           />
@@ -71,11 +70,9 @@ const Index = () => {
         ) : (
           <Debts
             debts={debts}
+            transactions={transactions}
             onAddDebt={addDebt}
             onDeleteDebt={deleteDebt}
-            onAddPayment={addPayment}
-            onDeletePayment={deletePayment}
-            getPaymentsForDebt={getPaymentsForDebt}
           />
         )}
       </main>

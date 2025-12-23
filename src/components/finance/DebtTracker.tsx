@@ -1,9 +1,11 @@
 import { CreditCard, Calendar, TrendingUp } from 'lucide-react';
-import { Debt } from '@/types/debt';
+import { Debt, calculateExpectedEndDate, calculateProgress } from '@/types/debt';
+import { Transaction } from '@/types/transaction';
 import { Progress } from '@/components/ui/progress';
 
 interface DebtTrackerProps {
   debts: Debt[];
+  transactions: Transaction[];
   onNavigateToDebts?: () => void;
 }
 
@@ -23,7 +25,15 @@ const formatMonthYear = (date: string): string => {
   return `${months[parseInt(month) - 1]}/${year}`;
 };
 
-export const DebtTracker = ({ debts, onNavigateToDebts }: DebtTrackerProps) => {
+// Calcula valor pago de uma dívida com base nas transações
+const getPaidValueForDebt = (debtName: string, transactions: Transaction[]): number => {
+  return transactions
+    .filter(t => t.type === 'despesa' && t.category === 'dividas' && 
+            t.description.toLowerCase().includes(debtName.toLowerCase()))
+    .reduce((sum, t) => sum + t.value, 0);
+};
+
+export const DebtTracker = ({ debts, transactions, onNavigateToDebts }: DebtTrackerProps) => {
   if (debts.length === 0) {
     return (
       <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
@@ -49,9 +59,16 @@ export const DebtTracker = ({ debts, onNavigateToDebts }: DebtTrackerProps) => {
     );
   }
 
-  const totalDebt = debts.reduce((sum, d) => sum + d.totalValue, 0);
-  const totalPaid = debts.reduce((sum, d) => sum + d.paidValue, 0);
-  const overallProgress = totalDebt > 0 ? (totalPaid / totalDebt) * 100 : 0;
+  // Calcula totais
+  const totals = debts.reduce((acc, debt) => {
+    const paidValue = getPaidValueForDebt(debt.name, transactions);
+    return {
+      totalDebt: acc.totalDebt + debt.totalValue,
+      totalPaid: acc.totalPaid + paidValue,
+    };
+  }, { totalDebt: 0, totalPaid: 0 });
+
+  const overallProgress = calculateProgress(totals.totalDebt, totals.totalPaid);
 
   return (
     <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
@@ -82,16 +99,18 @@ export const DebtTracker = ({ debts, onNavigateToDebts }: DebtTrackerProps) => {
         </div>
         <Progress value={overallProgress} className="h-2 mb-3" />
         <div className="flex justify-between text-xs text-muted-foreground">
-          <span>Pago: <span className="text-income font-medium">{formatCurrency(totalPaid)}</span></span>
-          <span>Total: <span className="text-foreground font-medium">{formatCurrency(totalDebt)}</span></span>
+          <span>Pago: <span className="text-income font-medium">{formatCurrency(totals.totalPaid)}</span></span>
+          <span>Total: <span className="text-foreground font-medium">{formatCurrency(totals.totalDebt)}</span></span>
         </div>
       </div>
 
       {/* Lista de Dívidas */}
       <div className="space-y-4">
         {debts.slice(0, 3).map(debt => {
-          const remaining = debt.totalValue - debt.paidValue;
-          const progress = debt.totalValue > 0 ? (debt.paidValue / debt.totalValue) * 100 : 0;
+          const paidValue = getPaidValueForDebt(debt.name, transactions);
+          const remaining = debt.totalValue - paidValue;
+          const progress = calculateProgress(debt.totalValue, paidValue);
+          const expectedEndDate = calculateExpectedEndDate(debt.totalValue, debt.monthlyInstallment, debt.startDate, paidValue);
 
           return (
             <div key={debt.id} className="border border-border rounded-lg p-4">
@@ -102,7 +121,7 @@ export const DebtTracker = ({ debts, onNavigateToDebts }: DebtTrackerProps) => {
                 </h4>
                 <div className="flex items-center gap-1 text-xs text-muted-foreground bg-muted/50 px-2 py-1 rounded">
                   <Calendar className="w-3 h-3" />
-                  {formatMonthYear(debt.expectedEndDate)}
+                  {formatMonthYear(expectedEndDate)}
                 </div>
               </div>
 
@@ -118,11 +137,11 @@ export const DebtTracker = ({ debts, onNavigateToDebts }: DebtTrackerProps) => {
               <div className="grid grid-cols-3 gap-2 text-center text-xs">
                 <div>
                   <p className="text-muted-foreground">Pago</p>
-                  <p className="font-semibold text-income">{formatCurrency(debt.paidValue)}</p>
+                  <p className="font-semibold text-income">{formatCurrency(paidValue)}</p>
                 </div>
                 <div>
                   <p className="text-muted-foreground">Falta</p>
-                  <p className="font-semibold text-expense">{formatCurrency(remaining)}</p>
+                  <p className="font-semibold text-expense">{formatCurrency(Math.max(0, remaining))}</p>
                 </div>
                 <div>
                   <p className="text-muted-foreground">Total</p>
