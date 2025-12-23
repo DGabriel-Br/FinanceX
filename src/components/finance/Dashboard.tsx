@@ -1,7 +1,7 @@
 import { TrendingUp, TrendingDown, Wallet } from 'lucide-react';
 import { PeriodFilter } from './PeriodFilter';
 import { PeriodFilter as PeriodFilterType, Transaction } from '@/types/transaction';
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, LabelList, Cell } from 'recharts';
 import { useMemo } from 'react';
 
 interface DashboardProps {
@@ -15,10 +15,19 @@ interface DashboardProps {
   transactions: Transaction[];
 }
 
-const MONTHS = [
-  'Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun',
-  'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'
+const MONTHS_FULL = [
+  'Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho',
+  'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'
 ];
+
+// Formatar valor compacto para labels
+const formatCompact = (value: number): string => {
+  return new Intl.NumberFormat('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+    minimumFractionDigits: 2,
+  }).format(value);
+};
 
 // Formatar valor em Real brasileiro
 const formatCurrency = (value: number): string => {
@@ -34,7 +43,7 @@ export const Dashboard = ({ totals, filter, onFilterChange, transactions }: Dash
     const currentYear = new Date().getFullYear();
     
     // Inicializa dados de todos os meses
-    const monthlyData = MONTHS.map((month, index) => ({
+    const monthlyData = MONTHS_FULL.map((month, index) => ({
       name: month,
       receitas: 0,
       despesas: 0,
@@ -120,22 +129,36 @@ export const Dashboard = ({ totals, filter, onFilterChange, transactions }: Dash
 
       {/* Gráfico de colunas */}
       <div className="mt-8 bg-card border border-border rounded-xl p-6 shadow-sm">
-        <h3 className="text-lg font-semibold text-foreground mb-4">
-          Receitas e Despesas por Mês ({new Date().getFullYear()})
+        <h3 className="text-center text-lg font-bold text-foreground mb-6 underline">
+          GRÁFICO - RECEITAS X DESPESAS MENSAL
         </h3>
-        <div className="h-80">
+        <div className="h-96">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={chartData} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+            <BarChart 
+              data={chartData} 
+              margin={{ top: 30, right: 20, left: 20, bottom: 20 }}
+              barCategoryGap="20%"
+            >
+              <CartesianGrid 
+                strokeDasharray="0" 
+                stroke="hsl(var(--border))" 
+                vertical={true}
+                horizontal={true}
+              />
               <XAxis 
                 dataKey="name" 
-                tick={{ fill: 'hsl(var(--muted-foreground))' }}
+                tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
                 axisLine={{ stroke: 'hsl(var(--border))' }}
+                tickLine={{ stroke: 'hsl(var(--border))' }}
+                interval={0}
+                angle={0}
               />
               <YAxis 
-                tick={{ fill: 'hsl(var(--muted-foreground))' }}
+                tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 12 }}
                 axisLine={{ stroke: 'hsl(var(--border))' }}
-                tickFormatter={(value) => `R$ ${value}`}
+                tickLine={{ stroke: 'hsl(var(--border))' }}
+                tickFormatter={(value) => value.toLocaleString('pt-BR')}
+                domain={[0, 'auto']}
               />
               <Tooltip 
                 formatter={(value: number) => formatCurrency(value)}
@@ -146,19 +169,32 @@ export const Dashboard = ({ totals, filter, onFilterChange, transactions }: Dash
                 }}
                 labelStyle={{ color: 'hsl(var(--foreground))' }}
               />
-              <Legend />
               <Bar 
                 dataKey="receitas" 
                 name="Receitas" 
-                fill="hsl(var(--income))" 
-                radius={[4, 4, 0, 0]}
-              />
+                fill="#22c55e"
+                barSize={30}
+              >
+                <LabelList 
+                  dataKey="receitas" 
+                  position="top" 
+                  formatter={(value: number) => value > 0 ? formatCompact(value) : ''}
+                  style={{ fill: '#22c55e', fontSize: 11, fontWeight: 500 }}
+                />
+              </Bar>
               <Bar 
                 dataKey="despesas" 
                 name="Despesas" 
-                fill="hsl(var(--expense))" 
-                radius={[4, 4, 0, 0]}
-              />
+                fill="#dc2626"
+                barSize={30}
+              >
+                <LabelList 
+                  dataKey="despesas" 
+                  position="top" 
+                  formatter={(value: number) => value > 0 ? formatCompact(value) : ''}
+                  style={{ fill: '#dc2626', fontSize: 11, fontWeight: 500 }}
+                />
+              </Bar>
             </BarChart>
           </ResponsiveContainer>
         </div>
