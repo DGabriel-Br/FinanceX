@@ -58,12 +58,13 @@ const formatMonthYear = (date: string): string => {
   return `${months[parseInt(month) - 1]}/${year}`;
 };
 
-// Calcula valor pago de uma dívida com base nas transações
-const getPaidValueForDebt = (debtName: string, transactions: Transaction[]): number => {
-  return transactions
+// Calcula valor pago de uma dívida com base nas transações + valor inicial
+const getTotalPaidValue = (debt: Debt, transactions: Transaction[]): number => {
+  const transactionsPaid = transactions
     .filter(t => t.type === 'despesa' && t.category === 'dividas' && 
-            t.description.toLowerCase().includes(debtName.toLowerCase()))
+            t.description.toLowerCase().includes(debt.name.toLowerCase()))
     .reduce((sum, t) => sum + t.value, 0);
+  return debt.paidValue + transactionsPaid;
 };
 
 // Formulário de Nova Dívida
@@ -71,6 +72,7 @@ const DebtForm = ({ onSubmit, onClose }: { onSubmit: (debt: Omit<Debt, 'id' | 'c
   const [name, setName] = useState('');
   const [totalValue, setTotalValue] = useState('');
   const [monthlyInstallment, setMonthlyInstallment] = useState('');
+  const [paidValue, setPaidValue] = useState('');
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(undefined);
   const [calendarOpen, setCalendarOpen] = useState(false);
 
@@ -85,6 +87,7 @@ const DebtForm = ({ onSubmit, onClose }: { onSubmit: (debt: Omit<Debt, 'id' | 'c
     e.preventDefault();
     const numericTotal = parseCurrency(totalValue);
     const numericMonthly = parseCurrency(monthlyInstallment);
+    const numericPaid = parseCurrency(paidValue);
     if (!name.trim() || numericTotal <= 0 || numericMonthly <= 0 || !selectedDate) return;
 
     // Formata a data como YYYY-MM
@@ -94,12 +97,14 @@ const DebtForm = ({ onSubmit, onClose }: { onSubmit: (debt: Omit<Debt, 'id' | 'c
       name: name.trim(),
       totalValue: numericTotal,
       monthlyInstallment: numericMonthly,
+      paidValue: numericPaid,
       startDate,
     });
 
     setName('');
     setTotalValue('');
     setMonthlyInstallment('');
+    setPaidValue('');
     setSelectedDate(undefined);
     onClose();
   };
@@ -136,6 +141,18 @@ const DebtForm = ({ onSubmit, onClose }: { onSubmit: (debt: Omit<Debt, 'id' | 'c
           inputMode="numeric"
           value={monthlyInstallment}
           onChange={e => setMonthlyInstallment(formatCurrencyInput(e.target.value))}
+          placeholder="0,00"
+          className="w-full px-3 py-2 rounded-lg border border-input bg-background text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+        />
+      </div>
+
+      <div>
+        <label className="block text-sm font-medium text-foreground mb-2">Valor Já Pago (R$)</label>
+        <input
+          type="text"
+          inputMode="numeric"
+          value={paidValue}
+          onChange={e => setPaidValue(formatCurrencyInput(e.target.value))}
           placeholder="0,00"
           className="w-full px-3 py-2 rounded-lg border border-input bg-background text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
         />
@@ -282,7 +299,7 @@ export const Debts = ({
 
   // Calcula estatísticas gerais
   const stats = debts.reduce((acc, debt) => {
-    const paidValue = getPaidValueForDebt(debt.name, transactions);
+    const paidValue = getTotalPaidValue(debt, transactions);
     return {
       totalDebt: acc.totalDebt + debt.totalValue,
       totalPaid: acc.totalPaid + paidValue,
@@ -352,7 +369,7 @@ export const Debts = ({
             <DebtCard
               key={debt.id}
               debt={debt}
-              paidValue={getPaidValueForDebt(debt.name, transactions)}
+              paidValue={getTotalPaidValue(debt, transactions)}
               onDelete={() => onDeleteDebt(debt.id)}
             />
           ))}

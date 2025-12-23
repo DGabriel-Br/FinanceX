@@ -20,6 +20,7 @@ export type Database = {
           id: string
           monthly_installment: number
           name: string
+          paid_value: number
           start_date: string
           total_value: number
           user_id: string | null
@@ -29,6 +30,7 @@ export type Database = {
           id?: string
           monthly_installment: number
           name: string
+          paid_value?: number
           start_date: string
           total_value: number
           user_id?: string | null
@@ -38,6 +40,7 @@ export type Database = {
           id?: string
           monthly_installment?: number
           name?: string
+          paid_value?: number
           start_date?: string
           total_value?: number
           user_id?: string | null
