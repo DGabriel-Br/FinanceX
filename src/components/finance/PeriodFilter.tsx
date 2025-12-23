@@ -272,11 +272,11 @@ export const PeriodFilter = ({
             <span className="truncate">{shortDisplayLabel}</span>
           </Button>
         </SheetTrigger>
-        <SheetContent side="bottom" className="h-auto max-h-[80vh]">
-          <SheetHeader>
+        <SheetContent side="bottom" className="h-[85vh] flex flex-col">
+          <SheetHeader className="flex-shrink-0">
             <SheetTitle>Filtrar por período</SheetTitle>
           </SheetHeader>
-          <div className="py-4 space-y-3">
+          <div className="py-4 space-y-2 overflow-y-auto flex-1">
             {periodOptions.map((option) => (
               <button
                 key={option.value}
@@ -294,21 +294,21 @@ export const PeriodFilter = ({
             
             {/* Calendário para personalizado */}
             {selectedPeriod === 'personalizado' && (
-              <div className="pt-2 flex justify-center">
+              <div className="pt-4 flex justify-center">
                 <Calendar
                   mode="range"
                   selected={tempDateRange}
                   onSelect={handleDateRangeSelect}
                   numberOfMonths={1}
                   locale={ptBR}
-                  className="p-0"
+                  className="p-3 pointer-events-auto"
                 />
               </div>
             )}
           </div>
           
           {/* Exibir período selecionado */}
-          <div className="pt-2 pb-4 border-t border-border">
+          <div className="pt-2 pb-4 border-t border-border flex-shrink-0">
             <p className="text-xs text-muted-foreground text-center">
               {displayLabel}
             </p>
