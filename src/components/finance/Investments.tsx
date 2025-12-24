@@ -120,9 +120,12 @@ export const Investments = ({
   onCustomRangeChange,
   onNavigateToTransactions,
   onAddTransaction,
+  formatValue,
   showValues,
   onToggleValues,
 }: InvestmentsProps) => {
+  // Helper para formatar valores usando o prop ou fallback
+  const displayValue = (value: number) => formatValue ? formatValue(value) : formatCurrency(value);
   const [activeIndex, setActiveIndex] = useState<number | undefined>(undefined);
   const [isGoalsDialogOpen, setIsGoalsDialogOpen] = useState(false);
   const [editingGoal, setEditingGoal] = useState<InvestmentType | null>(null);
@@ -493,7 +496,7 @@ export const Investments = ({
             <div className="min-w-0">
               <p className="text-xs md:text-sm text-muted-foreground truncate">No Período</p>
               <p className="text-sm md:text-2xl font-bold text-primary truncate">
-                {formatCurrency(totalInvested)}
+                {displayValue(totalInvested)}
               </p>
             </div>
           </div>
@@ -510,7 +513,7 @@ export const Investments = ({
             <div className="min-w-0">
               <p className="text-xs md:text-sm text-muted-foreground truncate">Total</p>
               <p className="text-sm md:text-2xl font-bold text-income truncate">
-                {formatCurrency(totalInvestedAllTime)}
+                {displayValue(totalInvestedAllTime)}
               </p>
             </div>
           </div>
@@ -632,7 +635,7 @@ export const Investments = ({
                       ) : (
                         <div className="flex items-center gap-2">
                           <span className="text-sm text-muted-foreground">
-                            {currentGoal ? formatCurrency(currentGoal) : 'Sem meta'}
+                            {currentGoal ? displayValue(currentGoal) : 'Sem meta'}
                           </span>
                           <button
                             onClick={() => handleEditGoal(type)}
@@ -663,7 +666,7 @@ export const Investments = ({
                     </div>
                     <div className="flex items-center gap-3 text-sm">
                       <span className="text-muted-foreground">
-                        {formatCurrency(goal.invested)} / {formatCurrency(goal.target)}
+                        {displayValue(goal.invested)} / {displayValue(goal.target)}
                       </span>
                       <span 
                         className={cn(
@@ -686,7 +689,7 @@ export const Investments = ({
                   </div>
                   {goal.progress < 100 && (
                     <p className="text-xs text-muted-foreground mt-1">
-                      Faltam {formatCurrency(goal.remaining)} para atingir a meta
+                      Faltam {displayValue(goal.remaining)} para atingir a meta
                     </p>
                   )}
                   {goal.progress >= 100 && (
@@ -777,7 +780,7 @@ export const Investments = ({
                         <span className="text-foreground font-medium">{item.name}</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="font-medium text-foreground">{formatCurrency(item.value)}</span>
+                        <span className="font-medium text-foreground">{displayValue(item.value)}</span>
                         <span className="text-xs text-muted-foreground w-12 text-right">
                           {percentage.toFixed(1)}%
                         </span>
@@ -872,7 +875,7 @@ export const Investments = ({
                         "font-semibold text-sm",
                         isResgate ? "text-expense" : "text-income"
                       )}>
-                        {isResgate ? '-' : '+'}{formatCurrency(activity.value)}
+                        {isResgate ? '-' : '+'}{displayValue(activity.value)}
                       </span>
                     </div>
                   </div>
