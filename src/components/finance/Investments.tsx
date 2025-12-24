@@ -270,19 +270,22 @@ export const Investments = ({
     return Math.max(0, aportes - resgates);
   }, [allInvestmentTransactions, allWithdrawalTransactions]);
 
-  // Últimos aportes
-  const recentInvestments = useMemo(() => {
-    return [...investmentTransactions]
+  // Histórico unificado de movimentações (aportes e resgates)
+  const recentActivity = useMemo(() => {
+    const aportes = investmentTransactions.map(t => ({
+      ...t,
+      activityType: 'aporte' as const,
+    }));
+    
+    const resgates = withdrawalTransactions.map(t => ({
+      ...t,
+      activityType: 'resgate' as const,
+    }));
+    
+    return [...aportes, ...resgates]
       .sort((a, b) => b.createdAt - a.createdAt)
-      .slice(0, 5);
-  }, [investmentTransactions]);
-
-  // Últimos resgates
-  const recentWithdrawals = useMemo(() => {
-    return [...allWithdrawalTransactions]
-      .sort((a, b) => b.createdAt - a.createdAt)
-      .slice(0, 5);
-  }, [allWithdrawalTransactions]);
+      .slice(0, 10);
+  }, [investmentTransactions, withdrawalTransactions]);
 
   const onPieEnter = useCallback((_: any, index: number) => {
     setActiveIndex(index);
@@ -745,41 +748,60 @@ export const Investments = ({
           )}
         </div>
 
-        {/* Últimos aportes */}
+        {/* Histórico de Movimentações */}
         <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
           <div className="flex items-center gap-2 mb-4">
-            <CalendarIcon className="w-5 h-5 text-primary" />
-            <h3 className="text-lg font-semibold text-foreground">Últimos Aportes</h3>
+            <History className="w-5 h-5 text-primary" />
+            <h3 className="text-lg font-semibold text-foreground">Histórico de Movimentações</h3>
           </div>
           
-          {recentInvestments.length > 0 ? (
+          {recentActivity.length > 0 ? (
             <div className="space-y-3">
-              {recentInvestments.map((investment) => {
-                const type = extractInvestmentType(investment.description);
+              {recentActivity.map((activity) => {
+                const type = extractInvestmentType(activity.description);
                 const Icon = investmentTypeIcons[type];
                 const color = investmentTypeColors[type];
-                const [year, month, day] = investment.date.split('-');
+                const [year, month, day] = activity.date.split('-');
                 const formattedDate = `${day}/${month}/${year}`;
+                const isResgate = activity.activityType === 'resgate';
                 
                 return (
                   <div 
-                    key={investment.id} 
+                    key={activity.id} 
                     className="flex items-center justify-between p-3 bg-muted/30 rounded-lg"
                   >
                     <div className="flex items-center gap-3">
                       <div 
-                        className="w-10 h-10 rounded-lg flex items-center justify-center"
+                        className="w-10 h-10 rounded-lg flex items-center justify-center relative"
                         style={{ backgroundColor: `${color}20` }}
                       >
                         <Icon className="w-5 h-5" style={{ color }} />
+                        {isResgate && (
+                          <div className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-expense flex items-center justify-center">
+                            <ArrowDownToLine className="w-2.5 h-2.5 text-white" />
+                          </div>
+                        )}
                       </div>
                       <div>
-                        <p className="font-medium text-foreground text-sm">{investment.description}</p>
+                        <div className="flex items-center gap-2">
+                          <p className="font-medium text-foreground text-sm">{activity.description}</p>
+                          <span className={cn(
+                            "text-xs px-1.5 py-0.5 rounded",
+                            isResgate 
+                              ? "bg-expense/10 text-expense" 
+                              : "bg-income/10 text-income"
+                          )}>
+                            {isResgate ? 'Resgate' : 'Aporte'}
+                          </span>
+                        </div>
                         <p className="text-xs text-muted-foreground">{formattedDate}</p>
                       </div>
                     </div>
-                    <span className="font-semibold text-primary">
-                      {formatCurrency(investment.value)}
+                    <span className={cn(
+                      "font-semibold",
+                      isResgate ? "text-expense" : "text-income"
+                    )}>
+                      {isResgate ? '-' : '+'}{formatCurrency(activity.value)}
                     </span>
                   </div>
                 );
@@ -788,55 +810,7 @@ export const Investments = ({
           ) : (
             <div className="h-48 flex flex-col items-center justify-center">
               <Wallet className="w-12 h-12 text-muted-foreground mb-4" />
-              <p className="text-muted-foreground text-sm">Nenhum aporte no período</p>
-            </div>
-          )}
-        </div>
-
-        {/* Histórico de Resgates */}
-        <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
-          <div className="flex items-center gap-2 mb-4">
-            <History className="w-5 h-5 text-expense" />
-            <h3 className="text-lg font-semibold text-foreground">Histórico de Resgates</h3>
-          </div>
-          
-          {recentWithdrawals.length > 0 ? (
-            <div className="space-y-3">
-              {recentWithdrawals.map((withdrawal) => {
-                const type = extractInvestmentType(withdrawal.description);
-                const Icon = investmentTypeIcons[type];
-                const color = investmentTypeColors[type];
-                const [year, month, day] = withdrawal.date.split('-');
-                const formattedDate = `${day}/${month}/${year}`;
-                
-                return (
-                  <div 
-                    key={withdrawal.id} 
-                    className="flex items-center justify-between p-3 bg-muted/30 rounded-lg"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div 
-                        className="w-10 h-10 rounded-lg flex items-center justify-center"
-                        style={{ backgroundColor: `${color}20` }}
-                      >
-                        <Icon className="w-5 h-5" style={{ color }} />
-                      </div>
-                      <div>
-                        <p className="font-medium text-foreground text-sm">{withdrawal.description}</p>
-                        <p className="text-xs text-muted-foreground">{formattedDate}</p>
-                      </div>
-                    </div>
-                    <span className="font-semibold text-expense">
-                      -{formatCurrency(withdrawal.value)}
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
-          ) : (
-            <div className="h-48 flex flex-col items-center justify-center">
-              <ArrowDownToLine className="w-12 h-12 text-muted-foreground mb-4" />
-              <p className="text-muted-foreground text-sm">Nenhum resgate realizado</p>
+              <p className="text-muted-foreground text-sm">Nenhuma movimentação no período</p>
             </div>
           )}
         </div>
