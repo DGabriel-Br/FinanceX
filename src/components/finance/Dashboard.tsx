@@ -1,4 +1,4 @@
-import { TrendingUp, TrendingDown, Wallet, BarChart3 } from 'lucide-react';
+import { TrendingUp, TrendingDown, Wallet, BarChart3, Eye, EyeOff } from 'lucide-react';
 import { PeriodFilter, CustomDateRange } from './PeriodFilter';
 import { DebtTracker } from './DebtTracker';
 import { CategoryCharts } from './CategoryCharts';
@@ -6,6 +6,7 @@ import { Transaction } from '@/types/transaction';
 import { Debt } from '@/types/debt';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, Cell, ReferenceLine } from 'recharts';
 import { useMemo, useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
 
 
 interface DashboardProps {
@@ -109,10 +110,21 @@ export const Dashboard = ({
           <h2 className="text-xl md:text-2xl font-bold text-foreground">Dashboard</h2>
           <p className="text-sm md:text-base text-muted-foreground mt-1 hidden sm:block">Resumo das suas finanças</p>
         </div>
-        <PeriodFilter 
-          customRange={customRange}
-          onCustomRangeChange={onCustomRangeChange}
-        />
+        <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={onToggleValues}
+            title={showValues ? 'Ocultar valores' : 'Exibir valores'}
+            className="h-9 w-9"
+          >
+            {showValues ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+          </Button>
+          <PeriodFilter 
+            customRange={customRange}
+            onCustomRangeChange={onCustomRangeChange}
+          />
+        </div>
       </div>
 
       {/* Cards */}
@@ -241,10 +253,12 @@ export const Dashboard = ({
                 tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: isMobile ? 9 : 12 }}
                 axisLine={{ stroke: 'hsl(var(--border))' }}
                 tickLine={{ stroke: 'hsl(var(--border))' }}
-                tickFormatter={(value) => isMobile 
-                  ? (value >= 1000 ? `${(value/1000).toFixed(0)}k` : value.toString())
-                  : value.toLocaleString('pt-BR')
-                }
+                tickFormatter={(value) => {
+                  if (!showValues) return '••••';
+                  return isMobile 
+                    ? (value >= 1000 ? `${(value/1000).toFixed(0)}k` : value.toString())
+                    : value.toLocaleString('pt-BR');
+                }}
                 width={isMobile ? 35 : 60}
               />
               <Tooltip 
@@ -271,7 +285,7 @@ export const Dashboard = ({
                               {entry.name}:
                             </span>
                             <span className="text-foreground ml-1">
-                              {formatCurrency(entry.value as number)}
+                              {showValues ? formatCurrency(entry.value as number) : '••••••'}
                             </span>
                           </p>
                         ))}
