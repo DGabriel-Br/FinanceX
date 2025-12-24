@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback } from 'react';
-import { Plus, TrendingUp, PieChart, CalendarIcon, Wallet, Target, Pencil, X, Check, ArrowDownToLine, History } from 'lucide-react';
+import { Plus, TrendingUp, PieChart, CalendarIcon, Wallet, Target, Pencil, X, Check, ArrowDownToLine, History, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Transaction } from '@/types/transaction';
 import { 
   InvestmentType, 
@@ -130,6 +130,8 @@ export const Investments = ({
   const [withdrawDescription, setWithdrawDescription] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [activityFilter, setActivityFilter] = useState<'all' | 'aporte' | 'resgate'>('all');
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 5;
   
   const { goals, setGoal, removeGoal, getGoal } = useInvestmentGoals();
 
@@ -272,7 +274,7 @@ export const Investments = ({
   }, [allInvestmentTransactions, allWithdrawalTransactions]);
 
   // Histórico unificado de movimentações (aportes e resgates)
-  const recentActivity = useMemo(() => {
+  const allActivities = useMemo(() => {
     const aportes = investmentTransactions.map(t => ({
       ...t,
       activityType: 'aporte' as const,
@@ -292,10 +294,21 @@ export const Investments = ({
       activities = resgates;
     }
     
-    return activities
-      .sort((a, b) => b.createdAt - a.createdAt)
-      .slice(0, 10);
+    return activities.sort((a, b) => b.createdAt - a.createdAt);
   }, [investmentTransactions, withdrawalTransactions, activityFilter]);
+
+  // Paginação
+  const totalPages = Math.ceil(allActivities.length / itemsPerPage);
+  const paginatedActivities = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    return allActivities.slice(startIndex, startIndex + itemsPerPage);
+  }, [allActivities, currentPage, itemsPerPage]);
+
+  // Reset página ao mudar filtro
+  const handleFilterChange = (value: 'all' | 'aporte' | 'resgate') => {
+    setActivityFilter(value);
+    setCurrentPage(1);
+  };
 
   const onPieEnter = useCallback((_: any, index: number) => {
     setActiveIndex(index);
@@ -765,7 +778,7 @@ export const Investments = ({
               <History className="w-5 h-5 text-primary" />
               <h3 className="text-lg font-semibold text-foreground">Histórico de Movimentações</h3>
             </div>
-            <Select value={activityFilter} onValueChange={(v) => setActivityFilter(v as 'all' | 'aporte' | 'resgate')}>
+            <Select value={activityFilter} onValueChange={(v) => handleFilterChange(v as 'all' | 'aporte' | 'resgate')}>
               <SelectTrigger className="w-[180px] h-9">
                 <SelectValue />
               </SelectTrigger>
@@ -777,9 +790,9 @@ export const Investments = ({
             </Select>
           </div>
           
-          {recentActivity.length > 0 ? (
+          {paginatedActivities.length > 0 ? (
             <div className="divide-y divide-border">
-              {recentActivity.map((activity) => {
+              {paginatedActivities.map((activity) => {
                 const type = extractInvestmentType(activity.description);
                 const [year, month, day] = activity.date.split('-');
                 const months = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
@@ -828,6 +841,35 @@ export const Investments = ({
                   </div>
                 );
               })}
+              
+              {/* Paginação */}
+              {totalPages > 1 && (
+                <div className="flex items-center justify-between pt-4 mt-4 border-t border-border">
+                  <span className="text-xs text-muted-foreground">
+                    Página {currentPage} de {totalPages}
+                  </span>
+                  <div className="flex items-center gap-1">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                      disabled={currentPage === 1}
+                      className="h-8 w-8 p-0"
+                    >
+                      <ChevronLeft className="w-4 h-4" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                      disabled={currentPage === totalPages}
+                      className="h-8 w-8 p-0"
+                    >
+                      <ChevronRight className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
+              )}
             </div>
           ) : (
             <div className="h-48 flex flex-col items-center justify-center">
