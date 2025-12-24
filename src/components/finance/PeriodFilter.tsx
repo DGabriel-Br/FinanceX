@@ -36,6 +36,7 @@ interface PeriodFilterProps {
   onCustomRangeChange: (range: CustomDateRange | null) => void;
   showValues?: boolean;
   onToggleValues?: () => void;
+  customAction?: React.ReactNode;
 }
 
 const periodOptions: { value: PeriodOption; label: string }[] = [
@@ -53,7 +54,8 @@ export const PeriodFilter = ({
   customRange, 
   onCustomRangeChange,
   showValues,
-  onToggleValues
+  onToggleValues,
+  customAction
 }: PeriodFilterProps) => {
   const [selectedPeriod, setSelectedPeriod] = useState<PeriodOption>('esteMes');
   const [calendarOpen, setCalendarOpen] = useState(false);
@@ -188,6 +190,9 @@ export const PeriodFilter = ({
   const DesktopFilter = () => (
     <div className="flex flex-col gap-3">
       <div className="flex items-center gap-2">
+        {/* Custom action button */}
+        {customAction}
+
         {/* Values visibility toggle */}
         {onToggleValues && (
           <Button
@@ -269,6 +274,9 @@ export const PeriodFilter = ({
 
   const MobileFilter = () => (
     <div className="flex items-center gap-2">
+      {/* Custom action button */}
+      {customAction}
+
       {/* Values visibility toggle */}
       {onToggleValues && (
         <Button
