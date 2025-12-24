@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback } from 'react';
-import { Plus, TrendingUp, PieChart, CalendarIcon, Wallet, Target, Pencil, X, Check } from 'lucide-react';
+import { Plus, TrendingUp, PieChart, CalendarIcon, Wallet, Target, Pencil, X, Check, ArrowDownToLine } from 'lucide-react';
 import { Transaction } from '@/types/transaction';
 import { 
   InvestmentType, 
@@ -20,6 +20,14 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { toast } from 'sonner';
 
 interface InvestmentsProps {
   transactions: Transaction[];
@@ -27,6 +35,7 @@ interface InvestmentsProps {
   customRange: CustomDateRange | null;
   onCustomRangeChange: (range: CustomDateRange | null) => void;
   onNavigateToTransactions?: () => void;
+  onAddTransaction?: (transaction: Omit<Transaction, 'id' | 'createdAt'>) => Promise<void>;
 }
 
 // Formatar valor em Real brasileiro
@@ -106,14 +115,67 @@ export const Investments = ({
   allTransactions,
   customRange, 
   onCustomRangeChange,
-  onNavigateToTransactions 
+  onNavigateToTransactions,
+  onAddTransaction 
 }: InvestmentsProps) => {
   const [activeIndex, setActiveIndex] = useState<number | undefined>(undefined);
   const [isGoalsDialogOpen, setIsGoalsDialogOpen] = useState(false);
   const [editingGoal, setEditingGoal] = useState<InvestmentType | null>(null);
   const [goalInputValue, setGoalInputValue] = useState('');
   
+  // Estado para resgate de investimento
+  const [isWithdrawDialogOpen, setIsWithdrawDialogOpen] = useState(false);
+  const [withdrawType, setWithdrawType] = useState<InvestmentType>('reserva_emergencia');
+  const [withdrawValue, setWithdrawValue] = useState('');
+  const [withdrawDescription, setWithdrawDescription] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
   const { goals, setGoal, removeGoal, getGoal } = useInvestmentGoals();
+
+  // Helper para obter data atual no formato YYYY-MM-DD
+  const getTodayDate = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
+  const handleWithdraw = async () => {
+    if (!onAddTransaction) {
+      toast.error('Função de adicionar transação não disponível');
+      return;
+    }
+
+    const value = parseCurrency(withdrawValue);
+    if (value <= 0) {
+      toast.error('Informe um valor válido');
+      return;
+    }
+
+    const description = withdrawDescription.trim() || `Resgate ${investmentTypeLabels[withdrawType]}`;
+    
+    setIsSubmitting(true);
+    try {
+      await onAddTransaction({
+        type: 'receita',
+        category: 'outros_receita',
+        date: getTodayDate(),
+        description: description,
+        value: value,
+      });
+      
+      toast.success('Resgate registrado com sucesso!');
+      setIsWithdrawDialogOpen(false);
+      setWithdrawType('reserva_emergencia');
+      setWithdrawValue('');
+      setWithdrawDescription('');
+    } catch (error) {
+      toast.error('Erro ao registrar resgate');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   // Filtra apenas transações de investimento
   const investmentTransactions = useMemo(() => {
@@ -241,10 +303,97 @@ export const Investments = ({
           <h2 className="text-xl md:text-2xl font-bold text-foreground">Investimentos</h2>
           <p className="text-sm md:text-base text-muted-foreground mt-1 hidden sm:block">Acompanhe seus aportes</p>
         </div>
-        <PeriodFilter 
-          customRange={customRange}
-          onCustomRangeChange={onCustomRangeChange}
-        />
+        <div className="flex items-center gap-2">
+          <Dialog open={isWithdrawDialogOpen} onOpenChange={setIsWithdrawDialogOpen}>
+            <DialogTrigger asChild>
+              <Button variant="outline" size="sm" className="gap-2">
+                <ArrowDownToLine className="w-4 h-4" />
+                <span className="hidden sm:inline">Resgatar</span>
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="max-w-md">
+              <DialogHeader>
+                <DialogTitle>Resgatar Investimento</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4 mt-4">
+                <p className="text-sm text-muted-foreground">
+                  Registre um resgate ou venda de ativo. O valor será adicionado como receita nos lançamentos.
+                </p>
+                
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-foreground">Tipo de Investimento</label>
+                  <Select value={withdrawType} onValueChange={(v) => setWithdrawType(v as InvestmentType)}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {allInvestmentTypes.map(type => {
+                        const Icon = investmentTypeIcons[type];
+                        return (
+                          <SelectItem key={type} value={type}>
+                            <div className="flex items-center gap-2">
+                              <Icon className="w-4 h-4" />
+                              <span>{investmentTypeLabels[type]}</span>
+                            </div>
+                          </SelectItem>
+                        );
+                      })}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-foreground">Valor do Resgate</label>
+                  <div className="relative">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">R$</span>
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      value={withdrawValue}
+                      onChange={e => setWithdrawValue(formatCurrencyInput(e.target.value))}
+                      placeholder="0,00"
+                      className="w-full pl-10 pr-4 py-2 rounded-lg border border-input bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-foreground">Descrição (opcional)</label>
+                  <input
+                    type="text"
+                    value={withdrawDescription}
+                    onChange={e => setWithdrawDescription(e.target.value)}
+                    placeholder={`Resgate ${investmentTypeLabels[withdrawType]}`}
+                    className="w-full px-4 py-2 rounded-lg border border-input bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                  />
+                </div>
+
+                <div className="flex gap-3 pt-2">
+                  <Button 
+                    variant="outline" 
+                    className="flex-1" 
+                    onClick={() => setIsWithdrawDialogOpen(false)}
+                    disabled={isSubmitting}
+                  >
+                    Cancelar
+                  </Button>
+                  <Button 
+                    className="flex-1 gap-2"
+                    onClick={handleWithdraw}
+                    disabled={isSubmitting || !withdrawValue}
+                  >
+                    {isSubmitting ? 'Registrando...' : 'Confirmar Resgate'}
+                  </Button>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
+          
+          <PeriodFilter 
+            customRange={customRange}
+            onCustomRangeChange={onCustomRangeChange}
+          />
+        </div>
       </div>
 
       {/* Cards de resumo */}
