@@ -398,6 +398,7 @@ export const Investments = ({
           onCustomRangeChange={onCustomRangeChange}
           showValues={showValues}
           onToggleValues={onToggleValues}
+          hideToggleOnMobile
           customAction={
             <Dialog open={isWithdrawDialogOpen} onOpenChange={setIsWithdrawDialogOpen}>
               <DialogTrigger asChild>
