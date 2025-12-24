@@ -186,8 +186,8 @@ export default function Auth() {
         </div>
       </div>
 
-      {/* Right Side - Auth Form */}
-      <div className="flex-1 flex items-center justify-center p-6 lg:p-12 bg-background">
+      {/* Right Side - Auth Form - Always light background */}
+      <div className="flex-1 flex items-center justify-center p-6 lg:p-12" style={{ backgroundColor: 'hsl(210, 20%, 98%)' }}>
         <div className="w-full max-w-sm">
           
           {/* Logo - apenas mobile */}
@@ -199,8 +199,8 @@ export default function Auth() {
           >
             <img src={logoDark} alt="FinanceX" className="w-12 h-12 rounded-xl shadow-lg shadow-primary/30 object-cover" />
             <div>
-              <h1 className="text-xl font-bold text-foreground">FinanceX</h1>
-              <p className="text-muted-foreground text-xs">Controle Financeiro</p>
+            <h1 className="text-xl font-bold text-[hsl(220,20%,10%)]">FinanceX</h1>
+              <p className="text-[hsl(220,10%,45%)] text-xs">Controle Financeiro</p>
             </div>
           </div>
 
@@ -211,10 +211,10 @@ export default function Auth() {
               mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
             )}
           >
-            <h2 className="text-2xl font-bold text-foreground mb-2">
+            <h2 className="text-2xl font-bold text-[hsl(220,20%,10%)] mb-2">
               {isRegisterRoute ? 'Crie sua conta' : 'Bem-vindo de volta!'}
             </h2>
-            <p className="text-muted-foreground whitespace-nowrap text-sm lg:text-base">
+            <p className="text-[hsl(220,10%,45%)] whitespace-nowrap text-sm lg:text-base">
               {isRegisterRoute 
                 ? 'Preencha os dados para começar.' 
                 : 'Entre com seu e-mail e senha.'}
@@ -236,7 +236,7 @@ export default function Auth() {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 disabled={isLoading}
-                className="h-14 px-5 text-base bg-background border-2 border-border rounded-xl focus:border-primary transition-all duration-300 hover:border-primary/50"
+                className="h-14 px-5 text-base bg-white border-2 border-[hsl(220,15%,90%)] rounded-xl focus:border-primary transition-all duration-300 hover:border-primary/50 text-[hsl(220,20%,10%)] placeholder:text-[hsl(220,10%,45%)]"
               />
             </div>
             
@@ -253,12 +253,12 @@ export default function Auth() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 disabled={isLoading}
-                className="h-14 px-5 pr-14 text-base bg-background border-2 border-border rounded-xl focus:border-primary transition-all duration-300 hover:border-primary/50"
+                className="h-14 px-5 pr-14 text-base bg-white border-2 border-[hsl(220,15%,90%)] rounded-xl focus:border-primary transition-all duration-300 hover:border-primary/50 text-[hsl(220,20%,10%)] placeholder:text-[hsl(220,10%,45%)]"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-[hsl(220,10%,45%)] hover:text-[hsl(220,20%,10%)] transition-colors"
               >
                 {showPassword ? (
                   <EyeOff className="w-5 h-5" />
@@ -271,7 +271,7 @@ export default function Auth() {
             {isRegisterRoute && (
               <p 
                 className={cn(
-                  "text-xs text-muted-foreground -mt-2 transition-all duration-300",
+                  "text-xs text-[hsl(220,10%,45%)] -mt-2 transition-all duration-300",
                   mounted ? "opacity-100" : "opacity-0"
                 )}
               >
@@ -306,7 +306,7 @@ export default function Auth() {
               mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
             )}
           >
-            <p className="text-muted-foreground">
+            <p className="text-[hsl(220,10%,45%)]">
               {isRegisterRoute ? 'Já tem uma conta? ' : 'Não tem uma conta? '}
               <button
                 type="button"
@@ -317,7 +317,7 @@ export default function Auth() {
               </button>
             </p>
             {!isRegisterRoute && (
-              <p className="text-muted-foreground">
+              <p className="text-[hsl(220,10%,45%)]">
                 Esqueceu a senha?{' '}
                 <button
                   type="button"
