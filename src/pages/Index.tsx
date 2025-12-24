@@ -122,6 +122,7 @@ const Index = () => {
             customRange={customRange}
             onCustomRangeChange={setCustomRange}
             onNavigateToTransactions={() => setActiveTab('lancamentos')}
+            onAddTransaction={addTransaction}
           />
         ) : (
           <Debts
