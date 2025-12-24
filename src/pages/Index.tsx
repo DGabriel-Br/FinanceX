@@ -82,12 +82,8 @@ const Index = () => {
   }, [user]);
 
   const handleSignOut = async () => {
-    setIsLoggingOut(true);
     await signOut();
-    // Aguarda o mesmo delay da tela inicial (1.5s)
-    setTimeout(() => {
-      navigate('/login', { replace: true });
-    }, 1500);
+    navigate('/login', { replace: true });
   };
 
   if (authLoading || showSplash || isLoggingOut) {
