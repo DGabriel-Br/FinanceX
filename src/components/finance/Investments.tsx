@@ -129,6 +129,7 @@ export const Investments = ({
   const [withdrawValue, setWithdrawValue] = useState('');
   const [withdrawDescription, setWithdrawDescription] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [activityFilter, setActivityFilter] = useState<'all' | 'aporte' | 'resgate'>('all');
   
   const { goals, setGoal, removeGoal, getGoal } = useInvestmentGoals();
 
@@ -282,10 +283,19 @@ export const Investments = ({
       activityType: 'resgate' as const,
     }));
     
-    return [...aportes, ...resgates]
+    let activities = [...aportes, ...resgates];
+    
+    // Aplicar filtro
+    if (activityFilter === 'aporte') {
+      activities = aportes;
+    } else if (activityFilter === 'resgate') {
+      activities = resgates;
+    }
+    
+    return activities
       .sort((a, b) => b.createdAt - a.createdAt)
       .slice(0, 10);
-  }, [investmentTransactions, withdrawalTransactions]);
+  }, [investmentTransactions, withdrawalTransactions, activityFilter]);
 
   const onPieEnter = useCallback((_: any, index: number) => {
     setActiveIndex(index);
@@ -750,9 +760,21 @@ export const Investments = ({
 
         {/* Histórico de Movimentações */}
         <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
-          <div className="flex items-center gap-2 mb-4">
-            <History className="w-5 h-5 text-primary" />
-            <h3 className="text-lg font-semibold text-foreground">Histórico de Movimentações</h3>
+          <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center gap-2">
+              <History className="w-5 h-5 text-primary" />
+              <h3 className="text-lg font-semibold text-foreground">Histórico de Movimentações</h3>
+            </div>
+            <Select value={activityFilter} onValueChange={(v) => setActivityFilter(v as 'all' | 'aporte' | 'resgate')}>
+              <SelectTrigger className="w-[180px] h-9">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">Todas as operações</SelectItem>
+                <SelectItem value="aporte">Investimento</SelectItem>
+                <SelectItem value="resgate">Resgate</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
           
           {recentActivity.length > 0 ? (
