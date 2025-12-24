@@ -153,7 +153,9 @@ export const Investments = ({
       return;
     }
 
-    const description = withdrawDescription.trim() || `Resgate ${investmentTypeLabels[withdrawType]}`;
+    const description = withdrawDescription.trim() 
+      ? `Resgate ${investmentTypeLabels[withdrawType]} - ${withdrawDescription.trim()}`
+      : `Resgate ${investmentTypeLabels[withdrawType]}`;
     
     setIsSubmitting(true);
     try {
@@ -177,9 +179,17 @@ export const Investments = ({
     }
   };
 
-  // Filtra apenas transações de investimento
+  // Filtra transações de investimento (aportes)
   const investmentTransactions = useMemo(() => {
     return transactions.filter(t => t.type === 'despesa' && t.category === 'investimentos');
+  }, [transactions]);
+
+  // Filtra transações de resgate de investimento
+  const withdrawalTransactions = useMemo(() => {
+    return transactions.filter(t => 
+      t.type === 'receita' && 
+      t.description.toLowerCase().includes('resgate')
+    );
   }, [transactions]);
 
   // Todas as transações de investimento (para cálculos gerais)
@@ -187,27 +197,51 @@ export const Investments = ({
     return allTransactions.filter(t => t.type === 'despesa' && t.category === 'investimentos');
   }, [allTransactions]);
 
-  // Agrupa investimentos por tipo (histórico completo para metas)
+  // Todas as transações de resgate (para cálculos gerais)
+  const allWithdrawalTransactions = useMemo(() => {
+    return allTransactions.filter(t => 
+      t.type === 'receita' && 
+      t.description.toLowerCase().includes('resgate')
+    );
+  }, [allTransactions]);
+
+  // Agrupa investimentos por tipo (histórico completo para metas) - subtraindo resgates
   const investmentsByTypeAllTime = useMemo(() => {
     const grouped = new Map<InvestmentType, number>();
     
+    // Soma aportes
     allInvestmentTransactions.forEach(t => {
       const type = extractInvestmentType(t.description);
       const current = grouped.get(type) || 0;
       grouped.set(type, current + t.value);
     });
 
-    return grouped;
-  }, [allInvestmentTransactions]);
+    // Subtrai resgates
+    allWithdrawalTransactions.forEach(t => {
+      const type = extractInvestmentType(t.description);
+      const current = grouped.get(type) || 0;
+      grouped.set(type, Math.max(0, current - t.value));
+    });
 
-  // Agrupa investimentos por tipo (período selecionado)
+    return grouped;
+  }, [allInvestmentTransactions, allWithdrawalTransactions]);
+
+  // Agrupa investimentos por tipo (período selecionado) - saldo líquido
   const investmentsByType = useMemo(() => {
     const grouped = new Map<InvestmentType, number>();
     
+    // Soma aportes
     investmentTransactions.forEach(t => {
       const type = extractInvestmentType(t.description);
       const current = grouped.get(type) || 0;
       grouped.set(type, current + t.value);
+    });
+
+    // Subtrai resgates
+    withdrawalTransactions.forEach(t => {
+      const type = extractInvestmentType(t.description);
+      const current = grouped.get(type) || 0;
+      grouped.set(type, Math.max(0, current - t.value));
     });
 
     return Array.from(grouped.entries())
@@ -220,13 +254,21 @@ export const Investments = ({
       }))
       .filter(item => item.value > 0)
       .sort((a, b) => b.value - a.value);
-  }, [investmentTransactions]);
+  }, [investmentTransactions, withdrawalTransactions]);
 
-  // Total investido no período
-  const totalInvested = investmentsByType.reduce((sum, item) => sum + item.value, 0);
+  // Total investido no período (aportes - resgates)
+  const totalInvested = useMemo(() => {
+    const aportes = investmentTransactions.reduce((sum, t) => sum + t.value, 0);
+    const resgates = withdrawalTransactions.reduce((sum, t) => sum + t.value, 0);
+    return Math.max(0, aportes - resgates);
+  }, [investmentTransactions, withdrawalTransactions]);
 
-  // Total investido (histórico completo)
-  const totalInvestedAllTime = allInvestmentTransactions.reduce((sum, t) => sum + t.value, 0);
+  // Total investido (histórico completo - aportes menos resgates)
+  const totalInvestedAllTime = useMemo(() => {
+    const aportes = allInvestmentTransactions.reduce((sum, t) => sum + t.value, 0);
+    const resgates = allWithdrawalTransactions.reduce((sum, t) => sum + t.value, 0);
+    return Math.max(0, aportes - resgates);
+  }, [allInvestmentTransactions, allWithdrawalTransactions]);
 
   // Últimos aportes
   const recentInvestments = useMemo(() => {
