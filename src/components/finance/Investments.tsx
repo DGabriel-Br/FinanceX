@@ -388,7 +388,7 @@ export const Investments = ({
           customAction={
             <Dialog open={isWithdrawDialogOpen} onOpenChange={setIsWithdrawDialogOpen}>
               <DialogTrigger asChild>
-                <Button variant="outline" size="sm" className="gap-2 h-9">
+                <Button size="sm" className="gap-2 h-9">
                   <ArrowDownToLine className="w-4 h-4" />
                   <span className="hidden sm:inline">Resgatar</span>
                 </Button>
