@@ -193,7 +193,7 @@ export default function Auth() {
           {/* Logo - apenas mobile */}
           <div 
             className={cn(
-              "flex lg:hidden items-center gap-3 mb-8 transition-all duration-500",
+              "flex lg:hidden items-center justify-center gap-3 mb-8 transition-all duration-500",
               mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
             )}
           >
@@ -207,7 +207,7 @@ export default function Auth() {
           {/* Heading */}
           <div 
             className={cn(
-              "mb-8 transition-all duration-500 delay-100",
+              "mb-8 text-center lg:text-left transition-all duration-500 delay-100",
               mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
             )}
           >
@@ -302,7 +302,7 @@ export default function Auth() {
           {/* Links */}
           <div 
             className={cn(
-              "mt-8 space-y-3 text-sm transition-all duration-500 delay-500",
+              "mt-8 space-y-3 text-sm text-center lg:text-left transition-all duration-500 delay-500",
               mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
             )}
           >
