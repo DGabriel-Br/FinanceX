@@ -74,6 +74,9 @@ const renderActiveShape = (props: any) => {
     fill, payload, percent, value
   } = props;
 
+  // Usa o formatter do payload se disponível, senão formatCurrency
+  const formatter = payload.formatter || formatCurrency;
+
   return (
     <g>
       <Sector
@@ -93,7 +96,7 @@ const renderActiveShape = (props: any) => {
         {payload.name}
       </text>
       <text x={cx} y={cy + 10} textAnchor="middle" fill="hsl(var(--muted-foreground))" fontSize={12}>
-        {formatCurrency(value)}
+        {formatter(value)}
       </text>
       <text x={cx} y={cy + 26} textAnchor="middle" fill="hsl(var(--muted-foreground))" fontSize={11}>
         {`${(percent * 100).toFixed(1)}%`}
@@ -262,10 +265,11 @@ export const Investments = ({
         value,
         color: investmentTypeColors[type],
         Icon: investmentTypeIcons[type],
+        formatter: displayValue,
       }))
       .filter(item => item.value > 0)
       .sort((a, b) => b.value - a.value);
-  }, [investmentTransactions, withdrawalTransactions]);
+  }, [investmentTransactions, withdrawalTransactions, displayValue]);
 
   // Total investido no período (aportes - resgates)
   const totalInvested = useMemo(() => {
