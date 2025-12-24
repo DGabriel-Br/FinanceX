@@ -65,7 +65,7 @@ export const MobileHeader = ({
       {/* Header com fundo mobile-header */}
       <div className="bg-mobile-header safe-area-top">
         {/* Conteúdo do header */}
-        <div className="px-4 py-3">
+        <div className="px-4 py-4">
           <div className="flex items-center justify-between w-full">
             {/* Avatar e Nome */}
             <div className="flex items-center gap-3 flex-1 min-w-0">
