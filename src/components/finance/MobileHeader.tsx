@@ -46,22 +46,22 @@ export const MobileHeader = ({
   const firstName = getFirstName(userName, userEmail);
 
   return (
-    <div className="md:hidden">
+    <div className="md:hidden w-full">
       {/* Header com fundo primary */}
       <div className="bg-primary px-4 pt-4 pb-8 safe-area-top">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between w-full">
           {/* Avatar e Nome */}
-          <div className="flex items-center gap-3">
-            <div className="w-11 h-11 rounded-full bg-card flex items-center justify-center shadow-md">
+          <div className="flex items-center gap-3 flex-1 min-w-0">
+            <div className="w-10 h-10 rounded-full bg-card flex items-center justify-center shadow-md flex-shrink-0">
               <span className="text-sm font-bold text-foreground">{initials}</span>
             </div>
-            <span className="text-lg font-semibold text-primary-foreground">
+            <span className="text-base font-semibold text-primary-foreground truncate">
               {firstName}
             </span>
           </div>
 
           {/* Ícones de ação */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center flex-shrink-0">
             {/* Botão de mostrar/ocultar valores */}
             {onToggleValues && (
               <button
@@ -70,9 +70,9 @@ export const MobileHeader = ({
                 aria-label={showValues ? 'Ocultar valores' : 'Mostrar valores'}
               >
                 {showValues ? (
-                  <Eye className="w-6 h-6 text-primary-foreground" />
+                  <Eye className="w-5 h-5 text-primary-foreground" />
                 ) : (
-                  <EyeOff className="w-6 h-6 text-primary-foreground" />
+                  <EyeOff className="w-5 h-5 text-primary-foreground" />
                 )}
               </button>
             )}
