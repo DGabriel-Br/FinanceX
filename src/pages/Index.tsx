@@ -130,8 +130,6 @@ const Index = () => {
           onToggleTheme={toggleTheme}
           userEmail={user.email}
           onSignOut={handleSignOut}
-          showValues={showValues}
-          onToggleValues={toggleValuesVisibility}
         />
       </div>
 
