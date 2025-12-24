@@ -684,7 +684,7 @@ export const Investments = ({
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Gráfico de distribuição */}
-        <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
+        <div className="bg-card border border-border rounded-xl p-6 shadow-sm h-fit">
           <div className="flex items-center gap-2 mb-4">
             <PieChart className="w-5 h-5 text-primary" />
             <h3 className="text-lg font-semibold text-foreground">Distribuição dos Investimentos</h3>
