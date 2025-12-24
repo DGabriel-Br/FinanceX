@@ -1,5 +1,6 @@
-import { Search, Bell, MessageSquare, Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useScrollDirection } from '@/hooks/useScrollDirection';
 
 interface MobileHeaderProps {
   userName?: string;
@@ -44,9 +45,18 @@ export const MobileHeader = ({
 }: MobileHeaderProps) => {
   const initials = getInitials(userName, userEmail);
   const firstName = getFirstName(userName, userEmail);
+  const { scrollDirection, isAtTop } = useScrollDirection({ threshold: 15 });
+
+  // Header visível quando: no topo, rolando para cima, ou direção ainda não definida
+  const isVisible = isAtTop || scrollDirection === 'up' || scrollDirection === null;
 
   return (
-    <div className="md:hidden w-full">
+    <div 
+      className={cn(
+        "md:hidden w-full sticky top-0 z-50 transition-transform duration-300 ease-out",
+        isVisible ? "translate-y-0" : "-translate-y-full"
+      )}
+    >
       {/* Header com fundo primary */}
       <div className="bg-primary safe-area-top">
         {/* Conteúdo do header */}
