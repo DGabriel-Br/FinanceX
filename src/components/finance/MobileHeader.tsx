@@ -57,9 +57,14 @@ export const MobileHeader = ({
               <div className="w-10 h-10 rounded-full bg-card flex items-center justify-center shadow-md flex-shrink-0">
                 <span className="text-sm font-bold text-foreground">{initials}</span>
               </div>
-              <span className="text-base font-semibold text-primary-foreground truncate">
-                {firstName}
-              </span>
+              <div className="flex flex-col min-w-0">
+                <span className="text-xs text-primary-foreground/80">
+                  Bem-vindo(a),
+                </span>
+                <span className="text-base font-semibold text-primary-foreground truncate">
+                  {firstName}
+                </span>
+              </div>
             </div>
 
             {/* Ícones de ação */}
