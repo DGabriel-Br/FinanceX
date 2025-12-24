@@ -21,10 +21,15 @@ export interface MobileNavProps {
   onSignOut?: () => void;
 }
 
-const navItems = [
-  { id: 'dashboard' as Tab, label: 'Dashboard', icon: LayoutDashboard },
+// Itens reorganizados: Dashboard no centro
+const navItemsLeft = [
   { id: 'lancamentos' as Tab, label: 'Lançamentos', icon: Receipt },
   { id: 'investimentos' as Tab, label: 'Investimentos', icon: TrendingUp },
+];
+
+const navItemCenter = { id: 'dashboard' as Tab, label: 'Dashboard', icon: LayoutDashboard };
+
+const navItemsRight = [
   { id: 'dividas' as Tab, label: 'Dívidas', icon: CreditCard },
 ];
 
@@ -35,7 +40,61 @@ export const MobileNav = ({ activeTab, theme, onToggleTheme, userEmail, onSignOu
     <>
       <nav className="fixed bottom-0 left-0 right-0 z-50 bg-card border-t border-border md:hidden safe-area-bottom">
         <div className="flex items-center justify-around h-16 px-2">
-          {navItems.map((item) => {
+          {/* Itens da esquerda */}
+          {navItemsLeft.map((item) => {
+            const isActive = activeTab === item.id;
+            const Icon = item.icon;
+
+            return (
+              <Link
+                key={item.id}
+                to={`/${item.id}`}
+                className={cn(
+                  'flex flex-col items-center justify-center flex-1 h-full gap-1 transition-colors',
+                  isActive
+                    ? 'text-primary'
+                    : 'text-muted-foreground hover:text-foreground'
+                )}
+              >
+                <Icon className={cn('w-5 h-5', isActive && 'scale-110 transition-transform')} />
+                <span className={cn(
+                  'text-[10px] font-medium truncate max-w-[60px]',
+                  isActive && 'font-semibold'
+                )}>
+                  {item.label}
+                </span>
+              </Link>
+            );
+          })}
+
+          {/* Dashboard no centro - destaque */}
+          <Link
+            to={`/${navItemCenter.id}`}
+            className={cn(
+              'flex flex-col items-center justify-center flex-1 h-full gap-1 transition-colors',
+              activeTab === navItemCenter.id
+                ? 'text-primary'
+                : 'text-muted-foreground hover:text-foreground'
+            )}
+          >
+            <div className={cn(
+              'w-12 h-12 rounded-full flex items-center justify-center -mt-4 shadow-lg transition-all',
+              activeTab === navItemCenter.id
+                ? 'bg-primary text-primary-foreground'
+                : 'bg-muted text-muted-foreground'
+            )}>
+              <navItemCenter.icon className="w-6 h-6" />
+            </div>
+            <span className={cn(
+              'text-[10px] font-medium -mt-1',
+              activeTab === navItemCenter.id && 'font-semibold text-primary'
+            )}>
+              {navItemCenter.label}
+            </span>
+          </Link>
+
+          {/* Itens da direita */}
+          {navItemsRight.map((item) => {
             const isActive = activeTab === item.id;
             const Icon = item.icon;
 
