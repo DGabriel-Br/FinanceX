@@ -64,6 +64,7 @@ export const Transactions = ({
             transactions={transactions}
             onUpdate={onUpdate}
             onDelete={onDelete}
+            formatValue={formatValue}
           />
         </div>
       </div>

@@ -459,10 +459,14 @@ export const Debts = ({
   onAddDebt,
   onUpdateDebt,
   onDeleteDebt,
+  formatValue,
   showValues,
   onToggleValues,
 }: DebtsProps) => {
   const [isDebtDialogOpen, setIsDebtDialogOpen] = useState(false);
+  
+  // Helper para formatar valores usando o prop ou fallback
+  const displayValue = (value: number) => formatValue ? formatValue(value) : formatCurrency(value);
 
   // Calcula estatísticas gerais
   const stats = debts.reduce((acc, debt) => {
@@ -523,21 +527,21 @@ export const Debts = ({
           style={{ animationDelay: '0.1s' }}
         >
           <p className="text-xs md:text-sm text-muted-foreground">Total em Dívidas</p>
-          <p className="text-lg md:text-xl font-bold text-foreground">{formatCurrency(stats.totalDebt)}</p>
+          <p className="text-lg md:text-xl font-bold text-foreground">{displayValue(stats.totalDebt)}</p>
         </div>
         <div 
           className="bg-card border border-border rounded-xl p-3 md:p-4 shadow-sm opacity-0 animate-fade-in-up"
           style={{ animationDelay: '0.15s' }}
         >
           <p className="text-xs md:text-sm text-muted-foreground">Total Pago</p>
-          <p className="text-lg md:text-xl font-bold text-income">{formatCurrency(stats.totalPaid)}</p>
+          <p className="text-lg md:text-xl font-bold text-income">{displayValue(stats.totalPaid)}</p>
         </div>
         <div 
           className="bg-card border border-border rounded-xl p-3 md:p-4 shadow-sm opacity-0 animate-fade-in-up"
           style={{ animationDelay: '0.2s' }}
         >
           <p className="text-xs md:text-sm text-muted-foreground">Falta Pagar</p>
-          <p className="text-lg md:text-xl font-bold text-expense">{formatCurrency(stats.totalRemaining)}</p>
+          <p className="text-lg md:text-xl font-bold text-expense">{displayValue(stats.totalRemaining)}</p>
         </div>
       </div>
 

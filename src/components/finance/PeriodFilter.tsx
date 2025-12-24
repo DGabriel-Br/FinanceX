@@ -190,9 +190,6 @@ export const PeriodFilter = ({
   const DesktopFilter = () => (
     <div className="flex flex-col gap-3">
       <div className="flex items-center gap-2">
-        {/* Custom action button */}
-        {customAction}
-
         {/* Values visibility toggle */}
         {onToggleValues && (
           <Button
@@ -205,6 +202,9 @@ export const PeriodFilter = ({
             {showValues ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
           </Button>
         )}
+
+        {/* Custom action button */}
+        {customAction}
 
         {/* Navigation arrows */}
         <Button
@@ -274,9 +274,6 @@ export const PeriodFilter = ({
 
   const MobileFilter = () => (
     <div className="flex items-center gap-2">
-      {/* Custom action button */}
-      {customAction}
-
       {/* Values visibility toggle */}
       {onToggleValues && (
         <Button
@@ -289,6 +286,9 @@ export const PeriodFilter = ({
           {showValues ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
         </Button>
       )}
+
+      {/* Custom action button */}
+      {customAction}
 
       {/* Navigation arrows compactas */}
       <Button

@@ -18,6 +18,7 @@ interface TransactionListProps {
   transactions: Transaction[];
   onUpdate: (id: string, updates: Partial<Omit<Transaction, 'id' | 'createdAt'>>) => void;
   onDelete: (id: string) => void;
+  formatValue?: (value: number) => string;
 }
 
 // Formatar valor em Real brasileiro
@@ -41,7 +42,7 @@ const formatDate = (dateString: string): string => {
 const incomeCategories: IncomeCategory[] = ['salario', '13_salario', 'ferias', 'freelance', 'outros_receita'];
 const expenseCategories: ExpenseCategory[] = ['contas_fixas', 'investimentos', 'dividas', 'educacao', 'transporte', 'mercado', 'delivery', 'outros_despesa'];
 
-export const TransactionList = ({ transactions, onUpdate, onDelete }: TransactionListProps) => {
+export const TransactionList = ({ transactions, onUpdate, onDelete, formatValue }: TransactionListProps) => {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editForm, setEditForm] = useState({
     type: 'despesa' as TransactionType,
@@ -235,7 +236,7 @@ export const TransactionList = ({ transactions, onUpdate, onDelete }: Transactio
                         transaction.type === 'receita' ? 'text-income' : 'text-expense'
                       )}
                     >
-                      {transaction.type === 'receita' ? '+' : '-'} {formatCurrency(transaction.value)}
+                      {transaction.type === 'receita' ? '+' : '-'} {formatValue ? formatValue(transaction.value) : formatCurrency(transaction.value)}
                     </span>
                   </td>
                   <td className="px-4 py-3">
