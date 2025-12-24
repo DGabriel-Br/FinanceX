@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback } from 'react';
-import { Plus, TrendingUp, PieChart, CalendarIcon, Wallet, Target, Pencil, X, Check, ArrowDownToLine } from 'lucide-react';
+import { Plus, TrendingUp, PieChart, CalendarIcon, Wallet, Target, Pencil, X, Check, ArrowDownToLine, History } from 'lucide-react';
 import { Transaction } from '@/types/transaction';
 import { 
   InvestmentType, 
@@ -276,6 +276,13 @@ export const Investments = ({
       .sort((a, b) => b.createdAt - a.createdAt)
       .slice(0, 5);
   }, [investmentTransactions]);
+
+  // Últimos resgates
+  const recentWithdrawals = useMemo(() => {
+    return [...allWithdrawalTransactions]
+      .sort((a, b) => b.createdAt - a.createdAt)
+      .slice(0, 5);
+  }, [allWithdrawalTransactions]);
 
   const onPieEnter = useCallback((_: any, index: number) => {
     setActiveIndex(index);
@@ -782,6 +789,54 @@ export const Investments = ({
             <div className="h-48 flex flex-col items-center justify-center">
               <Wallet className="w-12 h-12 text-muted-foreground mb-4" />
               <p className="text-muted-foreground text-sm">Nenhum aporte no período</p>
+            </div>
+          )}
+        </div>
+
+        {/* Histórico de Resgates */}
+        <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
+          <div className="flex items-center gap-2 mb-4">
+            <History className="w-5 h-5 text-expense" />
+            <h3 className="text-lg font-semibold text-foreground">Histórico de Resgates</h3>
+          </div>
+          
+          {recentWithdrawals.length > 0 ? (
+            <div className="space-y-3">
+              {recentWithdrawals.map((withdrawal) => {
+                const type = extractInvestmentType(withdrawal.description);
+                const Icon = investmentTypeIcons[type];
+                const color = investmentTypeColors[type];
+                const [year, month, day] = withdrawal.date.split('-');
+                const formattedDate = `${day}/${month}/${year}`;
+                
+                return (
+                  <div 
+                    key={withdrawal.id} 
+                    className="flex items-center justify-between p-3 bg-muted/30 rounded-lg"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div 
+                        className="w-10 h-10 rounded-lg flex items-center justify-center"
+                        style={{ backgroundColor: `${color}20` }}
+                      >
+                        <Icon className="w-5 h-5" style={{ color }} />
+                      </div>
+                      <div>
+                        <p className="font-medium text-foreground text-sm">{withdrawal.description}</p>
+                        <p className="text-xs text-muted-foreground">{formattedDate}</p>
+                      </div>
+                    </div>
+                    <span className="font-semibold text-expense">
+                      -{formatCurrency(withdrawal.value)}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="h-48 flex flex-col items-center justify-center">
+              <ArrowDownToLine className="w-12 h-12 text-muted-foreground mb-4" />
+              <p className="text-muted-foreground text-sm">Nenhum resgate realizado</p>
             </div>
           )}
         </div>
