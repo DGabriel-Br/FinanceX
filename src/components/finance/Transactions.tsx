@@ -42,6 +42,7 @@ export const Transactions = ({
           onCustomRangeChange={onCustomRangeChange}
           showValues={showValues}
           onToggleValues={onToggleValues}
+          hideToggleOnMobile
         />
       </div>
 

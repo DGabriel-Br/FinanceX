@@ -37,6 +37,7 @@ interface PeriodFilterProps {
   showValues?: boolean;
   onToggleValues?: () => void;
   customAction?: React.ReactNode;
+  hideToggleOnMobile?: boolean;
 }
 
 const periodOptions: { value: PeriodOption; label: string }[] = [
@@ -55,7 +56,8 @@ export const PeriodFilter = ({
   onCustomRangeChange,
   showValues,
   onToggleValues,
-  customAction
+  customAction,
+  hideToggleOnMobile = false
 }: PeriodFilterProps) => {
   const [selectedPeriod, setSelectedPeriod] = useState<PeriodOption>('esteMes');
   const [calendarOpen, setCalendarOpen] = useState(false);
@@ -274,8 +276,8 @@ export const PeriodFilter = ({
 
   const MobileFilter = () => (
     <div className="flex items-center gap-2">
-      {/* Values visibility toggle */}
-      {onToggleValues && (
+      {/* Values visibility toggle - hidden on mobile when hideToggleOnMobile is true */}
+      {onToggleValues && !hideToggleOnMobile && (
         <Button
           variant="outline"
           size="icon"
