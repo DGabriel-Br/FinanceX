@@ -206,7 +206,13 @@ export const Sidebar = ({
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel>Cancelar</AlertDialogCancel>
-          <AlertDialogAction onClick={handleConfirmLogout} className="bg-expense hover:bg-expense/90">
+          <AlertDialogAction 
+            onClick={(e) => {
+              e.preventDefault();
+              handleConfirmLogout();
+            }} 
+            className="bg-expense hover:bg-expense/90"
+          >
             Sair
           </AlertDialogAction>
         </AlertDialogFooter>
