@@ -1,4 +1,4 @@
-import { TrendingUp, TrendingDown, Wallet, BarChart3, History } from 'lucide-react';
+import { TrendingUp, TrendingDown, Wallet, BarChart3 } from 'lucide-react';
 import { PeriodFilter, CustomDateRange } from './PeriodFilter';
 import { DebtTracker } from './DebtTracker';
 import { CategoryCharts } from './CategoryCharts';
@@ -120,24 +120,7 @@ export const Dashboard = ({
       </div>
 
       {/* Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-4">
-        {/* Saldo Anterior */}
-        {totals.saldoAnterior !== 0 && (
-          <div className="bg-card border border-border rounded-xl p-3 md:p-5 shadow-sm animate-fade-in hover:shadow-lg hover:scale-[1.02] transition-all duration-300" style={{ animationDelay: '0.05s', animationDuration: '0.5s', animationFillMode: 'both' }}>
-            <div className="flex items-center gap-2 md:gap-3">
-              <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-muted flex items-center justify-center animate-scale-in" style={{ animationDelay: '0.15s', animationDuration: '0.4s', animationFillMode: 'both' }}>
-                <History className="w-4 h-4 md:w-5 md:h-5 text-muted-foreground" />
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="text-[10px] md:text-xs text-muted-foreground">Saldo Anterior</p>
-                <p className={`text-sm md:text-lg font-bold truncate ${totals.saldoAnterior >= 0 ? 'text-income' : 'text-expense'}`}>
-                  {formatValue(totals.saldoAnterior)}
-                </p>
-              </div>
-            </div>
-          </div>
-        )}
-
+      <div className="grid grid-cols-3 gap-3 md:gap-4">
         {/* Receitas */}
         <div className="bg-card border border-border rounded-xl p-3 md:p-5 shadow-sm animate-fade-in hover:shadow-lg hover:scale-[1.02] transition-all duration-300" style={{ animationDelay: '0.1s', animationDuration: '0.5s', animationFillMode: 'both' }}>
           <div className="flex items-center gap-2 md:gap-3">
