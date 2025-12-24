@@ -53,8 +53,9 @@ export const MobileHeader = ({
   return (
     <div 
       className={cn(
-        "md:hidden w-full sticky top-0 z-50 transition-transform duration-300 ease-out",
-        isVisible ? "translate-y-0" : "-translate-y-full"
+        "md:hidden w-full sticky top-0 z-50 transition-all duration-300 ease-out",
+        isVisible ? "translate-y-0" : "-translate-y-full",
+        !isAtTop && "shadow-md"
       )}
     >
       {/* Header com fundo primary */}
