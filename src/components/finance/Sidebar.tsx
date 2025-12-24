@@ -2,7 +2,8 @@ import { LayoutDashboard, Receipt, ChevronLeft, ChevronRight, Moon, Sun, CreditC
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { Switch } from '@/components/ui/switch';
-import logo from '@/assets/logo.jpg';
+import logoDark from '@/assets/logo.jpg';
+import logoLight from '@/assets/logo-transparent.png';
 
 type Tab = 'dashboard' | 'lancamentos' | 'dividas' | 'investimentos';
 
@@ -53,7 +54,7 @@ export const Sidebar = ({
         collapsed ? "justify-center" : "gap-3"
       )}>
         {/* Logo */}
-        <img src={logo} alt="FluxoCerto" className="w-10 h-10 rounded-lg flex-shrink-0 object-cover" />
+        <img src={theme === 'light' ? logoLight : logoDark} alt="FluxoCerto" className="w-10 h-10 rounded-lg flex-shrink-0 object-cover" />
         
         {!collapsed && (
           <div className="flex-1 min-w-0">
