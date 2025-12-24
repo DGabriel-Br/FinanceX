@@ -158,6 +158,8 @@ const Index = () => {
               onUpdate={updateTransaction}
               onDelete={deleteTransaction}
               formatValue={formatValue}
+              showValues={showValues}
+              onToggleValues={toggleValuesVisibility}
             />
           ) : activeTab === 'investimentos' ? (
             <Investments
@@ -168,6 +170,8 @@ const Index = () => {
               onNavigateToTransactions={() => navigate('/lancamentos')}
               onAddTransaction={addTransaction}
               formatValue={formatValue}
+              showValues={showValues}
+              onToggleValues={toggleValuesVisibility}
             />
           ) : (
             <Debts
@@ -177,6 +181,8 @@ const Index = () => {
               onUpdateDebt={updateDebt}
               onDeleteDebt={deleteDebt}
               formatValue={formatValue}
+              showValues={showValues}
+              onToggleValues={toggleValuesVisibility}
             />
           )}
         </div>

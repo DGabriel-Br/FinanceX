@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Plus, Trash2, CreditCard, Calendar as CalendarIcon, TrendingUp, CheckCircle, Pencil, Save, X } from 'lucide-react';
+import { Plus, Trash2, CreditCard, Calendar as CalendarIcon, TrendingUp, CheckCircle, Pencil, Save, X, Eye, EyeOff } from 'lucide-react';
 import { Debt, calculateExpectedEndDate, calculateProgress } from '@/types/debt';
 import { Transaction } from '@/types/transaction';
 import { cn } from '@/lib/utils';
@@ -24,6 +24,8 @@ interface DebtsProps {
   onUpdateDebt: (id: string, updates: Partial<Omit<Debt, 'id' | 'createdAt'>>) => void;
   onDeleteDebt: (id: string) => void;
   formatValue?: (value: number) => string;
+  showValues?: boolean;
+  onToggleValues?: () => void;
 }
 
 // Formatar valor em Real brasileiro
@@ -205,11 +207,13 @@ const DebtCard = ({
   paidValue,
   onUpdate,
   onDelete,
+  displayValue,
 }: { 
   debt: Debt; 
   paidValue: number;
   onUpdate: (updates: Partial<Omit<Debt, 'id' | 'createdAt'>>) => void;
   onDelete: () => void;
+  displayValue: (value: number) => string;
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(debt.name);
@@ -402,19 +406,19 @@ const DebtCard = ({
       <div className="grid grid-cols-2 gap-3 mb-4">
         <div className="text-center p-3 bg-muted/30 rounded-lg">
           <p className="text-xs text-muted-foreground mb-1">Pago até agora</p>
-          <p className="font-semibold text-income text-sm">{formatCurrency(paidValue)}</p>
+          <p className="font-semibold text-income text-sm">{displayValue(paidValue)}</p>
         </div>
         <div className="text-center p-3 bg-muted/30 rounded-lg">
           <p className="text-xs text-muted-foreground mb-1">Falta pagar</p>
-          <p className="font-semibold text-expense text-sm">{formatCurrency(Math.max(0, remaining))}</p>
+          <p className="font-semibold text-expense text-sm">{displayValue(Math.max(0, remaining))}</p>
         </div>
         <div className="text-center p-3 bg-muted/30 rounded-lg">
           <p className="text-xs text-muted-foreground mb-1">Valor Total</p>
-          <p className="font-semibold text-foreground text-sm">{formatCurrency(debt.totalValue)}</p>
+          <p className="font-semibold text-foreground text-sm">{displayValue(debt.totalValue)}</p>
         </div>
         <div className="text-center p-3 bg-muted/30 rounded-lg">
           <p className="text-xs text-muted-foreground mb-1">Parcela Mensal</p>
-          <p className="font-semibold text-primary text-sm">{formatCurrency(debt.monthlyInstallment)}</p>
+          <p className="font-semibold text-primary text-sm">{displayValue(debt.monthlyInstallment)}</p>
         </div>
       </div>
 
@@ -456,9 +460,15 @@ export const Debts = ({
   transactions,
   onAddDebt,
   onUpdateDebt,
-  onDeleteDebt, 
+  onDeleteDebt,
+  formatValue,
+  showValues,
+  onToggleValues,
 }: DebtsProps) => {
   const [isDebtDialogOpen, setIsDebtDialogOpen] = useState(false);
+  
+  // Helper para formatar valores usando o prop ou fallback
+  const displayValue = (value: number) => formatValue ? formatValue(value) : formatCurrency(value);
 
   // Calcula estatísticas gerais
   const stats = debts.reduce((acc, debt) => {
@@ -482,20 +492,35 @@ export const Debts = ({
           <p className="text-sm md:text-base text-muted-foreground mt-1">Gerencie e acompanhe suas dívidas</p>
         </div>
         
-        <Dialog open={isDebtDialogOpen} onOpenChange={setIsDebtDialogOpen}>
-          <DialogTrigger asChild>
-            <button className="flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg bg-primary text-primary-foreground font-medium text-sm transition-all duration-200 hover:bg-primary/90 w-full sm:w-auto">
-              <Plus className="w-4 h-4" />
-              Nova Dívida
-            </button>
-          </DialogTrigger>
-          <DialogContent className="max-w-[95vw] sm:max-w-md mx-auto">
-            <DialogHeader>
-              <DialogTitle>Adicionar Nova Dívida</DialogTitle>
-            </DialogHeader>
-            <DebtForm onSubmit={onAddDebt} onClose={() => setIsDebtDialogOpen(false)} />
-          </DialogContent>
-        </Dialog>
+        <div className="flex items-center gap-2 w-full sm:w-auto">
+          {/* Toggle ocultar valores - visível apenas em desktop */}
+          {onToggleValues && (
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={onToggleValues}
+              title={showValues ? 'Ocultar valores' : 'Exibir valores'}
+              className="h-10 w-10 shrink-0 hidden sm:flex"
+            >
+              {showValues ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+            </Button>
+          )}
+          
+          <Dialog open={isDebtDialogOpen} onOpenChange={setIsDebtDialogOpen}>
+            <DialogTrigger asChild>
+              <button className="flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg bg-primary text-primary-foreground font-medium text-sm transition-all duration-200 hover:bg-primary/90 flex-1 sm:flex-initial">
+                <Plus className="w-4 h-4" />
+                Nova Dívida
+              </button>
+            </DialogTrigger>
+            <DialogContent className="max-w-[95vw] sm:max-w-md mx-auto">
+              <DialogHeader>
+                <DialogTitle>Adicionar Nova Dívida</DialogTitle>
+              </DialogHeader>
+              <DebtForm onSubmit={onAddDebt} onClose={() => setIsDebtDialogOpen(false)} />
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
 
       {/* Resumo */}
@@ -505,21 +530,21 @@ export const Debts = ({
           style={{ animationDelay: '0.1s' }}
         >
           <p className="text-xs md:text-sm text-muted-foreground">Total em Dívidas</p>
-          <p className="text-lg md:text-xl font-bold text-foreground">{formatCurrency(stats.totalDebt)}</p>
+          <p className="text-lg md:text-xl font-bold text-foreground">{displayValue(stats.totalDebt)}</p>
         </div>
         <div 
           className="bg-card border border-border rounded-xl p-3 md:p-4 shadow-sm opacity-0 animate-fade-in-up"
           style={{ animationDelay: '0.15s' }}
         >
           <p className="text-xs md:text-sm text-muted-foreground">Total Pago</p>
-          <p className="text-lg md:text-xl font-bold text-income">{formatCurrency(stats.totalPaid)}</p>
+          <p className="text-lg md:text-xl font-bold text-income">{displayValue(stats.totalPaid)}</p>
         </div>
         <div 
           className="bg-card border border-border rounded-xl p-3 md:p-4 shadow-sm opacity-0 animate-fade-in-up"
           style={{ animationDelay: '0.2s' }}
         >
           <p className="text-xs md:text-sm text-muted-foreground">Falta Pagar</p>
-          <p className="text-lg md:text-xl font-bold text-expense">{formatCurrency(stats.totalRemaining)}</p>
+          <p className="text-lg md:text-xl font-bold text-expense">{displayValue(stats.totalRemaining)}</p>
         </div>
       </div>
 
@@ -557,6 +582,7 @@ export const Debts = ({
                 paidValue={getTotalPaidValue(debt, transactions)}
                 onUpdate={(updates) => onUpdateDebt(debt.id, updates)}
                 onDelete={() => onDeleteDebt(debt.id)}
+                displayValue={displayValue}
               />
             </div>
           ))}

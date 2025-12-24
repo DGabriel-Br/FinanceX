@@ -3,7 +3,7 @@ import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Button } from '@/components/ui/button';
-import { CalendarIcon, ChevronLeft, ChevronRight, Filter } from 'lucide-react';
+import { CalendarIcon, ChevronLeft, ChevronRight, Filter, Eye, EyeOff } from 'lucide-react';
 import { format, startOfWeek, endOfWeek, startOfMonth, endOfMonth, startOfYear, endOfYear, subDays, subMonths } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { cn } from '@/lib/utils';
@@ -34,6 +34,10 @@ type PeriodOption =
 interface PeriodFilterProps {
   customRange: CustomDateRange | null;
   onCustomRangeChange: (range: CustomDateRange | null) => void;
+  showValues?: boolean;
+  onToggleValues?: () => void;
+  customAction?: React.ReactNode;
+  hideToggleOnMobile?: boolean;
 }
 
 const periodOptions: { value: PeriodOption; label: string }[] = [
@@ -49,7 +53,11 @@ const periodOptions: { value: PeriodOption; label: string }[] = [
 
 export const PeriodFilter = ({ 
   customRange, 
-  onCustomRangeChange 
+  onCustomRangeChange,
+  showValues,
+  onToggleValues,
+  customAction,
+  hideToggleOnMobile = false
 }: PeriodFilterProps) => {
   const [selectedPeriod, setSelectedPeriod] = useState<PeriodOption>('esteMes');
   const [calendarOpen, setCalendarOpen] = useState(false);
@@ -184,6 +192,22 @@ export const PeriodFilter = ({
   const DesktopFilter = () => (
     <div className="flex flex-col gap-3">
       <div className="flex items-center gap-2">
+        {/* Values visibility toggle */}
+        {onToggleValues && (
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={onToggleValues}
+            title={showValues ? 'Ocultar valores' : 'Exibir valores'}
+            className="h-9 w-9 shrink-0"
+          >
+            {showValues ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+          </Button>
+        )}
+
+        {/* Custom action button */}
+        {customAction}
+
         {/* Navigation arrows */}
         <Button
           variant="outline"
@@ -250,9 +274,24 @@ export const PeriodFilter = ({
     </div>
   );
 
-  // Versão Mobile
   const MobileFilter = () => (
     <div className="flex items-center gap-2">
+      {/* Values visibility toggle - hidden on mobile when hideToggleOnMobile is true */}
+      {onToggleValues && !hideToggleOnMobile && (
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={onToggleValues}
+          title={showValues ? 'Ocultar valores' : 'Exibir valores'}
+          className="h-8 w-8 shrink-0"
+        >
+          {showValues ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+        </Button>
+      )}
+
+      {/* Custom action button */}
+      {customAction}
+
       {/* Navigation arrows compactas */}
       <Button
         variant="outline"
