@@ -72,7 +72,7 @@ export const MobileHeader = ({
                 <span className="text-xs text-mobile-header-foreground/70">
                   Bem-vindo(a),
                 </span>
-                <span className="text-base font-semibold text-mobile-header-foreground truncate">
+                <span className="text-base font-semibold text-mobile-header-foreground truncate uppercase">
                   {firstName}
                 </span>
               </div>
