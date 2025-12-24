@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback } from 'react';
-import { Plus, TrendingUp, PieChart, CalendarIcon, Wallet, Target, Pencil, X, Check, ArrowDownToLine, History, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Plus, TrendingUp, PieChart, CalendarIcon, Wallet, Target, Pencil, X, Check, ArrowDownToLine, History, ChevronLeft, ChevronRight, ArrowUpRight, ArrowDownLeft } from 'lucide-react';
 import { Transaction } from '@/types/transaction';
 import { 
   InvestmentType, 
@@ -809,11 +809,14 @@ export const Investments = ({
                     key={activity.id} 
                     className="flex items-start gap-3 py-4 first:pt-0 last:pb-0"
                   >
-                    <div className="mt-0.5">
+                    <div className={cn(
+                      "w-8 h-8 rounded-full flex items-center justify-center shrink-0",
+                      isResgate ? "bg-expense/15" : "bg-income/15"
+                    )}>
                       {isResgate ? (
-                        <ArrowDownToLine className="w-4 h-4 text-muted-foreground" />
+                        <ArrowDownLeft className="w-4 h-4 text-expense" />
                       ) : (
-                        <TrendingUp className="w-4 h-4 text-muted-foreground" />
+                        <ArrowUpRight className="w-4 h-4 text-income" />
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
