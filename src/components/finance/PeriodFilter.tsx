@@ -276,19 +276,6 @@ export const PeriodFilter = ({
 
   const MobileFilter = () => (
     <div className="flex items-center gap-2">
-      {/* Values visibility toggle - hidden on mobile when hideToggleOnMobile is true */}
-      {onToggleValues && !hideToggleOnMobile && (
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={onToggleValues}
-          title={showValues ? 'Ocultar valores' : 'Exibir valores'}
-          className="h-8 w-8 shrink-0"
-        >
-          {showValues ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
-        </Button>
-      )}
-
       {/* Custom action button */}
       {customAction}
 
