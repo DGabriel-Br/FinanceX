@@ -27,8 +27,17 @@ const Index = () => {
   const navigate = useNavigate();
   const activeTab = getTabFromPath(location.pathname);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [showSplash, setShowSplash] = useState(true);
   const { theme, toggleTheme } = useTheme();
   const { user, loading: authLoading, signOut } = useAuth();
+
+  // Tempo mínimo de exibição da splash screen (1.5 segundos)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowSplash(false);
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, []);
   
   const {
     transactions,
@@ -72,7 +81,7 @@ const Index = () => {
     navigate('/auth');
   };
 
-  if (authLoading) {
+  if (authLoading || showSplash) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-background">
         {/* Logo animada */}
