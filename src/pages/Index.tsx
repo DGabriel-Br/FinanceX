@@ -34,14 +34,7 @@ const Index = () => {
   const { user, loading: authLoading, signOut } = useAuth();
   const { showValues, toggleValuesVisibility, formatValue } = useValuesVisibility();
 
-  // Tempo mínimo de exibição da splash screen (1.5 segundos)
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowSplash(false);
-    }, 1500);
-    return () => clearTimeout(timer);
-  }, []);
-  
+  // IMPORTANTE: Todos os hooks devem ser chamados antes de qualquer early return
   const {
     transactions,
     loading: transactionsLoading,
@@ -63,6 +56,14 @@ const Index = () => {
     deleteDebt,
     refetch: refetchDebts,
   } = useDebts();
+
+  // Tempo mínimo de exibição da splash screen (1.5 segundos)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowSplash(false);
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Redirecionar para login se não autenticado
   useEffect(() => {
