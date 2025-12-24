@@ -2,6 +2,7 @@ import { LayoutDashboard, Receipt, ChevronLeft, ChevronRight, Moon, Sun, CreditC
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { Switch } from '@/components/ui/switch';
+import logo from '@/assets/logo.jpg';
 
 type Tab = 'dashboard' | 'lancamentos' | 'dividas' | 'investimentos';
 
@@ -52,9 +53,7 @@ export const Sidebar = ({
         collapsed ? "justify-center" : "gap-3"
       )}>
         {/* Logo */}
-        <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-income to-primary flex items-center justify-center text-primary-foreground font-bold text-sm flex-shrink-0">
-          FC
-        </div>
+        <img src={logo} alt="FluxoCerto" className="w-10 h-10 rounded-lg flex-shrink-0 object-cover" />
         
         {!collapsed && (
           <div className="flex-1 min-w-0">
