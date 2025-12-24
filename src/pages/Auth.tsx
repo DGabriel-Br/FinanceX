@@ -189,6 +189,20 @@ export default function Auth() {
       {/* Right Side - Auth Form */}
       <div className="flex-1 flex items-center justify-center p-6 lg:p-12 bg-background">
         <div className="w-full max-w-sm">
+          
+          {/* Logo - apenas mobile */}
+          <div 
+            className={cn(
+              "flex lg:hidden items-center justify-center gap-3 mb-8 transition-all duration-500",
+              mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+            )}
+          >
+            <img src={logoDark} alt="FinanceX" className="w-12 h-12 rounded-xl shadow-lg shadow-primary/30 object-cover" />
+            <div>
+              <h1 className="text-xl font-bold text-foreground">FinanceX</h1>
+              <p className="text-muted-foreground text-xs">Controle Financeiro</p>
+            </div>
+          </div>
 
           {/* Heading */}
           <div 
