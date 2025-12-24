@@ -492,15 +492,15 @@ export const Debts = ({
           <p className="text-sm md:text-base text-muted-foreground mt-1">Gerencie e acompanhe suas dívidas</p>
         </div>
         
-        <div className="flex items-center gap-2 w-full sm:w-auto">
-          {/* Toggle ocultar valores - visível apenas em desktop */}
+        {/* Botões visíveis apenas em desktop */}
+        <div className="hidden sm:flex items-center gap-2">
           {onToggleValues && (
             <Button
               variant="outline"
               size="icon"
               onClick={onToggleValues}
               title={showValues ? 'Ocultar valores' : 'Exibir valores'}
-              className="h-10 w-10 shrink-0 hidden sm:flex"
+              className="h-10 w-10 shrink-0"
             >
               {showValues ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
             </Button>
@@ -508,7 +508,7 @@ export const Debts = ({
           
           <Dialog open={isDebtDialogOpen} onOpenChange={setIsDebtDialogOpen}>
             <DialogTrigger asChild>
-              <button className="flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg bg-primary text-primary-foreground font-medium text-sm transition-all duration-200 hover:bg-primary/90 flex-1 sm:flex-initial">
+              <button className="flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg bg-primary text-primary-foreground font-medium text-sm transition-all duration-200 hover:bg-primary/90">
                 <Plus className="w-4 h-4" />
                 Nova Dívida
               </button>
@@ -557,6 +557,24 @@ export const Debts = ({
           💡 <strong>Como funciona:</strong> Os valores pagos são calculados automaticamente a partir dos lançamentos com categoria "Dívidas". 
           Na descrição do lançamento, inclua o nome da dívida para que o sistema identifique corretamente.
         </p>
+      </div>
+
+      {/* Botão Nova Dívida - visível apenas em mobile, abaixo da dica */}
+      <div className="sm:hidden mb-6">
+        <Dialog open={isDebtDialogOpen} onOpenChange={setIsDebtDialogOpen}>
+          <DialogTrigger asChild>
+            <button className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg bg-primary text-primary-foreground font-medium text-sm transition-all duration-200 hover:bg-primary/90">
+              <Plus className="w-4 h-4" />
+              Nova Dívida
+            </button>
+          </DialogTrigger>
+          <DialogContent className="max-w-[95vw] sm:max-w-md mx-auto">
+            <DialogHeader>
+              <DialogTitle>Adicionar Nova Dívida</DialogTitle>
+            </DialogHeader>
+            <DebtForm onSubmit={onAddDebt} onClose={() => setIsDebtDialogOpen(false)} />
+          </DialogContent>
+        </Dialog>
       </div>
 
       {/* Lista de Dívidas */}
