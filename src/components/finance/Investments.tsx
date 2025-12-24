@@ -791,7 +791,8 @@ export const Investments = ({
           </div>
           
           {paginatedActivities.length > 0 ? (
-            <div className="divide-y divide-border">
+            <div className="flex flex-col">
+              <div className="divide-y divide-border min-h-[340px]">
               {paginatedActivities.map((activity) => {
                 const type = extractInvestmentType(activity.description);
                 const [year, month, day] = activity.date.split('-');
@@ -844,6 +845,7 @@ export const Investments = ({
                   </div>
                 );
               })}
+              </div>
               
               {/* Paginação */}
               {totalPages > 1 && (
