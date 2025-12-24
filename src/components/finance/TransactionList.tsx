@@ -107,161 +107,158 @@ export const TransactionList = ({ transactions, onUpdate, onDelete }: Transactio
   const editCategoryLabels = editForm.type === 'receita' ? incomeCategoryLabels : expenseCategoryLabels;
 
   return (
-    <div className="overflow-hidden rounded-xl border border-border">
-      <table className="w-full">
-        <thead className="bg-muted/50">
-          <tr>
-            <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-              Data
-            </th>
-            <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-              Categoria
-            </th>
-            <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-              Descrição
-            </th>
-            <th className="text-right px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-              Valor
-            </th>
-            <th className="w-24 px-4 py-3"></th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-border">
-          {transactions.map(transaction => (
-            <tr
-              key={transaction.id}
-              className="group bg-card hover:bg-muted/30 transition-colors duration-150"
-            >
-              {editingId === transaction.id ? (
-                // Modo edição
-                <>
-                  <td className="px-4 py-3">
+    <div className="space-y-3">
+      {transactions.map(transaction => {
+        const categoryKey = transaction.category || (transaction.type === 'receita' ? 'outros_receita' : 'outros_despesa');
+        const Icon = getCategoryIcon(categoryKey, transaction.type);
+
+        return (
+          <div
+            key={transaction.id}
+            className="group bg-card border border-border rounded-xl p-4 hover:bg-muted/30 transition-colors duration-150"
+          >
+            {editingId === transaction.id ? (
+              // Modo edição
+              <div className="space-y-3">
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-xs text-muted-foreground mb-1 block">Data</label>
                     <input
                       type="date"
                       value={editForm.date}
                       onChange={e => setEditForm(prev => ({ ...prev, date: e.target.value }))}
-                      className="w-full px-2 py-1 rounded border border-input bg-background text-sm"
+                      className="w-full px-3 py-2 rounded-lg border border-input bg-background text-sm"
                     />
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="flex flex-col gap-2">
-                      <select
-                        value={editForm.type}
-                        onChange={e => setEditForm(prev => ({ ...prev, type: e.target.value as TransactionType }))}
-                        className="px-2 py-1 rounded border border-input bg-background text-sm"
-                      >
-                        <option value="receita">Receita</option>
-                        <option value="despesa">Despesa</option>
-                      </select>
-                      <select
-                        value={editForm.category}
-                        onChange={e => setEditForm(prev => ({ ...prev, category: e.target.value as TransactionCategory }))}
-                        className="px-2 py-1 rounded border border-input bg-background text-sm"
-                      >
-                        {currentEditCategories.map(cat => (
-                          <option key={cat} value={cat}>
-                            {editCategoryLabels[cat as keyof typeof editCategoryLabels]}
-                          </option>
-                        ))}
-                      </select>
-                    </div>
-                  </td>
-                  <td className="px-4 py-3">
-                    <input
-                      type="text"
-                      value={editForm.description}
-                      onChange={e => setEditForm(prev => ({ ...prev, description: e.target.value }))}
-                      className="w-full px-2 py-1 rounded border border-input bg-background text-sm"
-                    />
-                  </td>
-                  <td className="px-4 py-3">
-                    <input
-                      type="text"
-                      inputMode="numeric"
-                      value={editForm.value}
-                      onChange={e => setEditForm(prev => ({ ...prev, value: e.target.value }))}
-                      className="w-full px-2 py-1 rounded border border-input bg-background text-sm text-right"
-                    />
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="flex items-center justify-end gap-1">
-                      <button
-                        onClick={() => saveEditing(transaction.id)}
-                        className="p-2 rounded-lg text-income hover:bg-income/10 transition-colors"
-                        title="Salvar"
-                      >
-                        <Check className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={cancelEditing}
-                        className="p-2 rounded-lg text-muted-foreground hover:bg-muted transition-colors"
-                        title="Cancelar"
-                      >
-                        <X className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </td>
-                </>
-              ) : (
-                // Modo visualização
-                <>
-                  <td className="px-4 py-3 text-sm text-muted-foreground">
-                    {formatDate(transaction.date)}
-                  </td>
-                  <td className="px-4 py-3">
-                    {(() => {
-                      const categoryKey = transaction.category || (transaction.type === 'receita' ? 'outros_receita' : 'outros_despesa');
-                      const Icon = getCategoryIcon(categoryKey, transaction.type);
-                      return (
-                        <span className={cn(
-                          "inline-flex items-center gap-1.5 text-xs font-medium px-2 py-1 rounded-full",
-                          transaction.type === 'receita' 
-                            ? 'bg-income/10 text-income' 
-                            : 'bg-expense/10 text-expense'
-                        )}>
-                          <Icon className="w-3 h-3" />
-                          {getCategoryLabel(categoryKey, transaction.type)}
-                        </span>
-                      );
-                    })()}
-                  </td>
-                  <td className="px-4 py-3">
-                    <span className="text-sm text-foreground">{transaction.description}</span>
-                  </td>
-                  <td className="px-4 py-3 text-right">
-                    <span
-                      className={cn(
-                        'text-sm font-medium',
-                        transaction.type === 'receita' ? 'text-income' : 'text-expense'
-                      )}
+                  </div>
+                  <div>
+                    <label className="text-xs text-muted-foreground mb-1 block">Tipo</label>
+                    <select
+                      value={editForm.type}
+                      onChange={e => setEditForm(prev => ({ ...prev, type: e.target.value as TransactionType }))}
+                      className="w-full px-3 py-2 rounded-lg border border-input bg-background text-sm"
                     >
-                      {transaction.type === 'receita' ? '+' : '-'} {formatCurrency(transaction.value)}
+                      <option value="receita">Receita</option>
+                      <option value="despesa">Despesa</option>
+                    </select>
+                  </div>
+                </div>
+                <div>
+                  <label className="text-xs text-muted-foreground mb-1 block">Categoria</label>
+                  <select
+                    value={editForm.category}
+                    onChange={e => setEditForm(prev => ({ ...prev, category: e.target.value as TransactionCategory }))}
+                    className="w-full px-3 py-2 rounded-lg border border-input bg-background text-sm"
+                  >
+                    {currentEditCategories.map(cat => (
+                      <option key={cat} value={cat}>
+                        {editCategoryLabels[cat as keyof typeof editCategoryLabels]}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="text-xs text-muted-foreground mb-1 block">Descrição</label>
+                  <input
+                    type="text"
+                    value={editForm.description}
+                    onChange={e => setEditForm(prev => ({ ...prev, description: e.target.value }))}
+                    className="w-full px-3 py-2 rounded-lg border border-input bg-background text-sm"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs text-muted-foreground mb-1 block">Valor</label>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    value={editForm.value}
+                    onChange={e => setEditForm(prev => ({ ...prev, value: e.target.value }))}
+                    className="w-full px-3 py-2 rounded-lg border border-input bg-background text-sm"
+                  />
+                </div>
+                <div className="flex items-center justify-end gap-2 pt-2">
+                  <button
+                    onClick={cancelEditing}
+                    className="px-4 py-2 rounded-lg text-muted-foreground hover:bg-muted transition-colors text-sm"
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    onClick={() => saveEditing(transaction.id)}
+                    className="px-4 py-2 rounded-lg bg-income text-white hover:bg-income/90 transition-colors text-sm font-medium"
+                  >
+                    Salvar
+                  </button>
+                </div>
+              </div>
+            ) : (
+              // Modo visualização
+              <div className="flex items-center gap-4">
+                {/* Ícone da categoria */}
+                <div className={cn(
+                  "w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0",
+                  transaction.type === 'receita' 
+                    ? 'bg-income/10 text-income' 
+                    : 'bg-expense/10 text-expense'
+                )}>
+                  <Icon className="w-5 h-5" />
+                </div>
+
+                {/* Informações */}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium text-foreground truncate">
+                      {transaction.description}
                     </span>
-                  </td>
-                  <td className="px-4 py-3">
-                    <div className="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
-                      <button
-                        onClick={() => startEditing(transaction)}
-                        className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-                        title="Editar"
-                      >
-                        <Pencil className="w-4 h-4" />
-                      </button>
-                      <button
-                        onClick={() => onDelete(transaction.id)}
-                        className="p-2 rounded-lg text-muted-foreground hover:text-expense hover:bg-expense/10 transition-colors"
-                        title="Excluir"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </td>
-                </>
-              )}
-            </tr>
-          ))}
-        </tbody>
-      </table>
+                  </div>
+                  <div className="flex items-center gap-2 mt-0.5">
+                    <span className={cn(
+                      "text-xs font-medium px-2 py-0.5 rounded-full",
+                      transaction.type === 'receita' 
+                        ? 'bg-income/10 text-income' 
+                        : 'bg-expense/10 text-expense'
+                    )}>
+                      {getCategoryLabel(categoryKey, transaction.type)}
+                    </span>
+                    <span className="text-xs text-muted-foreground">
+                      {formatDate(transaction.date)}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Valor */}
+                <div className="text-right flex-shrink-0">
+                  <span
+                    className={cn(
+                      'font-semibold',
+                      transaction.type === 'receita' ? 'text-income' : 'text-expense'
+                    )}
+                  >
+                    {transaction.type === 'receita' ? '+' : '-'} {formatCurrency(transaction.value)}
+                  </span>
+                </div>
+
+                {/* Ações */}
+                <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex-shrink-0">
+                  <button
+                    onClick={() => startEditing(transaction)}
+                    className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                    title="Editar"
+                  >
+                    <Pencil className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => onDelete(transaction.id)}
+                    className="p-2 rounded-lg text-muted-foreground hover:text-expense hover:bg-expense/10 transition-colors"
+                    title="Excluir"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        );
+      })}
     </div>
   );
 };
