@@ -395,14 +395,14 @@ export const Investments = ({
         </div>
         
         <div className="flex items-center gap-2 w-full sm:w-auto">
-          {/* Toggle ocultar valores */}
+          {/* Toggle ocultar valores - visível apenas em desktop */}
           {onToggleValues && (
             <Button
               variant="outline"
               size="icon"
               onClick={onToggleValues}
               title={showValues ? 'Ocultar valores' : 'Exibir valores'}
-              className="h-10 w-10 shrink-0"
+              className="h-10 w-10 shrink-0 hidden sm:flex"
             >
               {showValues ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
             </Button>
