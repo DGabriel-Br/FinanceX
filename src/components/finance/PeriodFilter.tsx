@@ -74,7 +74,6 @@ export const PeriodFilter = ({
   }, []);
 
   const handlePeriodChange = (period: PeriodOption) => {
-    const wasAlreadyPersonalizado = selectedPeriod === 'personalizado';
     setSelectedPeriod(period);
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -84,44 +83,48 @@ export const PeriodFilter = ({
     switch (period) {
       case 'maximo':
         range = null;
+        setCalendarOpen(false);
         break;
       case 'hoje':
         range = { start: today, end: today };
+        setCalendarOpen(false);
         break;
       case 'ontem': {
         const yesterday = subDays(today, 1);
         range = { start: yesterday, end: yesterday };
+        setCalendarOpen(false);
         break;
       }
       case 'ultimos7dias': {
         const weekAgo = subDays(today, 6);
         range = { start: weekAgo, end: today };
+        setCalendarOpen(false);
         break;
       }
       case 'esteMes':
         range = { start: startOfMonth(today), end: endOfMonth(today) };
+        setCalendarOpen(false);
         break;
       case 'mesPassado': {
         const lastMonth = subMonths(today, 1);
         range = { start: startOfMonth(lastMonth), end: endOfMonth(lastMonth) };
+        setCalendarOpen(false);
         break;
       }
       case 'esteAno':
         range = { start: startOfYear(today), end: endOfYear(today) };
+        setCalendarOpen(false);
         break;
       case 'personalizado':
         // Mantém o range atual ou inicia com o mês atual
         if (!customRange) {
           range = { start: startOfMonth(today), end: today };
+          setCalendarMonth(startOfMonth(today));
         } else {
           range = customRange;
+          setCalendarMonth(customRange.start);
         }
         setTempDateRange({ from: range.start, to: range.end });
-        setCalendarMonth(range.start);
-        // Abre o calendário automaticamente no desktop apenas se não estava em personalizado
-        if (!isMobile && !wasAlreadyPersonalizado) {
-          setTimeout(() => setCalendarOpen(true), 150);
-        }
         break;
     }
 
@@ -135,9 +138,13 @@ export const PeriodFilter = ({
 
   const handleDateRangeSelect = (range: DateRange | undefined) => {
     setTempDateRange(range);
-    if (range?.from && range?.to) {
-      onCustomRangeChange({ start: range.from, end: range.to });
+  };
+  
+  const applyDateRange = () => {
+    if (tempDateRange?.from && tempDateRange?.to) {
+      onCustomRangeChange({ start: tempDateRange.from, end: tempDateRange.to });
     }
+    setCalendarOpen(false);
   };
 
   const navigateMonth = (direction: 'prev' | 'next') => {
@@ -266,7 +273,7 @@ export const PeriodFilter = ({
               <div className="p-3 pt-0 flex justify-end">
                 <Button 
                   size="sm" 
-                  onClick={() => setCalendarOpen(false)}
+                  onClick={applyDateRange}
                   disabled={!tempDateRange?.from || !tempDateRange?.to}
                 >
                   Aplicar
@@ -354,7 +361,7 @@ export const PeriodFilter = ({
             
             {/* Calendário para personalizado */}
             {selectedPeriod === 'personalizado' && (
-              <div className="pt-4 flex justify-center">
+              <div className="pt-4 flex flex-col items-center gap-3">
                 <Calendar
                   mode="range"
                   selected={tempDateRange}
@@ -365,6 +372,17 @@ export const PeriodFilter = ({
                   locale={ptBR}
                   className="p-3 pointer-events-auto"
                 />
+                <Button 
+                  size="sm" 
+                  onClick={() => {
+                    applyDateRange();
+                    setSheetOpen(false);
+                  }}
+                  disabled={!tempDateRange?.from || !tempDateRange?.to}
+                  className="w-full max-w-[280px]"
+                >
+                  Aplicar
+                </Button>
               </div>
             )}
           </div>
