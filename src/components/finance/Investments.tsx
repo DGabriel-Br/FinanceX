@@ -37,6 +37,8 @@ interface InvestmentsProps {
   onNavigateToTransactions?: () => void;
   onAddTransaction?: (transaction: Omit<Transaction, 'id' | 'createdAt'>) => Promise<void>;
   formatValue?: (value: number) => string;
+  showValues?: boolean;
+  onToggleValues?: () => void;
 }
 
 // Formatar valor em Real brasileiro
@@ -117,7 +119,9 @@ export const Investments = ({
   customRange, 
   onCustomRangeChange,
   onNavigateToTransactions,
-  onAddTransaction 
+  onAddTransaction,
+  showValues,
+  onToggleValues,
 }: InvestmentsProps) => {
   const [activeIndex, setActiveIndex] = useState<number | undefined>(undefined);
   const [isGoalsDialogOpen, setIsGoalsDialogOpen] = useState(false);
@@ -385,6 +389,8 @@ export const Investments = ({
         <PeriodFilter 
           customRange={customRange}
           onCustomRangeChange={onCustomRangeChange}
+          showValues={showValues}
+          onToggleValues={onToggleValues}
           customAction={
             <Dialog open={isWithdrawDialogOpen} onOpenChange={setIsWithdrawDialogOpen}>
               <DialogTrigger asChild>
