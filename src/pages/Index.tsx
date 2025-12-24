@@ -74,8 +74,29 @@ const Index = () => {
 
   if (authLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
-        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      <div className="min-h-screen flex flex-col items-center justify-center bg-background">
+        {/* Logo animada */}
+        <div className="relative mb-6">
+          <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-income to-primary flex items-center justify-center text-primary-foreground font-bold text-2xl animate-pulse">
+            FC
+          </div>
+          {/* Anel de loading ao redor do logo */}
+          <div className="absolute -inset-2 rounded-3xl border-2 border-primary/30 animate-spin" style={{ animationDuration: '3s' }} />
+          <div className="absolute -inset-3 rounded-3xl border-2 border-t-primary border-r-transparent border-b-transparent border-l-transparent animate-spin" style={{ animationDuration: '1.5s' }} />
+        </div>
+        
+        {/* Nome do app */}
+        <h1 className="text-xl font-semibold text-foreground mb-2 animate-fade-in">
+          FluxoCerto
+        </h1>
+        <p className="text-sm text-muted-foreground animate-fade-in" style={{ animationDelay: '0.1s' }}>
+          Carregando seu controle financeiro...
+        </p>
+        
+        {/* Barra de progresso */}
+        <div className="w-48 h-1 bg-muted rounded-full mt-6 overflow-hidden">
+          <div className="h-full bg-gradient-to-r from-income to-primary rounded-full animate-[loading_1.5s_ease-in-out_infinite]" />
+        </div>
       </div>
     );
   }
