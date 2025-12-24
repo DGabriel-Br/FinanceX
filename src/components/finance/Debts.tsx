@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Plus, Trash2, CreditCard, Calendar as CalendarIcon, TrendingUp, CheckCircle, Pencil, Save, X } from 'lucide-react';
+import { Plus, Trash2, CreditCard, Calendar as CalendarIcon, TrendingUp, CheckCircle, Pencil, Save, X, Eye, EyeOff } from 'lucide-react';
 import { Debt, calculateExpectedEndDate, calculateProgress } from '@/types/debt';
 import { Transaction } from '@/types/transaction';
 import { cn } from '@/lib/utils';
@@ -24,6 +24,8 @@ interface DebtsProps {
   onUpdateDebt: (id: string, updates: Partial<Omit<Debt, 'id' | 'createdAt'>>) => void;
   onDeleteDebt: (id: string) => void;
   formatValue?: (value: number) => string;
+  showValues?: boolean;
+  onToggleValues?: () => void;
 }
 
 // Formatar valor em Real brasileiro
@@ -456,7 +458,9 @@ export const Debts = ({
   transactions,
   onAddDebt,
   onUpdateDebt,
-  onDeleteDebt, 
+  onDeleteDebt,
+  showValues,
+  onToggleValues,
 }: DebtsProps) => {
   const [isDebtDialogOpen, setIsDebtDialogOpen] = useState(false);
 
@@ -482,20 +486,34 @@ export const Debts = ({
           <p className="text-sm md:text-base text-muted-foreground mt-1">Gerencie e acompanhe suas dívidas</p>
         </div>
         
-        <Dialog open={isDebtDialogOpen} onOpenChange={setIsDebtDialogOpen}>
-          <DialogTrigger asChild>
-            <button className="flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg bg-primary text-primary-foreground font-medium text-sm transition-all duration-200 hover:bg-primary/90 w-full sm:w-auto">
-              <Plus className="w-4 h-4" />
-              Nova Dívida
-            </button>
-          </DialogTrigger>
-          <DialogContent className="max-w-[95vw] sm:max-w-md mx-auto">
-            <DialogHeader>
-              <DialogTitle>Adicionar Nova Dívida</DialogTitle>
-            </DialogHeader>
-            <DebtForm onSubmit={onAddDebt} onClose={() => setIsDebtDialogOpen(false)} />
-          </DialogContent>
-        </Dialog>
+        <div className="flex items-center gap-2 w-full sm:w-auto">
+          {onToggleValues && (
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={onToggleValues}
+              title={showValues ? 'Ocultar valores' : 'Exibir valores'}
+              className="h-10 w-10 shrink-0"
+            >
+              {showValues ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+            </Button>
+          )}
+          
+          <Dialog open={isDebtDialogOpen} onOpenChange={setIsDebtDialogOpen}>
+            <DialogTrigger asChild>
+              <button className="flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg bg-primary text-primary-foreground font-medium text-sm transition-all duration-200 hover:bg-primary/90 flex-1 sm:flex-initial">
+                <Plus className="w-4 h-4" />
+                Nova Dívida
+              </button>
+            </DialogTrigger>
+            <DialogContent className="max-w-[95vw] sm:max-w-md mx-auto">
+              <DialogHeader>
+                <DialogTitle>Adicionar Nova Dívida</DialogTitle>
+              </DialogHeader>
+              <DebtForm onSubmit={onAddDebt} onClose={() => setIsDebtDialogOpen(false)} />
+            </DialogContent>
+          </Dialog>
+        </div>
       </div>
 
       {/* Resumo */}
