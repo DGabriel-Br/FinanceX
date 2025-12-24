@@ -7,6 +7,7 @@ interface DebtTrackerProps {
   debts: Debt[];
   transactions: Transaction[];
   onNavigateToDebts?: () => void;
+  formatValue?: (value: number) => string;
 }
 
 // Formatar valor em Real brasileiro
@@ -35,7 +36,9 @@ const getTotalPaidValue = (debt: Debt, transactions: Transaction[]): number => {
   return (debt.paidValue || 0) + transactionsPaid;
 };
 
-export const DebtTracker = ({ debts, transactions, onNavigateToDebts }: DebtTrackerProps) => {
+export const DebtTracker = ({ debts, transactions, onNavigateToDebts, formatValue }: DebtTrackerProps) => {
+  // Helper para formatar valores
+  const displayValue = (value: number) => formatValue ? formatValue(value) : formatCurrency(value);
   // Filtra apenas dívidas não quitadas para verificar se deve mostrar o componente
   const hasActiveDebts = debts.some(debt => {
     const paidValue = getTotalPaidValue(debt, transactions);
@@ -113,8 +116,8 @@ export const DebtTracker = ({ debts, transactions, onNavigateToDebts }: DebtTrac
         </div>
         <Progress value={overallProgress} className="h-2 mb-3" />
         <div className="flex justify-between text-xs text-muted-foreground">
-          <span>Pago: <span className="text-income font-medium">{formatCurrency(totals.totalPaid)}</span></span>
-          <span>Total: <span className="text-foreground font-medium">{formatCurrency(totals.totalDebt)}</span></span>
+          <span>Pago: <span className="text-income font-medium">{displayValue(totals.totalPaid)}</span></span>
+          <span>Total: <span className="text-foreground font-medium">{displayValue(totals.totalDebt)}</span></span>
         </div>
       </div>
 
@@ -151,15 +154,15 @@ export const DebtTracker = ({ debts, transactions, onNavigateToDebts }: DebtTrac
               <div className="grid grid-cols-3 gap-2 text-center text-xs">
                 <div>
                   <p className="text-muted-foreground">Pago</p>
-                  <p className="font-semibold text-income">{formatCurrency(paidValue)}</p>
+                  <p className="font-semibold text-income">{displayValue(paidValue)}</p>
                 </div>
                 <div>
                   <p className="text-muted-foreground">Falta</p>
-                  <p className="font-semibold text-expense">{formatCurrency(Math.max(0, remaining))}</p>
+                  <p className="font-semibold text-expense">{displayValue(Math.max(0, remaining))}</p>
                 </div>
                 <div>
                   <p className="text-muted-foreground">Total</p>
-                  <p className="font-semibold text-foreground">{formatCurrency(debt.totalValue)}</p>
+                  <p className="font-semibold text-foreground">{displayValue(debt.totalValue)}</p>
                 </div>
               </div>
             </div>

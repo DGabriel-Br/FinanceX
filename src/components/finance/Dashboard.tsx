@@ -338,11 +338,11 @@ export const Dashboard = ({
 
       {/* Acompanhamento de Dívidas */}
       <div className="mt-6">
-        <DebtTracker debts={debts} transactions={allTransactions} onNavigateToDebts={onNavigateToDebts} />
+        <DebtTracker debts={debts} transactions={allTransactions} onNavigateToDebts={onNavigateToDebts} formatValue={formatValue} />
       </div>
 
       {/* Gráficos de Pizza por Categoria */}
-      <CategoryCharts transactions={transactions} />
+      <CategoryCharts transactions={transactions} formatValue={formatValue} />
     </div>
   );
 };

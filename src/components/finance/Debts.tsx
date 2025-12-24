@@ -207,11 +207,13 @@ const DebtCard = ({
   paidValue,
   onUpdate,
   onDelete,
+  displayValue,
 }: { 
   debt: Debt; 
   paidValue: number;
   onUpdate: (updates: Partial<Omit<Debt, 'id' | 'createdAt'>>) => void;
   onDelete: () => void;
+  displayValue: (value: number) => string;
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [editName, setEditName] = useState(debt.name);
@@ -404,19 +406,19 @@ const DebtCard = ({
       <div className="grid grid-cols-2 gap-3 mb-4">
         <div className="text-center p-3 bg-muted/30 rounded-lg">
           <p className="text-xs text-muted-foreground mb-1">Pago até agora</p>
-          <p className="font-semibold text-income text-sm">{formatCurrency(paidValue)}</p>
+          <p className="font-semibold text-income text-sm">{displayValue(paidValue)}</p>
         </div>
         <div className="text-center p-3 bg-muted/30 rounded-lg">
           <p className="text-xs text-muted-foreground mb-1">Falta pagar</p>
-          <p className="font-semibold text-expense text-sm">{formatCurrency(Math.max(0, remaining))}</p>
+          <p className="font-semibold text-expense text-sm">{displayValue(Math.max(0, remaining))}</p>
         </div>
         <div className="text-center p-3 bg-muted/30 rounded-lg">
           <p className="text-xs text-muted-foreground mb-1">Valor Total</p>
-          <p className="font-semibold text-foreground text-sm">{formatCurrency(debt.totalValue)}</p>
+          <p className="font-semibold text-foreground text-sm">{displayValue(debt.totalValue)}</p>
         </div>
         <div className="text-center p-3 bg-muted/30 rounded-lg">
           <p className="text-xs text-muted-foreground mb-1">Parcela Mensal</p>
-          <p className="font-semibold text-primary text-sm">{formatCurrency(debt.monthlyInstallment)}</p>
+          <p className="font-semibold text-primary text-sm">{displayValue(debt.monthlyInstallment)}</p>
         </div>
       </div>
 
@@ -579,6 +581,7 @@ export const Debts = ({
                 paidValue={getTotalPaidValue(debt, transactions)}
                 onUpdate={(updates) => onUpdateDebt(debt.id, updates)}
                 onDelete={() => onDeleteDebt(debt.id)}
+                displayValue={displayValue}
               />
             </div>
           ))}
