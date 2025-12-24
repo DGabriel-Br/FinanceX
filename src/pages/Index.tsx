@@ -10,6 +10,7 @@ import { useTransactions } from '@/hooks/useTransactions';
 import { useDebts } from '@/hooks/useDebts';
 import { useTheme } from '@/hooks/useTheme';
 import { useAuth } from '@/hooks/useAuth';
+import { useValuesVisibility } from '@/hooks/useValuesVisibility';
 import logoDark from '@/assets/logo.jpg';
 import logoLight from '@/assets/logo-transparent.png';
 
@@ -31,6 +32,7 @@ const Index = () => {
   const [showSplash, setShowSplash] = useState(true);
   const { theme, toggleTheme } = useTheme();
   const { user, loading: authLoading, signOut } = useAuth();
+  const { showValues, toggleValuesVisibility, formatValue } = useValuesVisibility();
 
   // Tempo mínimo de exibição da splash screen (1.5 segundos)
   useEffect(() => {
@@ -143,6 +145,9 @@ const Index = () => {
               allTransactions={transactions}
               debts={debts}
               onNavigateToDebts={() => navigate('/dividas')}
+              showValues={showValues}
+              onToggleValues={toggleValuesVisibility}
+              formatValue={formatValue}
             />
           ) : activeTab === 'lancamentos' ? (
             <Transactions
@@ -152,6 +157,7 @@ const Index = () => {
               onAdd={addTransaction}
               onUpdate={updateTransaction}
               onDelete={deleteTransaction}
+              formatValue={formatValue}
             />
           ) : activeTab === 'investimentos' ? (
             <Investments
@@ -161,6 +167,7 @@ const Index = () => {
               onCustomRangeChange={setCustomRange}
               onNavigateToTransactions={() => navigate('/lancamentos')}
               onAddTransaction={addTransaction}
+              formatValue={formatValue}
             />
           ) : (
             <Debts
@@ -169,6 +176,7 @@ const Index = () => {
               onAddDebt={addDebt}
               onUpdateDebt={updateDebt}
               onDeleteDebt={deleteDebt}
+              formatValue={formatValue}
             />
           )}
         </div>

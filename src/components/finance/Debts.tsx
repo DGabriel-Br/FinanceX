@@ -23,6 +23,7 @@ interface DebtsProps {
   onAddDebt: (debt: Omit<Debt, 'id' | 'createdAt'>) => void;
   onUpdateDebt: (id: string, updates: Partial<Omit<Debt, 'id' | 'createdAt'>>) => void;
   onDeleteDebt: (id: string) => void;
+  formatValue?: (value: number) => string;
 }
 
 // Formatar valor em Real brasileiro
