@@ -11,6 +11,16 @@ import { useDebts } from '@/hooks/useDebts';
 import { useTheme } from '@/hooks/useTheme';
 import { useAuth } from '@/hooks/useAuth';
 import { useValuesVisibility } from '@/hooks/useValuesVisibility';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 import logoDark from '@/assets/logo.jpg';
 import logoLight from '@/assets/logo-transparent.png';
 
@@ -31,6 +41,7 @@ const Index = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [showSplash, setShowSplash] = useState(true);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const { theme, toggleTheme } = useTheme();
   const { user, loading: authLoading, signOut } = useAuth();
   const { showValues, toggleValuesVisibility, formatValue } = useValuesVisibility();
@@ -81,7 +92,12 @@ const Index = () => {
     }
   }, [user]);
 
-  const handleSignOut = async () => {
+  const handleSignOutRequest = () => {
+    setShowLogoutConfirm(true);
+  };
+
+  const handleSignOutConfirm = async () => {
+    setShowLogoutConfirm(false);
     setIsLoggingOut(true);
     await signOut();
     // Aguarda 3s para exibir a tela de logout
@@ -125,84 +141,104 @@ const Index = () => {
   const totals = getTotals();
 
   return (
-    <div className="flex min-h-screen w-full relative">
-      {/* Sidebar - apenas desktop */}
-      <div className="hidden md:block">
-        <Sidebar 
+    <>
+      <div className="flex min-h-screen w-full relative">
+        {/* Sidebar - apenas desktop */}
+        <div className="hidden md:block">
+          <Sidebar 
+            activeTab={activeTab} 
+            collapsed={sidebarCollapsed}
+            onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
+            theme={theme}
+            onToggleTheme={toggleTheme}
+            userEmail={user.email}
+            onSignOut={handleSignOutRequest}
+          />
+        </div>
+
+        {/* Conteúdo principal */}
+        <main className="flex-1 overflow-auto bg-background pb-20 md:pb-0">
+          <div key={activeTab} className="animate-fade-in" style={{ animationDuration: '0.3s' }}>
+            {activeTab === 'dashboard' ? (
+              <Dashboard
+                totals={totals}
+                customRange={customRange}
+                onCustomRangeChange={setCustomRange}
+                transactions={filteredTransactions}
+                allTransactions={transactions}
+                debts={debts}
+                onNavigateToDebts={() => navigate('/dividas')}
+                showValues={showValues}
+                onToggleValues={toggleValuesVisibility}
+                formatValue={formatValue}
+              />
+            ) : activeTab === 'lancamentos' ? (
+              <Transactions
+                transactions={filteredTransactions}
+                customRange={customRange}
+                onCustomRangeChange={setCustomRange}
+                onAdd={addTransaction}
+                onUpdate={updateTransaction}
+                onDelete={deleteTransaction}
+                formatValue={formatValue}
+                showValues={showValues}
+                onToggleValues={toggleValuesVisibility}
+              />
+            ) : activeTab === 'investimentos' ? (
+              <Investments
+                transactions={filteredTransactions}
+                allTransactions={transactions}
+                customRange={customRange}
+                onCustomRangeChange={setCustomRange}
+                onNavigateToTransactions={() => navigate('/lancamentos')}
+                onAddTransaction={addTransaction}
+                formatValue={formatValue}
+                showValues={showValues}
+                onToggleValues={toggleValuesVisibility}
+              />
+            ) : (
+              <Debts
+                debts={debts}
+                transactions={transactions}
+                onAddDebt={addDebt}
+                onUpdateDebt={updateDebt}
+                onDeleteDebt={deleteDebt}
+                formatValue={formatValue}
+                showValues={showValues}
+                onToggleValues={toggleValuesVisibility}
+              />
+            )}
+          </div>
+        </main>
+
+        {/* Navegação Mobile - apenas mobile */}
+        <MobileNav 
           activeTab={activeTab} 
-          collapsed={sidebarCollapsed}
-          onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
           theme={theme}
           onToggleTheme={toggleTheme}
           userEmail={user.email}
-          onSignOut={handleSignOut}
+          onSignOut={handleSignOutRequest}
         />
       </div>
 
-      {/* Conteúdo principal */}
-      <main className="flex-1 overflow-auto bg-background pb-20 md:pb-0">
-        <div key={activeTab} className="animate-fade-in" style={{ animationDuration: '0.3s' }}>
-          {activeTab === 'dashboard' ? (
-            <Dashboard
-              totals={totals}
-              customRange={customRange}
-              onCustomRangeChange={setCustomRange}
-              transactions={filteredTransactions}
-              allTransactions={transactions}
-              debts={debts}
-              onNavigateToDebts={() => navigate('/dividas')}
-              showValues={showValues}
-              onToggleValues={toggleValuesVisibility}
-              formatValue={formatValue}
-            />
-          ) : activeTab === 'lancamentos' ? (
-            <Transactions
-              transactions={filteredTransactions}
-              customRange={customRange}
-              onCustomRangeChange={setCustomRange}
-              onAdd={addTransaction}
-              onUpdate={updateTransaction}
-              onDelete={deleteTransaction}
-              formatValue={formatValue}
-              showValues={showValues}
-              onToggleValues={toggleValuesVisibility}
-            />
-          ) : activeTab === 'investimentos' ? (
-            <Investments
-              transactions={filteredTransactions}
-              allTransactions={transactions}
-              customRange={customRange}
-              onCustomRangeChange={setCustomRange}
-              onNavigateToTransactions={() => navigate('/lancamentos')}
-              onAddTransaction={addTransaction}
-              formatValue={formatValue}
-              showValues={showValues}
-              onToggleValues={toggleValuesVisibility}
-            />
-          ) : (
-            <Debts
-              debts={debts}
-              transactions={transactions}
-              onAddDebt={addDebt}
-              onUpdateDebt={updateDebt}
-              onDeleteDebt={deleteDebt}
-              formatValue={formatValue}
-              showValues={showValues}
-              onToggleValues={toggleValuesVisibility}
-            />
-          )}
-        </div>
-      </main>
-
-      {/* Navegação Mobile - apenas mobile */}
-      <MobileNav 
-        activeTab={activeTab} 
-        theme={theme}
-        onToggleTheme={toggleTheme}
-        userEmail={user.email}
-        onSignOut={handleSignOut}
-      />
-    </div>
+      {/* Diálogo de confirmação de logout */}
+      <AlertDialog open={showLogoutConfirm} onOpenChange={setShowLogoutConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Deseja sair da sua conta?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Você será desconectado e precisará fazer login novamente para acessar sua conta.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={handleSignOutConfirm} className="bg-expense hover:bg-expense/90">
+              Sair
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   );
 };
 
