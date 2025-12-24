@@ -1,18 +1,7 @@
-import { useState } from 'react';
 import { LayoutDashboard, Receipt, ChevronLeft, ChevronRight, Moon, Sun, CreditCard, TrendingUp, LogOut, User } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { Switch } from '@/components/ui/switch';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
 import logoDark from '@/assets/logo.jpg';
 import logoLight from '@/assets/logo-transparent.png';
 
@@ -44,19 +33,7 @@ export const Sidebar = ({
   userEmail,
   onSignOut
 }: SidebarProps) => {
-  const [showLogoutDialog, setShowLogoutDialog] = useState(false);
-
-  const handleLogoutClick = () => {
-    setShowLogoutDialog(true);
-  };
-
-  const handleConfirmLogout = () => {
-    setShowLogoutDialog(false);
-    onSignOut?.();
-  };
-
   return (
-    <>
     <aside className={cn(
       "bg-sidebar text-sidebar-foreground flex flex-col transition-[width] duration-300 ease-in-out relative h-screen sticky top-0",
       collapsed ? "w-[72px]" : "w-64"
@@ -181,7 +158,7 @@ export const Sidebar = ({
         {/* Logout Button */}
         {onSignOut && (
           <button
-            onClick={handleLogoutClick}
+            onClick={onSignOut}
             title="Sair"
             className={cn(
               'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors text-sidebar-foreground/80 hover:bg-expense/10 hover:text-expense',
@@ -194,30 +171,5 @@ export const Sidebar = ({
         )}
       </div>
     </aside>
-
-    {/* Logout Confirmation Dialog */}
-    <AlertDialog open={showLogoutDialog} onOpenChange={setShowLogoutDialog}>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>Sair da conta?</AlertDialogTitle>
-          <AlertDialogDescription>
-            Você realmente deseja sair da sua conta? Será necessário fazer login novamente para acessar seus dados.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel>Cancelar</AlertDialogCancel>
-          <AlertDialogAction 
-            onClick={(e) => {
-              e.preventDefault();
-              handleConfirmLogout();
-            }} 
-            className="bg-expense hover:bg-expense/90"
-          >
-            Sair
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
-    </>
   );
 };

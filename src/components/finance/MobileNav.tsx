@@ -9,16 +9,6 @@ import {
   SheetHeader,
   SheetTitle,
 } from '@/components/ui/sheet';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-} from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 
 type Tab = 'dashboard' | 'lancamentos' | 'dividas' | 'investimentos';
@@ -40,17 +30,6 @@ const navItems = [
 
 export const MobileNav = ({ activeTab, theme, onToggleTheme, userEmail, onSignOut }: MobileNavProps) => {
   const [settingsOpen, setSettingsOpen] = useState(false);
-  const [showLogoutDialog, setShowLogoutDialog] = useState(false);
-
-  const handleLogoutClick = () => {
-    setSettingsOpen(false);
-    setShowLogoutDialog(true);
-  };
-
-  const handleConfirmLogout = () => {
-    setShowLogoutDialog(false);
-    onSignOut?.();
-  };
 
   return (
     <>
@@ -154,7 +133,10 @@ export const MobileNav = ({ activeTab, theme, onToggleTheme, userEmail, onSignOu
             {onSignOut && (
               <Button
                 variant="outline"
-                onClick={handleLogoutClick}
+                onClick={() => {
+                  onSignOut();
+                  setSettingsOpen(false);
+                }}
                 className="w-full gap-2 text-expense border-expense/30 hover:bg-expense/10 hover:text-expense"
               >
                 <LogOut className="w-4 h-4" />
@@ -164,30 +146,6 @@ export const MobileNav = ({ activeTab, theme, onToggleTheme, userEmail, onSignOu
           </div>
         </SheetContent>
       </Sheet>
-
-      {/* Logout Confirmation Dialog */}
-      <AlertDialog open={showLogoutDialog} onOpenChange={setShowLogoutDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Sair da conta?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Você realmente deseja sair da sua conta? Será necessário fazer login novamente para acessar seus dados.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction 
-              onClick={(e) => {
-                e.preventDefault();
-                handleConfirmLogout();
-              }} 
-              className="bg-expense hover:bg-expense/90"
-            >
-              Sair
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
     </>
   );
 };
