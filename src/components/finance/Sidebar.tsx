@@ -54,12 +54,12 @@ export const Sidebar = ({
         collapsed ? "justify-center" : "gap-3"
       )}>
         {/* Logo */}
-        <img src={logoDark} alt="FluxoCerto" className="w-10 h-10 rounded-lg flex-shrink-0 object-cover" />
+        <img src={logoDark} alt="FinanceX" className="w-10 h-10 rounded-lg flex-shrink-0 object-cover" />
         
         {!collapsed && (
           <div className="flex-1 min-w-0">
             <h1 className="text-sm font-semibold text-sidebar-primary-foreground truncate">
-              FluxoCerto
+              FinanceX
             </h1>
             <p className="text-xs text-sidebar-foreground/60 truncate">Controle Financeiro</p>
           </div>
