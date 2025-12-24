@@ -62,7 +62,6 @@ export const PeriodFilter = ({
   const [selectedPeriod, setSelectedPeriod] = useState<PeriodOption>('esteMes');
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [tempDateRange, setTempDateRange] = useState<DateRange | undefined>(undefined);
-  const [calendarMonth, setCalendarMonth] = useState<Date>(new Date());
   const [sheetOpen, setSheetOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -83,46 +82,37 @@ export const PeriodFilter = ({
     switch (period) {
       case 'maximo':
         range = null;
-        setCalendarOpen(false);
         break;
       case 'hoje':
         range = { start: today, end: today };
-        setCalendarOpen(false);
         break;
       case 'ontem': {
         const yesterday = subDays(today, 1);
         range = { start: yesterday, end: yesterday };
-        setCalendarOpen(false);
         break;
       }
       case 'ultimos7dias': {
         const weekAgo = subDays(today, 6);
         range = { start: weekAgo, end: today };
-        setCalendarOpen(false);
         break;
       }
       case 'esteMes':
         range = { start: startOfMonth(today), end: endOfMonth(today) };
-        setCalendarOpen(false);
         break;
       case 'mesPassado': {
         const lastMonth = subMonths(today, 1);
         range = { start: startOfMonth(lastMonth), end: endOfMonth(lastMonth) };
-        setCalendarOpen(false);
         break;
       }
       case 'esteAno':
         range = { start: startOfYear(today), end: endOfYear(today) };
-        setCalendarOpen(false);
         break;
       case 'personalizado':
         // Mantém o range atual ou inicia com o mês atual
         if (!customRange) {
           range = { start: startOfMonth(today), end: today };
-          setCalendarMonth(startOfMonth(today));
         } else {
           range = customRange;
-          setCalendarMonth(customRange.start);
         }
         setTempDateRange({ from: range.start, to: range.end });
         break;
@@ -138,13 +128,9 @@ export const PeriodFilter = ({
 
   const handleDateRangeSelect = (range: DateRange | undefined) => {
     setTempDateRange(range);
-  };
-  
-  const applyDateRange = () => {
-    if (tempDateRange?.from && tempDateRange?.to) {
-      onCustomRangeChange({ start: tempDateRange.from, end: tempDateRange.to });
+    if (range?.from && range?.to) {
+      onCustomRangeChange({ start: range.from, end: range.to });
     }
-    setCalendarOpen(false);
   };
 
   const navigateMonth = (direction: 'prev' | 'next') => {
@@ -255,30 +241,16 @@ export const PeriodFilter = ({
                 <CalendarIcon className="h-4 w-4" />
               </Button>
             </PopoverTrigger>
-            <PopoverContent 
-              className="w-auto p-0" 
-              align="end"
-              onInteractOutside={(e) => e.preventDefault()}
-            >
+            <PopoverContent className="w-auto p-0" align="end">
               <Calendar
                 mode="range"
                 selected={tempDateRange}
                 onSelect={handleDateRangeSelect}
-                month={calendarMonth}
-                onMonthChange={setCalendarMonth}
                 numberOfMonths={1}
                 locale={ptBR}
                 className="p-3 pointer-events-auto"
+                initialFocus
               />
-              <div className="p-3 pt-0 flex justify-end">
-                <Button 
-                  size="sm" 
-                  onClick={applyDateRange}
-                  disabled={!tempDateRange?.from || !tempDateRange?.to}
-                >
-                  Aplicar
-                </Button>
-              </div>
             </PopoverContent>
           </Popover>
         )}
@@ -361,28 +333,15 @@ export const PeriodFilter = ({
             
             {/* Calendário para personalizado */}
             {selectedPeriod === 'personalizado' && (
-              <div className="pt-4 flex flex-col items-center gap-3">
+              <div className="pt-4 flex justify-center">
                 <Calendar
                   mode="range"
                   selected={tempDateRange}
                   onSelect={handleDateRangeSelect}
-                  month={calendarMonth}
-                  onMonthChange={setCalendarMonth}
                   numberOfMonths={1}
                   locale={ptBR}
                   className="p-3 pointer-events-auto"
                 />
-                <Button 
-                  size="sm" 
-                  onClick={() => {
-                    applyDateRange();
-                    setSheetOpen(false);
-                  }}
-                  disabled={!tempDateRange?.from || !tempDateRange?.to}
-                  className="w-full max-w-[280px]"
-                >
-                  Aplicar
-                </Button>
               </div>
             )}
           </div>
