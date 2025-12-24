@@ -13,8 +13,6 @@ interface DashboardProps {
     receitas: number;
     despesas: number;
     saldo: number;
-    saldoPeriodo: number;
-    saldoAnterior: number;
   };
   customRange: CustomDateRange | null;
   onCustomRangeChange: (range: CustomDateRange | null) => void;
@@ -120,16 +118,16 @@ export const Dashboard = ({
       </div>
 
       {/* Cards */}
-      <div className="grid grid-cols-3 gap-3 md:gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-6">
         {/* Receitas */}
-        <div className="bg-card border border-border rounded-xl p-3 md:p-5 shadow-sm animate-fade-in hover:shadow-lg hover:scale-[1.02] transition-all duration-300" style={{ animationDelay: '0.1s', animationDuration: '0.5s', animationFillMode: 'both' }}>
-          <div className="flex items-center gap-2 md:gap-3">
-            <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-income/10 flex items-center justify-center animate-scale-in" style={{ animationDelay: '0.2s', animationDuration: '0.4s', animationFillMode: 'both' }}>
-              <TrendingUp className="w-4 h-4 md:w-5 md:h-5 text-income" />
+        <div className="bg-card border border-border rounded-xl p-4 md:p-6 shadow-sm animate-fade-in hover:shadow-lg hover:scale-[1.02] transition-all duration-300" style={{ animationDelay: '0.1s', animationDuration: '0.5s', animationFillMode: 'both' }}>
+          <div className="flex items-center gap-3 md:gap-4">
+            <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-income/10 flex items-center justify-center animate-scale-in" style={{ animationDelay: '0.2s', animationDuration: '0.4s', animationFillMode: 'both' }}>
+              <TrendingUp className="w-5 h-5 md:w-6 md:h-6 text-income" />
             </div>
             <div className="min-w-0 flex-1">
-              <p className="text-[10px] md:text-xs text-muted-foreground">Receitas</p>
-              <p className="text-sm md:text-lg font-bold text-income truncate">
+              <p className="text-xs md:text-sm text-muted-foreground">Receitas</p>
+              <p className="text-lg md:text-2xl font-bold text-income truncate">
                 {formatValue(totals.receitas)}
               </p>
             </div>
@@ -137,29 +135,29 @@ export const Dashboard = ({
         </div>
 
         {/* Despesas */}
-        <div className="bg-card border border-border rounded-xl p-3 md:p-5 shadow-sm animate-fade-in hover:shadow-lg hover:scale-[1.02] transition-all duration-300" style={{ animationDelay: '0.15s', animationDuration: '0.5s', animationFillMode: 'both' }}>
-          <div className="flex items-center gap-2 md:gap-3">
-            <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-expense/10 flex items-center justify-center animate-scale-in" style={{ animationDelay: '0.25s', animationDuration: '0.4s', animationFillMode: 'both' }}>
-              <TrendingDown className="w-4 h-4 md:w-5 md:h-5 text-expense" />
+        <div className="bg-card border border-border rounded-xl p-4 md:p-6 shadow-sm animate-fade-in hover:shadow-lg hover:scale-[1.02] transition-all duration-300" style={{ animationDelay: '0.15s', animationDuration: '0.5s', animationFillMode: 'both' }}>
+          <div className="flex items-center gap-3 md:gap-4">
+            <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-expense/10 flex items-center justify-center animate-scale-in" style={{ animationDelay: '0.25s', animationDuration: '0.4s', animationFillMode: 'both' }}>
+              <TrendingDown className="w-5 h-5 md:w-6 md:h-6 text-expense" />
             </div>
             <div className="min-w-0 flex-1">
-              <p className="text-[10px] md:text-xs text-muted-foreground">Despesas</p>
-              <p className="text-sm md:text-lg font-bold text-expense truncate">
+              <p className="text-xs md:text-sm text-muted-foreground">Despesas</p>
+              <p className="text-lg md:text-2xl font-bold text-expense truncate">
                 {formatValue(totals.despesas)}
               </p>
             </div>
           </div>
         </div>
 
-        {/* Saldo Total */}
-        <div className="bg-card border border-border rounded-xl p-3 md:p-5 shadow-sm animate-fade-in hover:shadow-lg hover:scale-[1.02] transition-all duration-300" style={{ animationDelay: '0.2s', animationDuration: '0.5s', animationFillMode: 'both' }}>
-          <div className="flex items-center gap-2 md:gap-3">
-            <div className="w-8 h-8 md:w-10 md:h-10 rounded-full bg-primary/10 flex items-center justify-center animate-scale-in" style={{ animationDelay: '0.3s', animationDuration: '0.4s', animationFillMode: 'both' }}>
-              <Wallet className="w-4 h-4 md:w-5 md:h-5 text-primary" />
+        {/* Saldo */}
+        <div className="bg-card border border-border rounded-xl p-4 md:p-6 shadow-sm animate-fade-in hover:shadow-lg hover:scale-[1.02] transition-all duration-300" style={{ animationDelay: '0.2s', animationDuration: '0.5s', animationFillMode: 'both' }}>
+          <div className="flex items-center gap-3 md:gap-4">
+            <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-primary/10 flex items-center justify-center animate-scale-in" style={{ animationDelay: '0.3s', animationDuration: '0.4s', animationFillMode: 'both' }}>
+              <Wallet className="w-5 h-5 md:w-6 md:h-6 text-primary" />
             </div>
             <div className="min-w-0 flex-1">
-              <p className="text-[10px] md:text-xs text-muted-foreground">Saldo Total</p>
-              <p className={`text-sm md:text-lg font-bold truncate ${totals.saldo >= 0 ? 'text-income' : 'text-expense'}`}>
+              <p className="text-xs md:text-sm text-muted-foreground">Saldo</p>
+              <p className={`text-lg md:text-2xl font-bold truncate ${totals.saldo >= 0 ? 'text-income' : 'text-expense'}`}>
                 {formatValue(totals.saldo)}
               </p>
             </div>
