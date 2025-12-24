@@ -81,11 +81,10 @@ const Index = () => {
   }, [user]);
 
   const handleSignOut = async () => {
+    // Navega primeiro para evitar que o usuário veja o dashboard
+    navigate('/login', { replace: true });
+    // Depois faz o signOut
     await signOut();
-    // Pequeno delay para garantir que o estado de auth seja atualizado
-    setTimeout(() => {
-      navigate('/login');
-    }, 100);
   };
 
   if (authLoading || showSplash) {
