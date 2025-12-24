@@ -1,8 +1,11 @@
+import { Search, Bell, MessageSquare, Eye, EyeOff } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface MobileHeaderProps {
   userName?: string;
   userEmail?: string;
+  showValues?: boolean;
+  onToggleValues?: () => void;
 }
 
 // Função para extrair iniciais do nome ou email
@@ -35,7 +38,9 @@ const getFirstName = (name?: string, email?: string): string => {
 
 export const MobileHeader = ({ 
   userName, 
-  userEmail
+  userEmail, 
+  showValues = true,
+  onToggleValues 
 }: MobileHeaderProps) => {
   const initials = getInitials(userName, userEmail);
   const firstName = getFirstName(userName, userEmail);
@@ -52,13 +57,31 @@ export const MobileHeader = ({
               <div className="w-10 h-10 rounded-full bg-card flex items-center justify-center shadow-md flex-shrink-0">
                 <span className="text-sm font-bold text-foreground">{initials}</span>
               </div>
-            <span className="text-base font-semibold text-primary-foreground truncate">
-              {firstName}
-            </span>
+              <span className="text-base font-semibold text-primary-foreground truncate">
+                {firstName}
+              </span>
+            </div>
+
+            {/* Ícones de ação */}
+            <div className="flex items-center flex-shrink-0">
+              {/* Botão de mostrar/ocultar valores */}
+              {onToggleValues && (
+                <button
+                  onClick={onToggleValues}
+                  className="p-2 rounded-full hover:bg-primary-foreground/10 transition-colors"
+                  aria-label={showValues ? 'Ocultar valores' : 'Mostrar valores'}
+                >
+                  {showValues ? (
+                    <Eye className="w-5 h-5 text-primary-foreground" />
+                  ) : (
+                    <EyeOff className="w-5 h-5 text-primary-foreground" />
+                  )}
+                </button>
+              )}
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
       {/* Curva de transição */}
       <div className="relative h-4 -mt-0">

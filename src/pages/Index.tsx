@@ -160,7 +160,11 @@ const Index = () => {
         {/* Conteúdo principal */}
         <main className="flex-1 flex flex-col overflow-auto bg-background pb-20 md:pb-0">
           {/* Mobile Header */}
-          <MobileHeader userEmail={user.email} />
+          <MobileHeader 
+            userEmail={user.email}
+            showValues={showValues}
+            onToggleValues={toggleValuesVisibility}
+          />
 
           <div key={activeTab} className="animate-fade-in flex-1" style={{ animationDuration: '0.3s' }}>
             {activeTab === 'dashboard' ? (
