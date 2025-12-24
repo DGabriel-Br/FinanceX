@@ -81,7 +81,10 @@ const Index = () => {
 
   const handleSignOut = async () => {
     await signOut();
-    navigate('/login');
+    // Pequeno delay para garantir que o estado de auth seja atualizado
+    setTimeout(() => {
+      navigate('/login');
+    }, 100);
   };
 
   if (authLoading || showSplash) {
