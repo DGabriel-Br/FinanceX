@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback } from 'react';
-import { Plus, TrendingUp, PieChart, CalendarIcon, Wallet, Target, Pencil, X, Check, ArrowDownToLine, History, ChevronLeft, ChevronRight, ArrowUpRight, ArrowDownLeft } from 'lucide-react';
+import { Plus, TrendingUp, PieChart, CalendarIcon, Wallet, Target, Pencil, X, Check, ArrowDownToLine, History, ChevronLeft, ChevronRight, ArrowUpRight, ArrowDownLeft, Eye, EyeOff } from 'lucide-react';
 import { Transaction } from '@/types/transaction';
 import { 
   InvestmentType, 
@@ -9,7 +9,7 @@ import {
   extractInvestmentType 
 } from '@/types/investment';
 import { useInvestmentGoals } from '@/hooks/useInvestmentGoals';
-import { PeriodFilter, CustomDateRange } from './PeriodFilter';
+import { CustomDateRange } from './PeriodFilter';
 import { cn } from '@/lib/utils';
 import { PieChart as RechartsPieChart, Pie, Cell, ResponsiveContainer, Sector } from 'recharts';
 import {
@@ -386,27 +386,35 @@ export const Investments = ({
     <div className="p-4 md:p-8">
       {/* Header */}
       <div 
-        className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 mb-6 md:mb-8 opacity-0 animate-fade-in"
+        className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 md:mb-8 opacity-0 animate-fade-in"
         style={{ animationDelay: '0.05s' }}
       >
-        <div className="min-w-0 shrink-0">
-          <h2 className="text-xl md:text-2xl font-bold text-foreground">Investimentos</h2>
-          <p className="text-sm md:text-base text-muted-foreground mt-1 hidden sm:block">Acompanhe seus aportes</p>
+        <div>
+          <h2 className="text-xl md:text-2xl font-bold text-foreground">Controle de Investimentos</h2>
+          <p className="text-sm md:text-base text-muted-foreground mt-1">Acompanhe seus aportes</p>
         </div>
-        <PeriodFilter 
-          customRange={customRange}
-          onCustomRangeChange={onCustomRangeChange}
-          showValues={showValues}
-          onToggleValues={onToggleValues}
-          hideToggleOnMobile
-          customAction={
-            <Dialog open={isWithdrawDialogOpen} onOpenChange={setIsWithdrawDialogOpen}>
-              <DialogTrigger asChild>
-                <Button size="sm" className="gap-2 h-9">
-                  <ArrowDownToLine className="w-4 h-4" />
-                  <span>Resgatar</span>
-                </Button>
-              </DialogTrigger>
+        
+        <div className="flex items-center gap-2 w-full sm:w-auto">
+          {/* Toggle ocultar valores */}
+          {onToggleValues && (
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={onToggleValues}
+              title={showValues ? 'Ocultar valores' : 'Exibir valores'}
+              className="h-10 w-10 shrink-0"
+            >
+              {showValues ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+            </Button>
+          )}
+          
+          <Dialog open={isWithdrawDialogOpen} onOpenChange={setIsWithdrawDialogOpen}>
+            <DialogTrigger asChild>
+              <button className="flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg bg-primary text-primary-foreground font-medium text-sm transition-all duration-200 hover:bg-primary/90 flex-1 sm:flex-initial">
+                <ArrowDownToLine className="w-4 h-4" />
+                Resgatar
+              </button>
+            </DialogTrigger>
               <DialogContent className="max-w-md">
                 <DialogHeader>
                   <DialogTitle>Resgatar Investimento</DialogTitle>
@@ -484,8 +492,7 @@ export const Investments = ({
                 </div>
               </DialogContent>
             </Dialog>
-          }
-        />
+        </div>
       </div>
 
       {/* Cards de resumo */}
