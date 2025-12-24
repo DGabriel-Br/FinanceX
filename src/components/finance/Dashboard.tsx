@@ -110,13 +110,13 @@ export const Dashboard = ({
           <h2 className="text-xl md:text-2xl font-bold text-foreground">Dashboard</h2>
           <p className="text-sm md:text-base text-muted-foreground mt-1 hidden sm:block">Resumo das suas finanças</p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-start gap-2">
           <Button
             variant="outline"
             size="icon"
             onClick={onToggleValues}
             title={showValues ? 'Ocultar valores' : 'Exibir valores'}
-            className="h-9 w-9"
+            className="h-9 w-9 mt-0"
           >
             {showValues ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
           </Button>
