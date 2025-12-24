@@ -58,8 +58,8 @@ export const MobileHeader = ({
         !isAtTop && "shadow-md"
       )}
     >
-      {/* Header com fundo primary */}
-      <div className="bg-primary safe-area-top">
+      {/* Header com fundo mobile-header */}
+      <div className="bg-mobile-header safe-area-top">
         {/* Conteúdo do header */}
         <div className="px-4 py-3">
           <div className="flex items-center justify-between w-full">
@@ -69,10 +69,10 @@ export const MobileHeader = ({
                 <span className="text-sm font-bold text-foreground">{initials}</span>
               </div>
               <div className="flex flex-col min-w-0">
-                <span className="text-xs text-primary-foreground/80">
+                <span className="text-xs text-mobile-header-foreground/70">
                   Bem-vindo(a),
                 </span>
-                <span className="text-base font-semibold text-primary-foreground truncate">
+                <span className="text-base font-semibold text-mobile-header-foreground truncate">
                   {firstName}
                 </span>
               </div>
@@ -84,13 +84,13 @@ export const MobileHeader = ({
               {onToggleValues && (
                 <button
                   onClick={onToggleValues}
-                  className="p-2 rounded-full hover:bg-primary-foreground/10 transition-colors"
+                  className="p-2 rounded-full hover:bg-mobile-header-foreground/10 transition-colors"
                   aria-label={showValues ? 'Ocultar valores' : 'Mostrar valores'}
                 >
                   {showValues ? (
-                    <Eye className="w-5 h-5 text-primary-foreground" />
+                    <Eye className="w-5 h-5 text-mobile-header-foreground" />
                   ) : (
-                    <EyeOff className="w-5 h-5 text-primary-foreground" />
+                    <EyeOff className="w-5 h-5 text-mobile-header-foreground" />
                   )}
                 </button>
               )}
@@ -101,7 +101,7 @@ export const MobileHeader = ({
 
       {/* Curva de transição */}
       <div className="relative h-4 -mt-0">
-        <div className="absolute inset-0 bg-primary" />
+        <div className="absolute inset-0 bg-mobile-header" />
         <div className="absolute inset-0 bg-background rounded-t-3xl" />
       </div>
     </div>

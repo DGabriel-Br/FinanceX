@@ -63,6 +63,11 @@ export default {
         // Cores financeiras
         income: "hsl(var(--income))",
         expense: "hsl(var(--expense))",
+        // Mobile header
+        "mobile-header": {
+          DEFAULT: "hsl(var(--mobile-header))",
+          foreground: "hsl(var(--mobile-header-foreground))",
+        },
       },
       borderRadius: {
         lg: "var(--radius)",
