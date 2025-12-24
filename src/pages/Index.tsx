@@ -67,7 +67,7 @@ const Index = () => {
   // Redirecionar para login se não autenticado
   useEffect(() => {
     if (!authLoading && !user) {
-      navigate('/auth');
+      navigate('/login');
     }
   }, [user, authLoading, navigate]);
 
@@ -81,7 +81,7 @@ const Index = () => {
 
   const handleSignOut = async () => {
     await signOut();
-    navigate('/auth');
+    navigate('/login');
   };
 
   if (authLoading || showSplash) {
