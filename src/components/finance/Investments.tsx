@@ -691,16 +691,16 @@ export const Investments = ({
           </div>
           
           {investmentsByType.length > 0 ? (
-            <>
-              <div className="h-64">
+            <div className="flex flex-col sm:flex-row items-center gap-6">
+              <div className="w-40 h-40 shrink-0">
                 <ResponsiveContainer width="100%" height="100%">
                   <RechartsPieChart>
                     <Pie
                       data={investmentsByType}
                       cx="50%"
                       cy="50%"
-                      innerRadius={50}
-                      outerRadius={80}
+                      innerRadius={35}
+                      outerRadius={55}
                       paddingAngle={2}
                       dataKey="value"
                       activeIndex={activeIndex}
@@ -723,7 +723,7 @@ export const Investments = ({
                   </RechartsPieChart>
                 </ResponsiveContainer>
               </div>
-              <div className="mt-4 space-y-2">
+              <div className="flex-1 space-y-2 w-full">
                 {investmentsByType.map((item, index) => {
                   const Icon = item.Icon;
                   const percentage = (item.value / totalInvested) * 100;
@@ -739,15 +739,15 @@ export const Investments = ({
                     >
                       <div className="flex items-center gap-2">
                         <div 
-                          className="w-8 h-8 rounded-lg flex items-center justify-center"
+                          className="w-7 h-7 rounded-lg flex items-center justify-center"
                           style={{ backgroundColor: `${item.color}20` }}
                         >
-                          <Icon className="w-4 h-4" style={{ color: item.color }} />
+                          <Icon className="w-3.5 h-3.5" style={{ color: item.color }} />
                         </div>
-                        <span className="text-foreground font-medium">{item.name}</span>
+                        <span className="text-foreground font-medium text-sm">{item.name}</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="font-medium text-foreground">{formatCurrency(item.value)}</span>
+                        <span className="font-medium text-foreground text-sm">{formatCurrency(item.value)}</span>
                         <span className="text-xs text-muted-foreground w-12 text-right">
                           {percentage.toFixed(1)}%
                         </span>
@@ -756,7 +756,7 @@ export const Investments = ({
                   );
                 })}
               </div>
-            </>
+            </div>
           ) : (
             <div className="h-64 flex flex-col items-center justify-center">
               <TrendingUp className="w-12 h-12 text-muted-foreground mb-4" />
