@@ -48,7 +48,7 @@ export const MobileHeader = ({
   return (
     <div className="md:hidden w-full">
       {/* Header com fundo primary */}
-      <div className="bg-primary px-4 pt-8 pb-8 safe-area-top">
+      <div className="bg-primary px-4 pt-14 pb-8 safe-area-top">
         <div className="flex items-center justify-between w-full">
           {/* Avatar e Nome */}
           <div className="flex items-center gap-3 flex-1 min-w-0">
