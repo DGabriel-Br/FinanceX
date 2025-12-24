@@ -30,6 +30,7 @@ const Index = () => {
   const activeTab = getTabFromPath(location.pathname);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [showSplash, setShowSplash] = useState(true);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
   const { theme, toggleTheme } = useTheme();
   const { user, loading: authLoading, signOut } = useAuth();
   const { showValues, toggleValuesVisibility, formatValue } = useValuesVisibility();
@@ -81,13 +82,15 @@ const Index = () => {
   }, [user]);
 
   const handleSignOut = async () => {
-    // Navega primeiro para evitar que o usuário veja o dashboard
-    navigate('/login', { replace: true });
-    // Depois faz o signOut
+    setIsLoggingOut(true);
     await signOut();
+    // Aguarda um pequeno delay para a animação
+    setTimeout(() => {
+      navigate('/login', { replace: true });
+    }, 1000);
   };
 
-  if (authLoading || showSplash) {
+  if (authLoading || showSplash || isLoggingOut) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-background">
         {/* Logo animada */}
@@ -103,7 +106,7 @@ const Index = () => {
           FinanceX
         </h1>
         <p className="text-sm text-muted-foreground animate-fade-in" style={{ animationDelay: '0.1s' }}>
-          Carregando seu controle financeiro...
+          {isLoggingOut ? 'Saindo...' : 'Carregando seu controle financeiro...'}
         </p>
         
         {/* Barra de progresso */}
