@@ -187,7 +187,10 @@ export default function Auth() {
       </div>
 
       {/* Right Side - Auth Form - Always light background */}
-      <div className="flex-1 flex items-center justify-center p-6 lg:p-12" style={{ backgroundColor: 'hsl(210, 20%, 98%)' }}>
+      <div 
+        className="flex-1 flex items-center justify-center p-6 lg:p-12"
+        style={{ backgroundColor: '#f5f7fa', transition: 'none' }}
+      >
         <div className="w-full max-w-sm">
           
           {/* Logo - apenas mobile */}
