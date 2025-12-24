@@ -11,8 +11,6 @@ interface TransactionsProps {
   onUpdate: (id: string, updates: Partial<Omit<Transaction, 'id' | 'createdAt'>>) => void;
   onDelete: (id: string) => void;
   formatValue?: (value: number) => string;
-  showValues?: boolean;
-  onToggleValues?: () => void;
 }
 
 export const Transactions = ({
@@ -23,8 +21,6 @@ export const Transactions = ({
   onUpdate,
   onDelete,
   formatValue,
-  showValues,
-  onToggleValues,
 }: TransactionsProps) => {
   return (
     <div className="p-4 md:p-8">
@@ -40,9 +36,6 @@ export const Transactions = ({
         <PeriodFilter 
           customRange={customRange}
           onCustomRangeChange={onCustomRangeChange}
-          showValues={showValues}
-          onToggleValues={onToggleValues}
-          hideToggleOnMobile
         />
       </div>
 
@@ -65,7 +58,6 @@ export const Transactions = ({
             transactions={transactions}
             onUpdate={onUpdate}
             onDelete={onDelete}
-            formatValue={formatValue}
           />
         </div>
       </div>

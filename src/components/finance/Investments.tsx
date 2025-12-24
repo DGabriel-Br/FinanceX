@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback } from 'react';
-import { Plus, TrendingUp, PieChart, CalendarIcon, Wallet, Target, Pencil, X, Check, ArrowDownToLine, History, ChevronLeft, ChevronRight, ArrowUpRight, ArrowDownLeft, Eye, EyeOff } from 'lucide-react';
+import { Plus, TrendingUp, PieChart, CalendarIcon, Wallet, Target, Pencil, X, Check, ArrowDownToLine, History, ChevronLeft, ChevronRight, ArrowUpRight, ArrowDownLeft } from 'lucide-react';
 import { Transaction } from '@/types/transaction';
 import { 
   InvestmentType, 
@@ -9,7 +9,7 @@ import {
   extractInvestmentType 
 } from '@/types/investment';
 import { useInvestmentGoals } from '@/hooks/useInvestmentGoals';
-import { CustomDateRange } from './PeriodFilter';
+import { PeriodFilter, CustomDateRange } from './PeriodFilter';
 import { cn } from '@/lib/utils';
 import { PieChart as RechartsPieChart, Pie, Cell, ResponsiveContainer, Sector } from 'recharts';
 import {
@@ -37,8 +37,6 @@ interface InvestmentsProps {
   onNavigateToTransactions?: () => void;
   onAddTransaction?: (transaction: Omit<Transaction, 'id' | 'createdAt'>) => Promise<void>;
   formatValue?: (value: number) => string;
-  showValues?: boolean;
-  onToggleValues?: () => void;
 }
 
 // Formatar valor em Real brasileiro
@@ -74,9 +72,6 @@ const renderActiveShape = (props: any) => {
     fill, payload, percent, value
   } = props;
 
-  // Usa o formatter do payload se disponível, senão formatCurrency
-  const formatter = payload.formatter || formatCurrency;
-
   return (
     <g>
       <Sector
@@ -96,7 +91,7 @@ const renderActiveShape = (props: any) => {
         {payload.name}
       </text>
       <text x={cx} y={cy + 10} textAnchor="middle" fill="hsl(var(--muted-foreground))" fontSize={12}>
-        {formatter(value)}
+        {formatCurrency(value)}
       </text>
       <text x={cx} y={cy + 26} textAnchor="middle" fill="hsl(var(--muted-foreground))" fontSize={11}>
         {`${(percent * 100).toFixed(1)}%`}
@@ -122,13 +117,8 @@ export const Investments = ({
   customRange, 
   onCustomRangeChange,
   onNavigateToTransactions,
-  onAddTransaction,
-  formatValue,
-  showValues,
-  onToggleValues,
+  onAddTransaction 
 }: InvestmentsProps) => {
-  // Helper para formatar valores usando o prop ou fallback
-  const displayValue = (value: number) => formatValue ? formatValue(value) : formatCurrency(value);
   const [activeIndex, setActiveIndex] = useState<number | undefined>(undefined);
   const [isGoalsDialogOpen, setIsGoalsDialogOpen] = useState(false);
   const [editingGoal, setEditingGoal] = useState<InvestmentType | null>(null);
@@ -265,11 +255,10 @@ export const Investments = ({
         value,
         color: investmentTypeColors[type],
         Icon: investmentTypeIcons[type],
-        formatter: displayValue,
       }))
       .filter(item => item.value > 0)
       .sort((a, b) => b.value - a.value);
-  }, [investmentTransactions, withdrawalTransactions, displayValue]);
+  }, [investmentTransactions, withdrawalTransactions]);
 
   // Total investido no período (aportes - resgates)
   const totalInvested = useMemo(() => {
@@ -386,112 +375,103 @@ export const Investments = ({
     <div className="p-4 md:p-8">
       {/* Header */}
       <div 
-        className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 md:mb-8 opacity-0 animate-fade-in"
+        className="flex items-start justify-between gap-3 mb-6 md:mb-8 opacity-0 animate-fade-in"
         style={{ animationDelay: '0.05s' }}
       >
-        <div>
-          <h2 className="text-xl md:text-2xl font-bold text-foreground">Controle de Investimentos</h2>
-          <p className="text-sm md:text-base text-muted-foreground mt-1">Acompanhe seus aportes</p>
+        <div className="min-w-0 flex-1">
+          <h2 className="text-xl md:text-2xl font-bold text-foreground">Investimentos</h2>
+          <p className="text-sm md:text-base text-muted-foreground mt-1 hidden sm:block">Acompanhe seus aportes</p>
         </div>
-        
-        <div className="flex items-center gap-2 w-full sm:w-auto">
-          {/* Toggle ocultar valores - visível apenas em desktop */}
-          {onToggleValues && (
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={onToggleValues}
-              title={showValues ? 'Ocultar valores' : 'Exibir valores'}
-              className="h-10 w-10 shrink-0 hidden sm:flex"
-            >
-              {showValues ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
-            </Button>
-          )}
-          
+        <div className="flex items-center gap-2">
           <Dialog open={isWithdrawDialogOpen} onOpenChange={setIsWithdrawDialogOpen}>
             <DialogTrigger asChild>
-              <button className="flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg bg-primary text-primary-foreground font-medium text-sm transition-all duration-200 hover:bg-primary/90 flex-1 sm:flex-initial">
+              <Button variant="outline" size="sm" className="gap-2">
                 <ArrowDownToLine className="w-4 h-4" />
-                Resgatar
-              </button>
+                <span className="hidden sm:inline">Resgatar</span>
+              </Button>
             </DialogTrigger>
-              <DialogContent className="max-w-md">
-                <DialogHeader>
-                  <DialogTitle>Resgatar Investimento</DialogTitle>
-                </DialogHeader>
-                <div className="space-y-4 mt-4">
-                  <p className="text-sm text-muted-foreground">
-                    Registre um resgate ou venda de ativo. O valor será adicionado como receita nos lançamentos.
-                  </p>
-                  
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Tipo de Investimento</label>
-                    <Select value={withdrawType} onValueChange={(v) => setWithdrawType(v as InvestmentType)}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {allInvestmentTypes.map(type => {
-                          const Icon = investmentTypeIcons[type];
-                          return (
-                            <SelectItem key={type} value={type}>
-                              <div className="flex items-center gap-2">
-                                <Icon className="w-4 h-4" />
-                                <span>{investmentTypeLabels[type]}</span>
-                              </div>
-                            </SelectItem>
-                          );
-                        })}
-                      </SelectContent>
-                    </Select>
-                  </div>
+            <DialogContent className="max-w-md">
+              <DialogHeader>
+                <DialogTitle>Resgatar Investimento</DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4 mt-4">
+                <p className="text-sm text-muted-foreground">
+                  Registre um resgate ou venda de ativo. O valor será adicionado como receita nos lançamentos.
+                </p>
+                
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-foreground">Tipo de Investimento</label>
+                  <Select value={withdrawType} onValueChange={(v) => setWithdrawType(v as InvestmentType)}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {allInvestmentTypes.map(type => {
+                        const Icon = investmentTypeIcons[type];
+                        return (
+                          <SelectItem key={type} value={type}>
+                            <div className="flex items-center gap-2">
+                              <Icon className="w-4 h-4" />
+                              <span>{investmentTypeLabels[type]}</span>
+                            </div>
+                          </SelectItem>
+                        );
+                      })}
+                    </SelectContent>
+                  </Select>
+                </div>
 
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Valor do Resgate</label>
-                    <div className="relative">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">R$</span>
-                      <input
-                        type="text"
-                        inputMode="numeric"
-                        value={withdrawValue}
-                        onChange={e => setWithdrawValue(formatCurrencyInput(e.target.value))}
-                        placeholder="0,00"
-                        className="w-full pl-10 pr-4 py-2 rounded-lg border border-input bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Descrição (opcional)</label>
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-foreground">Valor do Resgate</label>
+                  <div className="relative">
+                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">R$</span>
                     <input
                       type="text"
-                      value={withdrawDescription}
-                      onChange={e => setWithdrawDescription(e.target.value)}
-                      placeholder={`Resgate ${investmentTypeLabels[withdrawType]}`}
-                      className="w-full px-4 py-2 rounded-lg border border-input bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                      inputMode="numeric"
+                      value={withdrawValue}
+                      onChange={e => setWithdrawValue(formatCurrencyInput(e.target.value))}
+                      placeholder="0,00"
+                      className="w-full pl-10 pr-4 py-2 rounded-lg border border-input bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                     />
                   </div>
-
-                  <div className="flex gap-3 pt-2">
-                    <Button 
-                      variant="outline" 
-                      className="flex-1" 
-                      onClick={() => setIsWithdrawDialogOpen(false)}
-                      disabled={isSubmitting}
-                    >
-                      Cancelar
-                    </Button>
-                    <Button 
-                      className="flex-1 gap-2"
-                      onClick={handleWithdraw}
-                      disabled={isSubmitting || !withdrawValue}
-                    >
-                      {isSubmitting ? 'Registrando...' : 'Confirmar Resgate'}
-                    </Button>
-                  </div>
                 </div>
-              </DialogContent>
-            </Dialog>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium text-foreground">Descrição (opcional)</label>
+                  <input
+                    type="text"
+                    value={withdrawDescription}
+                    onChange={e => setWithdrawDescription(e.target.value)}
+                    placeholder={`Resgate ${investmentTypeLabels[withdrawType]}`}
+                    className="w-full px-4 py-2 rounded-lg border border-input bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                  />
+                </div>
+
+                <div className="flex gap-3 pt-2">
+                  <Button 
+                    variant="outline" 
+                    className="flex-1" 
+                    onClick={() => setIsWithdrawDialogOpen(false)}
+                    disabled={isSubmitting}
+                  >
+                    Cancelar
+                  </Button>
+                  <Button 
+                    className="flex-1 gap-2"
+                    onClick={handleWithdraw}
+                    disabled={isSubmitting || !withdrawValue}
+                  >
+                    {isSubmitting ? 'Registrando...' : 'Confirmar Resgate'}
+                  </Button>
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
+          
+          <PeriodFilter 
+            customRange={customRange}
+            onCustomRangeChange={onCustomRangeChange}
+          />
         </div>
       </div>
 
@@ -508,7 +488,7 @@ export const Investments = ({
             <div className="min-w-0">
               <p className="text-xs md:text-sm text-muted-foreground truncate">No Período</p>
               <p className="text-sm md:text-2xl font-bold text-primary truncate">
-                {displayValue(totalInvested)}
+                {formatCurrency(totalInvested)}
               </p>
             </div>
           </div>
@@ -525,7 +505,7 @@ export const Investments = ({
             <div className="min-w-0">
               <p className="text-xs md:text-sm text-muted-foreground truncate">Total</p>
               <p className="text-sm md:text-2xl font-bold text-income truncate">
-                {displayValue(totalInvestedAllTime)}
+                {formatCurrency(totalInvestedAllTime)}
               </p>
             </div>
           </div>
@@ -647,7 +627,7 @@ export const Investments = ({
                       ) : (
                         <div className="flex items-center gap-2">
                           <span className="text-sm text-muted-foreground">
-                            {currentGoal ? displayValue(currentGoal) : 'Sem meta'}
+                            {currentGoal ? formatCurrency(currentGoal) : 'Sem meta'}
                           </span>
                           <button
                             onClick={() => handleEditGoal(type)}
@@ -678,7 +658,7 @@ export const Investments = ({
                     </div>
                     <div className="flex items-center gap-3 text-sm">
                       <span className="text-muted-foreground">
-                        {displayValue(goal.invested)} / {displayValue(goal.target)}
+                        {formatCurrency(goal.invested)} / {formatCurrency(goal.target)}
                       </span>
                       <span 
                         className={cn(
@@ -701,7 +681,7 @@ export const Investments = ({
                   </div>
                   {goal.progress < 100 && (
                     <p className="text-xs text-muted-foreground mt-1">
-                      Faltam {displayValue(goal.remaining)} para atingir a meta
+                      Faltam {formatCurrency(goal.remaining)} para atingir a meta
                     </p>
                   )}
                   {goal.progress >= 100 && (
@@ -792,7 +772,7 @@ export const Investments = ({
                         <span className="text-foreground font-medium">{item.name}</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <span className="font-medium text-foreground">{displayValue(item.value)}</span>
+                        <span className="font-medium text-foreground">{formatCurrency(item.value)}</span>
                         <span className="text-xs text-muted-foreground w-12 text-right">
                           {percentage.toFixed(1)}%
                         </span>
@@ -887,7 +867,7 @@ export const Investments = ({
                         "font-semibold text-sm",
                         isResgate ? "text-expense" : "text-income"
                       )}>
-                        {isResgate ? '-' : '+'}{displayValue(activity.value)}
+                        {isResgate ? '-' : '+'}{formatCurrency(activity.value)}
                       </span>
                     </div>
                   </div>

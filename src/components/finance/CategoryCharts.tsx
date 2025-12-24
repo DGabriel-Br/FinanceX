@@ -5,7 +5,6 @@ import { Transaction, expenseCategoryLabels, incomeCategoryLabels, ExpenseCatego
 
 interface CategoryChartsProps {
   transactions: Transaction[];
-  formatValue?: (value: number) => string;
 }
 
 // Cores para as categorias
@@ -43,9 +42,6 @@ const renderActiveShape = (props: any) => {
     fill, payload, percent, value
   } = props;
 
-  // Usa o formatter do payload se disponível, senão formatCurrency
-  const formatter = payload.formatter || formatCurrency;
-
   return (
     <g>
       {/* Fatia expandida */}
@@ -67,7 +63,7 @@ const renderActiveShape = (props: any) => {
         {payload.name}
       </text>
       <text x={cx} y={cy + 10} textAnchor="middle" fill="hsl(var(--muted-foreground))" fontSize={12}>
-        {formatter(value)}
+        {formatCurrency(value)}
       </text>
       <text x={cx} y={cy + 26} textAnchor="middle" fill="hsl(var(--muted-foreground))" fontSize={11}>
         {`${(percent * 100).toFixed(1)}%`}
@@ -76,12 +72,9 @@ const renderActiveShape = (props: any) => {
   );
 };
 
-export const CategoryCharts = ({ transactions, formatValue }: CategoryChartsProps) => {
+export const CategoryCharts = ({ transactions }: CategoryChartsProps) => {
   const [activeExpenseIndex, setActiveExpenseIndex] = useState<number | undefined>(undefined);
   const [activeIncomeIndex, setActiveIncomeIndex] = useState<number | undefined>(undefined);
-  
-  // Helper para formatar valores
-  const displayValue = (value: number) => formatValue ? formatValue(value) : formatCurrency(value);
 
   // Agrupa despesas por categoria
   const expenseData = useMemo(() => {
@@ -99,11 +92,10 @@ export const CategoryCharts = ({ transactions, formatValue }: CategoryChartsProp
         name: expenseCategoryLabels[category] || category,
         value,
         color: EXPENSE_COLORS[index % EXPENSE_COLORS.length],
-        formatter: displayValue,
       }))
       .filter(item => item.value > 0)
       .sort((a, b) => b.value - a.value);
-  }, [transactions, displayValue]);
+  }, [transactions]);
 
   // Agrupa receitas por categoria
   const incomeData = useMemo(() => {
@@ -121,11 +113,10 @@ export const CategoryCharts = ({ transactions, formatValue }: CategoryChartsProp
         name: incomeCategoryLabels[category] || category,
         value,
         color: INCOME_COLORS[index % INCOME_COLORS.length],
-        formatter: displayValue,
       }))
       .filter(item => item.value > 0)
       .sort((a, b) => b.value - a.value);
-  }, [transactions, displayValue]);
+  }, [transactions]);
 
   const totalExpenses = expenseData.reduce((sum, item) => sum + item.value, 0);
   const totalIncome = incomeData.reduce((sum, item) => sum + item.value, 0);
@@ -214,7 +205,7 @@ export const CategoryCharts = ({ transactions, formatValue }: CategoryChartsProp
                     <span className="text-muted-foreground">{item.name}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="font-medium text-foreground">{displayValue(item.value)}</span>
+                    <span className="font-medium text-foreground">{formatCurrency(item.value)}</span>
                     <span className="text-xs text-muted-foreground">
                       ({((item.value / totalExpenses) * 100).toFixed(1)}%)
                     </span>
@@ -296,7 +287,7 @@ export const CategoryCharts = ({ transactions, formatValue }: CategoryChartsProp
                     <span className="text-muted-foreground">{item.name}</span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className="font-medium text-foreground">{displayValue(item.value)}</span>
+                    <span className="font-medium text-foreground">{formatCurrency(item.value)}</span>
                     <span className="text-xs text-muted-foreground">
                       ({((item.value / totalIncome) * 100).toFixed(1)}%)
                     </span>

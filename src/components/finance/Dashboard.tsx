@@ -1,4 +1,4 @@
-import { TrendingUp, TrendingDown, Wallet, BarChart3 } from 'lucide-react';
+import { TrendingUp, TrendingDown, Wallet, BarChart3, Eye, EyeOff } from 'lucide-react';
 import { PeriodFilter, CustomDateRange } from './PeriodFilter';
 import { DebtTracker } from './DebtTracker';
 import { CategoryCharts } from './CategoryCharts';
@@ -6,6 +6,7 @@ import { Transaction } from '@/types/transaction';
 import { Debt } from '@/types/debt';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, Cell, ReferenceLine } from 'recharts';
 import { useMemo, useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
 
 
 interface DashboardProps {
@@ -109,12 +110,21 @@ export const Dashboard = ({
           <h2 className="text-xl md:text-2xl font-bold text-foreground">Dashboard</h2>
           <p className="text-sm md:text-base text-muted-foreground mt-1 hidden sm:block">Resumo das suas finanças</p>
         </div>
-        <PeriodFilter 
-          customRange={customRange}
-          onCustomRangeChange={onCustomRangeChange}
-          showValues={showValues}
-          onToggleValues={onToggleValues}
-        />
+        <div className="flex items-start gap-2">
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={onToggleValues}
+            title={showValues ? 'Ocultar valores' : 'Exibir valores'}
+            className="h-9 w-9 mt-0"
+          >
+            {showValues ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+          </Button>
+          <PeriodFilter 
+            customRange={customRange}
+            onCustomRangeChange={onCustomRangeChange}
+          />
+        </div>
       </div>
 
       {/* Cards */}
@@ -338,11 +348,11 @@ export const Dashboard = ({
 
       {/* Acompanhamento de Dívidas */}
       <div className="mt-6">
-        <DebtTracker debts={debts} transactions={allTransactions} onNavigateToDebts={onNavigateToDebts} formatValue={formatValue} />
+        <DebtTracker debts={debts} transactions={allTransactions} onNavigateToDebts={onNavigateToDebts} />
       </div>
 
       {/* Gráficos de Pizza por Categoria */}
-      <CategoryCharts transactions={transactions} formatValue={formatValue} />
+      <CategoryCharts transactions={transactions} />
     </div>
   );
 };
