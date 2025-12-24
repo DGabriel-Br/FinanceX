@@ -96,43 +96,45 @@ const Index = () => {
 
       {/* Conteúdo principal */}
       <main className="flex-1 overflow-auto bg-background pb-20 md:pb-0">
-        {activeTab === 'dashboard' ? (
-          <Dashboard
-            totals={totals}
-            customRange={customRange}
-            onCustomRangeChange={setCustomRange}
-            transactions={filteredTransactions}
-            allTransactions={transactions}
-            debts={debts}
-            onNavigateToDebts={() => setActiveTab('dividas')}
-          />
-        ) : activeTab === 'lancamentos' ? (
-          <Transactions
-            transactions={filteredTransactions}
-            customRange={customRange}
-            onCustomRangeChange={setCustomRange}
-            onAdd={addTransaction}
-            onUpdate={updateTransaction}
-            onDelete={deleteTransaction}
-          />
-        ) : activeTab === 'investimentos' ? (
-          <Investments
-            transactions={filteredTransactions}
-            allTransactions={transactions}
-            customRange={customRange}
-            onCustomRangeChange={setCustomRange}
-            onNavigateToTransactions={() => setActiveTab('lancamentos')}
-            onAddTransaction={addTransaction}
-          />
-        ) : (
-          <Debts
-            debts={debts}
-            transactions={transactions}
-            onAddDebt={addDebt}
-            onUpdateDebt={updateDebt}
-            onDeleteDebt={deleteDebt}
-          />
-        )}
+        <div key={activeTab} className="animate-fade-in" style={{ animationDuration: '0.3s' }}>
+          {activeTab === 'dashboard' ? (
+            <Dashboard
+              totals={totals}
+              customRange={customRange}
+              onCustomRangeChange={setCustomRange}
+              transactions={filteredTransactions}
+              allTransactions={transactions}
+              debts={debts}
+              onNavigateToDebts={() => setActiveTab('dividas')}
+            />
+          ) : activeTab === 'lancamentos' ? (
+            <Transactions
+              transactions={filteredTransactions}
+              customRange={customRange}
+              onCustomRangeChange={setCustomRange}
+              onAdd={addTransaction}
+              onUpdate={updateTransaction}
+              onDelete={deleteTransaction}
+            />
+          ) : activeTab === 'investimentos' ? (
+            <Investments
+              transactions={filteredTransactions}
+              allTransactions={transactions}
+              customRange={customRange}
+              onCustomRangeChange={setCustomRange}
+              onNavigateToTransactions={() => setActiveTab('lancamentos')}
+              onAddTransaction={addTransaction}
+            />
+          ) : (
+            <Debts
+              debts={debts}
+              transactions={transactions}
+              onAddDebt={addDebt}
+              onUpdateDebt={updateDebt}
+              onDeleteDebt={deleteDebt}
+            />
+          )}
+        </div>
       </main>
 
       {/* Navegação Mobile - apenas mobile */}
