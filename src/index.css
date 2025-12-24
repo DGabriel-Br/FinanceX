@@ -43,6 +43,10 @@
     --income: 142 71% 45%;
     --expense: 0 84% 60%;
 
+    /* Mobile header */
+    --mobile-header: 220 50% 25%;
+    --mobile-header-foreground: 210 20% 98%;
+
     /* Sidebar */
     --sidebar-background: 220 25% 12%;
     --sidebar-foreground: 220 15% 70%;
@@ -85,6 +89,10 @@
 
     --income: 142 71% 45%;
     --expense: 0 70% 55%;
+
+    /* Mobile header */
+    --mobile-header: 220 35% 18%;
+    --mobile-header-foreground: 210 20% 98%;
 
     --sidebar-background: 220 30% 6%;
     --sidebar-foreground: 220 15% 70%;
