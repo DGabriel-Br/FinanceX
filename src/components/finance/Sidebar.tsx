@@ -1,4 +1,5 @@
 import { LayoutDashboard, Receipt, ChevronLeft, ChevronRight, Moon, Sun, CreditCard, TrendingUp, LogOut, User } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { Switch } from '@/components/ui/switch';
 
@@ -6,7 +7,6 @@ type Tab = 'dashboard' | 'lancamentos' | 'dividas' | 'investimentos';
 
 export interface SidebarProps {
   activeTab: Tab;
-  onTabChange: (tab: Tab) => void;
   collapsed: boolean;
   onToggleCollapse: () => void;
   theme: 'light' | 'dark';
@@ -24,7 +24,6 @@ const menuItems = [
 
 export const Sidebar = ({ 
   activeTab, 
-  onTabChange, 
   collapsed, 
   onToggleCollapse,
   theme,
@@ -76,8 +75,8 @@ export const Sidebar = ({
             
             return (
               <li key={item.id}>
-                <button
-                  onClick={() => onTabChange(item.id)}
+                <Link
+                  to={`/${item.id}`}
                   title={collapsed ? item.label : undefined}
                   className={cn(
                     'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors duration-200',
@@ -91,7 +90,7 @@ export const Sidebar = ({
                     <Icon className="w-5 h-5" />
                   </div>
                   {!collapsed && <span className="whitespace-nowrap">{item.label}</span>}
-                </button>
+                </Link>
               </li>
             );
           })}

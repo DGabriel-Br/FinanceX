@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Sidebar } from '@/components/finance/Sidebar';
 import { MobileNav } from '@/components/finance/MobileNav';
 import { Dashboard } from '@/components/finance/Dashboard';
@@ -14,12 +14,21 @@ import { Loader2 } from 'lucide-react';
 
 type Tab = 'dashboard' | 'lancamentos' | 'dividas' | 'investimentos';
 
+const getTabFromPath = (pathname: string): Tab => {
+  const path = pathname.replace('/', '') as Tab;
+  if (['dashboard', 'lancamentos', 'dividas', 'investimentos'].includes(path)) {
+    return path;
+  }
+  return 'dashboard';
+};
+
 const Index = () => {
-  const [activeTab, setActiveTab] = useState<Tab>('dashboard');
+  const location = useLocation();
+  const navigate = useNavigate();
+  const activeTab = getTabFromPath(location.pathname);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const { theme, toggleTheme } = useTheme();
   const { user, loading: authLoading, signOut } = useAuth();
-  const navigate = useNavigate();
   
   const {
     transactions,
@@ -84,7 +93,6 @@ const Index = () => {
       <div className="hidden md:block">
         <Sidebar 
           activeTab={activeTab} 
-          onTabChange={setActiveTab} 
           collapsed={sidebarCollapsed}
           onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
           theme={theme}
@@ -105,7 +113,7 @@ const Index = () => {
               transactions={filteredTransactions}
               allTransactions={transactions}
               debts={debts}
-              onNavigateToDebts={() => setActiveTab('dividas')}
+              onNavigateToDebts={() => navigate('/dividas')}
             />
           ) : activeTab === 'lancamentos' ? (
             <Transactions
@@ -122,7 +130,7 @@ const Index = () => {
               allTransactions={transactions}
               customRange={customRange}
               onCustomRangeChange={setCustomRange}
-              onNavigateToTransactions={() => setActiveTab('lancamentos')}
+              onNavigateToTransactions={() => navigate('/lancamentos')}
               onAddTransaction={addTransaction}
             />
           ) : (
@@ -140,7 +148,6 @@ const Index = () => {
       {/* Navegação Mobile - apenas mobile */}
       <MobileNav 
         activeTab={activeTab} 
-        onTabChange={setActiveTab} 
         theme={theme}
         onToggleTheme={toggleTheme}
         userEmail={user.email}

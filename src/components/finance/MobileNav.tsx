@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { LayoutDashboard, Receipt, CreditCard, TrendingUp, Settings, Moon, Sun, LogOut, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Switch } from '@/components/ui/switch';
@@ -14,7 +15,6 @@ type Tab = 'dashboard' | 'lancamentos' | 'dividas' | 'investimentos';
 
 export interface MobileNavProps {
   activeTab: Tab;
-  onTabChange: (tab: Tab) => void;
   theme: 'light' | 'dark';
   onToggleTheme: () => void;
   userEmail?: string;
@@ -28,7 +28,7 @@ const navItems = [
   { id: 'dividas' as Tab, label: 'Dívidas', icon: CreditCard },
 ];
 
-export const MobileNav = ({ activeTab, onTabChange, theme, onToggleTheme, userEmail, onSignOut }: MobileNavProps) => {
+export const MobileNav = ({ activeTab, theme, onToggleTheme, userEmail, onSignOut }: MobileNavProps) => {
   const [settingsOpen, setSettingsOpen] = useState(false);
 
   return (
@@ -40,9 +40,9 @@ export const MobileNav = ({ activeTab, onTabChange, theme, onToggleTheme, userEm
             const Icon = item.icon;
 
             return (
-              <button
+              <Link
                 key={item.id}
-                onClick={() => onTabChange(item.id)}
+                to={`/${item.id}`}
                 className={cn(
                   'flex flex-col items-center justify-center flex-1 h-full gap-1 transition-colors',
                   isActive
@@ -57,7 +57,7 @@ export const MobileNav = ({ activeTab, onTabChange, theme, onToggleTheme, userEm
                 )}>
                   {item.label}
                 </span>
-              </button>
+              </Link>
             );
           })}
 
