@@ -7,7 +7,8 @@ import { toast } from 'sonner';
 import { Loader2, Eye, EyeOff, Shield, Smartphone, BarChart3 } from 'lucide-react';
 import { z } from 'zod';
 import { cn } from '@/lib/utils';
-import logo from '@/assets/logo.jpg';
+import logoDark from '@/assets/logo.jpg';
+import logoLight from '@/assets/logo-transparent.png';
 
 const emailSchema = z.string().email('Email inválido');
 const passwordSchema = z.string().min(6, 'A senha deve ter pelo menos 6 caracteres');
@@ -92,7 +93,7 @@ export default function Auth() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
         <div className="flex flex-col items-center gap-4">
-          <img src={logo} alt="FluxoCerto" className="w-16 h-16 rounded-2xl animate-pulse object-cover" />
+          <img src={logoDark} alt="FluxoCerto" className="w-16 h-16 rounded-2xl animate-pulse object-cover" />
           <Loader2 className="w-6 h-6 animate-spin text-primary" />
         </div>
       </div>
@@ -127,7 +128,7 @@ export default function Auth() {
               mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
             )}
           >
-            <img src={logo} alt="FluxoCerto" className="w-14 h-14 rounded-xl shadow-lg shadow-primary/30 object-cover" />
+            <img src={logoDark} alt="FluxoCerto" className="w-14 h-14 rounded-xl shadow-lg shadow-primary/30 object-cover" />
             <div>
               <h1 className="text-2xl font-bold">FluxoCerto</h1>
               <p className="text-white/60 text-sm">Controle Financeiro</p>
@@ -193,7 +194,7 @@ export default function Auth() {
               mounted ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4"
             )}
           >
-            <img src={logo} alt="FluxoCerto" className="w-12 h-12 rounded-xl shadow-lg object-cover" />
+            <img src={logoLight} alt="FluxoCerto" className="w-12 h-12 rounded-xl shadow-lg object-cover" />
             <span className="text-2xl font-bold text-foreground">FluxoCerto</span>
           </div>
 
