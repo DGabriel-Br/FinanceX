@@ -459,16 +459,16 @@ export const TransactionList = ({ transactions, onUpdate, onDelete, formatValue 
             
             {/* Tabela de transações do dia */}
             <div className="overflow-hidden rounded-xl border border-border">
-              <table className="w-full">
+              <table className="w-full table-fixed">
                 <thead className="bg-muted/50">
                   <tr>
-                    <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                    <th className="w-36 text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                       Categoria
                     </th>
                     <th className="text-left px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                       Descrição
                     </th>
-                    <th className="text-right px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                    <th className="w-32 text-right px-4 py-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">
                       Valor
                     </th>
                     <th className="w-24 px-4 py-3"></th>
