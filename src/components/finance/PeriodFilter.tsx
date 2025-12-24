@@ -74,6 +74,7 @@ export const PeriodFilter = ({
   }, []);
 
   const handlePeriodChange = (period: PeriodOption) => {
+    const wasAlreadyPersonalizado = selectedPeriod === 'personalizado';
     setSelectedPeriod(period);
     const today = new Date();
     today.setHours(0, 0, 0, 0);
@@ -117,9 +118,9 @@ export const PeriodFilter = ({
         }
         setTempDateRange({ from: range.start, to: range.end });
         setCalendarMonth(range.start);
-        // Abre o calendário automaticamente no desktop
-        if (!isMobile) {
-          setTimeout(() => setCalendarOpen(true), 100);
+        // Abre o calendário automaticamente no desktop apenas se não estava em personalizado
+        if (!isMobile && !wasAlreadyPersonalizado) {
+          setTimeout(() => setCalendarOpen(true), 150);
         }
         break;
     }
@@ -247,7 +248,11 @@ export const PeriodFilter = ({
                 <CalendarIcon className="h-4 w-4" />
               </Button>
             </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="end">
+            <PopoverContent 
+              className="w-auto p-0" 
+              align="end"
+              onInteractOutside={(e) => e.preventDefault()}
+            >
               <Calendar
                 mode="range"
                 selected={tempDateRange}
@@ -258,6 +263,15 @@ export const PeriodFilter = ({
                 locale={ptBR}
                 className="p-3 pointer-events-auto"
               />
+              <div className="p-3 pt-0 flex justify-end">
+                <Button 
+                  size="sm" 
+                  onClick={() => setCalendarOpen(false)}
+                  disabled={!tempDateRange?.from || !tempDateRange?.to}
+                >
+                  Aplicar
+                </Button>
+              </div>
             </PopoverContent>
           </Popover>
         )}
