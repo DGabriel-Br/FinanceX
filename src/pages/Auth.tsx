@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,11 +14,13 @@ const emailSchema = z.string().email('Email inválido');
 const passwordSchema = z.string().min(6, 'A senha deve ter pelo menos 6 caracteres');
 
 export default function Auth() {
+  const location = useLocation();
+  const isRegisterRoute = location.pathname === '/cadastro';
+  
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [isRegister, setIsRegister] = useState(false);
   const [mounted, setMounted] = useState(false);
   const { user, loading, signIn, signUp } = useAuth();
   const navigate = useNavigate();
@@ -58,7 +60,7 @@ export default function Auth() {
     
     setIsLoading(true);
     
-    if (isRegister) {
+    if (isRegisterRoute) {
       const { error } = await signUp(email, password);
       setIsLoading(false);
 
@@ -196,10 +198,10 @@ export default function Auth() {
             )}
           >
             <h2 className="text-2xl font-bold text-foreground mb-2">
-              {isRegister ? 'Crie sua conta' : 'Bem-vindo de volta!'}
+              {isRegisterRoute ? 'Crie sua conta' : 'Bem-vindo de volta!'}
             </h2>
             <p className="text-muted-foreground">
-              {isRegister 
+              {isRegisterRoute 
                 ? 'Preencha os dados abaixo para começar.' 
                 : 'Entre com seu e-mail e senha para começar.'}
             </p>
@@ -252,7 +254,7 @@ export default function Auth() {
               </button>
             </div>
 
-            {isRegister && (
+            {isRegisterRoute && (
               <p 
                 className={cn(
                   "text-xs text-muted-foreground -mt-2 transition-all duration-300",
@@ -277,7 +279,7 @@ export default function Auth() {
                 {isLoading ? (
                   <Loader2 className="w-5 h-5 animate-spin" />
                 ) : (
-                  isRegister ? 'Criar conta' : 'Entrar'
+                  isRegisterRoute ? 'Criar conta' : 'Entrar'
                 )}
               </Button>
             </div>
@@ -291,16 +293,16 @@ export default function Auth() {
             )}
           >
             <p className="text-muted-foreground">
-              {isRegister ? 'Já tem uma conta? ' : 'Não tem uma conta? '}
+              {isRegisterRoute ? 'Já tem uma conta? ' : 'Não tem uma conta? '}
               <button
                 type="button"
-                onClick={() => setIsRegister(!isRegister)}
+                onClick={() => navigate(isRegisterRoute ? '/login' : '/cadastro')}
                 className="text-primary hover:underline font-medium transition-colors"
               >
-                {isRegister ? 'Entrar' : 'Cadastrar agora'}
+                {isRegisterRoute ? 'Entrar' : 'Cadastrar agora'}
               </button>
             </p>
-            {!isRegister && (
+            {!isRegisterRoute && (
               <p className="text-muted-foreground">
                 Esqueceu a senha?{' '}
                 <button
