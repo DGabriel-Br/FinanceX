@@ -177,17 +177,6 @@ export const MobileNav = ({ activeTab, theme, onToggleTheme, userEmail, onSignOu
               />
             </div>
 
-            {/* Versão */}
-            <div className="p-4 bg-muted/30 rounded-xl">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-medium text-foreground">FinanceX</p>
-                  <p className="text-xs text-muted-foreground">Controle Financeiro Pessoal</p>
-                </div>
-                <span className="text-xs text-muted-foreground bg-muted px-2 py-1 rounded">v1.0.0</span>
-              </div>
-            </div>
-
             {/* Logout Button */}
             {onSignOut && (
               <Button
