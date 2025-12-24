@@ -115,6 +115,10 @@ export const PeriodFilter = ({
           range = customRange;
         }
         setTempDateRange({ from: range.start, to: range.end });
+        // Abre o calendário automaticamente no desktop
+        if (!isMobile) {
+          setTimeout(() => setCalendarOpen(true), 100);
+        }
         break;
     }
 
