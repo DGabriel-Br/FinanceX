@@ -165,6 +165,8 @@ const Index = () => {
             userEmail={user.email}
             showValues={showValues}
             onToggleValues={toggleValuesVisibility}
+            theme={theme}
+            onToggleTheme={toggleTheme}
           />
 
           <div key={activeTab} className="animate-fade-in flex-1" style={{ animationDuration: '0.3s' }}>

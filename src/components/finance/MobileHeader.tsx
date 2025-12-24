@@ -1,4 +1,4 @@
-import { Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff, Moon, Sun } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useScrollDirection } from '@/hooks/useScrollDirection';
 
@@ -7,6 +7,8 @@ interface MobileHeaderProps {
   userEmail?: string;
   showValues?: boolean;
   onToggleValues?: () => void;
+  theme?: 'light' | 'dark';
+  onToggleTheme?: () => void;
 }
 
 // Função para extrair iniciais do nome ou email
@@ -41,7 +43,9 @@ export const MobileHeader = ({
   userName, 
   userEmail, 
   showValues = true,
-  onToggleValues 
+  onToggleValues,
+  theme = 'light',
+  onToggleTheme
 }: MobileHeaderProps) => {
   const initials = getInitials(userName, userEmail);
   const firstName = getFirstName(userName, userEmail);
@@ -79,7 +83,7 @@ export const MobileHeader = ({
             </div>
 
             {/* Ícones de ação */}
-            <div className="flex items-center flex-shrink-0">
+            <div className="flex items-center flex-shrink-0 gap-1">
               {/* Botão de mostrar/ocultar valores */}
               {onToggleValues && (
                 <button
@@ -91,6 +95,21 @@ export const MobileHeader = ({
                     <Eye className="w-5 h-5 text-mobile-header-foreground" />
                   ) : (
                     <EyeOff className="w-5 h-5 text-mobile-header-foreground" />
+                  )}
+                </button>
+              )}
+              
+              {/* Botão de alternar tema */}
+              {onToggleTheme && (
+                <button
+                  onClick={onToggleTheme}
+                  className="p-2 rounded-full hover:bg-mobile-header-foreground/10 transition-colors"
+                  aria-label={theme === 'dark' ? 'Mudar para tema claro' : 'Mudar para tema escuro'}
+                >
+                  {theme === 'dark' ? (
+                    <Moon className="w-5 h-5 text-mobile-header-foreground" />
+                  ) : (
+                    <Sun className="w-5 h-5 text-mobile-header-foreground" />
                   )}
                 </button>
               )}
