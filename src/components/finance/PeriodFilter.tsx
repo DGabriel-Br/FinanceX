@@ -62,6 +62,7 @@ export const PeriodFilter = ({
   const [selectedPeriod, setSelectedPeriod] = useState<PeriodOption>('esteMes');
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [tempDateRange, setTempDateRange] = useState<DateRange | undefined>(undefined);
+  const [calendarMonth, setCalendarMonth] = useState<Date>(new Date());
   const [sheetOpen, setSheetOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -115,6 +116,7 @@ export const PeriodFilter = ({
           range = customRange;
         }
         setTempDateRange({ from: range.start, to: range.end });
+        setCalendarMonth(range.start);
         // Abre o calendário automaticamente no desktop
         if (!isMobile) {
           setTimeout(() => setCalendarOpen(true), 100);
@@ -250,10 +252,11 @@ export const PeriodFilter = ({
                 mode="range"
                 selected={tempDateRange}
                 onSelect={handleDateRangeSelect}
+                month={calendarMonth}
+                onMonthChange={setCalendarMonth}
                 numberOfMonths={1}
                 locale={ptBR}
                 className="p-3 pointer-events-auto"
-                initialFocus
               />
             </PopoverContent>
           </Popover>
@@ -342,6 +345,8 @@ export const PeriodFilter = ({
                   mode="range"
                   selected={tempDateRange}
                   onSelect={handleDateRangeSelect}
+                  month={calendarMonth}
+                  onMonthChange={setCalendarMonth}
                   numberOfMonths={1}
                   locale={ptBR}
                   className="p-3 pointer-events-auto"
