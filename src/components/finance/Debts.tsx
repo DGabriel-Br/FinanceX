@@ -492,35 +492,18 @@ export const Debts = ({
           <p className="text-sm md:text-base text-muted-foreground mt-1">Gerencie e acompanhe suas dívidas</p>
         </div>
         
-        <div className="flex items-center gap-2 w-full sm:w-auto">
-          {/* Toggle ocultar valores - visível apenas em desktop */}
-          {onToggleValues && (
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={onToggleValues}
-              title={showValues ? 'Ocultar valores' : 'Exibir valores'}
-              className="h-10 w-10 shrink-0 hidden sm:flex"
-            >
-              {showValues ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
-            </Button>
-          )}
-          
-          <Dialog open={isDebtDialogOpen} onOpenChange={setIsDebtDialogOpen}>
-            <DialogTrigger asChild>
-              <button className="flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg bg-primary text-primary-foreground font-medium text-sm transition-all duration-200 hover:bg-primary/90 flex-1 sm:flex-initial">
-                <Plus className="w-4 h-4" />
-                Nova Dívida
-              </button>
-            </DialogTrigger>
-            <DialogContent className="max-w-[95vw] sm:max-w-md mx-auto">
-              <DialogHeader>
-                <DialogTitle>Adicionar Nova Dívida</DialogTitle>
-              </DialogHeader>
-              <DebtForm onSubmit={onAddDebt} onClose={() => setIsDebtDialogOpen(false)} />
-            </DialogContent>
-          </Dialog>
-        </div>
+        {/* Toggle ocultar valores - visível apenas em desktop */}
+        {onToggleValues && (
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={onToggleValues}
+            title={showValues ? 'Ocultar valores' : 'Exibir valores'}
+            className="h-10 w-10 shrink-0 hidden sm:flex"
+          >
+            {showValues ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+          </Button>
+        )}
       </div>
 
       {/* Resumo */}
@@ -550,13 +533,34 @@ export const Debts = ({
 
       {/* Aviso sobre como registrar pagamentos */}
       <div 
-        className="mb-6 p-4 bg-muted/50 rounded-lg border border-border opacity-0 animate-fade-in"
+        className="mb-4 p-4 bg-muted/50 rounded-lg border border-border opacity-0 animate-fade-in"
         style={{ animationDelay: '0.25s' }}
       >
         <p className="text-sm text-muted-foreground">
           💡 <strong>Como funciona:</strong> Os valores pagos são calculados automaticamente a partir dos lançamentos com categoria "Dívidas". 
           Na descrição do lançamento, inclua o nome da dívida para que o sistema identifique corretamente.
         </p>
+      </div>
+
+      {/* Botão Nova Dívida */}
+      <div 
+        className="mb-6 opacity-0 animate-fade-in"
+        style={{ animationDelay: '0.28s' }}
+      >
+        <Dialog open={isDebtDialogOpen} onOpenChange={setIsDebtDialogOpen}>
+          <DialogTrigger asChild>
+            <button className="flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg bg-primary text-primary-foreground font-medium text-sm transition-all duration-200 hover:bg-primary/90 w-full sm:w-auto">
+              <Plus className="w-4 h-4" />
+              Nova Dívida
+            </button>
+          </DialogTrigger>
+          <DialogContent className="max-w-[95vw] sm:max-w-md mx-auto">
+            <DialogHeader>
+              <DialogTitle>Adicionar Nova Dívida</DialogTitle>
+            </DialogHeader>
+            <DebtForm onSubmit={onAddDebt} onClose={() => setIsDebtDialogOpen(false)} />
+          </DialogContent>
+        </Dialog>
       </div>
 
       {/* Lista de Dívidas */}

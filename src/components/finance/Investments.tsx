@@ -394,105 +394,18 @@ export const Investments = ({
           <p className="text-sm md:text-base text-muted-foreground mt-1">Acompanhe seus aportes</p>
         </div>
         
-        <div className="flex items-center gap-2 w-full sm:w-auto">
-          {/* Toggle ocultar valores - visível apenas em desktop */}
-          {onToggleValues && (
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={onToggleValues}
-              title={showValues ? 'Ocultar valores' : 'Exibir valores'}
-              className="h-10 w-10 shrink-0 hidden sm:flex"
-            >
-              {showValues ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
-            </Button>
-          )}
-          
-          <Dialog open={isWithdrawDialogOpen} onOpenChange={setIsWithdrawDialogOpen}>
-            <DialogTrigger asChild>
-              <button className="flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg bg-primary text-primary-foreground font-medium text-sm transition-all duration-200 hover:bg-primary/90 flex-1 sm:flex-initial">
-                <ArrowDownToLine className="w-4 h-4" />
-                Resgatar
-              </button>
-            </DialogTrigger>
-              <DialogContent className="max-w-md">
-                <DialogHeader>
-                  <DialogTitle>Resgatar Investimento</DialogTitle>
-                </DialogHeader>
-                <div className="space-y-4 mt-4">
-                  <p className="text-sm text-muted-foreground">
-                    Registre um resgate ou venda de ativo. O valor será adicionado como receita nos lançamentos.
-                  </p>
-                  
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Tipo de Investimento</label>
-                    <Select value={withdrawType} onValueChange={(v) => setWithdrawType(v as InvestmentType)}>
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {allInvestmentTypes.map(type => {
-                          const Icon = investmentTypeIcons[type];
-                          return (
-                            <SelectItem key={type} value={type}>
-                              <div className="flex items-center gap-2">
-                                <Icon className="w-4 h-4" />
-                                <span>{investmentTypeLabels[type]}</span>
-                              </div>
-                            </SelectItem>
-                          );
-                        })}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Valor do Resgate</label>
-                    <div className="relative">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">R$</span>
-                      <input
-                        type="text"
-                        inputMode="numeric"
-                        value={withdrawValue}
-                        onChange={e => setWithdrawValue(formatCurrencyInput(e.target.value))}
-                        placeholder="0,00"
-                        className="w-full pl-10 pr-4 py-2 rounded-lg border border-input bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium text-foreground">Descrição (opcional)</label>
-                    <input
-                      type="text"
-                      value={withdrawDescription}
-                      onChange={e => setWithdrawDescription(e.target.value)}
-                      placeholder={`Resgate ${investmentTypeLabels[withdrawType]}`}
-                      className="w-full px-4 py-2 rounded-lg border border-input bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-                    />
-                  </div>
-
-                  <div className="flex gap-3 pt-2">
-                    <Button 
-                      variant="outline" 
-                      className="flex-1" 
-                      onClick={() => setIsWithdrawDialogOpen(false)}
-                      disabled={isSubmitting}
-                    >
-                      Cancelar
-                    </Button>
-                    <Button 
-                      className="flex-1 gap-2"
-                      onClick={handleWithdraw}
-                      disabled={isSubmitting || !withdrawValue}
-                    >
-                      {isSubmitting ? 'Registrando...' : 'Confirmar Resgate'}
-                    </Button>
-                  </div>
-                </div>
-              </DialogContent>
-            </Dialog>
-        </div>
+{/* Toggle ocultar valores - visível apenas em desktop */}
+        {onToggleValues && (
+          <Button
+            variant="outline"
+            size="icon"
+            onClick={onToggleValues}
+            title={showValues ? 'Ocultar valores' : 'Exibir valores'}
+            className="h-10 w-10 shrink-0 hidden sm:flex"
+          >
+            {showValues ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+          </Button>
+        )}
       </div>
 
       {/* Cards de resumo */}
@@ -566,15 +479,106 @@ export const Investments = ({
         </div>
       </div>
 
-      {/* Aviso */}
+{/* Aviso */}
       <div 
-        className="mb-6 p-4 bg-muted/50 rounded-lg border border-border opacity-0 animate-fade-in"
+        className="mb-4 p-4 bg-muted/50 rounded-lg border border-border opacity-0 animate-fade-in"
         style={{ animationDelay: '0.3s' }}
       >
         <p className="text-sm text-muted-foreground">
           💡 <strong>Como funciona:</strong> Os investimentos são identificados automaticamente a partir dos lançamentos com categoria "Investimentos". 
           Na descrição, inclua palavras-chave como "Reserva", "Ações", "FII", "Tesouro", "CDB", "Cripto" para classificação automática.
         </p>
+      </div>
+
+      {/* Botão Resgatar */}
+      <div 
+        className="mb-6 opacity-0 animate-fade-in"
+        style={{ animationDelay: '0.32s' }}
+      >
+        <Dialog open={isWithdrawDialogOpen} onOpenChange={setIsWithdrawDialogOpen}>
+          <DialogTrigger asChild>
+            <button className="flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg bg-primary text-primary-foreground font-medium text-sm transition-all duration-200 hover:bg-primary/90 w-full sm:w-auto">
+              <ArrowDownToLine className="w-4 h-4" />
+              Resgatar
+            </button>
+          </DialogTrigger>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>Resgatar Investimento</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 mt-4">
+              <p className="text-sm text-muted-foreground">
+                Registre um resgate ou venda de ativo. O valor será adicionado como receita nos lançamentos.
+              </p>
+              
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-foreground">Tipo de Investimento</label>
+                <Select value={withdrawType} onValueChange={(v) => setWithdrawType(v as InvestmentType)}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {allInvestmentTypes.map(type => {
+                      const Icon = investmentTypeIcons[type];
+                      return (
+                        <SelectItem key={type} value={type}>
+                          <div className="flex items-center gap-2">
+                            <Icon className="w-4 h-4" />
+                            <span>{investmentTypeLabels[type]}</span>
+                          </div>
+                        </SelectItem>
+                      );
+                    })}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-foreground">Valor do Resgate</label>
+                <div className="relative">
+                  <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground">R$</span>
+                  <input
+                    type="text"
+                    inputMode="numeric"
+                    value={withdrawValue}
+                    onChange={e => setWithdrawValue(formatCurrencyInput(e.target.value))}
+                    placeholder="0,00"
+                    className="w-full pl-10 pr-4 py-2 rounded-lg border border-input bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-foreground">Descrição (opcional)</label>
+                <input
+                  type="text"
+                  value={withdrawDescription}
+                  onChange={e => setWithdrawDescription(e.target.value)}
+                  placeholder={`Resgate ${investmentTypeLabels[withdrawType]}`}
+                  className="w-full px-4 py-2 rounded-lg border border-input bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                />
+              </div>
+
+              <div className="flex gap-3 pt-2">
+                <Button 
+                  variant="outline" 
+                  className="flex-1" 
+                  onClick={() => setIsWithdrawDialogOpen(false)}
+                  disabled={isSubmitting}
+                >
+                  Cancelar
+                </Button>
+                <Button 
+                  className="flex-1 gap-2"
+                  onClick={handleWithdraw}
+                  disabled={isSubmitting || !withdrawValue}
+                >
+                  {isSubmitting ? 'Registrando...' : 'Confirmar Resgate'}
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
 
       {/* Metas de Investimento */}
