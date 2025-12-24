@@ -193,7 +193,7 @@ export default function Auth() {
           {/* Logo - apenas mobile */}
           <div 
             className={cn(
-              "flex lg:hidden items-center justify-center gap-3 mb-8 transition-all duration-500",
+              "flex lg:hidden items-center gap-3 mb-8 transition-all duration-500",
               mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
             )}
           >
