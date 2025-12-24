@@ -778,53 +778,53 @@ export const Investments = ({
           </div>
           
           {recentActivity.length > 0 ? (
-            <div className="space-y-3">
+            <div className="divide-y divide-border">
               {recentActivity.map((activity) => {
                 const type = extractInvestmentType(activity.description);
-                const Icon = investmentTypeIcons[type];
-                const color = investmentTypeColors[type];
                 const [year, month, day] = activity.date.split('-');
-                const formattedDate = `${day}/${month}/${year}`;
+                const months = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
+                const formattedDate = `${day} de ${months[parseInt(month) - 1]} ${year}`;
                 const isResgate = activity.activityType === 'resgate';
+                
+                // Extrai descrição limpa (remove prefixo "Resgate" se houver)
+                const cleanDescription = activity.description
+                  .replace(/^Resgate\s*/i, '')
+                  .replace(/\s*-\s*$/, '');
                 
                 return (
                   <div 
                     key={activity.id} 
-                    className="flex items-center justify-between p-3 bg-muted/30 rounded-lg"
+                    className="flex items-start gap-3 py-4 first:pt-0 last:pb-0"
                   >
-                    <div className="flex items-center gap-3">
-                      <div 
-                        className="w-10 h-10 rounded-lg flex items-center justify-center relative"
-                        style={{ backgroundColor: `${color}20` }}
-                      >
-                        <Icon className="w-5 h-5" style={{ color }} />
-                        {isResgate && (
-                          <div className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-expense flex items-center justify-center">
-                            <ArrowDownToLine className="w-2.5 h-2.5 text-white" />
-                          </div>
-                        )}
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <p className="font-medium text-foreground text-sm">{activity.description}</p>
-                          <span className={cn(
-                            "text-xs px-1.5 py-0.5 rounded",
-                            isResgate 
-                              ? "bg-expense/10 text-expense" 
-                              : "bg-income/10 text-income"
-                          )}>
-                            {isResgate ? 'Resgate' : 'Aporte'}
-                          </span>
-                        </div>
-                        <p className="text-xs text-muted-foreground">{formattedDate}</p>
-                      </div>
+                    <div className="mt-0.5">
+                      {isResgate ? (
+                        <ArrowDownToLine className="w-4 h-4 text-muted-foreground" />
+                      ) : (
+                        <TrendingUp className="w-4 h-4 text-muted-foreground" />
+                      )}
                     </div>
-                    <span className={cn(
-                      "font-semibold",
-                      isResgate ? "text-expense" : "text-income"
-                    )}>
-                      {isResgate ? '-' : '+'}{formatCurrency(activity.value)}
-                    </span>
+                    <div className="flex-1 min-w-0">
+                      <p className={cn(
+                        "font-semibold text-sm",
+                        isResgate ? "text-expense" : "text-income"
+                      )}>
+                        {isResgate ? 'Resgate' : 'Investimento'}
+                      </p>
+                      <p className="text-sm text-foreground truncate">
+                        {investmentTypeLabels[type]}
+                      </p>
+                      <p className="text-xs text-muted-foreground mt-0.5">
+                        {formattedDate}
+                      </p>
+                    </div>
+                    <div className="text-right shrink-0">
+                      <span className={cn(
+                        "font-semibold text-sm",
+                        isResgate ? "text-expense" : "text-income"
+                      )}>
+                        {isResgate ? '-' : '+'}{formatCurrency(activity.value)}
+                      </span>
+                    </div>
                   </div>
                 );
               })}
