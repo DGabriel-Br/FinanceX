@@ -472,7 +472,10 @@ export const Debts = ({
   return (
     <div className="p-4 md:p-8">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 md:mb-8">
+      <div 
+        className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 md:mb-8 opacity-0 animate-fade-in"
+        style={{ animationDelay: '0.05s' }}
+      >
         <div>
           <h2 className="text-xl md:text-2xl font-bold text-foreground">Controle de Dívidas</h2>
           <p className="text-sm md:text-base text-muted-foreground mt-1">Gerencie e acompanhe suas dívidas</p>
@@ -496,22 +499,34 @@ export const Debts = ({
 
       {/* Resumo */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4 mb-6 md:mb-8">
-        <div className="bg-card border border-border rounded-xl p-3 md:p-4 shadow-sm">
+        <div 
+          className="bg-card border border-border rounded-xl p-3 md:p-4 shadow-sm opacity-0 animate-fade-in-up"
+          style={{ animationDelay: '0.1s' }}
+        >
           <p className="text-xs md:text-sm text-muted-foreground">Total em Dívidas</p>
           <p className="text-lg md:text-xl font-bold text-foreground">{formatCurrency(stats.totalDebt)}</p>
         </div>
-        <div className="bg-card border border-border rounded-xl p-3 md:p-4 shadow-sm">
+        <div 
+          className="bg-card border border-border rounded-xl p-3 md:p-4 shadow-sm opacity-0 animate-fade-in-up"
+          style={{ animationDelay: '0.15s' }}
+        >
           <p className="text-xs md:text-sm text-muted-foreground">Total Pago</p>
           <p className="text-lg md:text-xl font-bold text-income">{formatCurrency(stats.totalPaid)}</p>
         </div>
-        <div className="bg-card border border-border rounded-xl p-3 md:p-4 shadow-sm">
+        <div 
+          className="bg-card border border-border rounded-xl p-3 md:p-4 shadow-sm opacity-0 animate-fade-in-up"
+          style={{ animationDelay: '0.2s' }}
+        >
           <p className="text-xs md:text-sm text-muted-foreground">Falta Pagar</p>
           <p className="text-lg md:text-xl font-bold text-expense">{formatCurrency(stats.totalRemaining)}</p>
         </div>
       </div>
 
       {/* Aviso sobre como registrar pagamentos */}
-      <div className="mb-6 p-4 bg-muted/50 rounded-lg border border-border">
+      <div 
+        className="mb-6 p-4 bg-muted/50 rounded-lg border border-border opacity-0 animate-fade-in"
+        style={{ animationDelay: '0.25s' }}
+      >
         <p className="text-sm text-muted-foreground">
           💡 <strong>Como funciona:</strong> Os valores pagos são calculados automaticamente a partir dos lançamentos com categoria "Dívidas". 
           Na descrição do lançamento, inclua o nome da dívida para que o sistema identifique corretamente.
@@ -520,21 +535,29 @@ export const Debts = ({
 
       {/* Lista de Dívidas */}
       {debts.length === 0 ? (
-        <div className="text-center py-12 bg-card border border-border rounded-xl">
+        <div 
+          className="text-center py-12 bg-card border border-border rounded-xl opacity-0 animate-scale-in"
+          style={{ animationDelay: '0.3s' }}
+        >
           <CreditCard className="w-12 h-12 text-muted-foreground mx-auto mb-4" />
           <p className="text-muted-foreground">Nenhuma dívida cadastrada</p>
           <p className="text-sm text-muted-foreground mt-1">Clique em "Nova Dívida" para começar</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          {debts.map(debt => (
-            <DebtCard
+          {debts.map((debt, index) => (
+            <div 
               key={debt.id}
-              debt={debt}
-              paidValue={getTotalPaidValue(debt, transactions)}
-              onUpdate={(updates) => onUpdateDebt(debt.id, updates)}
-              onDelete={() => onDeleteDebt(debt.id)}
-            />
+              className="opacity-0 animate-fade-in-up"
+              style={{ animationDelay: `${0.3 + index * 0.08}s` }}
+            >
+              <DebtCard
+                debt={debt}
+                paidValue={getTotalPaidValue(debt, transactions)}
+                onUpdate={(updates) => onUpdateDebt(debt.id, updates)}
+                onDelete={() => onDeleteDebt(debt.id)}
+              />
+            </div>
           ))}
         </div>
       )}
