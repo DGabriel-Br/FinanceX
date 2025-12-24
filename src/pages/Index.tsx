@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { Sidebar } from '@/components/finance/Sidebar';
 import { MobileNav } from '@/components/finance/MobileNav';
 import { MobileHeader } from '@/components/finance/MobileHeader';
+import { FloatingAddButton } from '@/components/finance/FloatingAddButton';
 import { Dashboard } from '@/components/finance/Dashboard';
 import { Transactions } from '@/components/finance/Transactions';
 import { Debts } from '@/components/finance/Debts';
@@ -218,6 +219,9 @@ const Index = () => {
             )}
           </div>
         </main>
+
+        {/* Floating Add Button - apenas mobile */}
+        <FloatingAddButton onAddTransaction={addTransaction} />
 
         {/* Navegação Mobile - apenas mobile */}
         <MobileNav 
