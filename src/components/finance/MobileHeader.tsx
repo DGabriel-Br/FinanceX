@@ -48,36 +48,45 @@ export const MobileHeader = ({
   return (
     <div className="md:hidden w-full">
       {/* Header com fundo primary */}
-      <div className="bg-primary px-4 pt-14 pb-8 safe-area-top">
-        <div className="flex items-center justify-between w-full">
-          {/* Avatar e Nome */}
-          <div className="flex items-center gap-3 flex-1 min-w-0">
-            <div className="w-10 h-10 rounded-full bg-card flex items-center justify-center shadow-md flex-shrink-0">
-              <span className="text-sm font-bold text-foreground">{initials}</span>
+      <div className="bg-primary safe-area-top">
+        {/* Espaçador para status bar */}
+        <div className="h-6" />
+        
+        {/* Conteúdo do header */}
+        <div className="px-4 py-4">
+          <div className="flex items-center justify-between w-full">
+            {/* Avatar e Nome */}
+            <div className="flex items-center gap-3 flex-1 min-w-0">
+              <div className="w-10 h-10 rounded-full bg-card flex items-center justify-center shadow-md flex-shrink-0">
+                <span className="text-sm font-bold text-foreground">{initials}</span>
+              </div>
+              <span className="text-base font-semibold text-primary-foreground truncate">
+                {firstName}
+              </span>
             </div>
-            <span className="text-base font-semibold text-primary-foreground truncate">
-              {firstName}
-            </span>
-          </div>
 
-          {/* Ícones de ação */}
-          <div className="flex items-center flex-shrink-0">
-            {/* Botão de mostrar/ocultar valores */}
-            {onToggleValues && (
-              <button
-                onClick={onToggleValues}
-                className="p-2 rounded-full hover:bg-primary-foreground/10 transition-colors"
-                aria-label={showValues ? 'Ocultar valores' : 'Mostrar valores'}
-              >
-                {showValues ? (
-                  <Eye className="w-5 h-5 text-primary-foreground" />
-                ) : (
-                  <EyeOff className="w-5 h-5 text-primary-foreground" />
-                )}
-              </button>
-            )}
+            {/* Ícones de ação */}
+            <div className="flex items-center flex-shrink-0">
+              {/* Botão de mostrar/ocultar valores */}
+              {onToggleValues && (
+                <button
+                  onClick={onToggleValues}
+                  className="p-2 rounded-full hover:bg-primary-foreground/10 transition-colors"
+                  aria-label={showValues ? 'Ocultar valores' : 'Mostrar valores'}
+                >
+                  {showValues ? (
+                    <Eye className="w-5 h-5 text-primary-foreground" />
+                  ) : (
+                    <EyeOff className="w-5 h-5 text-primary-foreground" />
+                  )}
+                </button>
+              )}
+            </div>
           </div>
         </div>
+        
+        {/* Espaço extra antes da curva */}
+        <div className="h-4" />
       </div>
 
       {/* Curva de transição */}
