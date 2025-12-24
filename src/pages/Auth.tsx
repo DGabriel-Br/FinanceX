@@ -194,7 +194,7 @@ export default function Auth() {
               mounted ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4"
             )}
           >
-            <img src={logoLight} alt="FluxoCerto" className="w-12 h-12 rounded-xl shadow-lg object-cover" />
+            <img src={logoDark} alt="FluxoCerto" className="w-12 h-12 rounded-xl shadow-lg object-cover" />
             <span className="text-2xl font-bold text-foreground">FluxoCerto</span>
           </div>
 

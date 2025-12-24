@@ -87,7 +87,7 @@ const Index = () => {
       <div className="min-h-screen flex flex-col items-center justify-center bg-background">
         {/* Logo animada */}
         <div className="relative mb-6">
-          <img src={theme === 'light' ? logoLight : logoDark} alt="FluxoCerto" className="w-20 h-20 rounded-2xl animate-pulse object-cover" />
+          <img src={logoDark} alt="FluxoCerto" className="w-20 h-20 rounded-2xl animate-pulse object-cover" />
           {/* Anel de loading ao redor do logo */}
           <div className="absolute -inset-2 rounded-3xl border-2 border-primary/30 animate-spin" style={{ animationDuration: '3s' }} />
           <div className="absolute -inset-3 rounded-3xl border-2 border-t-primary border-r-transparent border-b-transparent border-l-transparent animate-spin" style={{ animationDuration: '1.5s' }} />
