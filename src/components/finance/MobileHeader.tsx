@@ -84,21 +84,6 @@ export const MobileHeader = ({
 
             {/* Ícones de ação */}
             <div className="flex items-center flex-shrink-0 gap-1">
-              {/* Botão de mostrar/ocultar valores */}
-              {onToggleValues && (
-                <button
-                  onClick={onToggleValues}
-                  className="p-2 rounded-full hover:bg-mobile-header-foreground/10 transition-colors"
-                  aria-label={showValues ? 'Ocultar valores' : 'Mostrar valores'}
-                >
-                  {showValues ? (
-                    <Eye className="w-5 h-5 text-mobile-header-foreground" />
-                  ) : (
-                    <EyeOff className="w-5 h-5 text-mobile-header-foreground" />
-                  )}
-                </button>
-              )}
-              
               {/* Botão de alternar tema */}
               {onToggleTheme && (
                 <button
@@ -110,6 +95,21 @@ export const MobileHeader = ({
                     <Moon className="w-5 h-5 text-mobile-header-foreground" />
                   ) : (
                     <Sun className="w-5 h-5 text-mobile-header-foreground" />
+                  )}
+                </button>
+              )}
+              
+              {/* Botão de mostrar/ocultar valores */}
+              {onToggleValues && (
+                <button
+                  onClick={onToggleValues}
+                  className="p-2 rounded-full hover:bg-mobile-header-foreground/10 transition-colors"
+                  aria-label={showValues ? 'Ocultar valores' : 'Mostrar valores'}
+                >
+                  {showValues ? (
+                    <Eye className="w-5 h-5 text-mobile-header-foreground" />
+                  ) : (
+                    <EyeOff className="w-5 h-5 text-mobile-header-foreground" />
                   )}
                 </button>
               )}
