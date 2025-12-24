@@ -373,7 +373,10 @@ export const Investments = ({
   return (
     <div className="p-4 md:p-8">
       {/* Header */}
-      <div className="flex items-start justify-between gap-3 mb-6 md:mb-8">
+      <div 
+        className="flex items-start justify-between gap-3 mb-6 md:mb-8 opacity-0 animate-fade-in"
+        style={{ animationDelay: '0.05s' }}
+      >
         <div className="min-w-0 flex-1">
           <h2 className="text-xl md:text-2xl font-bold text-foreground">Investimentos</h2>
           <p className="text-sm md:text-base text-muted-foreground mt-1 hidden sm:block">Acompanhe seus aportes</p>
@@ -473,7 +476,10 @@ export const Investments = ({
 
       {/* Cards de resumo */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6 mb-6 md:mb-8">
-        <div className="bg-card border border-border rounded-xl p-3 md:p-6 shadow-sm">
+        <div 
+          className="bg-card border border-border rounded-xl p-3 md:p-6 shadow-sm opacity-0 animate-fade-in-up"
+          style={{ animationDelay: '0.1s' }}
+        >
           <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-4">
             <div className="w-8 h-8 md:w-12 md:h-12 rounded-full bg-primary/10 flex items-center justify-center">
               <TrendingUp className="w-4 h-4 md:w-6 md:h-6 text-primary" />
@@ -487,7 +493,10 @@ export const Investments = ({
           </div>
         </div>
 
-        <div className="bg-card border border-border rounded-xl p-3 md:p-6 shadow-sm">
+        <div 
+          className="bg-card border border-border rounded-xl p-3 md:p-6 shadow-sm opacity-0 animate-fade-in-up"
+          style={{ animationDelay: '0.15s' }}
+        >
           <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-4">
             <div className="w-8 h-8 md:w-12 md:h-12 rounded-full bg-income/10 flex items-center justify-center">
               <Wallet className="w-4 h-4 md:w-6 md:h-6 text-income" />
@@ -501,7 +510,10 @@ export const Investments = ({
           </div>
         </div>
 
-        <div className="bg-card border border-border rounded-xl p-3 md:p-6 shadow-sm">
+        <div 
+          className="bg-card border border-border rounded-xl p-3 md:p-6 shadow-sm opacity-0 animate-fade-in-up"
+          style={{ animationDelay: '0.2s' }}
+        >
           <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-4">
             <div className="w-8 h-8 md:w-12 md:h-12 rounded-full bg-secondary flex items-center justify-center">
               <PieChart className="w-4 h-4 md:w-6 md:h-6 text-muted-foreground" />
@@ -515,7 +527,10 @@ export const Investments = ({
           </div>
         </div>
 
-        <div className="bg-card border border-border rounded-xl p-3 md:p-6 shadow-sm">
+        <div 
+          className="bg-card border border-border rounded-xl p-3 md:p-6 shadow-sm opacity-0 animate-fade-in-up"
+          style={{ animationDelay: '0.25s' }}
+        >
           <div className="flex flex-col md:flex-row md:items-center gap-2 md:gap-4">
             <div className="w-8 h-8 md:w-12 md:h-12 rounded-full bg-primary/10 flex items-center justify-center">
               <Target className="w-4 h-4 md:w-6 md:h-6 text-primary" />
@@ -531,7 +546,10 @@ export const Investments = ({
       </div>
 
       {/* Aviso */}
-      <div className="mb-6 p-4 bg-muted/50 rounded-lg border border-border">
+      <div 
+        className="mb-6 p-4 bg-muted/50 rounded-lg border border-border opacity-0 animate-fade-in"
+        style={{ animationDelay: '0.3s' }}
+      >
         <p className="text-sm text-muted-foreground">
           💡 <strong>Como funciona:</strong> Os investimentos são identificados automaticamente a partir dos lançamentos com categoria "Investimentos". 
           Na descrição, inclua palavras-chave como "Reserva", "Ações", "FII", "Tesouro", "CDB", "Cripto" para classificação automática.
@@ -539,7 +557,10 @@ export const Investments = ({
       </div>
 
       {/* Metas de Investimento */}
-      <div className="mb-6 bg-card border border-border rounded-xl p-6 shadow-sm">
+      <div 
+        className="mb-6 bg-card border border-border rounded-xl p-6 shadow-sm opacity-0 animate-fade-in-up"
+        style={{ animationDelay: '0.35s' }}
+      >
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <Target className="w-5 h-5 text-primary" />
@@ -684,7 +705,10 @@ export const Investments = ({
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Gráfico de distribuição */}
-        <div className="bg-card border border-border rounded-xl p-6 shadow-sm h-fit">
+        <div 
+          className="bg-card border border-border rounded-xl p-6 shadow-sm h-fit opacity-0 animate-slide-in-left"
+          style={{ animationDelay: '0.4s' }}
+        >
           <div className="flex items-center gap-2 mb-4">
             <PieChart className="w-5 h-5 text-primary" />
             <h3 className="text-lg font-semibold text-foreground">Distribuição dos Investimentos</h3>
@@ -772,7 +796,10 @@ export const Investments = ({
         </div>
 
         {/* Histórico de Movimentações */}
-        <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
+        <div 
+          className="bg-card border border-border rounded-xl p-6 shadow-sm opacity-0 animate-slide-in-right"
+          style={{ animationDelay: '0.45s' }}
+        >
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <History className="w-5 h-5 text-primary" />
