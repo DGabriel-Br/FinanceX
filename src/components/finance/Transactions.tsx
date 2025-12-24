@@ -10,6 +10,7 @@ interface TransactionsProps {
   onAdd: (transaction: { type: TransactionType; date: string; description: string; value: number }) => void;
   onUpdate: (id: string, updates: Partial<Omit<Transaction, 'id' | 'createdAt'>>) => void;
   onDelete: (id: string) => void;
+  formatValue?: (value: number) => string;
 }
 
 export const Transactions = ({
@@ -19,6 +20,7 @@ export const Transactions = ({
   onAdd,
   onUpdate,
   onDelete,
+  formatValue,
 }: TransactionsProps) => {
   return (
     <div className="p-4 md:p-8">

@@ -36,6 +36,7 @@ interface InvestmentsProps {
   onCustomRangeChange: (range: CustomDateRange | null) => void;
   onNavigateToTransactions?: () => void;
   onAddTransaction?: (transaction: Omit<Transaction, 'id' | 'createdAt'>) => Promise<void>;
+  formatValue?: (value: number) => string;
 }
 
 // Formatar valor em Real brasileiro
