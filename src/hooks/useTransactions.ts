@@ -168,9 +168,34 @@ export const useTransactions = () => {
     });
   }, [transactions, customRange]);
 
+  // Calcular saldo anterior ao período selecionado
+  const getPreviousBalance = useCallback(() => {
+    if (!customRange) return 0;
+    
+    const startDate = new Date(customRange.start);
+    startDate.setHours(0, 0, 0, 0);
+    
+    // Filtra transações anteriores ao início do período
+    const previousTransactions = transactions.filter(t => {
+      const transactionDate = parseLocalDate(t.date);
+      return transactionDate < startDate;
+    });
+    
+    const previousReceitas = previousTransactions
+      .filter(t => t.type === 'receita')
+      .reduce((sum, t) => sum + t.value, 0);
+    
+    const previousDespesas = previousTransactions
+      .filter(t => t.type === 'despesa')
+      .reduce((sum, t) => sum + t.value, 0);
+    
+    return previousReceitas - previousDespesas;
+  }, [transactions, customRange]);
+
   // Calcular totais
   const getTotals = useCallback(() => {
     const filtered = getFilteredTransactions();
+    const previousBalance = getPreviousBalance();
     
     const receitas = filtered
       .filter(t => t.type === 'receita')
@@ -180,12 +205,16 @@ export const useTransactions = () => {
       .filter(t => t.type === 'despesa')
       .reduce((sum, t) => sum + t.value, 0);
     
+    const saldoPeriodo = receitas - despesas;
+    
     return {
       receitas,
       despesas,
-      saldo: receitas - despesas,
+      saldoAnterior: previousBalance,
+      saldoPeriodo,
+      saldo: previousBalance + saldoPeriodo, // Saldo total acumulado
     };
-  }, [getFilteredTransactions]);
+  }, [getFilteredTransactions, getPreviousBalance]);
 
   return {
     transactions,
