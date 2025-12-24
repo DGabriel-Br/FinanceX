@@ -214,10 +214,10 @@ export default function Auth() {
             <h2 className="text-2xl font-bold text-foreground mb-2">
               {isRegisterRoute ? 'Crie sua conta' : 'Bem-vindo de volta!'}
             </h2>
-            <p className="text-muted-foreground">
+            <p className="text-muted-foreground whitespace-nowrap text-sm lg:text-base">
               {isRegisterRoute 
-                ? 'Preencha os dados abaixo para começar.' 
-                : 'Entre com seu e-mail e senha para começar.'}
+                ? 'Preencha os dados para começar.' 
+                : 'Entre com seu e-mail e senha.'}
             </p>
           </div>
 
