@@ -49,11 +49,8 @@ export const MobileHeader = ({
     <div className="md:hidden w-full">
       {/* Header com fundo primary */}
       <div className="bg-primary safe-area-top">
-        {/* Espaçador para status bar */}
-        <div className="h-6" />
-        
         {/* Conteúdo do header */}
-        <div className="px-4 py-4">
+        <div className="px-4 py-3">
           <div className="flex items-center justify-between w-full">
             {/* Avatar e Nome */}
             <div className="flex items-center gap-3 flex-1 min-w-0">
@@ -84,13 +81,10 @@ export const MobileHeader = ({
             </div>
           </div>
         </div>
-        
-        {/* Espaço extra antes da curva */}
-        <div className="h-4" />
       </div>
 
       {/* Curva de transição */}
-      <div className="relative h-4 -mt-4">
+      <div className="relative h-4 -mt-0">
         <div className="absolute inset-0 bg-primary" />
         <div className="absolute inset-0 bg-background rounded-t-3xl" />
       </div>
