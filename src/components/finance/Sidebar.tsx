@@ -1,4 +1,4 @@
-import { LayoutDashboard, Receipt, ChevronLeft, ChevronRight, Moon, Sun, CreditCard, TrendingUp, LogOut, User } from 'lucide-react';
+import { LayoutDashboard, Receipt, ChevronLeft, ChevronRight, Moon, Sun, CreditCard, TrendingUp, LogOut, User, Eye, EyeOff } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { Switch } from '@/components/ui/switch';
@@ -15,6 +15,8 @@ export interface SidebarProps {
   onToggleTheme: () => void;
   userEmail?: string;
   onSignOut?: () => void;
+  showValues?: boolean;
+  onToggleValues?: () => void;
 }
 
 const menuItems = [
@@ -31,7 +33,9 @@ export const Sidebar = ({
   theme,
   onToggleTheme,
   userEmail,
-  onSignOut
+  onSignOut,
+  showValues,
+  onToggleValues
 }: SidebarProps) => {
   return (
     <aside className={cn(
@@ -114,6 +118,45 @@ export const Sidebar = ({
               <div className="flex-1 min-w-0">
                 <p className="text-xs text-sidebar-foreground/60 truncate">{userEmail}</p>
               </div>
+            )}
+          </div>
+        )}
+
+        {/* Values Visibility Toggle */}
+        {onToggleValues && (
+          <div
+            className={cn(
+              'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg hover:bg-sidebar-accent transition-colors',
+              collapsed && 'justify-center px-0'
+            )}
+          >
+            <button
+              onClick={onToggleValues}
+              title={showValues ? 'Ocultar valores' : 'Exibir valores'}
+              className={cn(
+                "flex items-center gap-3",
+                collapsed ? "justify-center" : "flex-1"
+              )}
+            >
+              {showValues ? (
+                <Eye className="w-5 h-5 text-sidebar-foreground/80 flex-shrink-0" />
+              ) : (
+                <EyeOff className="w-5 h-5 text-sidebar-foreground/80 flex-shrink-0" />
+              )}
+              
+              {!collapsed && (
+                <span className="text-sm text-sidebar-foreground/80 flex-1 text-left">
+                  {showValues ? 'Valores Visíveis' : 'Valores Ocultos'}
+                </span>
+              )}
+            </button>
+            
+            {!collapsed && (
+              <Switch 
+                checked={showValues}
+                onCheckedChange={onToggleValues}
+                className="data-[state=checked]:bg-primary"
+              />
             )}
           </div>
         )}
