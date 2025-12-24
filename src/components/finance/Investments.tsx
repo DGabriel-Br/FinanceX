@@ -506,7 +506,7 @@ export const Investments = ({
               <TrendingUp className="w-4 h-4 md:w-6 md:h-6 text-primary" />
             </div>
             <div className="min-w-0">
-              <p className="text-xs md:text-sm text-muted-foreground truncate">No Período</p>
+              <p className="text-xs md:text-sm text-muted-foreground truncate"><span className="md:hidden">Este Mês</span><span className="hidden md:inline">No Período</span></p>
               <p className="text-sm md:text-2xl font-bold text-primary truncate">
                 {displayValue(totalInvested)}
               </p>
