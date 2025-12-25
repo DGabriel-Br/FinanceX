@@ -162,6 +162,7 @@ const Index = () => {
         <main className="flex-1 flex flex-col overflow-auto bg-background pb-20 md:pb-0">
           {/* Mobile Header */}
           <MobileHeader 
+            userName={user.user_metadata?.full_name}
             userEmail={user.email}
             showValues={showValues}
             onToggleValues={toggleValuesVisibility}
