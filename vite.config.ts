@@ -17,9 +17,9 @@ export default defineConfig(({ mode }) => ({
       registerType: "autoUpdate",
       includeAssets: ["favicon.png", "pwa-192x192.png", "pwa-512x512.png"],
       manifest: {
-        name: "FluxoCerto - Controle Financeiro",
-        short_name: "FluxoCerto",
-        description: "Controle financeiro pessoal simples e eficiente",
+        name: "FinanceX — Suas Finanças, Sob Controle",
+        short_name: "FinanceX",
+        description: "FinanceX - Aplicação de controle financeiro pessoal simples e eficiente",
         theme_color: "#0a0f1a",
         background_color: "#0a0f1a",
         display: "standalone",
