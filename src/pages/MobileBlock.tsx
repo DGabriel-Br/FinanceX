@@ -1,7 +1,8 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Smartphone, Download, Zap, Bell, WifiOff, Shield } from 'lucide-react';
+import { Download, Zap, Bell, WifiOff, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import financeFLogo from '@/assets/finance-f-logo.png';
 
 // Floating particle component
 const FloatingParticle = ({ 
@@ -161,16 +162,26 @@ export default function MobileBlock() {
       {/* Main Content */}
       <div className="flex-1 flex flex-col items-center justify-center px-6 relative z-10">
 
-        {/* Icon with animated ring */}
+        {/* FinanceX Logo Text */}
         <div 
           className={cn(
-            "mb-6 relative transition-all duration-700 delay-100",
+            "mb-6 relative transition-all duration-700 delay-100 flex items-center",
             mounted ? "opacity-100 scale-100" : "opacity-0 scale-50"
           )}
         >
-          <div className="absolute inset-0 bg-primary/30 rounded-full blur-xl scale-150 animate-pulse" />
-          <div className="relative p-4 rounded-full bg-gradient-to-br from-primary/30 to-primary/10 border border-primary/30 backdrop-blur-sm">
-            <Smartphone className="w-8 h-8 text-primary" />
+          <div className="absolute -inset-4 bg-gradient-to-r from-primary/20 via-income/20 to-primary/20 rounded-2xl blur-2xl animate-pulse" />
+          <div className="relative flex items-center">
+            <img 
+              src={financeFLogo} 
+              alt="F" 
+              className="w-10 h-10 object-contain drop-shadow-[0_0_12px_rgba(34,211,238,0.5)]" 
+            />
+            <span 
+              className="text-3xl font-black tracking-tight bg-gradient-to-r from-primary via-income to-primary bg-clip-text text-transparent"
+              style={{ fontFamily: "'Orbitron', sans-serif" }}
+            >
+              inanceX
+            </span>
           </div>
         </div>
 
