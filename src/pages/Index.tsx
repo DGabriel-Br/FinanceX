@@ -81,7 +81,7 @@ const Index = () => {
   // Redirecionar para login se não autenticado
   useEffect(() => {
     if (!authLoading && !user) {
-      navigate('/login');
+      navigate('/welcome');
     }
   }, [user, authLoading, navigate]);
 
