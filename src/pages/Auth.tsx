@@ -4,7 +4,7 @@ import { useAuthContext } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { toast } from 'sonner';
-import { Loader2, Eye, EyeOff, Shield, Smartphone, BarChart3 } from 'lucide-react';
+import { Loader2, Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import { z } from 'zod';
 import { cn } from '@/lib/utils';
 import logo from '@/assets/logo.png';
@@ -98,7 +98,7 @@ export default function Auth() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-background">
+      <div className="min-h-screen flex items-center justify-center bg-sidebar">
         <div className="flex flex-col items-center gap-4">
           <img src={logo} alt="FinanceX" className="w-16 h-16 rounded-2xl animate-pulse object-cover" />
           <Loader2 className="w-6 h-6 animate-spin text-primary" />
@@ -108,170 +108,88 @@ export default function Auth() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col lg:flex-row">
-      {/* Left Side - Branding (hidden on mobile) */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-sidebar via-sidebar to-primary/20 relative overflow-hidden">
-        {/* Animated Background Pattern */}
-        <div className="absolute inset-0">
-          <div 
-            className={cn(
-              "absolute top-20 left-20 w-72 h-72 bg-income/10 rounded-full blur-3xl transition-all duration-1000",
-              mounted ? "opacity-100 scale-100" : "opacity-0 scale-50"
-            )} 
-          />
-          <div 
-            className={cn(
-              "absolute bottom-20 right-20 w-96 h-96 bg-primary/10 rounded-full blur-3xl transition-all duration-1000 delay-300",
-              mounted ? "opacity-100 scale-100" : "opacity-0 scale-50"
-            )} 
-          />
-        </div>
-        
-        <div className="relative z-10 flex flex-col justify-center px-12 xl:px-20 text-white">
-          {/* Logo */}
-          <div 
-            className={cn(
-              "flex items-center gap-4 mb-12 transition-all duration-700",
-              mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-            )}
-          >
-            <img src={logo} alt="FinanceX" className="w-14 h-14 rounded-xl shadow-lg shadow-primary/30 object-cover" />
-            <div>
-              <h1 className="text-2xl font-bold">FinanceX</h1>
-              <p className="text-white/60 text-sm">Controle Financeiro</p>
-            </div>
-          </div>
-
-          {/* Headline */}
-          <h2 
-            className={cn(
-              "text-4xl xl:text-5xl font-bold leading-tight mb-6 transition-all duration-700 delay-100",
-              mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-            )}
-          >
-            Suas finanças,
-            <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-income to-primary">
-              sob controle.
-            </span>
-          </h2>
-          
-          <p 
-            className={cn(
-              "text-white/70 text-lg mb-12 max-w-md transition-all duration-700 delay-200",
-              mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-            )}
-          >
-            Acompanhe receitas, despesas, investimentos e dívidas em um só lugar. 
-            Simples, rápido e seguro.
-          </p>
-
-          {/* Features */}
-          <div className="space-y-4">
-            {[
-              { icon: BarChart3, text: "Dashboard completo com gráficos", delay: "delay-300" },
-              { icon: Smartphone, text: "Acesse de qualquer dispositivo", delay: "delay-[400ms]" },
-              { icon: Shield, text: "Seus dados sempre protegidos", delay: "delay-500" },
-            ].map((feature, index) => (
-              <div 
-                key={index}
-                className={cn(
-                  "flex items-center gap-4 transition-all duration-700",
-                  feature.delay,
-                  mounted ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-4"
-                )}
-              >
-                <div className="w-10 h-10 rounded-lg bg-white/10 flex items-center justify-center">
-                  <feature.icon className={cn("w-5 h-5", index % 2 === 0 ? "text-income" : "text-primary")} />
-                </div>
-                <span className="text-white/80">{feature.text}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Right Side - Auth Form - Always light background */}
-      <div 
-        className="flex-1 flex items-center justify-center p-6 lg:p-12"
-        style={{ backgroundColor: '#f5f7fa', transition: 'none' }}
+    <div className="min-h-screen flex flex-col bg-sidebar">
+      {/* Header with back button */}
+      <header 
+        className={cn(
+          "px-4 pt-4 safe-area-top transition-all duration-500",
+          mounted ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4"
+        )}
       >
-        <div className="w-full max-w-sm">
-          
-          {/* Logo - apenas mobile */}
-          <div 
-            className={cn(
-              "flex lg:hidden items-center justify-center gap-3 mb-8 transition-all duration-500",
-              mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-            )}
-          >
-            <img src={logo} alt="FinanceX" className="w-12 h-12 rounded-xl shadow-lg shadow-primary/30 object-cover" />
-            <div>
-            <h1 className="text-xl font-bold text-[hsl(220,20%,10%)]">FinanceX</h1>
-              <p className="text-[hsl(220,10%,45%)] text-xs">Controle Financeiro</p>
-            </div>
-          </div>
+        <button
+          onClick={() => navigate('/welcome')}
+          className="p-2 -ml-2 text-white/80 hover:text-white transition-colors"
+          aria-label="Voltar"
+        >
+          <ArrowLeft className="w-6 h-6" />
+        </button>
+      </header>
 
-          {/* Heading */}
-          <div 
-            className={cn(
-              "mb-8 text-center lg:text-left transition-all duration-500 delay-100",
-              mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-            )}
-          >
-            <h2 className="text-2xl font-bold text-[hsl(220,20%,10%)] mb-2">
-              {isRegisterRoute ? 'Crie sua conta' : 'Bem-vindo de volta!'}
-            </h2>
-            <p className="text-[hsl(220,10%,45%)] whitespace-nowrap text-sm lg:text-base">
-              {isRegisterRoute 
-                ? 'Preencha os dados para começar.' 
-                : 'Entre com seu e-mail e senha.'}
-            </p>
-          </div>
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col px-6 pt-4 pb-8">
+        {/* Title */}
+        <h1 
+          className={cn(
+            "text-2xl md:text-3xl font-bold text-white mb-8 transition-all duration-500 delay-100",
+            mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+          )}
+        >
+          {isRegisterRoute ? 'Crie sua conta' : 'Boas-vindas de volta!'}
+        </h1>
 
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-5">
-            {isRegisterRoute && (
-              <div 
-                className={cn(
-                  "transition-all duration-500 delay-150",
-                  mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-                )}
-              >
-                <Input
-                  type="text"
-                  placeholder="Seu nome"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  required
-                  disabled={isLoading}
-                  className="h-14 px-5 text-base bg-white border-2 border-[hsl(220,15%,90%)] rounded-xl focus:border-primary transition-all duration-300 hover:border-primary/50 text-[hsl(220,20%,10%)] placeholder:text-[hsl(220,10%,45%)]"
-                />
-              </div>
-            )}
+        {/* Form */}
+        <form onSubmit={handleSubmit} className="space-y-5 flex-1">
+          {/* Name field - only for register */}
+          {isRegisterRoute && (
             <div 
               className={cn(
-                "transition-all duration-500 delay-200",
+                "space-y-2 transition-all duration-500 delay-150",
                 mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
               )}
             >
+              <label className="text-sm text-white/70">Nome completo</label>
               <Input
-                type="email"
-                placeholder="seu@email.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                type="text"
+                placeholder="Seu nome"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
                 required
                 disabled={isLoading}
-                className="h-14 px-5 text-base bg-white border-2 border-[hsl(220,15%,90%)] rounded-xl focus:border-primary transition-all duration-300 hover:border-primary/50 text-[hsl(220,20%,10%)] placeholder:text-[hsl(220,10%,45%)]"
+                className="h-14 px-4 text-base bg-sidebar-accent border-0 rounded-xl text-white placeholder:text-white/40 focus:ring-2 focus:ring-primary/50"
               />
             </div>
-            
-            <div 
-              className={cn(
-                "relative transition-all duration-500 delay-300",
-                mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-              )}
-            >
+          )}
+
+          {/* Email field */}
+          <div 
+            className={cn(
+              "space-y-2 transition-all duration-500",
+              isRegisterRoute ? "delay-200" : "delay-150",
+              mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+            )}
+          >
+            <label className="text-sm text-white/70">E-mail</label>
+            <Input
+              type="email"
+              placeholder="seu@email.com"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              disabled={isLoading}
+              className="h-14 px-4 text-base bg-sidebar-accent border-0 rounded-xl text-white placeholder:text-white/40 focus:ring-2 focus:ring-primary/50"
+            />
+          </div>
+          
+          {/* Password field */}
+          <div 
+            className={cn(
+              "space-y-2 transition-all duration-500",
+              isRegisterRoute ? "delay-[250ms]" : "delay-200",
+              mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+            )}
+          >
+            <label className="text-sm text-white/70">Senha</label>
+            <div className="relative">
               <Input
                 type={showPassword ? 'text' : 'password'}
                 placeholder="••••••••"
@@ -279,12 +197,12 @@ export default function Auth() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 disabled={isLoading}
-                className="h-14 px-5 pr-14 text-base bg-white border-2 border-[hsl(220,15%,90%)] rounded-xl focus:border-primary transition-all duration-300 hover:border-primary/50 text-[hsl(220,20%,10%)] placeholder:text-[hsl(220,10%,45%)]"
+                className="h-14 px-4 pr-14 text-base bg-sidebar-accent border-0 rounded-xl text-white placeholder:text-white/40 focus:ring-2 focus:ring-primary/50"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-[hsl(220,10%,45%)] hover:text-[hsl(220,20%,10%)] transition-colors"
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-white/50 hover:text-white/80 transition-colors"
               >
                 {showPassword ? (
                   <EyeOff className="w-5 h-5" />
@@ -293,70 +211,74 @@ export default function Auth() {
                 )}
               </button>
             </div>
-
             {isRegisterRoute && (
-              <p 
-                className={cn(
-                  "text-xs text-[hsl(220,10%,45%)] -mt-2 transition-all duration-300",
-                  mounted ? "opacity-100" : "opacity-0"
-                )}
-              >
-                Mínimo de 6 caracteres
-              </p>
+              <p className="text-xs text-white/50">Mínimo de 6 caracteres</p>
             )}
+          </div>
 
-            <div 
-              className={cn(
-                "transition-all duration-500 delay-[400ms]",
-                mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-              )}
-            >
-              <Button 
-                type="submit" 
-                className="w-full h-14 text-base font-semibold rounded-xl bg-gradient-to-r from-primary to-[#00a3ff] hover:opacity-90 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 shadow-lg shadow-primary/30" 
-                disabled={isLoading}
-              >
-                {isLoading ? (
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                ) : (
-                  isRegisterRoute ? 'Criar conta' : 'Entrar'
-                )}
-              </Button>
-            </div>
-          </form>
-
-          {/* Links */}
+          {/* Submit Button */}
           <div 
             className={cn(
-              "mt-8 space-y-3 text-sm text-center lg:text-left transition-all duration-500 delay-500",
+              "pt-4 transition-all duration-500",
+              isRegisterRoute ? "delay-300" : "delay-[250ms]",
               mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
             )}
           >
-            <p className="text-[hsl(220,10%,45%)]">
-              {isRegisterRoute ? 'Já tem uma conta? ' : 'Não tem uma conta? '}
+            <Button 
+              type="submit" 
+              className="w-full h-14 text-base font-semibold rounded-full bg-primary hover:bg-primary/90 text-primary-foreground transition-all duration-300 shadow-lg shadow-primary/30" 
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <Loader2 className="w-5 h-5 animate-spin" />
+              ) : (
+                isRegisterRoute ? 'Criar conta' : 'Entrar'
+              )}
+            </Button>
+          </div>
+
+          {/* Forgot password - only for login */}
+          {!isRegisterRoute && (
+            <div 
+              className={cn(
+                "text-center transition-all duration-500 delay-300",
+                mounted ? "opacity-100" : "opacity-0"
+              )}
+            >
               <button
                 type="button"
-                onClick={() => navigate(isRegisterRoute ? '/login' : '/cadastro')}
-                className="text-primary hover:underline font-medium transition-colors"
+                onClick={() => toast.info('Função de recuperação de senha será implementada em breve.')}
+                className="text-primary hover:underline text-sm font-medium transition-colors"
               >
-                {isRegisterRoute ? 'Entrar' : 'Cadastrar agora'}
+                Esqueceu a senha?
               </button>
-            </p>
-            {!isRegisterRoute && (
-              <p className="text-[hsl(220,10%,45%)]">
-                Esqueceu a senha?{' '}
-                <button
-                  type="button"
-                  onClick={() => toast.info('Função de recuperação de senha será implementada em breve.')}
-                  className="text-primary hover:underline font-medium transition-colors"
-                >
-                  Clique aqui
-                </button>
-              </p>
-            )}
-          </div>
+            </div>
+          )}
+        </form>
+
+        {/* Bottom link */}
+        <div 
+          className={cn(
+            "mt-6 text-center transition-all duration-500",
+            isRegisterRoute ? "delay-[350ms]" : "delay-[350ms]",
+            mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+          )}
+        >
+          <p className="text-white/60 text-sm">
+            {isRegisterRoute ? 'Já tem uma conta? ' : 'Não tem uma conta? '}
+            <button
+              type="button"
+              onClick={() => navigate(isRegisterRoute ? '/login' : '/cadastro')}
+              className="text-primary hover:underline font-medium transition-colors"
+            >
+              {isRegisterRoute ? 'Entrar' : 'Registre-se'}
+            </button>
+          </p>
         </div>
       </div>
+
+      {/* Safe area bottom spacing */}
+      <div className="safe-area-bottom" />
     </div>
   );
 }

@@ -6,6 +6,7 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
+import Welcome from "./pages/Welcome";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 
@@ -24,9 +25,10 @@ const App = () => (
             <Route path="/lancamentos" element={<Index />} />
             <Route path="/investimentos" element={<Index />} />
             <Route path="/dividas" element={<Index />} />
+            <Route path="/welcome" element={<Welcome />} />
             <Route path="/login" element={<Auth />} />
             <Route path="/cadastro" element={<Auth />} />
-            <Route path="/auth" element={<Navigate to="/login" replace />} />
+            <Route path="/auth" element={<Navigate to="/welcome" replace />} />
             <Route path="/settings" element={<Settings />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
