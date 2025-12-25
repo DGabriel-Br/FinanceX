@@ -23,7 +23,7 @@ export type Database = {
           paid_value: number
           start_date: string
           total_value: number
-          user_id: string | null
+          user_id: string
         }
         Insert: {
           created_at?: number
@@ -33,7 +33,7 @@ export type Database = {
           paid_value?: number
           start_date: string
           total_value: number
-          user_id?: string | null
+          user_id: string
         }
         Update: {
           created_at?: number
@@ -43,7 +43,7 @@ export type Database = {
           paid_value?: number
           start_date?: string
           total_value?: number
-          user_id?: string | null
+          user_id?: string
         }
         Relationships: []
       }
@@ -53,21 +53,21 @@ export type Database = {
           id: string
           target_value: number
           type: string
-          user_id: string | null
+          user_id: string
         }
         Insert: {
           created_at?: string
           id?: string
           target_value: number
           type: string
-          user_id?: string | null
+          user_id: string
         }
         Update: {
           created_at?: string
           id?: string
           target_value?: number
           type?: string
-          user_id?: string | null
+          user_id?: string
         }
         Relationships: []
       }
@@ -79,7 +79,7 @@ export type Database = {
           description: string
           id: string
           type: string
-          user_id: string | null
+          user_id: string
           value: number
         }
         Insert: {
@@ -89,7 +89,7 @@ export type Database = {
           description: string
           id?: string
           type: string
-          user_id?: string | null
+          user_id: string
           value: number
         }
         Update: {
@@ -99,7 +99,7 @@ export type Database = {
           description?: string
           id?: string
           type?: string
-          user_id?: string | null
+          user_id?: string
           value?: number
         }
         Relationships: []
