@@ -24,7 +24,9 @@ export default function Auth() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
   const { user, loading, signIn, signUp } = useAuthContext();
@@ -56,6 +58,11 @@ export default function Auth() {
     const passwordResult = passwordSchema.safeParse(password);
     if (!passwordResult.success) {
       toast.error(passwordResult.error.errors[0].message);
+      return false;
+    }
+
+    if (isRegisterRoute && password !== confirmPassword) {
+      toast.error('As senhas não coincidem');
       return false;
     }
 
@@ -262,6 +269,46 @@ export default function Auth() {
                   <PasswordStrengthMeter password={password} className="mt-3" />
                 )}
               </div>
+
+              {/* Confirm Password field - only for register */}
+              {isRegisterRoute && (
+                <div className="space-y-2">
+                  <label className="text-xs font-medium text-white/70 uppercase tracking-wide">
+                    Confirmar senha {!confirmPassword && <span className="text-red-400">*</span>}
+                  </label>
+                  <div className="relative">
+                    <Input
+                      type={showConfirmPassword ? 'text' : 'password'}
+                      placeholder=""
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      required
+                      disabled={isLoading}
+                      className={cn(
+                        "h-11 px-3 pr-12 text-sm bg-sidebar-accent/80 border-0 rounded-md text-white placeholder:text-white/30 focus:ring-1 focus:ring-primary/50",
+                        confirmPassword && password !== confirmPassword && "ring-1 ring-red-500/50"
+                      )}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-white/50 hover:text-white/80 transition-colors"
+                    >
+                      {showConfirmPassword ? (
+                        <EyeOff className="w-4 h-4" />
+                      ) : (
+                        <Eye className="w-4 h-4" />
+                      )}
+                    </button>
+                  </div>
+                  {confirmPassword && password !== confirmPassword && (
+                    <p className="text-xs text-red-400">As senhas não coincidem</p>
+                  )}
+                  {confirmPassword && password === confirmPassword && confirmPassword.length > 0 && (
+                    <p className="text-xs text-income">Senhas coincidem ✓</p>
+                  )}
+                </div>
+              )}
 
               {/* Forgot password - only for login */}
               {!isRegisterRoute && (
