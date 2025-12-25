@@ -108,177 +108,372 @@ export default function Auth() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-sidebar">
-      {/* Header with back button */}
-      <header 
-        className={cn(
-          "px-4 pt-4 safe-area-top transition-all duration-500",
-          mounted ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4"
-        )}
-      >
-        <button
-          onClick={() => navigate('/welcome')}
-          className="p-2 -ml-2 text-white/80 hover:text-white transition-colors"
-          aria-label="Voltar"
-        >
-          <ArrowLeft className="w-6 h-6" />
-        </button>
-      </header>
+    <>
+      {/* Desktop Version */}
+      <div className="hidden md:flex min-h-screen bg-gradient-to-br from-sidebar via-[hsl(220,50%,15%)] to-primary/30 relative overflow-hidden">
+        {/* Animated Background Elements */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          {/* Large floating circles */}
+          <div 
+            className={cn(
+              "absolute top-[10%] left-[5%] w-40 h-40 bg-gradient-to-br from-white/10 to-transparent rounded-full blur-xl transition-all duration-1000",
+              mounted ? "opacity-60 scale-100" : "opacity-0 scale-50"
+            )} 
+          />
+          <div 
+            className={cn(
+              "absolute top-[15%] right-[10%] w-32 h-32 bg-gradient-to-br from-income/20 to-primary/10 rounded-full blur-2xl transition-all duration-1000 delay-200",
+              mounted ? "opacity-50 scale-100" : "opacity-0 scale-50"
+            )} 
+          />
+          <div 
+            className={cn(
+              "absolute bottom-[20%] left-[8%] w-48 h-48 bg-gradient-to-br from-primary/15 to-income/20 rounded-full blur-3xl transition-all duration-1000 delay-300",
+              mounted ? "opacity-40 scale-100" : "opacity-0 scale-50"
+            )} 
+          />
+          <div 
+            className={cn(
+              "absolute bottom-[10%] right-[15%] w-36 h-36 bg-gradient-to-br from-income/15 to-primary/20 rounded-full blur-2xl transition-all duration-1000 delay-500",
+              mounted ? "opacity-50 scale-100" : "opacity-0 scale-50"
+            )} 
+          />
+          
+          {/* Decorative top element */}
+          <div 
+            className={cn(
+              "absolute top-[8%] left-1/2 -translate-x-1/2 w-20 h-20 bg-gradient-to-br from-primary/30 to-income/20 rounded-full blur-xl transition-all duration-1000 delay-400",
+              mounted ? "opacity-60 scale-100" : "opacity-0 scale-50"
+            )} 
+          />
+          
+          {/* Star-like dots scattered */}
+          <div className="absolute top-[20%] left-[20%] w-1 h-1 bg-white/40 rounded-full animate-pulse" />
+          <div className="absolute top-[30%] left-[70%] w-1.5 h-1.5 bg-white/30 rounded-full animate-pulse delay-300" />
+          <div className="absolute top-[60%] left-[85%] w-1 h-1 bg-white/35 rounded-full animate-pulse delay-500" />
+          <div className="absolute top-[70%] left-[10%] w-1 h-1 bg-white/25 rounded-full animate-pulse delay-700" />
+          <div className="absolute top-[40%] left-[30%] w-0.5 h-0.5 bg-white/40 rounded-full animate-pulse delay-200" />
+          <div className="absolute top-[50%] left-[90%] w-1 h-1 bg-white/30 rounded-full animate-pulse delay-400" />
+          <div className="absolute top-[80%] left-[40%] w-0.5 h-0.5 bg-white/35 rounded-full animate-pulse delay-600" />
+          <div className="absolute top-[25%] left-[55%] w-1 h-1 bg-white/25 rounded-full animate-pulse delay-100" />
+          <div className="absolute top-[85%] left-[75%] w-1.5 h-1.5 bg-white/20 rounded-full animate-pulse delay-800" />
+          <div className="absolute top-[45%] left-[5%] w-1 h-1 bg-white/30 rounded-full animate-pulse delay-350" />
+        </div>
 
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col px-6 pt-4 pb-8">
-        {/* Title */}
-        <h1 
+        {/* Logo in top left */}
+        <div 
           className={cn(
-            "text-2xl md:text-3xl font-bold text-white mb-8 transition-all duration-500 delay-100",
-            mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+            "absolute top-6 left-6 flex items-center gap-3 z-20 transition-all duration-700",
+            mounted ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4"
           )}
         >
-          {isRegisterRoute ? 'Crie sua conta' : 'Boas-vindas de volta!'}
-        </h1>
+          <img src={logo} alt="FinanceX" className="w-10 h-10 rounded-xl object-cover shadow-lg" />
+          <span className="text-white font-bold text-lg">FinanceX</span>
+        </div>
 
-        {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-5 flex-1">
-          {/* Name field - only for register */}
-          {isRegisterRoute && (
+        {/* Centered Card */}
+        <div className="flex-1 flex items-center justify-center p-8 relative z-10">
+          <div 
+            className={cn(
+              "w-full max-w-md bg-sidebar/95 backdrop-blur-sm rounded-xl p-8 shadow-2xl border border-white/5 transition-all duration-700 delay-200",
+              mounted ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-95 translate-y-8"
+            )}
+          >
+            {/* Card Header */}
+            <div className="text-center mb-8">
+              <h1 className="text-2xl font-bold text-white mb-2">
+                {isRegisterRoute ? 'Crie sua conta' : 'Boas-vindas de volta!'}
+              </h1>
+              <p className="text-white/60 text-sm">
+                {isRegisterRoute 
+                  ? 'Preencha os dados para começar a usar o FinanceX.'
+                  : 'Estamos muito animados em te ver novamente!'}
+              </p>
+            </div>
+
+            {/* Form */}
+            <form onSubmit={handleSubmit} className="space-y-5">
+              {/* Name field - only for register */}
+              {isRegisterRoute && (
+                <div className="space-y-2">
+                  <label className="text-xs font-medium text-white/70 uppercase tracking-wide">
+                    Nome completo <span className="text-red-400">*</span>
+                  </label>
+                  <Input
+                    type="text"
+                    placeholder=""
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    required
+                    disabled={isLoading}
+                    className="h-11 px-3 text-sm bg-sidebar-accent/80 border-0 rounded-md text-white placeholder:text-white/30 focus:ring-1 focus:ring-primary/50"
+                  />
+                </div>
+              )}
+
+              {/* Email field */}
+              <div className="space-y-2">
+                <label className="text-xs font-medium text-white/70 uppercase tracking-wide">
+                  E-mail <span className="text-red-400">*</span>
+                </label>
+                <Input
+                  type="email"
+                  placeholder=""
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  disabled={isLoading}
+                  className="h-11 px-3 text-sm bg-sidebar-accent/80 border-0 rounded-md text-white placeholder:text-white/30 focus:ring-1 focus:ring-primary/50"
+                />
+              </div>
+              
+              {/* Password field */}
+              <div className="space-y-2">
+                <label className="text-xs font-medium text-white/70 uppercase tracking-wide">
+                  Senha <span className="text-red-400">*</span>
+                </label>
+                <div className="relative">
+                  <Input
+                    type={showPassword ? 'text' : 'password'}
+                    placeholder=""
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    disabled={isLoading}
+                    className="h-11 px-3 pr-12 text-sm bg-sidebar-accent/80 border-0 rounded-md text-white placeholder:text-white/30 focus:ring-1 focus:ring-primary/50"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-white/50 hover:text-white/80 transition-colors"
+                  >
+                    {showPassword ? (
+                      <EyeOff className="w-4 h-4" />
+                    ) : (
+                      <Eye className="w-4 h-4" />
+                    )}
+                  </button>
+                </div>
+                {isRegisterRoute && (
+                  <p className="text-xs text-white/40">Mínimo de 6 caracteres</p>
+                )}
+              </div>
+
+              {/* Forgot password - only for login */}
+              {!isRegisterRoute && (
+                <div>
+                  <button
+                    type="button"
+                    onClick={() => toast.info('Função de recuperação de senha será implementada em breve.')}
+                    className="text-primary hover:underline text-xs font-medium transition-colors"
+                  >
+                    Esqueceu sua senha?
+                  </button>
+                </div>
+              )}
+
+              {/* Submit Button */}
+              <Button 
+                type="submit" 
+                className="w-full h-11 text-sm font-semibold rounded-md bg-primary hover:bg-primary/90 text-primary-foreground transition-all duration-300" 
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                ) : (
+                  isRegisterRoute ? 'Criar conta' : 'Entrar'
+                )}
+              </Button>
+
+              {/* Bottom link */}
+              <p className="text-white/50 text-xs text-center pt-2">
+                {isRegisterRoute ? 'Já tem uma conta? ' : 'Precisando de uma conta? '}
+                <button
+                  type="button"
+                  onClick={() => navigate(isRegisterRoute ? '/login' : '/cadastro')}
+                  className="text-primary hover:underline font-medium transition-colors"
+                >
+                  {isRegisterRoute ? 'Entrar' : 'Registre-se'}
+                </button>
+              </p>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile Version */}
+      <div className="md:hidden min-h-screen flex flex-col bg-sidebar">
+        {/* Header with back button */}
+        <header 
+          className={cn(
+            "px-4 pt-4 safe-area-top transition-all duration-500",
+            mounted ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4"
+          )}
+        >
+          <button
+            onClick={() => navigate('/welcome')}
+            className="p-2 -ml-2 text-white/80 hover:text-white transition-colors"
+            aria-label="Voltar"
+          >
+            <ArrowLeft className="w-6 h-6" />
+          </button>
+        </header>
+
+        {/* Main Content */}
+        <div className="flex-1 flex flex-col px-6 pt-4 pb-8">
+          {/* Title */}
+          <h1 
+            className={cn(
+              "text-2xl md:text-3xl font-bold text-white mb-8 transition-all duration-500 delay-100",
+              mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+            )}
+          >
+            {isRegisterRoute ? 'Crie sua conta' : 'Boas-vindas de volta!'}
+          </h1>
+
+          {/* Form */}
+          <form onSubmit={handleSubmit} className="space-y-5 flex-1">
+            {/* Name field - only for register */}
+            {isRegisterRoute && (
+              <div 
+                className={cn(
+                  "space-y-2 transition-all duration-500 delay-150",
+                  mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+                )}
+              >
+                <label className="text-sm text-white/70">Nome completo</label>
+                <Input
+                  type="text"
+                  placeholder="Seu nome"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  required
+                  disabled={isLoading}
+                  className="h-14 px-4 text-base bg-sidebar-accent border-0 rounded-xl text-white placeholder:text-white/40 focus:ring-2 focus:ring-primary/50"
+                />
+              </div>
+            )}
+
+            {/* Email field */}
             <div 
               className={cn(
-                "space-y-2 transition-all duration-500 delay-150",
+                "space-y-2 transition-all duration-500",
+                isRegisterRoute ? "delay-200" : "delay-150",
                 mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
               )}
             >
-              <label className="text-sm text-white/70">Nome completo</label>
+              <label className="text-sm text-white/70">E-mail</label>
               <Input
-                type="text"
-                placeholder="Seu nome"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
+                type="email"
+                placeholder="seu@email.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
                 required
                 disabled={isLoading}
                 className="h-14 px-4 text-base bg-sidebar-accent border-0 rounded-xl text-white placeholder:text-white/40 focus:ring-2 focus:ring-primary/50"
               />
             </div>
-          )}
-
-          {/* Email field */}
-          <div 
-            className={cn(
-              "space-y-2 transition-all duration-500",
-              isRegisterRoute ? "delay-200" : "delay-150",
-              mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-            )}
-          >
-            <label className="text-sm text-white/70">E-mail</label>
-            <Input
-              type="email"
-              placeholder="seu@email.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              disabled={isLoading}
-              className="h-14 px-4 text-base bg-sidebar-accent border-0 rounded-xl text-white placeholder:text-white/40 focus:ring-2 focus:ring-primary/50"
-            />
-          </div>
-          
-          {/* Password field */}
-          <div 
-            className={cn(
-              "space-y-2 transition-all duration-500",
-              isRegisterRoute ? "delay-[250ms]" : "delay-200",
-              mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-            )}
-          >
-            <label className="text-sm text-white/70">Senha</label>
-            <div className="relative">
-              <Input
-                type={showPassword ? 'text' : 'password'}
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                disabled={isLoading}
-                className="h-14 px-4 pr-14 text-base bg-sidebar-accent border-0 rounded-xl text-white placeholder:text-white/40 focus:ring-2 focus:ring-primary/50"
-              />
-              <button
-                type="button"
-                onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-4 top-1/2 -translate-y-1/2 text-white/50 hover:text-white/80 transition-colors"
-              >
-                {showPassword ? (
-                  <EyeOff className="w-5 h-5" />
-                ) : (
-                  <Eye className="w-5 h-5" />
-                )}
-              </button>
-            </div>
-            {isRegisterRoute && (
-              <p className="text-xs text-white/50">Mínimo de 6 caracteres</p>
-            )}
-          </div>
-
-          {/* Submit Button */}
-          <div 
-            className={cn(
-              "pt-4 transition-all duration-500",
-              isRegisterRoute ? "delay-300" : "delay-[250ms]",
-              mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-            )}
-          >
-            <Button 
-              type="submit" 
-              className="w-full h-14 text-base font-semibold rounded-full bg-primary hover:bg-primary/90 text-primary-foreground transition-all duration-300 shadow-lg shadow-primary/30" 
-              disabled={isLoading}
-            >
-              {isLoading ? (
-                <Loader2 className="w-5 h-5 animate-spin" />
-              ) : (
-                isRegisterRoute ? 'Criar conta' : 'Entrar'
-              )}
-            </Button>
-          </div>
-
-          {/* Forgot password - only for login */}
-          {!isRegisterRoute && (
+            
+            {/* Password field */}
             <div 
               className={cn(
-                "text-center transition-all duration-500 delay-300",
-                mounted ? "opacity-100" : "opacity-0"
+                "space-y-2 transition-all duration-500",
+                isRegisterRoute ? "delay-[250ms]" : "delay-200",
+                mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
               )}
             >
+              <label className="text-sm text-white/70">Senha</label>
+              <div className="relative">
+                <Input
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="••••••••"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  disabled={isLoading}
+                  className="h-14 px-4 pr-14 text-base bg-sidebar-accent border-0 rounded-xl text-white placeholder:text-white/40 focus:ring-2 focus:ring-primary/50"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-white/50 hover:text-white/80 transition-colors"
+                >
+                  {showPassword ? (
+                    <EyeOff className="w-5 h-5" />
+                  ) : (
+                    <Eye className="w-5 h-5" />
+                  )}
+                </button>
+              </div>
+              {isRegisterRoute && (
+                <p className="text-xs text-white/50">Mínimo de 6 caracteres</p>
+              )}
+            </div>
+
+            {/* Submit Button */}
+            <div 
+              className={cn(
+                "pt-4 transition-all duration-500",
+                isRegisterRoute ? "delay-300" : "delay-[250ms]",
+                mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+              )}
+            >
+              <Button 
+                type="submit" 
+                className="w-full h-14 text-base font-semibold rounded-full bg-primary hover:bg-primary/90 text-primary-foreground transition-all duration-300 shadow-lg shadow-primary/30" 
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                ) : (
+                  isRegisterRoute ? 'Criar conta' : 'Entrar'
+                )}
+              </Button>
+            </div>
+
+            {/* Forgot password - only for login */}
+            {!isRegisterRoute && (
+              <div 
+                className={cn(
+                  "text-center transition-all duration-500 delay-300",
+                  mounted ? "opacity-100" : "opacity-0"
+                )}
+              >
+                <button
+                  type="button"
+                  onClick={() => toast.info('Função de recuperação de senha será implementada em breve.')}
+                  className="text-primary hover:underline text-sm font-medium transition-colors"
+                >
+                  Esqueceu a senha?
+                </button>
+              </div>
+            )}
+          </form>
+
+          {/* Bottom link */}
+          <div 
+            className={cn(
+              "mt-6 text-center transition-all duration-500",
+              isRegisterRoute ? "delay-[350ms]" : "delay-[350ms]",
+              mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+            )}
+          >
+            <p className="text-white/60 text-sm">
+              {isRegisterRoute ? 'Já tem uma conta? ' : 'Não tem uma conta? '}
               <button
                 type="button"
-                onClick={() => toast.info('Função de recuperação de senha será implementada em breve.')}
-                className="text-primary hover:underline text-sm font-medium transition-colors"
+                onClick={() => navigate(isRegisterRoute ? '/login' : '/cadastro')}
+                className="text-primary hover:underline font-medium transition-colors"
               >
-                Esqueceu a senha?
+                {isRegisterRoute ? 'Entrar' : 'Registre-se'}
               </button>
-            </div>
-          )}
-        </form>
-
-        {/* Bottom link */}
-        <div 
-          className={cn(
-            "mt-6 text-center transition-all duration-500",
-            isRegisterRoute ? "delay-[350ms]" : "delay-[350ms]",
-            mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
-          )}
-        >
-          <p className="text-white/60 text-sm">
-            {isRegisterRoute ? 'Já tem uma conta? ' : 'Não tem uma conta? '}
-            <button
-              type="button"
-              onClick={() => navigate(isRegisterRoute ? '/login' : '/cadastro')}
-              className="text-primary hover:underline font-medium transition-colors"
-            >
-              {isRegisterRoute ? 'Entrar' : 'Registre-se'}
-            </button>
-          </p>
+            </p>
+          </div>
         </div>
-      </div>
 
-      {/* Safe area bottom spacing */}
-      <div className="safe-area-bottom" />
-    </div>
+        {/* Safe area bottom spacing */}
+        <div className="safe-area-bottom" />
+      </div>
+    </>
   );
 }
