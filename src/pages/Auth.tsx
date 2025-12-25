@@ -3,6 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { PasswordStrengthMeter } from '@/components/ui/PasswordStrengthMeter';
 import { toast } from 'sonner';
 import { Loader2, Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import { z } from 'zod';
@@ -258,7 +259,7 @@ export default function Auth() {
                   </button>
                 </div>
                 {isRegisterRoute && (
-                  <p className="text-xs text-white/40">Mínimo 8 caracteres, com maiúscula, minúscula e número</p>
+                  <PasswordStrengthMeter password={password} className="mt-3" />
                 )}
               </div>
 
