@@ -197,7 +197,7 @@ export default function Auth() {
               {isRegisterRoute && (
                 <div className="space-y-2">
                   <label className="text-xs font-medium text-white/70 uppercase tracking-wide">
-                    Nome completo <span className="text-red-400">*</span>
+                    Nome completo {!name.trim() && <span className="text-red-400">*</span>}
                   </label>
                   <Input
                     type="text"
@@ -214,7 +214,7 @@ export default function Auth() {
               {/* Email field */}
               <div className="space-y-2">
                 <label className="text-xs font-medium text-white/70 uppercase tracking-wide">
-                  E-mail <span className="text-red-400">*</span>
+                  E-mail {!email.trim() && <span className="text-red-400">*</span>}
                 </label>
                 <Input
                   type="email"
@@ -230,7 +230,7 @@ export default function Auth() {
               {/* Password field */}
               <div className="space-y-2">
                 <label className="text-xs font-medium text-white/70 uppercase tracking-wide">
-                  Senha <span className="text-red-400">*</span>
+                  Senha {!password && <span className="text-red-400">*</span>}
                 </label>
                 <div className="relative">
                   <Input
