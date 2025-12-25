@@ -142,25 +142,41 @@ export default function MobileBlock() {
         {/* Decorative top line */}
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-24 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
         
-        <Button
-          onClick={handleDownloadApp}
-          disabled={isDownloading}
-          className="w-full h-14 text-base font-semibold rounded-2xl bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground transition-all duration-300 shadow-xl shadow-primary/25 flex items-center justify-center gap-3 group disabled:opacity-100"
-        >
-          {isDownloading ? (
-            <>
-              <div className="relative w-5 h-5">
-                <Download className="w-5 h-5 animate-bounce" />
-              </div>
-              <span className="animate-pulse">Baixando...</span>
-            </>
-          ) : (
-            <>
-              <Download className="w-5 h-5 transition-transform duration-300 group-hover:-translate-y-0.5" />
-              Baixar aplicativo
-            </>
-          )}
-        </Button>
+        {/* Enhanced Download Button */}
+        <div className="relative group">
+          {/* Glow effect behind button */}
+          <div className="absolute -inset-1 bg-gradient-to-r from-primary via-primary/80 to-income/60 rounded-3xl blur-lg opacity-50 group-hover:opacity-75 transition-all duration-500 group-hover:blur-xl" />
+          
+          {/* Button container with shine effect */}
+          <Button
+            onClick={handleDownloadApp}
+            disabled={isDownloading}
+            className="relative w-full h-16 text-base font-bold rounded-2xl bg-gradient-to-r from-primary via-primary to-primary/90 hover:from-primary/95 hover:via-primary/90 hover:to-primary/85 text-primary-foreground transition-all duration-300 shadow-2xl shadow-primary/40 flex items-center justify-center gap-3 disabled:opacity-100 overflow-hidden border border-white/10"
+          >
+            {/* Shine overlay effect */}
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-700 ease-out" />
+            
+            {/* Inner highlight */}
+            <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/40 to-transparent" />
+            
+            {isDownloading ? (
+              <>
+                <div className="relative w-6 h-6 flex items-center justify-center">
+                  <div className="absolute inset-0 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  <Download className="w-4 h-4 animate-pulse" />
+                </div>
+                <span className="animate-pulse tracking-wide">Baixando...</span>
+              </>
+            ) : (
+              <>
+                <div className="relative">
+                  <Download className="w-6 h-6 transition-all duration-300 group-hover:scale-110 group-hover:-translate-y-0.5" />
+                </div>
+                <span className="tracking-wide">Baixar aplicativo</span>
+              </>
+            )}
+          </Button>
+        </div>
         
         {/* Security badge */}
         <div className="flex items-center justify-center gap-2 mt-5">
