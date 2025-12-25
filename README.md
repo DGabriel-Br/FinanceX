@@ -1,4 +1,4 @@
-# FluxoCerto - Controle Financeiro Pessoal
+# FinanceX — Suas Finanças, Sob Controle
 
 Uma aplicação moderna e intuitiva para gerenciar suas finanças pessoais.
 
