@@ -39,10 +39,16 @@ const FloatingParticle = ({
 export default function MobileBlock() {
   const [mounted, setMounted] = useState(false);
   const [isDownloading, setIsDownloading] = useState(false);
+  const [clickedFeature, setClickedFeature] = useState<number | null>(null);
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  const handleFeatureClick = (index: number) => {
+    setClickedFeature(index);
+    setTimeout(() => setClickedFeature(null), 600);
+  };
 
   // Generate random particles
   const particles = useMemo(() => {
@@ -211,16 +217,41 @@ export default function MobileBlock() {
           {features.map((feature, index) => (
             <div 
               key={index}
+              onClick={() => handleFeatureClick(index)}
               className={cn(
-                "flex items-center gap-4 p-3 rounded-xl bg-white/5 backdrop-blur-sm border border-white/5 transition-all duration-500",
+                "flex items-center gap-4 p-3 rounded-xl bg-white/5 backdrop-blur-sm border border-white/5 transition-all duration-300 cursor-pointer relative overflow-hidden select-none",
+                "hover:bg-white/10 hover:border-income/20 hover:scale-[1.02] active:scale-[0.98]",
                 mounted ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-8",
-                feature.delay
+                feature.delay,
+                clickedFeature === index && "border-income/40 bg-income/10"
               )}
             >
-              <div className="p-2 rounded-lg bg-gradient-to-br from-income/30 to-income/10">
-                <feature.icon className="w-5 h-5 text-income" />
+              {/* Ripple effect */}
+              {clickedFeature === index && (
+                <div className="absolute inset-0 pointer-events-none">
+                  <div className="absolute inset-0 animate-ping bg-income/20 rounded-xl" style={{ animationDuration: '0.6s', animationIterationCount: 1 }} />
+                  <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 bg-income/40 rounded-full animate-ping" style={{ animationDuration: '0.5s' }} />
+                </div>
+              )}
+              
+              <div className={cn(
+                "p-2 rounded-lg bg-gradient-to-br from-income/30 to-income/10 transition-all duration-300",
+                clickedFeature === index && "scale-110 from-income/50 to-income/20"
+              )}>
+                <feature.icon className={cn(
+                  "w-5 h-5 text-income transition-all duration-300",
+                  clickedFeature === index && "scale-110"
+                )} />
               </div>
-              <span className="text-sm text-white/80 font-medium">{feature.text}</span>
+              <span className={cn(
+                "text-sm text-white/80 font-medium transition-all duration-300",
+                clickedFeature === index && "text-white"
+              )}>{feature.text}</span>
+              
+              {/* Glow effect on click */}
+              {clickedFeature === index && (
+                <div className="absolute -inset-1 bg-gradient-to-r from-income/30 via-income/20 to-income/30 rounded-xl blur-md -z-10 animate-pulse" />
+              )}
             </div>
           ))}
         </div>
