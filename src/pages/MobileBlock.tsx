@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Smartphone, Download, Zap, Bell, WifiOff, Shield, Check } from 'lucide-react';
+import { Smartphone, Download, Zap, Bell, WifiOff, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import logo from '@/assets/logo.png';
 
 export default function MobileBlock() {
   const [mounted, setMounted] = useState(false);
@@ -73,22 +72,6 @@ export default function MobileBlock() {
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col items-center justify-center px-6 relative z-10">
-        {/* Logo - subtle and elegant */}
-        <div 
-          className={cn(
-            "mb-6 transition-all duration-700",
-            mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
-          )}
-        >
-          <div className="relative">
-            <div className="absolute inset-0 bg-primary/30 blur-xl rounded-2xl scale-125" />
-            <img 
-              src={logo} 
-              alt="FinanceX" 
-              className="relative w-16 h-16 rounded-2xl shadow-lg shadow-primary/30 object-cover ring-1 ring-white/10" 
-            />
-          </div>
-        </div>
 
         {/* Icon with animated ring */}
         <div 
