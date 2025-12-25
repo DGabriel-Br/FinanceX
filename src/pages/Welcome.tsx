@@ -4,16 +4,25 @@ import { useAuthContext } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useIsMobile } from '@/hooks/use-mobile';
 import logo from '@/assets/logo.png';
 
 export default function Welcome() {
   const [mounted, setMounted] = useState(false);
   const { user, loading } = useAuthContext();
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  // Redirecionar para login no desktop
+  useEffect(() => {
+    if (!loading && isMobile === false) {
+      navigate('/login', { replace: true });
+    }
+  }, [isMobile, loading, navigate]);
 
   useEffect(() => {
     if (!loading && user) {
