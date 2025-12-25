@@ -1,9 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Sidebar } from '@/components/finance/Sidebar';
-import { MobileNav } from '@/components/finance/MobileNav';
-import { MobileHeader } from '@/components/finance/MobileHeader';
-import { FloatingAddButton } from '@/components/finance/FloatingAddButton';
 import { Dashboard } from '@/components/finance/Dashboard';
 import { Transactions } from '@/components/finance/Transactions';
 import { Debts } from '@/components/finance/Debts';
@@ -81,7 +78,7 @@ const Index = () => {
   // Redirecionar para login se não autenticado
   useEffect(() => {
     if (!authLoading && !user) {
-      navigate('/welcome');
+      navigate('/login');
     }
   }, [user, authLoading, navigate]);
 
@@ -144,31 +141,19 @@ const Index = () => {
   return (
     <>
       <div className="flex min-h-screen w-full relative">
-        {/* Sidebar - apenas desktop */}
-        <div className="hidden md:block">
-          <Sidebar 
-            activeTab={activeTab} 
-            collapsed={sidebarCollapsed}
-            onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
-            theme={theme}
-            onToggleTheme={toggleTheme}
-            userEmail={user.email}
-            onSignOut={handleSignOutRequest}
-          />
-        </div>
+        {/* Sidebar - desktop */}
+        <Sidebar 
+          activeTab={activeTab} 
+          collapsed={sidebarCollapsed}
+          onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
+          theme={theme}
+          onToggleTheme={toggleTheme}
+          userEmail={user.email}
+          onSignOut={handleSignOutRequest}
+        />
 
         {/* Conteúdo principal */}
-        <main className="flex-1 flex flex-col overflow-auto bg-background pb-20 md:pb-0">
-          {/* Mobile Header */}
-          <MobileHeader 
-            userName={user.user_metadata?.full_name}
-            userEmail={user.email}
-            showValues={showValues}
-            onToggleValues={toggleValuesVisibility}
-            theme={theme}
-            onToggleTheme={toggleTheme}
-          />
-
+        <main className="flex-1 flex flex-col overflow-auto bg-background">
           <div key={activeTab} className="animate-fade-in flex-1" style={{ animationDuration: '0.3s' }}>
             {activeTab === 'dashboard' ? (
               <Dashboard
@@ -221,18 +206,6 @@ const Index = () => {
             )}
           </div>
         </main>
-
-        {/* Floating Add Button - apenas mobile */}
-        <FloatingAddButton onAddTransaction={addTransaction} />
-
-        {/* Navegação Mobile - apenas mobile */}
-        <MobileNav 
-          activeTab={activeTab} 
-          theme={theme}
-          onToggleTheme={toggleTheme}
-          userEmail={user.email}
-          onSignOut={handleSignOutRequest}
-        />
       </div>
 
       {/* Diálogo de confirmação de logout */}
