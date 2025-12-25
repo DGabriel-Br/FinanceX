@@ -87,14 +87,26 @@ export default function MobileBlock() {
         </div>
 
         {/* Title with gradient text */}
-        <h1 
+        <div 
           className={cn(
-            "text-2xl font-bold text-center mb-3 transition-all duration-700 delay-150 bg-gradient-to-r from-white via-white to-white/80 bg-clip-text text-transparent",
+            "text-center mb-4 transition-all duration-700 delay-150",
             mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
           )}
         >
-          Acesse pelo aplicativo
-        </h1>
+          <h1 className="text-2xl font-bold leading-tight">
+            <span className="bg-gradient-to-r from-white via-white to-white/90 bg-clip-text text-transparent">
+              Leve a experiência
+            </span>
+            <br />
+            <span className="bg-gradient-to-r from-primary via-income to-primary bg-clip-text text-transparent animate-pulse">
+              completa
+            </span>
+            <span className="bg-gradient-to-r from-white/90 via-white to-white/80 bg-clip-text text-transparent">
+              {" "}para o aplicativo
+            </span>
+          </h1>
+          <div className="mt-2 h-0.5 w-16 mx-auto bg-gradient-to-r from-transparent via-primary/50 to-transparent rounded-full" />
+        </div>
 
         {/* Description */}
         <p 
