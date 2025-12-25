@@ -288,13 +288,13 @@ export default function Auth() {
 
               {/* Bottom link */}
               <p className="text-white/50 text-xs text-center pt-2">
-                {isRegisterRoute ? 'Já tem uma conta? ' : 'Precisando de uma conta? '}
+                {isRegisterRoute ? 'Já tem uma conta? ' : 'Não tem uma conta? '}
                 <button
                   type="button"
                   onClick={() => navigate(isRegisterRoute ? '/login' : '/cadastro')}
                   className="text-primary hover:underline font-medium transition-colors"
                 >
-                  {isRegisterRoute ? 'Entrar' : 'Registre-se'}
+                  {isRegisterRoute ? 'Entrar' : 'Cadastre-se agora.'}
                 </button>
               </p>
             </form>
