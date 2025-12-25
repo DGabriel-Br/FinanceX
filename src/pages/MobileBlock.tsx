@@ -177,7 +177,7 @@ export default function MobileBlock() {
               className="w-10 h-10 object-contain drop-shadow-[0_0_12px_rgba(34,211,238,0.5)]" 
             />
             <span 
-              className="text-3xl font-black tracking-tight bg-gradient-to-r from-primary via-income to-primary bg-clip-text text-transparent"
+              className="text-3xl font-black tracking-tight text-white"
               style={{ fontFamily: "'Orbitron', sans-serif" }}
             >
               inanceX
