@@ -182,12 +182,12 @@ export default function Auth() {
             {/* Card Header */}
             <div className="text-center mb-8">
               <h1 className="text-2xl font-bold text-white mb-2">
-                {isRegisterRoute ? 'Crie sua conta' : 'Boas-vindas de volta!'}
+                {isRegisterRoute ? 'Crie sua conta' : 'Bem-vindo de volta!'}
               </h1>
               <p className="text-white/60 text-sm">
                 {isRegisterRoute 
                   ? 'Preencha os dados para começar a usar o FinanceX.'
-                  : 'Estamos muito animados em te ver novamente!'}
+                  : 'Entre com seu e-mail e senha para começar.'}
               </p>
             </div>
 
@@ -262,12 +262,13 @@ export default function Auth() {
               {/* Forgot password - only for login */}
               {!isRegisterRoute && (
                 <div>
+                  <span className="text-white/50 text-xs">Esqueceu a senha? </span>
                   <button
                     type="button"
                     onClick={() => toast.info('Função de recuperação de senha será implementada em breve.')}
                     className="text-primary hover:underline text-xs font-medium transition-colors"
                   >
-                    Esqueceu sua senha?
+                    Clique aqui
                   </button>
                 </div>
               )}
