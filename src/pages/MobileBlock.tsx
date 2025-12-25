@@ -170,10 +170,10 @@ export default function MobileBlock() {
           )}
         >
           <div className="absolute -inset-4 bg-gradient-to-r from-primary/20 via-income/20 to-primary/20 rounded-2xl blur-2xl animate-pulse" />
-          <div className="relative flex items-center gap-0">
-            <FinanceLogo size={36} />
+          <div className="relative flex items-baseline">
+            <FinanceLogo size={32} className="translate-y-1" />
             <span 
-              className="text-3xl font-black tracking-tight text-white -ml-1"
+              className="text-3xl font-black tracking-tight text-white -ml-2"
               style={{ fontFamily: "'Orbitron', sans-serif" }}
             >
               inanceX
