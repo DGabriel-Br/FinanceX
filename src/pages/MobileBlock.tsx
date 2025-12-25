@@ -24,7 +24,7 @@ export default function MobileBlock() {
   const features = [
     { icon: Zap, text: 'Experiência otimizada para celular', delay: 'delay-[400ms]' },
     { icon: Bell, text: 'Notificações em tempo real', delay: 'delay-[500ms]' },
-    { icon: WifiOff, text: 'Acesso offline aos seus dados', delay: 'delay-[600ms]' },
+    { icon: WifiOff, text: 'Funciona offline com sincronização', delay: 'delay-[600ms]' },
   ];
 
   return (

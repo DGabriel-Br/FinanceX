@@ -2,6 +2,7 @@ import { Eye, EyeOff, Moon, Sun } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { useScrollDirection } from '@/hooks/useScrollDirection';
+import { SyncIndicator } from './SyncIndicator';
 
 interface MobileHeaderProps {
   userName?: string;
@@ -85,6 +86,9 @@ export const MobileHeader = ({
 
             {/* Ícones de ação */}
             <div className="flex items-center flex-shrink-0 gap-1">
+              {/* Indicador de sincronização */}
+              <SyncIndicator />
+              
               {/* Botão de alternar tema */}
               {onToggleTheme && (
                 <button
