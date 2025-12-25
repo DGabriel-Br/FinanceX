@@ -7,13 +7,13 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuthContext } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 
 export default function Settings() {
   const navigate = useNavigate();
   const { toast } = useToast();
-  const { user, loading } = useAuth();
+  const { user, loading, refreshUser } = useAuthContext();
   
   // Estado para nome
   const [name, setName] = useState('');
@@ -57,6 +57,9 @@ export default function Settings() {
       });
 
       if (error) throw error;
+
+      // Atualizar o estado global do usuário
+      await refreshUser();
 
       toast({
         title: "Nome atualizado",

@@ -11,7 +11,7 @@ import { Investments } from '@/components/finance/Investments';
 import { useTransactions } from '@/hooks/useTransactions';
 import { useDebts } from '@/hooks/useDebts';
 import { useTheme } from '@/hooks/useTheme';
-import { useAuth } from '@/hooks/useAuth';
+import { useAuthContext } from '@/contexts/AuthContext';
 import { useValuesVisibility } from '@/hooks/useValuesVisibility';
 import {
   AlertDialog,
@@ -45,7 +45,7 @@ const Index = () => {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const { theme, toggleTheme } = useTheme();
-  const { user, loading: authLoading, signOut } = useAuth();
+  const { user, loading: authLoading, signOut } = useAuthContext();
   const { showValues, toggleValuesVisibility, formatValue } = useValuesVisibility();
 
   // IMPORTANTE: Todos os hooks devem ser chamados antes de qualquer early return
