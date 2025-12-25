@@ -10,7 +10,11 @@ import { cn } from '@/lib/utils';
 import logo from '@/assets/logo.png';
 
 const emailSchema = z.string().email('Email inválido');
-const passwordSchema = z.string().min(6, 'A senha deve ter pelo menos 6 caracteres');
+const passwordSchema = z.string()
+  .min(8, 'A senha deve ter pelo menos 8 caracteres')
+  .regex(/[A-Z]/, 'Deve conter pelo menos uma letra maiúscula')
+  .regex(/[a-z]/, 'Deve conter pelo menos uma letra minúscula')
+  .regex(/[0-9]/, 'Deve conter pelo menos um número');
 
 export default function Auth() {
   const location = useLocation();
@@ -48,10 +52,9 @@ export default function Auth() {
       return false;
     }
 
-    try {
-      passwordSchema.parse(password);
-    } catch {
-      toast.error('A senha deve ter pelo menos 6 caracteres');
+    const passwordResult = passwordSchema.safeParse(password);
+    if (!passwordResult.success) {
+      toast.error(passwordResult.error.errors[0].message);
       return false;
     }
 
@@ -255,7 +258,7 @@ export default function Auth() {
                   </button>
                 </div>
                 {isRegisterRoute && (
-                  <p className="text-xs text-white/40">Mínimo de 6 caracteres</p>
+                  <p className="text-xs text-white/40">Mínimo 8 caracteres, com maiúscula, minúscula e número</p>
                 )}
               </div>
 

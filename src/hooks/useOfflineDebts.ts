@@ -5,6 +5,7 @@ import { db, generateTempId, LocalDebt } from '@/lib/offline/database';
 import { syncService } from '@/lib/offline/syncService';
 import { toast } from 'sonner';
 import { useLiveQuery } from 'dexie-react-hooks';
+import { logger } from '@/lib/logger';
 
 export const useOfflineDebts = () => {
   const [loading, setLoading] = useState(true);
@@ -48,7 +49,7 @@ export const useOfflineDebts = () => {
           }
         }
       } catch (error) {
-        console.error('Erro ao inicializar:', error);
+        logger.error('Erro ao inicializar:', error);
       } finally {
         setLoading(false);
       }
@@ -114,7 +115,7 @@ export const useOfflineDebts = () => {
         createdAt: now,
       };
     } catch (error) {
-      console.error('Erro ao adicionar dívida:', error);
+      logger.error('Erro ao adicionar dívida:', error);
       toast.error('Erro ao adicionar dívida');
       return null;
     }
@@ -154,7 +155,7 @@ export const useOfflineDebts = () => {
 
       toast.success(navigator.onLine ? 'Dívida atualizada!' : 'Alteração salva localmente');
     } catch (error) {
-      console.error('Erro ao atualizar dívida:', error);
+      logger.error('Erro ao atualizar dívida:', error);
       toast.error('Erro ao atualizar dívida');
     }
   }, []);
@@ -183,7 +184,7 @@ export const useOfflineDebts = () => {
 
       toast.success(navigator.onLine ? 'Dívida excluída!' : 'Exclusão salva localmente');
     } catch (error) {
-      console.error('Erro ao excluir dívida:', error);
+      logger.error('Erro ao excluir dívida:', error);
       toast.error('Erro ao excluir dívida');
     }
   }, []);

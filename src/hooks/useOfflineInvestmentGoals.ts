@@ -5,6 +5,7 @@ import { db, generateTempId, LocalInvestmentGoal } from '@/lib/offline/database'
 import { syncService } from '@/lib/offline/syncService';
 import { toast } from 'sonner';
 import { useLiveQuery } from 'dexie-react-hooks';
+import { logger } from '@/lib/logger';
 
 export interface InvestmentGoal {
   type: InvestmentType;
@@ -48,7 +49,7 @@ export const useOfflineInvestmentGoals = () => {
           }
         }
       } catch (error) {
-        console.error('Erro ao inicializar:', error);
+        logger.error('Erro ao inicializar:', error);
       } finally {
         setLoading(false);
       }
@@ -130,7 +131,7 @@ export const useOfflineInvestmentGoals = () => {
 
       toast.success(navigator.onLine ? 'Meta atualizada!' : 'Meta salva localmente');
     } catch (error) {
-      console.error('Erro ao salvar meta:', error);
+      logger.error('Erro ao salvar meta:', error);
       toast.error('Erro ao salvar meta');
     }
   }, [userId]);
@@ -169,7 +170,7 @@ export const useOfflineInvestmentGoals = () => {
 
       toast.success(navigator.onLine ? 'Meta removida!' : 'Remoção salva localmente');
     } catch (error) {
-      console.error('Erro ao remover meta:', error);
+      logger.error('Erro ao remover meta:', error);
       toast.error('Erro ao remover meta');
     }
   }, [userId]);
