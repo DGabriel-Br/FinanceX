@@ -77,6 +77,16 @@ export default function Settings() {
   };
 
   const handleUpdatePassword = async () => {
+    // Validar senha atual
+    if (!currentPassword) {
+      toast({
+        title: "Senha atual obrigatória",
+        description: "Por favor, informe sua senha atual.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     if (newPassword.length < 6) {
       toast({
         title: "Senha muito curta",
@@ -97,6 +107,22 @@ export default function Settings() {
 
     setIsUpdatingPassword(true);
     try {
+      // Verificar senha atual antes de permitir alteração
+      const { error: verifyError } = await supabase.auth.signInWithPassword({
+        email: user?.email || '',
+        password: currentPassword
+      });
+
+      if (verifyError) {
+        toast({
+          title: "Senha atual incorreta",
+          description: "A senha atual informada está incorreta.",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Atualizar para nova senha
       const { error } = await supabase.auth.updateUser({
         password: newPassword
       });
@@ -211,6 +237,27 @@ export default function Settings() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
+              <Label htmlFor="currentPassword">Senha atual</Label>
+              <div className="relative">
+                <Input
+                  id="currentPassword"
+                  type={showCurrentPassword ? 'text' : 'password'}
+                  value={currentPassword}
+                  onChange={(e) => setCurrentPassword(e.target.value)}
+                  placeholder="Informe sua senha atual"
+                  className="pr-10"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                >
+                  {showCurrentPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
+            </div>
+
+            <div className="space-y-2">
               <Label htmlFor="newPassword">Nova senha</Label>
               <div className="relative">
                 <Input
@@ -254,7 +301,7 @@ export default function Settings() {
 
             <Button 
               onClick={handleUpdatePassword} 
-              disabled={isUpdatingPassword || !newPassword || !confirmPassword}
+              disabled={isUpdatingPassword || !currentPassword || !newPassword || !confirmPassword}
               className="w-full sm:w-auto"
             >
               {isUpdatingPassword ? (
