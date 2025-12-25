@@ -17,6 +17,7 @@ export default function Auth() {
   const location = useLocation();
   const isRegisterRoute = location.pathname === '/cadastro';
   
+  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -36,6 +37,11 @@ export default function Auth() {
   }, [user, loading, navigate]);
 
   const validateForm = () => {
+    if (isRegisterRoute && name.trim().length < 2) {
+      toast.error('Por favor, insira seu nome');
+      return false;
+    }
+
     try {
       emailSchema.parse(email);
     } catch {
@@ -61,7 +67,7 @@ export default function Auth() {
     setIsLoading(true);
     
     if (isRegisterRoute) {
-      const { error } = await signUp(email, password);
+      const { error } = await signUp(email, password, name.trim());
       setIsLoading(false);
 
       if (error) {
@@ -226,6 +232,24 @@ export default function Auth() {
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-5">
+            {isRegisterRoute && (
+              <div 
+                className={cn(
+                  "transition-all duration-500 delay-150",
+                  mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
+                )}
+              >
+                <Input
+                  type="text"
+                  placeholder="Seu nome"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  required
+                  disabled={isLoading}
+                  className="h-14 px-5 text-base bg-white border-2 border-[hsl(220,15%,90%)] rounded-xl focus:border-primary transition-all duration-300 hover:border-primary/50 text-[hsl(220,20%,10%)] placeholder:text-[hsl(220,10%,45%)]"
+                />
+              </div>
+            )}
             <div 
               className={cn(
                 "transition-all duration-500 delay-200",
