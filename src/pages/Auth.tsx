@@ -29,12 +29,20 @@ export default function Auth() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
   const { user, loading, signIn, signUp } = useAuthContext();
   const navigate = useNavigate();
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  // Trigger transition animation when route changes
+  useEffect(() => {
+    setIsTransitioning(true);
+    const timer = setTimeout(() => setIsTransitioning(false), 300);
+    return () => clearTimeout(timer);
+  }, [isRegisterRoute]);
 
   useEffect(() => {
     if (!loading && user) {
@@ -186,12 +194,16 @@ export default function Auth() {
         <div className="flex-1 flex items-center justify-center p-8 relative z-10">
           <div 
             className={cn(
-              "w-full max-w-md bg-sidebar/95 backdrop-blur-sm rounded-xl p-8 shadow-2xl border border-white/5 transition-all duration-700 delay-200",
-              mounted ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-95 translate-y-8"
+              "w-full max-w-md bg-sidebar/95 backdrop-blur-sm rounded-xl p-8 shadow-2xl border border-white/5 transition-all duration-500",
+              mounted ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-95 translate-y-8",
+              isTransitioning && "opacity-0 scale-95"
             )}
           >
             {/* Card Header */}
-            <div className="text-center mb-8">
+            <div className={cn(
+              "text-center mb-8 transition-all duration-300",
+              isTransitioning ? "opacity-0 translate-y-2" : "opacity-100 translate-y-0"
+            )}>
               <h1 className="text-2xl font-bold text-white mb-2">
                 {isRegisterRoute ? 'Crie sua conta' : 'Bem-vindo(a) de volta!'}
               </h1>
@@ -205,22 +217,25 @@ export default function Auth() {
             {/* Form */}
             <form onSubmit={handleSubmit} className="space-y-5">
               {/* Name field - only for register */}
-              {isRegisterRoute && (
-                <div className="space-y-2">
-                  <label className="text-xs font-medium text-white/70 uppercase tracking-wide">
-                    Nome completo {!name.trim() && <span className="text-red-400">*</span>}
-                  </label>
-                  <Input
-                    type="text"
-                    placeholder=""
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    required
-                    disabled={isLoading}
-                    className="h-11 px-3 text-sm bg-sidebar-accent/80 border-0 rounded-md text-white placeholder:text-white/30 focus:ring-1 focus:ring-primary/50"
-                  />
-                </div>
-              )}
+              <div className={cn(
+                "space-y-2 transition-all duration-300 overflow-hidden",
+                isRegisterRoute 
+                  ? "opacity-100 max-h-24 translate-y-0" 
+                  : "opacity-0 max-h-0 -translate-y-2 pointer-events-none"
+              )}>
+                <label className="text-xs font-medium text-white/70 uppercase tracking-wide">
+                  Nome completo {!name.trim() && <span className="text-red-400">*</span>}
+                </label>
+                <Input
+                  type="text"
+                  placeholder=""
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  required={isRegisterRoute}
+                  disabled={isLoading}
+                  className="h-11 px-3 text-sm bg-sidebar-accent/80 border-0 rounded-md text-white placeholder:text-white/30 focus:ring-1 focus:ring-primary/50"
+                />
+              </div>
 
               {/* Email field */}
               <div className="space-y-2">
@@ -271,44 +286,47 @@ export default function Auth() {
               </div>
 
               {/* Confirm Password field - only for register */}
-              {isRegisterRoute && (
-                <div className="space-y-2">
-                  <label className="text-xs font-medium text-white/70 uppercase tracking-wide">
-                    Confirmar senha {!confirmPassword && <span className="text-red-400">*</span>}
-                  </label>
-                  <div className="relative">
-                    <Input
-                      type={showConfirmPassword ? 'text' : 'password'}
-                      placeholder=""
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                      required
-                      disabled={isLoading}
-                      className={cn(
-                        "h-11 px-3 pr-12 text-sm bg-sidebar-accent/80 border-0 rounded-md text-white placeholder:text-white/30 focus:ring-1 focus:ring-primary/50",
-                        confirmPassword && password !== confirmPassword && "ring-1 ring-red-500/50"
-                      )}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-white/50 hover:text-white/80 transition-colors"
-                    >
-                      {showConfirmPassword ? (
-                        <EyeOff className="w-4 h-4" />
-                      ) : (
-                        <Eye className="w-4 h-4" />
-                      )}
-                    </button>
-                  </div>
-                  {confirmPassword && password !== confirmPassword && (
-                    <p className="text-xs text-red-400">As senhas não coincidem</p>
-                  )}
-                  {confirmPassword && password === confirmPassword && confirmPassword.length > 0 && (
-                    <p className="text-xs text-income">Senhas coincidem ✓</p>
-                  )}
+              <div className={cn(
+                "space-y-2 transition-all duration-300 overflow-hidden",
+                isRegisterRoute 
+                  ? "opacity-100 max-h-32 translate-y-0" 
+                  : "opacity-0 max-h-0 -translate-y-2 pointer-events-none"
+              )}>
+                <label className="text-xs font-medium text-white/70 uppercase tracking-wide">
+                  Confirmar senha {!confirmPassword && <span className="text-red-400">*</span>}
+                </label>
+                <div className="relative">
+                  <Input
+                    type={showConfirmPassword ? 'text' : 'password'}
+                    placeholder=""
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    required={isRegisterRoute}
+                    disabled={isLoading}
+                    className={cn(
+                      "h-11 px-3 pr-12 text-sm bg-sidebar-accent/80 border-0 rounded-md text-white placeholder:text-white/30 focus:ring-1 focus:ring-primary/50",
+                      confirmPassword && password !== confirmPassword && "ring-1 ring-red-500/50"
+                    )}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-white/50 hover:text-white/80 transition-colors"
+                  >
+                    {showConfirmPassword ? (
+                      <EyeOff className="w-4 h-4" />
+                    ) : (
+                      <Eye className="w-4 h-4" />
+                    )}
+                  </button>
                 </div>
-              )}
+                {confirmPassword && password !== confirmPassword && (
+                  <p className="text-xs text-red-400">As senhas não coincidem</p>
+                )}
+                {confirmPassword && password === confirmPassword && confirmPassword.length > 0 && (
+                  <p className="text-xs text-income">Senhas coincidem ✓</p>
+                )}
+              </div>
 
               {/* Forgot password - only for login */}
               {!isRegisterRoute && (
