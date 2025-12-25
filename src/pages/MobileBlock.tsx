@@ -1,19 +1,25 @@
 import { useState, useEffect } from 'react';
-import { Smartphone, Download, Zap, Bell, WifiOff, Shield, Star } from 'lucide-react';
+import { Smartphone, Download, Zap, Bell, WifiOff, Shield, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import logo from '@/assets/logo.png';
 
 export default function MobileBlock() {
   const [mounted, setMounted] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
   const handleDownloadApp = () => {
-    // TODO: Replace with actual app store links
-    window.open('https://play.google.com/store', '_blank');
+    setIsDownloading(true);
+    
+    // Simulate download animation
+    setTimeout(() => {
+      window.open('https://play.google.com/store', '_blank');
+      setTimeout(() => setIsDownloading(false), 500);
+    }, 1500);
   };
 
   const features = [
@@ -67,19 +73,19 @@ export default function MobileBlock() {
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col items-center justify-center px-6 relative z-10">
-        {/* Logo with glow effect */}
+        {/* Logo - subtle and elegant */}
         <div 
           className={cn(
-            "mb-8 transition-all duration-700",
+            "mb-6 transition-all duration-700",
             mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
           )}
         >
           <div className="relative">
-            <div className="absolute inset-0 bg-primary/40 blur-2xl rounded-3xl scale-150" />
+            <div className="absolute inset-0 bg-primary/30 blur-xl rounded-2xl scale-125" />
             <img 
               src={logo} 
               alt="FinanceX" 
-              className="relative w-24 h-24 rounded-3xl shadow-2xl shadow-primary/40 object-cover ring-2 ring-white/10" 
+              className="relative w-16 h-16 rounded-2xl shadow-lg shadow-primary/30 object-cover ring-1 ring-white/10" 
             />
           </div>
         </div>
@@ -87,20 +93,20 @@ export default function MobileBlock() {
         {/* Icon with animated ring */}
         <div 
           className={cn(
-            "mb-8 relative transition-all duration-700 delay-100",
+            "mb-6 relative transition-all duration-700 delay-100",
             mounted ? "opacity-100 scale-100" : "opacity-0 scale-50"
           )}
         >
           <div className="absolute inset-0 bg-primary/30 rounded-full blur-xl scale-150 animate-pulse" />
-          <div className="relative p-5 rounded-full bg-gradient-to-br from-primary/30 to-primary/10 border border-primary/30 backdrop-blur-sm">
-            <Smartphone className="w-10 h-10 text-primary" />
+          <div className="relative p-4 rounded-full bg-gradient-to-br from-primary/30 to-primary/10 border border-primary/30 backdrop-blur-sm">
+            <Smartphone className="w-8 h-8 text-primary" />
           </div>
         </div>
 
         {/* Title with gradient text */}
         <h1 
           className={cn(
-            "text-3xl font-bold text-center mb-4 transition-all duration-700 delay-150 bg-gradient-to-r from-white via-white to-white/80 bg-clip-text text-transparent",
+            "text-2xl font-bold text-center mb-3 transition-all duration-700 delay-150 bg-gradient-to-r from-white via-white to-white/80 bg-clip-text text-transparent",
             mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
           )}
         >
@@ -110,7 +116,7 @@ export default function MobileBlock() {
         {/* Description */}
         <p 
           className={cn(
-            "text-white/60 text-center text-base max-w-[280px] mb-10 leading-relaxed transition-all duration-700 delay-200",
+            "text-white/60 text-center text-sm max-w-[280px] mb-8 leading-relaxed transition-all duration-700 delay-200",
             mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
           )}
         >
@@ -155,16 +161,28 @@ export default function MobileBlock() {
         
         <Button
           onClick={handleDownloadApp}
-          className="w-full h-14 text-base font-semibold rounded-2xl bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground transition-all duration-300 shadow-xl shadow-primary/25 flex items-center justify-center gap-3 group"
+          disabled={isDownloading}
+          className="w-full h-14 text-base font-semibold rounded-2xl bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70 text-primary-foreground transition-all duration-300 shadow-xl shadow-primary/25 flex items-center justify-center gap-3 group disabled:opacity-100"
         >
-          <Download className="w-5 h-5 transition-transform duration-300 group-hover:-translate-y-0.5" />
-          Baixar aplicativo
+          {isDownloading ? (
+            <>
+              <div className="relative w-5 h-5">
+                <Download className="w-5 h-5 animate-bounce" />
+              </div>
+              <span className="animate-pulse">Baixando...</span>
+            </>
+          ) : (
+            <>
+              <Download className="w-5 h-5 transition-transform duration-300 group-hover:-translate-y-0.5" />
+              Baixar aplicativo
+            </>
+          )}
         </Button>
         
         {/* Security badge */}
         <div className="flex items-center justify-center gap-2 mt-5">
-          <Shield className="w-3.5 h-3.5 text-white/40" />
-          <p className="text-white/40 text-xs">
+          <Shield className="w-3.5 h-3.5 text-income" />
+          <p className="text-white/50 text-xs">
             Download seguro e verificado
           </p>
         </div>
