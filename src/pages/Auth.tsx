@@ -138,7 +138,7 @@ export default function Auth() {
             <img src={logo} alt="FinanceX" className="w-14 h-14 rounded-xl shadow-lg shadow-primary/30 object-cover" />
             <div>
               <h1 className="text-2xl font-bold">FinanceX</h1>
-              <p className="text-white/60 text-sm">Suas finanças, sob controle.</p>
+              <p className="text-white/60 text-sm">Controle Financeiro</p>
             </div>
           </div>
 
@@ -208,7 +208,7 @@ export default function Auth() {
             <img src={logo} alt="FinanceX" className="w-12 h-12 rounded-xl shadow-lg shadow-primary/30 object-cover" />
             <div>
             <h1 className="text-xl font-bold text-[hsl(220,20%,10%)]">FinanceX</h1>
-              <p className="text-[hsl(220,10%,45%)] text-xs">Suas finanças, sob controle.</p>
+              <p className="text-[hsl(220,10%,45%)] text-xs">Controle Financeiro</p>
             </div>
           </div>
 
