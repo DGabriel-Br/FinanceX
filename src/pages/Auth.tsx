@@ -182,7 +182,7 @@ export default function Auth() {
             {/* Card Header */}
             <div className="text-center mb-8">
               <h1 className="text-2xl font-bold text-white mb-2">
-                {isRegisterRoute ? 'Crie sua conta' : 'Bem-vindo de volta!'}
+                {isRegisterRoute ? 'Crie sua conta' : 'Bem-vindo(a) de volta!'}
               </h1>
               <p className="text-white/60 text-sm">
                 {isRegisterRoute 
