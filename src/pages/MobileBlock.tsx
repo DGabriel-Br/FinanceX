@@ -1,7 +1,40 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Smartphone, Download, Zap, Bell, WifiOff, Shield } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+
+// Floating particle component
+const FloatingParticle = ({ 
+  delay, 
+  duration, 
+  size, 
+  startX, 
+  startY,
+  color 
+}: { 
+  delay: number; 
+  duration: number; 
+  size: number; 
+  startX: number; 
+  startY: number;
+  color: string;
+}) => {
+  return (
+    <div
+      className={cn(
+        "absolute rounded-full pointer-events-none",
+        color
+      )}
+      style={{
+        width: size,
+        height: size,
+        left: `${startX}%`,
+        top: `${startY}%`,
+        animation: `float-particle ${duration}s ease-in-out ${delay}s infinite`,
+      }}
+    />
+  );
+};
 
 export default function MobileBlock() {
   const [mounted, setMounted] = useState(false);
@@ -9,6 +42,28 @@ export default function MobileBlock() {
 
   useEffect(() => {
     setMounted(true);
+  }, []);
+
+  // Generate random particles
+  const particles = useMemo(() => {
+    const colors = [
+      'bg-primary/40',
+      'bg-income/30',
+      'bg-white/20',
+      'bg-primary/25',
+      'bg-income/20',
+      'bg-white/15',
+    ];
+    
+    return Array.from({ length: 20 }, (_, i) => ({
+      id: i,
+      delay: Math.random() * 5,
+      duration: 8 + Math.random() * 12,
+      size: 2 + Math.random() * 6,
+      startX: Math.random() * 100,
+      startY: Math.random() * 100,
+      color: colors[Math.floor(Math.random() * colors.length)],
+    }));
   }, []);
 
   const handleDownloadApp = () => {
@@ -29,6 +84,33 @@ export default function MobileBlock() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-b from-sidebar via-sidebar to-[#0a1628] relative overflow-hidden">
+      {/* Floating Particles */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        {particles.map((particle) => (
+          <FloatingParticle key={particle.id} {...particle} />
+        ))}
+      </div>
+
+      {/* CSS Animation for particles */}
+      <style>{`
+        @keyframes float-particle {
+          0%, 100% {
+            transform: translateY(0px) translateX(0px) scale(1);
+            opacity: 0;
+          }
+          10% {
+            opacity: 1;
+          }
+          50% {
+            transform: translateY(-100px) translateX(20px) scale(1.2);
+            opacity: 0.8;
+          }
+          90% {
+            opacity: 1;
+          }
+        }
+      `}</style>
+
       {/* Animated Background Elements */}
       <div className="absolute inset-0 pointer-events-none">
         {/* Main gradient orbs */}
