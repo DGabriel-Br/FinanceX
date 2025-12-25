@@ -1,4 +1,5 @@
 import { Eye, EyeOff, Moon, Sun } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { useScrollDirection } from '@/hooks/useScrollDirection';
 
@@ -68,7 +69,7 @@ export const MobileHeader = ({
         <div className="px-4 py-5">
           <div className="flex items-center justify-between w-full">
             {/* Avatar e Nome */}
-            <div className="flex items-center gap-3 flex-1 min-w-0">
+            <Link to="/settings" className="flex items-center gap-3 flex-1 min-w-0">
               <div className="w-10 h-10 rounded-full bg-card flex items-center justify-center shadow-md flex-shrink-0">
                 <span className="text-sm font-bold text-foreground">{initials}</span>
               </div>
@@ -80,7 +81,7 @@ export const MobileHeader = ({
                   {firstName}
                 </span>
               </div>
-            </div>
+            </Link>
 
             {/* Ícones de ação */}
             <div className="flex items-center flex-shrink-0 gap-1">

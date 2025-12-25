@@ -101,9 +101,11 @@ export const Sidebar = ({
       <div className="p-3 mt-auto border-t border-sidebar-border space-y-2">
         {/* User Info */}
         {userEmail && (
-          <div
+          <Link
+            to="/settings"
+            title="Configurações do Perfil"
             className={cn(
-              'flex items-center gap-3 px-3 py-2.5 rounded-lg bg-sidebar-accent/50',
+              'flex items-center gap-3 px-3 py-2.5 rounded-lg bg-sidebar-accent/50 hover:bg-sidebar-accent transition-colors',
               collapsed && 'justify-center px-0'
             )}
           >
@@ -115,7 +117,7 @@ export const Sidebar = ({
                 <p className="text-xs text-sidebar-foreground/60 truncate">{userEmail}</p>
               </div>
             )}
-          </div>
+          </Link>
         )}
 
         {/* Theme Toggle */}
