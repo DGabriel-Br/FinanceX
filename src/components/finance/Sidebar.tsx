@@ -2,8 +2,7 @@ import { LayoutDashboard, Receipt, ChevronLeft, ChevronRight, Moon, Sun, CreditC
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { Switch } from '@/components/ui/switch';
-import logoDark from '@/assets/logo.jpg';
-import logoLight from '@/assets/logo-transparent.png';
+import logo from '@/assets/logo.png';
 
 type Tab = 'dashboard' | 'lancamentos' | 'dividas' | 'investimentos';
 
@@ -54,14 +53,14 @@ export const Sidebar = ({
         collapsed ? "justify-center" : "gap-3"
       )}>
         {/* Logo */}
-        <img src={logoDark} alt="FinanceX" className="w-10 h-10 rounded-lg flex-shrink-0 object-cover" />
+        <img src={logo} alt="FinanceX" className="w-10 h-10 rounded-lg flex-shrink-0 object-cover" />
         
         {!collapsed && (
           <div className="flex-1 min-w-0">
             <h1 className="text-sm font-semibold text-sidebar-primary-foreground truncate">
               FinanceX
             </h1>
-            <p className="text-xs text-sidebar-foreground/60 truncate">Controle Financeiro</p>
+            <p className="text-xs text-sidebar-foreground/60 truncate">Suas finanças, sob controle.</p>
           </div>
         )}
       </div>
