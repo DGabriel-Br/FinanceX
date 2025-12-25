@@ -60,7 +60,7 @@ export const Sidebar = ({
             <h1 className="text-sm font-semibold text-sidebar-primary-foreground truncate">
               FinanceX
             </h1>
-            <p className="text-xs text-sidebar-foreground/60 truncate">Suas finanças, sob controle.</p>
+            <p className="text-xs text-sidebar-foreground/60 truncate">Controle Financeiro</p>
           </div>
         )}
       </div>
