@@ -1,6 +1,7 @@
 import { db, isTempId, LocalTransaction, LocalDebt, LocalInvestmentGoal } from './database';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { logger } from '@/lib/logger';
 
 export interface SyncResult {
   success: boolean;
@@ -70,7 +71,7 @@ class SyncService {
 
       result.success = result.errors.length === 0;
     } catch (error) {
-      console.error('Erro na sincronização:', error);
+      logger.error('Erro na sincronização:', error);
       result.success = false;
       result.errors.push('Erro geral na sincronização');
     } finally {
@@ -141,7 +142,7 @@ class SyncService {
         }
         synced++;
       } catch (error) {
-        console.error('Erro ao sincronizar transação:', error);
+        logger.error('Erro ao sincronizar transação:', error);
         errors.push(`Transação: ${transaction.description}`);
       }
     }
@@ -159,7 +160,7 @@ class SyncService {
         await db.transactions.delete(transaction.id);
         synced++;
       } catch (error) {
-        console.error('Erro ao deletar transação no servidor:', error);
+        logger.error('Erro ao deletar transação no servidor:', error);
       }
     }
 
@@ -227,7 +228,7 @@ class SyncService {
         }
         synced++;
       } catch (error) {
-        console.error('Erro ao sincronizar dívida:', error);
+        logger.error('Erro ao sincronizar dívida:', error);
         errors.push(`Dívida: ${debt.name}`);
       }
     }
@@ -243,7 +244,7 @@ class SyncService {
         await db.debts.delete(debt.id);
         synced++;
       } catch (error) {
-        console.error('Erro ao deletar dívida no servidor:', error);
+        logger.error('Erro ao deletar dívida no servidor:', error);
       }
     }
 
@@ -301,7 +302,7 @@ class SyncService {
         }
         synced++;
       } catch (error) {
-        console.error('Erro ao sincronizar meta:', error);
+        logger.error('Erro ao sincronizar meta:', error);
         errors.push(`Meta: ${goal.type}`);
       }
     }
@@ -317,7 +318,7 @@ class SyncService {
         await db.investmentGoals.delete(goal.id);
         synced++;
       } catch (error) {
-        console.error('Erro ao deletar meta no servidor:', error);
+        logger.error('Erro ao deletar meta no servidor:', error);
       }
     }
 

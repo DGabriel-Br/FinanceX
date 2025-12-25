@@ -7,6 +7,7 @@ import { db, generateTempId, LocalTransaction } from '@/lib/offline/database';
 import { syncService } from '@/lib/offline/syncService';
 import { toast } from 'sonner';
 import { useLiveQuery } from 'dexie-react-hooks';
+import { logger } from '@/lib/logger';
 
 // Função para obter data local no formato YYYY-MM-DD
 export const getLocalDateString = (date: Date = new Date()): string => {
@@ -69,7 +70,7 @@ export const useOfflineTransactions = () => {
           }
         }
       } catch (error) {
-        console.error('Erro ao inicializar:', error);
+        logger.error('Erro ao inicializar:', error);
       } finally {
         setLoading(false);
       }
@@ -132,7 +133,7 @@ export const useOfflineTransactions = () => {
 
       toast.success(navigator.onLine ? 'Transação adicionada!' : 'Transação salva localmente');
     } catch (error) {
-      console.error('Erro ao adicionar transação:', error);
+      logger.error('Erro ao adicionar transação:', error);
       toast.error('Erro ao adicionar transação');
     }
   }, [userId]);
@@ -174,7 +175,7 @@ export const useOfflineTransactions = () => {
 
       toast.success(navigator.onLine ? 'Transação atualizada!' : 'Alteração salva localmente');
     } catch (error) {
-      console.error('Erro ao atualizar transação:', error);
+      logger.error('Erro ao atualizar transação:', error);
       toast.error('Erro ao atualizar transação');
     }
   }, []);
@@ -205,7 +206,7 @@ export const useOfflineTransactions = () => {
 
       toast.success(navigator.onLine ? 'Transação excluída!' : 'Exclusão salva localmente');
     } catch (error) {
-      console.error('Erro ao excluir transação:', error);
+      logger.error('Erro ao excluir transação:', error);
       toast.error('Erro ao excluir transação');
     }
   }, []);

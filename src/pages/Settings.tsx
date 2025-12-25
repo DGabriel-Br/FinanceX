@@ -87,10 +87,43 @@ export default function Settings() {
       return;
     }
 
-    if (newPassword.length < 6) {
+    // Validate password strength
+    const hasMinLength = newPassword.length >= 8;
+    const hasUppercase = /[A-Z]/.test(newPassword);
+    const hasLowercase = /[a-z]/.test(newPassword);
+    const hasNumber = /[0-9]/.test(newPassword);
+
+    if (!hasMinLength) {
       toast({
         title: "Senha muito curta",
-        description: "A nova senha deve ter pelo menos 6 caracteres.",
+        description: "A nova senha deve ter pelo menos 8 caracteres.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!hasUppercase) {
+      toast({
+        title: "Senha fraca",
+        description: "A senha deve conter pelo menos uma letra maiúscula.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!hasLowercase) {
+      toast({
+        title: "Senha fraca",
+        description: "A senha deve conter pelo menos uma letra minúscula.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    if (!hasNumber) {
+      toast({
+        title: "Senha fraca",
+        description: "A senha deve conter pelo menos um número.",
         variant: "destructive",
       });
       return;
@@ -265,7 +298,7 @@ export default function Settings() {
                   type={showNewPassword ? 'text' : 'password'}
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
-                  placeholder="Mínimo 6 caracteres"
+                  placeholder="Mínimo 8 caracteres"
                   className="pr-10"
                 />
                 <button
