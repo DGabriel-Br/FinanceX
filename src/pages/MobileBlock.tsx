@@ -199,7 +199,7 @@ export default function MobileBlock() {
         </div>
         
         <p className="text-white/30 text-[11px] text-center mt-3">
-          A versão web está disponível apenas para computadores
+          A versão web foi pensada para uso em computadores
         </p>
       </div>
 
