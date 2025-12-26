@@ -301,21 +301,26 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onSuccess }: NativeAuthS
             mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
           )}
         >
-          {/* Logo */}
+          {/* Logo - igual ao da versão web */}
           <div className="mb-8">
-            <div className="relative">
-              <div className="absolute -inset-8 bg-gradient-to-r from-primary/40 via-cyan-400/30 to-primary/40 rounded-full blur-3xl animate-pulse" />
-              <FinanceLogo size={100} className="relative drop-shadow-[0_0_40px_rgba(34,211,238,0.5)]" />
+            <div className="relative flex items-end justify-center">
+              {/* Glow effect */}
+              <div className="absolute -inset-6 bg-gradient-to-r from-primary/30 via-income/40 to-primary/30 rounded-2xl blur-3xl animate-pulse" />
+              <FinanceLogo size={48} className="relative drop-shadow-[0_0_30px_rgba(34,211,238,0.6)]" />
+              <span 
+                className="text-3xl font-black tracking-wider text-white -ml-1 relative"
+                style={{ fontFamily: "'Orbitron', sans-serif" }}
+              >
+                inanceX
+              </span>
             </div>
           </div>
 
           {/* Title */}
           <h1 
-            className="text-3xl font-black text-white text-center mb-4 tracking-tight"
-            style={{ fontFamily: "'Orbitron', sans-serif" }}
+            className="text-2xl font-bold text-white text-center mb-4 leading-tight"
           >
-            BEM-VINDO(A) AO{'\n'}
-            <span className="text-primary">FINANCE</span>X
+            BEM-VINDO(A) AO SEU{'\n'}CONTROLE FINANCEIRO!
           </h1>
 
           {/* Subtitle */}
