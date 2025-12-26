@@ -65,6 +65,7 @@ export default function Auth() {
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [slideDirection, setSlideDirection] = useState<'left' | 'right'>('right');
   const [displayedIsRegister, setDisplayedIsRegister] = useState(isRegisterRoute);
+  const [isShaking, setIsShaking] = useState(false);
   const { user, loading, signIn, signUp } = useAuthContext();
   const navigate = useNavigate();
 
@@ -123,9 +124,15 @@ export default function Auth() {
     }
   }, [user, loading, navigate]);
 
+  const triggerShake = () => {
+    setIsShaking(true);
+    setTimeout(() => setIsShaking(false), 500);
+  };
+
   const validateForm = () => {
     if (isRegisterRoute && name.trim().length < 2) {
       toast.error('Por favor, insira seu nome');
+      triggerShake();
       return false;
     }
 
@@ -133,17 +140,20 @@ export default function Auth() {
       emailSchema.parse(email);
     } catch {
       toast.error('Por favor, insira um email válido');
+      triggerShake();
       return false;
     }
 
     const passwordResult = passwordSchema.safeParse(password);
     if (!passwordResult.success) {
       toast.error(passwordResult.error.errors[0].message);
+      triggerShake();
       return false;
     }
 
     if (isRegisterRoute && password !== confirmPassword) {
       toast.error('As senhas não coincidem');
+      triggerShake();
       return false;
     }
 
@@ -162,6 +172,7 @@ export default function Auth() {
       setIsLoading(false);
 
       if (error) {
+        triggerShake();
         if (error.message.includes('User already registered')) {
           toast.error('Este email já está cadastrado. Tente fazer login.');
         } else {
@@ -176,6 +187,7 @@ export default function Auth() {
       setIsLoading(false);
 
       if (error) {
+        triggerShake();
         if (error.message.includes('Invalid login credentials')) {
           toast.error('Email ou senha incorretos');
         } else {
@@ -219,7 +231,7 @@ export default function Auth() {
           ))}
         </div>
 
-        {/* CSS Animation for particles */}
+        {/* CSS Animation for particles and shake */}
         <style>{`
           @keyframes float-particle {
             0%, 100% {
@@ -236,6 +248,14 @@ export default function Auth() {
             90% {
               opacity: 1;
             }
+          }
+          @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            10%, 30%, 50%, 70%, 90% { transform: translateX(-8px); }
+            20%, 40%, 60%, 80% { transform: translateX(8px); }
+          }
+          .animate-shake {
+            animation: shake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
           }
         `}</style>
 
@@ -350,7 +370,8 @@ export default function Auth() {
               mounted && !isTransitioning ? "opacity-100 scale-100 translate-x-0" : "",
               !mounted ? "opacity-0 scale-95 translate-y-8" : "",
               isTransitioning && slideDirection === 'right' ? "opacity-0 -translate-x-12" : "",
-              isTransitioning && slideDirection === 'left' ? "opacity-0 translate-x-12" : ""
+              isTransitioning && slideDirection === 'left' ? "opacity-0 translate-x-12" : "",
+              isShaking && "animate-shake"
             )}
           >
             {/* Card Header */}
