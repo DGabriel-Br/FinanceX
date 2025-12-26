@@ -154,7 +154,7 @@ const Index = () => {
 
   return (
     <>
-      <div className="flex min-h-screen w-full relative">
+      <div className={`flex ${isNativeApp ? 'flex-col' : ''} min-h-screen w-full relative`}>
         {/* Sidebar - desktop (oculta no app nativo) */}
         {!isNativeApp && (
           <Sidebar 
@@ -183,7 +183,7 @@ const Index = () => {
         )}
 
         {/* Conteúdo principal */}
-        <main className={`flex-1 flex flex-col overflow-auto bg-background ${isNativeApp ? 'pb-20' : ''}`}>
+        <main className={`flex-1 flex flex-col overflow-auto bg-background ${isNativeApp ? 'pb-24' : ''}`}>
           <div key={activeTab} className="animate-fade-in flex-1" style={{ animationDuration: '0.3s' }}>
             {activeTab === 'dashboard' ? (
               <Dashboard
