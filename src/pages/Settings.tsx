@@ -9,6 +9,7 @@ import { Separator } from '@/components/ui/separator';
 import { useToast } from '@/hooks/use-toast';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
+import { CategoryManager } from '@/components/finance/CategoryManager';
 
 export default function Settings() {
   const navigate = useNavigate();
@@ -348,6 +349,11 @@ export default function Settings() {
             </Button>
           </CardContent>
         </Card>
+
+        <Separator />
+
+        {/* Category Manager */}
+        <CategoryManager />
 
         {/* Info do Email */}
         <Card className="bg-muted/50">
