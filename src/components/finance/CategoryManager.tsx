@@ -1,10 +1,11 @@
 import { useState, useMemo } from 'react';
-import { Plus, Pencil, Trash2, Tag, Loader2, RotateCcw, EyeOff, GripVertical } from 'lucide-react';
+import { Plus, Pencil, Trash2, Tag, Loader2, GripVertical, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
 import {
   Dialog,
   DialogContent,
@@ -23,11 +24,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from '@/components/ui/collapsible';
 import {
   DndContext,
   closestCenter,
@@ -60,13 +56,11 @@ function SortableCategoryRow({
   type,
   onEdit,
   onDelete,
-  onHide,
 }: {
   category: SortableCategoryItem;
   type: 'receita' | 'despesa';
-  onEdit: (category: CustomCategory) => void;
-  onDelete: (category: CustomCategory) => void;
-  onHide: (key: string, label: string, type: 'receita' | 'despesa') => void;
+  onEdit: (category: { id: string; name: string; type: 'receita' | 'despesa'; isDefault: boolean }) => void;
+  onDelete: (category: { id: string; name: string; type: 'receita' | 'despesa'; isDefault: boolean }) => void;
 }) {
   const {
     attributes,
@@ -81,55 +75,56 @@ function SortableCategoryRow({
     transform: CSS.Transform.toString(transform),
     transition,
     opacity: isDragging ? 0.5 : 1,
+    zIndex: isDragging ? 50 : 'auto',
   };
 
   return (
     <div
       ref={setNodeRef}
       style={style}
-      className="flex items-center justify-between px-3 py-2 bg-muted/50 rounded-lg"
+      className={`
+        group flex items-center justify-between px-4 py-3 
+        bg-gradient-to-r from-card to-card/80 
+        border border-border/50 rounded-xl
+        hover:border-primary/30 hover:shadow-md hover:shadow-primary/5
+        transition-all duration-200
+        ${isDragging ? 'shadow-lg shadow-primary/20 border-primary/50' : ''}
+      `}
     >
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-3">
         <button
           {...attributes}
           {...listeners}
-          className="cursor-grab active:cursor-grabbing touch-none text-muted-foreground hover:text-foreground"
+          className="cursor-grab active:cursor-grabbing touch-none text-muted-foreground/50 hover:text-muted-foreground transition-colors"
         >
           <GripVertical className="w-4 h-4" />
         </button>
-        <span className="text-sm">{category.name}</span>
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-medium">{category.name}</span>
+          {category.isDefault && (
+            <Badge variant="secondary" className="text-[10px] px-1.5 py-0 h-4 bg-primary/10 text-primary border-0">
+              padrão
+            </Badge>
+          )}
+        </div>
       </div>
-      <div className="flex gap-1">
-        {category.isDefault ? (
-          <Button
-            size="icon"
-            variant="ghost"
-            className="h-8 w-8 text-muted-foreground hover:text-destructive"
-            onClick={() => onHide(category.key, category.name, type)}
-            title="Ocultar categoria"
-          >
-            <EyeOff className="w-4 h-4" />
-          </Button>
-        ) : (
-          <>
-            <Button
-              size="icon"
-              variant="ghost"
-              className="h-8 w-8"
-              onClick={() => onEdit({ id: category.id, name: category.name, type, icon: 'tag', created_at: '' })}
-            >
-              <Pencil className="w-4 h-4" />
-            </Button>
-            <Button
-              size="icon"
-              variant="ghost"
-              className="h-8 w-8 text-destructive hover:text-destructive"
-              onClick={() => onDelete({ id: category.id, name: category.name, type, icon: 'tag', created_at: '' })}
-            >
-              <Trash2 className="w-4 h-4" />
-            </Button>
-          </>
-        )}
+      <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+        <Button
+          size="icon"
+          variant="ghost"
+          className="h-8 w-8 text-muted-foreground hover:text-foreground hover:bg-primary/10"
+          onClick={() => onEdit({ id: category.id, name: category.name, type, isDefault: category.isDefault })}
+        >
+          <Pencil className="w-4 h-4" />
+        </Button>
+        <Button
+          size="icon"
+          variant="ghost"
+          className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+          onClick={() => onDelete({ id: category.id, name: category.name, type, isDefault: category.isDefault })}
+        >
+          <Trash2 className="w-4 h-4" />
+        </Button>
       </div>
     </div>
   );
@@ -143,9 +138,7 @@ export function CategoryManager() {
     deleteCategory, 
     getCategoriesByType,
     hideDefaultCategory,
-    restoreDefaultCategory,
     getVisibleDefaultCategories,
-    getHiddenDefaultCategories,
     getSortedCategories,
     updateCategoryOrder,
   } = useCustomCategories();
@@ -156,17 +149,12 @@ export function CategoryManager() {
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [isHideDefaultDialogOpen, setIsHideDefaultDialogOpen] = useState(false);
   
   // Form states
   const [newCategoryName, setNewCategoryName] = useState('');
-  const [editingCategory, setEditingCategory] = useState<CustomCategory | null>(null);
-  const [deletingCategory, setDeletingCategory] = useState<CustomCategory | null>(null);
-  const [hidingDefault, setHidingDefault] = useState<{ key: string; label: string; type: 'receita' | 'despesa' } | null>(null);
+  const [editingCategory, setEditingCategory] = useState<{ id: string; name: string; type: 'receita' | 'despesa'; isDefault: boolean; newName: string } | null>(null);
+  const [deletingCategory, setDeletingCategory] = useState<{ id: string; name: string; type: 'receita' | 'despesa'; isDefault: boolean } | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  
-  // Collapsible states
-  const [isHiddenOpen, setIsHiddenOpen] = useState(false);
 
   // DnD sensors
   const sensors = useSensors(
@@ -194,57 +182,47 @@ export function CategoryManager() {
   };
 
   const handleEdit = async () => {
-    if (!editingCategory || !editingCategory.name.trim()) return;
+    if (!editingCategory || !editingCategory.newName.trim()) return;
     
     setIsSubmitting(true);
-    const success = await updateCategory(editingCategory.id, editingCategory.name);
-    setIsSubmitting(false);
     
-    if (success) {
-      setEditingCategory(null);
-      setIsEditDialogOpen(false);
+    if (editingCategory.isDefault) {
+      // For default categories, we "hide" the old one and create a new custom one
+      await hideDefaultCategory(editingCategory.id, editingCategory.type);
+      await addCategory(editingCategory.newName.trim(), editingCategory.type);
+    } else {
+      await updateCategory(editingCategory.id, editingCategory.newName);
     }
+    
+    setIsSubmitting(false);
+    setEditingCategory(null);
+    setIsEditDialogOpen(false);
   };
 
   const handleDelete = async () => {
     if (!deletingCategory) return;
     
     setIsSubmitting(true);
-    await deleteCategory(deletingCategory.id);
+    
+    if (deletingCategory.isDefault) {
+      await hideDefaultCategory(deletingCategory.id, deletingCategory.type);
+    } else {
+      await deleteCategory(deletingCategory.id);
+    }
+    
     setIsSubmitting(false);
     setDeletingCategory(null);
     setIsDeleteDialogOpen(false);
   };
 
-  const handleHideDefault = async () => {
-    if (!hidingDefault) return;
-    
-    setIsSubmitting(true);
-    await hideDefaultCategory(hidingDefault.key, hidingDefault.type);
-    setIsSubmitting(false);
-    setHidingDefault(null);
-    setIsHideDefaultDialogOpen(false);
-  };
-
-  const handleRestoreDefault = async (key: string, type: 'receita' | 'despesa') => {
-    setIsSubmitting(true);
-    await restoreDefaultCategory(key, type);
-    setIsSubmitting(false);
-  };
-
-  const openEditDialog = (category: CustomCategory) => {
-    setEditingCategory({ ...category });
+  const openEditDialog = (category: { id: string; name: string; type: 'receita' | 'despesa'; isDefault: boolean }) => {
+    setEditingCategory({ ...category, newName: category.name });
     setIsEditDialogOpen(true);
   };
 
-  const openDeleteDialog = (category: CustomCategory) => {
+  const openDeleteDialog = (category: { id: string; name: string; type: 'receita' | 'despesa'; isDefault: boolean }) => {
     setDeletingCategory(category);
     setIsDeleteDialogOpen(true);
-  };
-
-  const openHideDefaultDialog = (key: string, label: string, type: 'receita' | 'despesa') => {
-    setHidingDefault({ key, label, type });
-    setIsHideDefaultDialogOpen(true);
   };
 
   const defaultIncomeCategories = Object.entries(incomeCategoryLabels) as [string, string][];
@@ -252,8 +230,6 @@ export function CategoryManager() {
   
   const visibleIncomeDefaults = getVisibleDefaultCategories('receita', defaultIncomeCategories);
   const visibleExpenseDefaults = getVisibleDefaultCategories('despesa', defaultExpenseCategories);
-  const hiddenIncomeDefaults = getHiddenDefaultCategories('receita', defaultIncomeCategories);
-  const hiddenExpenseDefaults = getHiddenDefaultCategories('despesa', defaultExpenseCategories);
   
   const customIncomeCategories = getCategoriesByType('receita');
   const customExpenseCategories = getCategoriesByType('despesa');
@@ -271,9 +247,12 @@ export function CategoryManager() {
 
   if (loading) {
     return (
-      <Card>
-        <CardContent className="flex items-center justify-center py-8">
-          <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+      <Card className="border-border/50 shadow-sm">
+        <CardContent className="flex items-center justify-center py-12">
+          <div className="flex flex-col items-center gap-3">
+            <Loader2 className="w-8 h-8 animate-spin text-primary" />
+            <span className="text-sm text-muted-foreground">Carregando categorias...</span>
+          </div>
         </CardContent>
       </Card>
     );
@@ -295,29 +274,43 @@ export function CategoryManager() {
 
   const renderCategoryList = (
     type: 'receita' | 'despesa',
-    sortedCategories: SortableCategoryItem[],
-    hiddenDefaults: [string, string][]
+    sortedCategories: SortableCategoryItem[]
   ) => (
-    <div className="space-y-4">
-      {/* Add button */}
-      <div className="flex justify-end">
+    <div className="space-y-4 pt-4">
+      {/* Header with count and add button */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2">
+          <Sparkles className="w-4 h-4 text-primary" />
+          <span className="text-sm text-muted-foreground">
+            {sortedCategories.length} {sortedCategories.length === 1 ? 'categoria' : 'categorias'}
+          </span>
+        </div>
         <Button
           size="sm"
           onClick={() => {
             setNewCategoryName('');
             setIsAddDialogOpen(true);
           }}
+          className="gap-1.5 shadow-sm"
         >
-          <Plus className="w-4 h-4 mr-1" />
-          Adicionar
+          <Plus className="w-4 h-4" />
+          Nova Categoria
         </Button>
       </div>
 
-      {/* All Categories (unified list with drag and drop) */}
+      {/* Categories list with drag and drop */}
       {sortedCategories.length === 0 ? (
-        <p className="text-sm text-muted-foreground text-center py-4">
-          Nenhuma categoria de {type === 'receita' ? 'receita' : 'despesa'}
-        </p>
+        <div className="flex flex-col items-center justify-center py-12 text-center">
+          <div className="w-16 h-16 rounded-full bg-muted/50 flex items-center justify-center mb-4">
+            <Tag className="w-8 h-8 text-muted-foreground/50" />
+          </div>
+          <p className="text-sm text-muted-foreground mb-1">
+            Nenhuma categoria de {type === 'receita' ? 'receita' : 'despesa'}
+          </p>
+          <p className="text-xs text-muted-foreground/70">
+            Clique em "Nova Categoria" para começar
+          </p>
+        </div>
       ) : (
         <DndContext
           sensors={sensors}
@@ -328,7 +321,7 @@ export function CategoryManager() {
             items={sortedCategories.map((c) => c.id)}
             strategy={verticalListSortingStrategy}
           >
-            <div className="grid gap-2">
+            <div className="space-y-2">
               {sortedCategories.map((category) => (
                 <SortableCategoryRow
                   key={category.id}
@@ -336,7 +329,6 @@ export function CategoryManager() {
                   type={type}
                   onEdit={openEditDialog}
                   onDelete={openDeleteDialog}
-                  onHide={openHideDefaultDialog}
                 />
               ))}
             </div>
@@ -344,65 +336,54 @@ export function CategoryManager() {
         </DndContext>
       )}
 
-      {/* Hidden Default Categories (Collapsible) */}
-      {hiddenDefaults.length > 0 && (
-        <Collapsible open={isHiddenOpen} onOpenChange={setIsHiddenOpen}>
-          <CollapsibleTrigger asChild>
-            <Button variant="ghost" size="sm" className="w-full justify-start text-muted-foreground">
-              <RotateCcw className="w-4 h-4 mr-2" />
-              {hiddenDefaults.length} categoria{hiddenDefaults.length > 1 ? 's' : ''} oculta{hiddenDefaults.length > 1 ? 's' : ''}
-            </Button>
-          </CollapsibleTrigger>
-          <CollapsibleContent className="space-y-2 mt-2">
-            {hiddenDefaults.map(([key, label]) => (
-              <div
-                key={key}
-                className="flex items-center justify-between px-3 py-2 bg-muted/30 rounded-lg opacity-60"
-              >
-                <span className="text-sm line-through">{label}</span>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  className="h-8 text-xs"
-                  onClick={() => handleRestoreDefault(key, type)}
-                  disabled={isSubmitting}
-                >
-                  <RotateCcw className="w-3 h-3 mr-1" />
-                  Restaurar
-                </Button>
-              </div>
-            ))}
-          </CollapsibleContent>
-        </Collapsible>
+      {/* Tip */}
+      {sortedCategories.length > 1 && (
+        <p className="text-xs text-muted-foreground/60 text-center pt-2">
+          💡 Arraste para reordenar as categorias
+        </p>
       )}
     </div>
   );
 
   return (
     <>
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Tag className="w-5 h-5" />
-            Gerenciar Categorias
-          </CardTitle>
-          <CardDescription>
-            Adicione, edite ou arraste para reordenar
-          </CardDescription>
+      <Card className="border-border/50 shadow-sm overflow-hidden">
+        <CardHeader className="bg-gradient-to-r from-primary/5 to-transparent border-b border-border/30">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+              <Tag className="w-5 h-5 text-primary" />
+            </div>
+            <div>
+              <CardTitle className="text-lg">Gerenciar Categorias</CardTitle>
+              <CardDescription>
+                Organize suas categorias de receitas e despesas
+              </CardDescription>
+            </div>
+          </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="p-4">
           <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'receita' | 'despesa')}>
-            <TabsList className="grid w-full grid-cols-2">
-              <TabsTrigger value="receita">Receitas</TabsTrigger>
-              <TabsTrigger value="despesa">Despesas</TabsTrigger>
+            <TabsList className="grid w-full grid-cols-2 p-1 bg-muted/50">
+              <TabsTrigger 
+                value="receita" 
+                className="data-[state=active]:bg-emerald-500 data-[state=active]:text-white rounded-lg transition-all"
+              >
+                💰 Receitas
+              </TabsTrigger>
+              <TabsTrigger 
+                value="despesa"
+                className="data-[state=active]:bg-rose-500 data-[state=active]:text-white rounded-lg transition-all"
+              >
+                💸 Despesas
+              </TabsTrigger>
             </TabsList>
 
             <TabsContent value="receita">
-              {renderCategoryList('receita', sortedIncomeCategories, hiddenIncomeDefaults)}
+              {renderCategoryList('receita', sortedIncomeCategories)}
             </TabsContent>
 
             <TabsContent value="despesa">
-              {renderCategoryList('despesa', sortedExpenseCategories, hiddenExpenseDefaults)}
+              {renderCategoryList('despesa', sortedExpenseCategories)}
             </TabsContent>
           </Tabs>
         </CardContent>
@@ -410,11 +391,14 @@ export function CategoryManager() {
 
       {/* Add Category Dialog */}
       <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Nova Categoria de {activeTab === 'receita' ? 'Receita' : 'Despesa'}</DialogTitle>
+            <DialogTitle className="flex items-center gap-2">
+              <Plus className="w-5 h-5 text-primary" />
+              Nova Categoria
+            </DialogTitle>
             <DialogDescription>
-              Adicione uma nova categoria personalizada
+              Adicione uma categoria de {activeTab === 'receita' ? 'receita' : 'despesa'}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
@@ -424,17 +408,24 @@ export function CategoryManager() {
                 id="categoryName"
                 value={newCategoryName}
                 onChange={(e) => setNewCategoryName(e.target.value)}
-                placeholder="Ex: Bônus, Entretenimento..."
+                placeholder="Ex: Freelance, Alimentação..."
                 maxLength={50}
+                className="h-11"
+                autoFocus
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && newCategoryName.trim()) {
+                    handleAdd();
+                  }
+                }}
               />
             </div>
           </div>
-          <DialogFooter>
+          <DialogFooter className="gap-2 sm:gap-0">
             <Button variant="outline" onClick={() => setIsAddDialogOpen(false)}>
               Cancelar
             </Button>
             <Button onClick={handleAdd} disabled={isSubmitting || !newCategoryName.trim()}>
-              {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Criar'}
+              {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Criar Categoria'}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -442,9 +433,12 @@ export function CategoryManager() {
 
       {/* Edit Category Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent>
+        <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Editar Categoria</DialogTitle>
+            <DialogTitle className="flex items-center gap-2">
+              <Pencil className="w-5 h-5 text-primary" />
+              Editar Categoria
+            </DialogTitle>
             <DialogDescription>
               Altere o nome da categoria
             </DialogDescription>
@@ -454,32 +448,48 @@ export function CategoryManager() {
               <Label htmlFor="editCategoryName">Nome da Categoria</Label>
               <Input
                 id="editCategoryName"
-                value={editingCategory?.name || ''}
-                onChange={(e) => setEditingCategory(prev => prev ? { ...prev, name: e.target.value } : null)}
+                value={editingCategory?.newName || ''}
+                onChange={(e) => setEditingCategory(prev => prev ? { ...prev, newName: e.target.value } : null)}
                 placeholder="Nome da categoria"
                 maxLength={50}
+                className="h-11"
+                autoFocus
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' && editingCategory?.newName.trim()) {
+                    handleEdit();
+                  }
+                }}
               />
             </div>
           </div>
-          <DialogFooter>
+          <DialogFooter className="gap-2 sm:gap-0">
             <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>
               Cancelar
             </Button>
-            <Button onClick={handleEdit} disabled={isSubmitting || !editingCategory?.name.trim()}>
+            <Button onClick={handleEdit} disabled={isSubmitting || !editingCategory?.newName.trim()}>
               {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Salvar'}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
-      {/* Delete Custom Category Confirmation */}
+      {/* Delete Category Confirmation */}
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Excluir Categoria</AlertDialogTitle>
+            <AlertDialogTitle className="flex items-center gap-2">
+              <Trash2 className="w-5 h-5 text-destructive" />
+              Excluir Categoria
+            </AlertDialogTitle>
             <AlertDialogDescription>
               Tem certeza que deseja excluir a categoria "{deletingCategory?.name}"? 
-              Esta ação não pode ser desfeita.
+              {deletingCategory?.isDefault ? (
+                <span className="block mt-2 text-amber-600 dark:text-amber-400">
+                  Esta é uma categoria padrão. Ela será removida da sua lista.
+                </span>
+              ) : (
+                <span className="block mt-2">Esta ação não pode ser desfeita.</span>
+              )}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
@@ -490,28 +500,6 @@ export function CategoryManager() {
               disabled={isSubmitting}
             >
               {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Excluir'}
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-
-      {/* Hide Default Category Confirmation */}
-      <AlertDialog open={isHideDefaultDialogOpen} onOpenChange={setIsHideDefaultDialogOpen}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Ocultar Categoria</AlertDialogTitle>
-            <AlertDialogDescription>
-              Tem certeza que deseja ocultar a categoria "{hidingDefault?.label}"? 
-              Você pode restaurá-la depois na seção de categorias ocultas.
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
-            <AlertDialogAction
-              onClick={handleHideDefault}
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Ocultar'}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
