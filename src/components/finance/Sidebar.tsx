@@ -1,9 +1,9 @@
-import { LayoutDashboard, Receipt, ChevronLeft, ChevronRight, Moon, Sun, CreditCard, TrendingUp, LogOut, User, Settings } from 'lucide-react';
+import { LayoutDashboard, Receipt, ChevronLeft, ChevronRight, Moon, Sun, CreditCard, TrendingUp, LogOut, Settings } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { Switch } from '@/components/ui/switch';
 import { FinanceLogo } from '@/components/ui/FinanceLogo';
-
+import { getInitials } from '@/lib/userUtils';
 type Tab = 'dashboard' | 'lancamentos' | 'dividas' | 'investimentos';
 
 export interface SidebarProps {
@@ -122,7 +122,7 @@ export const Sidebar = ({
                 {userAvatar ? (
                   <img src={userAvatar} alt="Avatar" className="w-full h-full object-cover" />
                 ) : (
-                  <User className="w-4 h-4 text-primary" />
+                  <span className="text-xs font-bold text-primary">{getInitials(userName, userEmail)}</span>
                 )}
               </div>
               <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-income rounded-full border-2 border-sidebar animate-pulse" title="Online" />

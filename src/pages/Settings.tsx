@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, User, Lock, Eye, EyeOff, Loader2, Mail, Shield, Camera, Check } from 'lucide-react';
+import { ArrowLeft, Eye, EyeOff, Loader2, Mail, Shield, Camera, User, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -10,6 +10,7 @@ import { useAuthContext } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { CategoryManager } from '@/components/finance/CategoryManager';
 import { PasswordStrengthMeter } from '@/components/ui/PasswordStrengthMeter';
+import { getInitials } from '@/lib/userUtils';
 
 export default function Settings() {
   const navigate = useNavigate();
@@ -291,7 +292,7 @@ export default function Settings() {
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <User className="w-8 h-8 text-muted-foreground" />
+                    <span className="text-2xl font-bold text-muted-foreground">{getInitials(name, user?.email)}</span>
                   )}
                 </div>
                 {isUploadingAvatar && (
