@@ -148,6 +148,7 @@ const Index = () => {
           onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
           theme={theme}
           onToggleTheme={toggleTheme}
+          userName={user.user_metadata?.full_name}
           userEmail={user.email}
           onSignOut={handleSignOutRequest}
         />
