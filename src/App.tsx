@@ -13,6 +13,12 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
+// Check if running inside Capacitor native app
+function isNativeApp(): boolean {
+  return !!(window as any).Capacitor?.isNativePlatform?.() || 
+         !!(window as any).Capacitor?.isNative;
+}
+
 // Component to handle mobile blocking
 function MobileGuard({ children }: { children: React.ReactNode }) {
   const isMobile = useIsMobile();
@@ -22,7 +28,12 @@ function MobileGuard({ children }: { children: React.ReactNode }) {
     return null;
   }
   
-  // On mobile, always show block page
+  // Allow native app to bypass mobile block
+  if (isNativeApp()) {
+    return <>{children}</>;
+  }
+  
+  // On mobile browser, show block page
   if (isMobile) {
     return <MobileBlock />;
   }
