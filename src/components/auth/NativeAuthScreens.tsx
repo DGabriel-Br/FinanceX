@@ -414,7 +414,7 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onSuccess }: NativeAuthS
           )}
         >
           <h1 className="text-2xl font-bold text-white mb-8">
-            Boas-vindas de volta!
+            Bem-vindo(a) de volta!
           </h1>
 
           <form onSubmit={handleLogin} className="space-y-5">
