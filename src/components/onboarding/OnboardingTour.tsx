@@ -8,10 +8,10 @@ import {
   Receipt, 
   CreditCard, 
   TrendingUp,
+  Sparkles,
   CheckCircle2,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { FinanceLogo } from '@/components/ui/FinanceLogo';
 
 interface TourStep {
   id: string;
@@ -26,7 +26,7 @@ const tourSteps: TourStep[] = [
     id: 'welcome',
     title: 'Bem-vindo ao FinanceX',
     description: 'Vamos fazer um tour rápido pelos recursos principais da plataforma.',
-    icon: <FinanceLogo size={28} />,
+    icon: <Sparkles className="w-6 h-6" />,
   },
   {
     id: 'dashboard',
