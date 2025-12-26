@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { Switch } from '@/components/ui/switch';
 import { FinanceLogo } from '@/components/ui/FinanceLogo';
-import { getInitials } from '@/lib/userUtils';
+import { getInitials, getDisplayName } from '@/lib/userUtils';
 type Tab = 'dashboard' | 'lancamentos' | 'dividas' | 'investimentos';
 
 export interface SidebarProps {
@@ -130,7 +130,7 @@ export const Sidebar = ({
             {!collapsed && (
               <div className="flex-1 min-w-0">
                 <p className="text-[10px] uppercase tracking-wider text-sidebar-foreground/40 font-medium mb-0.5">Logado como</p>
-                <p className="text-sm text-primary font-semibold truncate uppercase tracking-wide">{userName || userEmail}</p>
+                <p className="text-sm text-primary font-semibold truncate uppercase tracking-wide">{getDisplayName(userName, userEmail)}</p>
               </div>
             )}
           </div>
