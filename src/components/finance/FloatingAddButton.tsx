@@ -2,11 +2,11 @@ import { useState, useEffect } from 'react';
 import { Plus, CalendarIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-} from '@/components/ui/sheet';
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+} from '@/components/ui/drawer';
 import { 
   TransactionType, 
   TransactionCategory,
@@ -138,15 +138,17 @@ export const FloatingAddButton = ({ onAddTransaction }: FloatingAddButtonProps) 
         <Plus className="w-6 h-6" />
       </button>
 
-      {/* Sheet com formulário */}
-      <Sheet open={isOpen} onOpenChange={handleOpenChange}>
-        <SheetContent side="bottom" className="h-[85vh] rounded-t-2xl overflow-y-auto">
-          <SheetHeader className="pb-4">
-            <SheetTitle className="flex items-center gap-2">
+      {/* Drawer com formulário */}
+      <Drawer open={isOpen} onOpenChange={handleOpenChange}>
+        <DrawerContent className="max-h-[85vh]">
+          <DrawerHeader className="pb-4">
+            <DrawerTitle className="flex items-center gap-2">
               <Plus className="w-5 h-5 text-primary" />
               Novo Lançamento
-            </SheetTitle>
-          </SheetHeader>
+            </DrawerTitle>
+          </DrawerHeader>
+          
+          <div className="overflow-y-auto px-4">
           
           <form onSubmit={handleSubmit} className="space-y-4 pb-6">
             {/* Tipo */}
@@ -274,8 +276,9 @@ export const FloatingAddButton = ({ onAddTransaction }: FloatingAddButtonProps) 
               Adicionar Lançamento
             </button>
           </form>
-        </SheetContent>
-      </Sheet>
+          </div>
+        </DrawerContent>
+      </Drawer>
     </>
   );
 };
