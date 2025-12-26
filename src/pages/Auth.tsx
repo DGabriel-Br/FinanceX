@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { PasswordStrengthMeter } from '@/components/ui/PasswordStrengthMeter';
 import { toast } from 'sonner';
 import { Loader2, Eye, EyeOff, ArrowLeft } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
 import { z } from 'zod';
 import { cn } from '@/lib/utils';
 import { FinanceLogo } from '@/components/ui/FinanceLogo';
@@ -60,6 +61,7 @@ export default function Auth() {
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
@@ -68,6 +70,17 @@ export default function Auth() {
   const [isShaking, setIsShaking] = useState(false);
   const { user, loading, signIn, signUp } = useAuthContext();
   const navigate = useNavigate();
+
+  // Load saved credentials on mount
+  useEffect(() => {
+    const savedEmail = localStorage.getItem('financex_saved_email');
+    const savedPassword = localStorage.getItem('financex_saved_password');
+    if (savedEmail && savedPassword) {
+      setEmail(savedEmail);
+      setPassword(savedPassword);
+      setRememberMe(true);
+    }
+  }, []);
 
   // Generate random particles
   const particles = useMemo(() => {
@@ -194,6 +207,14 @@ export default function Auth() {
           toast.error('Erro ao fazer login: ' + error.message);
         }
       } else {
+        // Save credentials if remember me is checked
+        if (rememberMe) {
+          localStorage.setItem('financex_saved_email', email);
+          localStorage.setItem('financex_saved_password', password);
+        } else {
+          localStorage.removeItem('financex_saved_email');
+          localStorage.removeItem('financex_saved_password');
+        }
         toast.success('Login realizado com sucesso!');
         navigate('/');
       }
@@ -494,17 +515,38 @@ export default function Auth() {
                 </div>
               )}
 
-              {/* Forgot password - only for login */}
+              {/* Remember me and Forgot password - only for login */}
               {!displayedIsRegister && (
-                <div>
-                  <span className="text-white/50 text-xs">Esqueceu a senha? </span>
-                  <button
-                    type="button"
-                    onClick={() => toast.info('Função de recuperação de senha será implementada em breve.')}
-                    className="text-primary hover:underline text-xs font-medium transition-colors"
-                  >
-                    Clique aqui
-                  </button>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      id="remember-me"
+                      checked={rememberMe}
+                      onCheckedChange={(checked) => {
+                        setRememberMe(checked === true);
+                        if (!checked) {
+                          localStorage.removeItem('financex_saved_email');
+                          localStorage.removeItem('financex_saved_password');
+                        }
+                      }}
+                      className="border-white/30 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                    />
+                    <label 
+                      htmlFor="remember-me" 
+                      className="text-white/70 text-xs cursor-pointer select-none"
+                    >
+                      Lembrar-me
+                    </label>
+                  </div>
+                  <div>
+                    <button
+                      type="button"
+                      onClick={() => toast.info('Função de recuperação de senha será implementada em breve.')}
+                      className="text-primary hover:underline text-xs font-medium transition-colors"
+                    >
+                      Esqueceu a senha?
+                    </button>
+                  </div>
                 </div>
               )}
 
