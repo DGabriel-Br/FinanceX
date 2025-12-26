@@ -78,7 +78,7 @@ export default function MobileBlock() {
     
     // Create a link to download the APK directly
     const link = document.createElement('a');
-    link.href = 'https://github.com/DGabriel-Br/hello-chat-buddy/releases/download/v1.0.0/app-debug.apk';
+    link.href = 'https://github.com/DGabriel-Br/hello-chat-buddy/releases/download/v1.0.0/teste1.apk';
     link.download = 'FinanceX.apk';
     document.body.appendChild(link);
     link.click();
