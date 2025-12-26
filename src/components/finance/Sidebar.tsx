@@ -2,7 +2,7 @@ import { LayoutDashboard, Receipt, ChevronLeft, ChevronRight, Moon, Sun, CreditC
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { Switch } from '@/components/ui/switch';
-import logo from '@/assets/logo.png';
+import { FinanceLogo } from '@/components/ui/FinanceLogo';
 
 type Tab = 'dashboard' | 'lancamentos' | 'dividas' | 'investimentos';
 
@@ -54,16 +54,23 @@ export const Sidebar = ({
       {/* Header com Logo */}
       <div className={cn(
         "p-4 flex items-center",
-        collapsed ? "justify-center" : "gap-3"
+        collapsed ? "justify-center" : "gap-2"
       )}>
         {/* Logo */}
-        <img src={logo} alt="FinanceX" className="w-10 h-10 rounded-lg flex-shrink-0 object-cover" />
+        <div className="relative flex items-end flex-shrink-0">
+          <FinanceLogo size={collapsed ? 28 : 24} />
+          {!collapsed && (
+            <span 
+              className="text-lg font-black tracking-tight text-white -ml-0.5"
+              style={{ fontFamily: "'Orbitron', sans-serif" }}
+            >
+              inanceX
+            </span>
+          )}
+        </div>
         
         {!collapsed && (
-          <div className="flex-1 min-w-0">
-            <h1 className="text-sm font-semibold text-sidebar-primary-foreground truncate">
-              FinanceX
-            </h1>
+          <div className="flex-1 min-w-0 ml-1">
             <p className="text-xs text-sidebar-foreground/60 truncate">Controle Financeiro</p>
           </div>
         )}
