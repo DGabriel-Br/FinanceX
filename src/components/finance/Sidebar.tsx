@@ -53,7 +53,7 @@ export const Sidebar = ({
 
       {/* Header com Logo */}
       <div className={cn(
-        "px-4 py-5 flex",
+        "px-4 pt-6 pb-6 flex",
         collapsed ? "justify-center" : "justify-start pl-6"
       )}>
         {/* Logo com efeito de destaque */}
@@ -62,10 +62,10 @@ export const Sidebar = ({
           <div className="absolute -inset-2 bg-gradient-to-r from-primary/20 via-income/20 to-primary/20 rounded-xl blur-lg opacity-60 group-hover:opacity-100 transition-opacity duration-300" />
           <div className="absolute -inset-1 bg-gradient-to-r from-income/10 via-primary/15 to-income/10 rounded-lg blur-md animate-pulse" />
           
-          <FinanceLogo size={collapsed ? 32 : 28} className="relative drop-shadow-[0_0_12px_rgba(34,211,238,0.5)]" />
+          <FinanceLogo size={collapsed ? 36 : 32} className="relative drop-shadow-[0_0_12px_rgba(34,211,238,0.5)]" />
           {!collapsed && (
             <span 
-              className="text-xl font-black tracking-tight text-white -ml-0.5 relative drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]"
+              className="text-2xl font-black tracking-tight text-white -ml-0.5 relative drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]"
               style={{ fontFamily: "'Orbitron', sans-serif" }}
             >
               inanceX
@@ -75,7 +75,7 @@ export const Sidebar = ({
       </div>
 
       {/* Menu */}
-      <nav className="flex-1 px-3 mt-2 overflow-hidden">
+      <nav className="flex-1 px-3 overflow-hidden">
         <ul className="space-y-1">
           {menuItems.map(item => {
             const isActive = activeTab === item.id;
