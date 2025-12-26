@@ -1,4 +1,4 @@
-import { Eye, EyeOff, Moon, Sun } from 'lucide-react';
+import { Eye, EyeOff, Moon, Sun, RotateCw } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { useScrollDirection } from '@/hooks/useScrollDirection';
@@ -86,6 +86,15 @@ export const MobileHeader = ({
 
             {/* Ícones de ação */}
             <div className="flex items-center flex-shrink-0 gap-1">
+              {/* Botão de recarregar página */}
+              <button
+                onClick={() => window.location.reload()}
+                className="p-2 rounded-full hover:bg-mobile-header-foreground/10 transition-colors active:scale-95"
+                aria-label="Recarregar página"
+              >
+                <RotateCw className="w-5 h-5 text-mobile-header-foreground" />
+              </button>
+              
               {/* Indicador de sincronização */}
               <SyncIndicator />
               
