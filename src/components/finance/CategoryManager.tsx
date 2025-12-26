@@ -368,13 +368,13 @@ export function CategoryManager() {
                 value="receita" 
                 className="data-[state=active]:bg-emerald-500 data-[state=active]:text-white rounded-lg transition-all"
               >
-                💰 Receitas
+                Receitas
               </TabsTrigger>
               <TabsTrigger 
                 value="despesa"
                 className="data-[state=active]:bg-rose-500 data-[state=active]:text-white rounded-lg transition-all"
               >
-                💸 Despesas
+                Despesas
               </TabsTrigger>
             </TabsList>
 
