@@ -52,10 +52,7 @@ export const Sidebar = ({
       </button>
 
       {/* Header com Logo */}
-      <div className={cn(
-        "px-4 pt-6 pb-6 flex",
-        collapsed ? "justify-center" : "justify-start pl-6"
-      )}>
+      <div className="px-4 pt-6 pb-6 flex justify-center">
         {/* Logo com efeito de destaque */}
         <div className="relative flex items-end flex-shrink-0 group">
           {/* Glow effect background */}
