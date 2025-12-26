@@ -187,7 +187,7 @@ export const ExcelImportExport = ({
     }
   };
 
-  const downloadTemplate = () => {
+  const downloadTemplate = async () => {
     const templateData = [
       {
         'Tipo': 'Receita',
@@ -217,8 +217,43 @@ export const ExcelImportExport = ({
       { wch: 15 },
     ];
 
-    XLSX.writeFile(workbook, 'modelo_lancamentos.xlsx');
-    toast.success('Modelo baixado com sucesso!');
+    const fileName = 'modelo_lancamentos.xlsx';
+
+    // Verificar se está no app nativo
+    if (isNativePlatform()) {
+      try {
+        // Gerar o arquivo como base64
+        const wbout = XLSX.write(workbook, { bookType: 'xlsx', type: 'base64' });
+        
+        // Salvar o arquivo no dispositivo
+        const result = await Filesystem.writeFile({
+          path: fileName,
+          data: wbout,
+          directory: Directory.Documents,
+        });
+
+        // Compartilhar o arquivo (permite ao usuário escolher onde salvar/enviar)
+        await Share.share({
+          title: 'Modelo de Lançamentos',
+          text: 'Modelo para importação de lançamentos no FinanceX',
+          url: result.uri,
+          dialogTitle: 'Salvar ou compartilhar arquivo',
+        });
+
+        toast.success('Modelo baixado com sucesso!');
+      } catch (error: any) {
+        console.error('Erro ao baixar modelo no app nativo:', error);
+        // Se o usuário cancelou o compartilhamento, não mostrar erro
+        if (error?.message?.includes('cancel')) {
+          return;
+        }
+        toast.error('Erro ao baixar modelo. Tente novamente.');
+      }
+    } else {
+      // Navegador web - usar método padrão
+      XLSX.writeFile(workbook, fileName);
+      toast.success('Modelo baixado com sucesso!');
+    }
   };
 
   const parseCategory = (categoryStr: string, type: TransactionType): { key: string | null; isCustom: boolean; label: string } => {
