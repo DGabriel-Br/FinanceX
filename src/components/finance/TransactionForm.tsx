@@ -10,13 +10,14 @@ import {
   incomeCategoryIcons,
   expenseCategoryIcons
 } from '@/types/transaction';
-import { getLocalDateString, parseLocalDate } from '@/hooks/useTransactions';
+import { getLocalDateString } from '@/hooks/useTransactions';
 import { cn } from '@/lib/utils';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { formatCurrencyInput, parseCurrency } from '@/lib/currency';
 
 interface TransactionFormProps {
   onSubmit: (transaction: {
@@ -27,31 +28,6 @@ interface TransactionFormProps {
     value: number;
   }) => void;
 }
-
-// Formata número para moeda brasileira (ex: 1.234,56)
-const formatCurrency = (value: string): string => {
-  // Remove tudo que não é número
-  const numbers = value.replace(/\D/g, '');
-  
-  if (!numbers) return '';
-  
-  // Converte para número e divide por 100 para ter centavos
-  const amount = parseInt(numbers, 10) / 100;
-  
-  // Formata com separadores brasileiros
-  return amount.toLocaleString('pt-BR', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
-};
-
-// Converte string formatada para número
-const parseCurrency = (value: string): number => {
-  if (!value) return 0;
-  // Remove pontos de milhar e troca vírgula por ponto
-  const normalized = value.replace(/\./g, '').replace(',', '.');
-  return parseFloat(normalized) || 0;
-};
 
 const incomeCategories: IncomeCategory[] = ['salario', '13_salario', 'ferias', 'freelance', 'outros_receita'];
 const expenseCategories: ExpenseCategory[] = ['contas_fixas', 'investimentos', 'dividas', 'educacao', 'transporte', 'mercado', 'delivery', 'outros_despesa'];
@@ -74,7 +50,7 @@ export const TransactionForm = ({ onSubmit }: TransactionFormProps) => {
   }, [type]);
 
   const handleValueChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const formatted = formatCurrency(e.target.value);
+    const formatted = formatCurrencyInput(e.target.value);
     setValue(formatted);
   };
 
