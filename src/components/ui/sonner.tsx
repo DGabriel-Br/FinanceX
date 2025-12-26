@@ -32,21 +32,25 @@ const Toaster = ({ ...props }: ToasterProps) => {
   return (
     <>
       <style>{`
-        /* Animações de entrada */
+        /* Animações de entrada - desliza suavemente para cima */
         [data-sonner-toast][data-mounted="true"] {
-          animation: toast-slide-in 0.4s cubic-bezier(0.21, 1.02, 0.73, 1) forwards;
+          animation: toast-slide-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
         
-        /* Animações de saída */
+        /* Animações de saída - desliza suavemente para baixo */
         [data-sonner-toast][data-removed="true"] {
-          animation: toast-slide-out 0.3s cubic-bezier(0.06, 0.71, 0.55, 1) forwards;
+          animation: toast-slide-down 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
         }
         
-        /* Animação de entrada deslizando de baixo */
-        @keyframes toast-slide-in {
+        /* Animação de entrada - sobe suavemente */
+        @keyframes toast-slide-up {
           0% {
             opacity: 0;
-            transform: translateY(100%) scale(0.9);
+            transform: translateY(100%) scale(0.95);
+          }
+          60% {
+            opacity: 1;
+            transform: translateY(-8%) scale(1.01);
           }
           100% {
             opacity: 1;
@@ -54,27 +58,32 @@ const Toaster = ({ ...props }: ToasterProps) => {
           }
         }
         
-        /* Animação de saída deslizando para baixo */
-        @keyframes toast-slide-out {
+        /* Animação de saída - desce suavemente */
+        @keyframes toast-slide-down {
           0% {
             opacity: 1;
             transform: translateY(0) scale(1);
           }
+          40% {
+            opacity: 0.8;
+            transform: translateY(10%) scale(0.98);
+          }
           100% {
             opacity: 0;
-            transform: translateY(50%) scale(0.9);
+            transform: translateY(100%) scale(0.95);
           }
         }
 
         /* Efeito de hover sutil */
         [data-sonner-toast]:hover {
-          transform: scale(1.02);
-          box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+          transform: scale(1.02) translateY(-2px);
+          box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
         }
 
-        /* Transição suave no hover */
+        /* Transição suave para interações */
         [data-sonner-toast] {
-          transition: transform 0.2s ease, box-shadow 0.2s ease;
+          transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), 
+                      box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
         /* Ícone de sucesso pulsa */
