@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
-import { Download, Upload, FileSpreadsheet, X, AlertCircle } from 'lucide-react';
+import { Download, Upload, FileSpreadsheet, AlertCircle } from 'lucide-react';
 import { Transaction, TransactionType, TransactionCategory, incomeCategoryLabels, expenseCategoryLabels } from '@/types/transaction';
 import { toast } from 'sonner';
 import * as XLSX from 'xlsx';
@@ -11,12 +11,6 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 
 interface ExcelImportExportProps {
   transactions: Transaction[];
@@ -274,24 +268,27 @@ export const ExcelImportExport = ({ transactions, onImport }: ExcelImportExportP
 
   return (
     <>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="outline" size="sm" className="gap-2">
-            <FileSpreadsheet className="w-4 h-4" />
-            <span className="hidden sm:inline">Excel</span>
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuItem onClick={exportToExcel} className="gap-2 cursor-pointer">
-            <Download className="w-4 h-4" />
-            Exportar lançamentos
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => setIsImportDialogOpen(true)} className="gap-2 cursor-pointer">
-            <Upload className="w-4 h-4" />
-            Importar lançamentos
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      {/* Botão Importar */}
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => setIsImportDialogOpen(true)}
+        className="gap-1.5 h-8 md:h-9 px-2 md:px-3"
+      >
+        <Upload className="w-4 h-4" />
+        <span className="hidden sm:inline text-xs md:text-sm">Importar</span>
+      </Button>
+
+      {/* Botão Exportar */}
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={exportToExcel}
+        className="gap-1.5 h-8 md:h-9 px-2 md:px-3"
+      >
+        <Download className="w-4 h-4" />
+        <span className="hidden sm:inline text-xs md:text-sm">Exportar</span>
+      </Button>
 
       <Dialog open={isImportDialogOpen} onOpenChange={setIsImportDialogOpen}>
         <DialogContent className="sm:max-w-md">
