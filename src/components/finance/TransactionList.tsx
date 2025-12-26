@@ -15,6 +15,7 @@ import { parseLocalDate } from '@/hooks/useTransactions';
 import { cn } from '@/lib/utils';
 import { format, isToday, isYesterday } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { formatCurrency } from '@/lib/currency';
 
 interface TransactionListProps {
   transactions: Transaction[];
@@ -22,14 +23,6 @@ interface TransactionListProps {
   onDelete: (id: string) => void;
   formatValue?: (value: number) => string;
 }
-
-// Formatar valor em Real brasileiro
-const formatCurrency = (value: number): string => {
-  return new Intl.NumberFormat('pt-BR', {
-    style: 'currency',
-    currency: 'BRL',
-  }).format(value);
-};
 
 // Formatar data para exibição (dd/MM/yyyy)
 const formatDate = (dateString: string): string => {
