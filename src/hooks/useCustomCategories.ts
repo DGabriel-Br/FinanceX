@@ -11,28 +11,45 @@ export interface CustomCategory {
   created_at: string;
 }
 
+export interface HiddenDefaultCategory {
+  id: string;
+  category_key: string;
+  type: 'receita' | 'despesa';
+}
+
 export function useCustomCategories() {
   const { user } = useAuthContext();
   const { toast } = useToast();
   const [categories, setCategories] = useState<CustomCategory[]>([]);
+  const [hiddenDefaults, setHiddenDefaults] = useState<HiddenDefaultCategory[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchCategories = useCallback(async () => {
     if (!user) {
       setCategories([]);
+      setHiddenDefaults([]);
       setLoading(false);
       return;
     }
 
     try {
-      const { data, error } = await supabase
-        .from('custom_categories')
-        .select('*')
-        .eq('user_id', user.id)
-        .order('name');
+      const [categoriesResult, hiddenResult] = await Promise.all([
+        supabase
+          .from('custom_categories')
+          .select('*')
+          .eq('user_id', user.id)
+          .order('name'),
+        supabase
+          .from('hidden_default_categories')
+          .select('*')
+          .eq('user_id', user.id)
+      ]);
 
-      if (error) throw error;
-      setCategories((data || []) as CustomCategory[]);
+      if (categoriesResult.error) throw categoriesResult.error;
+      if (hiddenResult.error) throw hiddenResult.error;
+      
+      setCategories((categoriesResult.data || []) as CustomCategory[]);
+      setHiddenDefaults((hiddenResult.data || []) as HiddenDefaultCategory[]);
     } catch (error: any) {
       console.error('Error fetching categories:', error);
     } finally {
@@ -211,13 +228,94 @@ export function useCustomCategories() {
     return categories.filter(cat => cat.type === type);
   };
 
+  const isDefaultHidden = (categoryKey: string, type: 'receita' | 'despesa') => {
+    return hiddenDefaults.some(h => h.category_key === categoryKey && h.type === type);
+  };
+
+  const hideDefaultCategory = async (categoryKey: string, type: 'receita' | 'despesa') => {
+    if (!user) return false;
+
+    try {
+      const { data, error } = await supabase
+        .from('hidden_default_categories')
+        .insert({
+          user_id: user.id,
+          category_key: categoryKey,
+          type,
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      setHiddenDefaults(prev => [...prev, data as HiddenDefaultCategory]);
+      toast({
+        title: 'Categoria oculta',
+        description: 'A categoria padrão foi ocultada.',
+      });
+      return true;
+    } catch (error: any) {
+      console.error('Error hiding default category:', error);
+      toast({
+        title: 'Erro ao ocultar categoria',
+        description: error.message || 'Ocorreu um erro.',
+        variant: 'destructive',
+      });
+      return false;
+    }
+  };
+
+  const restoreDefaultCategory = async (categoryKey: string, type: 'receita' | 'despesa') => {
+    if (!user) return false;
+
+    try {
+      const { error } = await supabase
+        .from('hidden_default_categories')
+        .delete()
+        .eq('user_id', user.id)
+        .eq('category_key', categoryKey)
+        .eq('type', type);
+
+      if (error) throw error;
+
+      setHiddenDefaults(prev => prev.filter(h => !(h.category_key === categoryKey && h.type === type)));
+      toast({
+        title: 'Categoria restaurada',
+        description: 'A categoria padrão foi restaurada.',
+      });
+      return true;
+    } catch (error: any) {
+      console.error('Error restoring default category:', error);
+      toast({
+        title: 'Erro ao restaurar categoria',
+        description: error.message || 'Ocorreu um erro.',
+        variant: 'destructive',
+      });
+      return false;
+    }
+  };
+
+  const getVisibleDefaultCategories = (type: 'receita' | 'despesa', allDefaults: [string, string][]) => {
+    return allDefaults.filter(([key]) => !isDefaultHidden(key, type));
+  };
+
+  const getHiddenDefaultCategories = (type: 'receita' | 'despesa', allDefaults: [string, string][]) => {
+    return allDefaults.filter(([key]) => isDefaultHidden(key, type));
+  };
+
   return {
     categories,
+    hiddenDefaults,
     loading,
     addCategory,
     updateCategory,
     deleteCategory,
     getCategoriesByType,
+    isDefaultHidden,
+    hideDefaultCategory,
+    restoreDefaultCategory,
+    getVisibleDefaultCategories,
+    getHiddenDefaultCategories,
     refetch: fetchCategories,
   };
 }
