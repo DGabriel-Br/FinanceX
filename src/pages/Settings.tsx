@@ -426,7 +426,7 @@ export default function Settings() {
                   Salvando...
                 </>
               ) : (
-                'Salvar Nome'
+                'Salvar'
               )}
             </Button>
           </CardContent>
