@@ -62,6 +62,9 @@ export default function Auth() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [isTransitioning, setIsTransitioning] = useState(false);
+  const [slideDirection, setSlideDirection] = useState<'left' | 'right'>('right');
+  const [displayedIsRegister, setDisplayedIsRegister] = useState(isRegisterRoute);
   const { user, loading, signIn, signUp } = useAuthContext();
   const navigate = useNavigate();
 
@@ -90,6 +93,29 @@ export default function Auth() {
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  // Handle route transitions with animation
+  useEffect(() => {
+    if (isRegisterRoute !== displayedIsRegister) {
+      // Determine slide direction
+      setSlideDirection(isRegisterRoute ? 'right' : 'left');
+      setIsTransitioning(true);
+      
+      // After exit animation, update content and play enter animation
+      const timer = setTimeout(() => {
+        setDisplayedIsRegister(isRegisterRoute);
+        setIsTransitioning(false);
+      }, 300);
+      
+      return () => clearTimeout(timer);
+    }
+  }, [isRegisterRoute, displayedIsRegister]);
+
+  const handleNavigateToPage = (path: string) => {
+    const goingToRegister = path === '/cadastro';
+    setSlideDirection(goingToRegister ? 'right' : 'left');
+    navigate(path);
+  };
 
   useEffect(() => {
     if (!loading && user) {
@@ -316,21 +342,24 @@ export default function Auth() {
           </div>
         </div>
 
-        {/* Centered Card */}
-        <div className="flex-1 flex items-center justify-center p-8 relative z-10">
+        {/* Centered Card with slide transition */}
+        <div className="flex-1 flex items-center justify-center p-8 relative z-10 overflow-hidden">
           <div 
             className={cn(
-              "w-full max-w-md bg-sidebar/95 backdrop-blur-sm rounded-xl p-8 shadow-2xl border border-white/5 transition-all duration-700 delay-200",
-              mounted ? "opacity-100 scale-100 translate-y-0" : "opacity-0 scale-95 translate-y-8"
+              "w-full max-w-md bg-sidebar/95 backdrop-blur-sm rounded-xl p-8 shadow-2xl border border-white/5 transition-all duration-300 ease-out",
+              mounted && !isTransitioning ? "opacity-100 scale-100 translate-x-0" : "",
+              !mounted ? "opacity-0 scale-95 translate-y-8" : "",
+              isTransitioning && slideDirection === 'right' ? "opacity-0 -translate-x-12" : "",
+              isTransitioning && slideDirection === 'left' ? "opacity-0 translate-x-12" : ""
             )}
           >
             {/* Card Header */}
             <div className="text-center mb-8">
               <h1 className="text-2xl font-bold text-white mb-2">
-                {isRegisterRoute ? 'Crie sua conta' : 'Bem-vindo(a) de volta!'}
+                {displayedIsRegister ? 'Crie sua conta' : 'Bem-vindo(a) de volta!'}
               </h1>
               <p className="text-white/60 text-sm">
-                {isRegisterRoute 
+                {displayedIsRegister 
                   ? 'Preencha os dados para começar a usar o FinanceX.'
                   : 'Entre com seu e-mail e senha para começar.'}
               </p>
@@ -339,7 +368,7 @@ export default function Auth() {
             {/* Form */}
             <form onSubmit={handleSubmit} className="space-y-5">
               {/* Name field - only for register */}
-              {isRegisterRoute && (
+              {displayedIsRegister && (
                 <div className="space-y-2">
                   <label className="text-xs font-medium text-white/70 uppercase tracking-wide">
                     Nome completo {!name.trim() && <span className="text-red-400">*</span>}
@@ -399,13 +428,13 @@ export default function Auth() {
                     )}
                   </button>
                 </div>
-                {isRegisterRoute && (
+                {displayedIsRegister && (
                   <PasswordStrengthMeter password={password} className="mt-3" />
                 )}
               </div>
 
               {/* Confirm Password field - only for register */}
-              {isRegisterRoute && (
+              {displayedIsRegister && (
                 <div className="space-y-2">
                   <label className="text-xs font-medium text-white/70 uppercase tracking-wide">
                     Confirmar senha {!confirmPassword && <span className="text-red-400">*</span>}
@@ -445,7 +474,7 @@ export default function Auth() {
               )}
 
               {/* Forgot password - only for login */}
-              {!isRegisterRoute && (
+              {!displayedIsRegister && (
                 <div>
                   <span className="text-white/50 text-xs">Esqueceu a senha? </span>
                   <button
@@ -462,24 +491,24 @@ export default function Auth() {
               <Button 
                 type="submit" 
                 className="w-full h-11 text-sm font-semibold rounded-md bg-primary hover:bg-primary/90 text-primary-foreground transition-all duration-300" 
-                disabled={isLoading}
+                disabled={isLoading || isTransitioning}
               >
                 {isLoading ? (
                   <Loader2 className="w-4 h-4 animate-spin" />
                 ) : (
-                  isRegisterRoute ? 'Criar conta' : 'Entrar'
+                  displayedIsRegister ? 'Criar conta' : 'Entrar'
                 )}
               </Button>
 
               {/* Bottom link */}
               <p className="text-white/50 text-xs text-center pt-2">
-                {isRegisterRoute ? 'Já tem uma conta? ' : 'Não tem uma conta? '}
+                {displayedIsRegister ? 'Já tem uma conta? ' : 'Não tem uma conta? '}
                 <button
                   type="button"
-                  onClick={() => navigate(isRegisterRoute ? '/login' : '/cadastro')}
+                  onClick={() => handleNavigateToPage(displayedIsRegister ? '/login' : '/cadastro')}
                   className="text-primary hover:underline font-medium transition-colors"
                 >
-                  {isRegisterRoute ? 'Entrar' : 'Cadastre-se agora.'}
+                  {displayedIsRegister ? 'Entrar' : 'Cadastre-se agora.'}
                 </button>
               </p>
             </form>
