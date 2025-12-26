@@ -1,6 +1,6 @@
 import { useState, useRef, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
-import { Download, Upload, FileSpreadsheet, AlertCircle, Plus, Check, Eye, ArrowLeft, ArrowRight, TrendingUp, TrendingDown } from 'lucide-react';
+import { Download, Upload, FileSpreadsheet, AlertCircle, Plus, Check, Eye, ArrowLeft, ArrowRight, TrendingUp, TrendingDown, Loader2 } from 'lucide-react';
 import { Transaction, TransactionType, TransactionCategory, incomeCategoryLabels, expenseCategoryLabels } from '@/types/transaction';
 import { toast } from 'sonner';
 import * as XLSX from 'xlsx';
@@ -532,65 +532,93 @@ export const ExcelImportExport = ({
           {/* Step: Upload */}
           {currentStep === 'upload' && (
             <div className="space-y-6">
-              {/* Drop Zone */}
-              <div 
-                className="rounded-xl border-2 border-dashed border-primary/30 bg-primary/5 p-8 text-center hover:border-primary/50 hover:bg-primary/10 transition-colors cursor-pointer"
-                onClick={() => fileInputRef.current?.click()}
-              >
-                <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center">
-                  <Upload className="w-7 h-7 text-primary" />
-                </div>
-                <p className="text-base font-medium text-foreground mb-1">
-                  Arraste seu arquivo ou clique para selecionar
-                </p>
-                <p className="text-sm text-muted-foreground">
-                  Formatos aceitos: .xlsx, .xls
-                </p>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept=".xlsx,.xls"
-                  onChange={handleFileSelect}
-                  className="hidden"
-                />
-              </div>
-
-              {/* Quick Actions */}
-              <div className="flex items-center justify-center gap-3">
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={downloadTemplate}
-                  className="gap-2 text-muted-foreground hover:text-foreground"
-                >
-                  <Download className="w-4 h-4" />
-                  Baixar modelo de exemplo
-                </Button>
-              </div>
-
-              {importErrors.length > 0 && (
-                <div className="rounded-lg bg-destructive/10 p-3 max-h-40 overflow-auto">
-                  <div className="flex items-center gap-2 text-destructive mb-2">
-                    <AlertCircle className="w-4 h-4" />
-                    <span className="text-sm font-medium">Erros encontrados:</span>
+              {/* Loading State */}
+              {isImporting ? (
+                <div className="rounded-xl border-2 border-primary/30 bg-primary/5 p-12 text-center">
+                  <div className="relative w-20 h-20 mx-auto mb-6">
+                    {/* Outer spinning ring */}
+                    <div className="absolute inset-0 rounded-full border-4 border-primary/20" />
+                    <div className="absolute inset-0 rounded-full border-4 border-transparent border-t-primary animate-spin" />
+                    {/* Inner icon */}
+                    <div className="absolute inset-3 rounded-full bg-primary/10 flex items-center justify-center">
+                      <FileSpreadsheet className="w-8 h-8 text-primary" />
+                    </div>
                   </div>
-                  <ul className="text-xs text-destructive space-y-1">
-                    {importErrors.slice(0, 10).map((error, i) => (
-                      <li key={i}>• {error}</li>
-                    ))}
-                    {importErrors.length > 10 && (
-                      <li className="font-medium">...e mais {importErrors.length - 10} erro(s)</li>
-                    )}
-                  </ul>
+                  <p className="text-lg font-medium text-foreground mb-2">
+                    Processando arquivo...
+                  </p>
+                  <p className="text-sm text-muted-foreground">
+                    Aguarde enquanto analisamos seus lançamentos
+                  </p>
+                  <div className="flex justify-center gap-1 mt-4">
+                    <span className="w-2 h-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: '0ms' }} />
+                    <span className="w-2 h-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: '150ms' }} />
+                    <span className="w-2 h-2 rounded-full bg-primary animate-bounce" style={{ animationDelay: '300ms' }} />
+                  </div>
                 </div>
-              )}
+              ) : (
+                <>
+                  {/* Drop Zone */}
+                  <div 
+                    className="rounded-xl border-2 border-dashed border-primary/30 bg-primary/5 p-8 text-center hover:border-primary/50 hover:bg-primary/10 transition-all duration-300 cursor-pointer group"
+                    onClick={() => fileInputRef.current?.click()}
+                  >
+                    <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                      <Upload className="w-7 h-7 text-primary" />
+                    </div>
+                    <p className="text-base font-medium text-foreground mb-1">
+                      Arraste seu arquivo ou clique para selecionar
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      Formatos aceitos: .xlsx, .xls
+                    </p>
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      accept=".xlsx,.xls"
+                      onChange={handleFileSelect}
+                      className="hidden"
+                    />
+                  </div>
 
-              {/* Info */}
-              <div className="rounded-lg bg-muted/30 p-4">
-                <p className="text-xs text-muted-foreground text-center">
-                  <span className="text-primary">💡</span> Categorias novas serão criadas automaticamente com sua permissão
-                </p>
-              </div>
+                  {/* Quick Actions */}
+                  <div className="flex items-center justify-center gap-3">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={downloadTemplate}
+                      className="gap-2 text-muted-foreground hover:text-foreground"
+                    >
+                      <Download className="w-4 h-4" />
+                      Baixar modelo de exemplo
+                    </Button>
+                  </div>
+
+                  {importErrors.length > 0 && (
+                    <div className="rounded-lg bg-destructive/10 p-3 max-h-40 overflow-auto animate-fade-in">
+                      <div className="flex items-center gap-2 text-destructive mb-2">
+                        <AlertCircle className="w-4 h-4" />
+                        <span className="text-sm font-medium">Erros encontrados:</span>
+                      </div>
+                      <ul className="text-xs text-destructive space-y-1">
+                        {importErrors.slice(0, 10).map((error, i) => (
+                          <li key={i}>• {error}</li>
+                        ))}
+                        {importErrors.length > 10 && (
+                          <li className="font-medium">...e mais {importErrors.length - 10} erro(s)</li>
+                        )}
+                      </ul>
+                    </div>
+                  )}
+
+                  {/* Info */}
+                  <div className="rounded-lg bg-muted/30 p-4">
+                    <p className="text-xs text-muted-foreground text-center">
+                      <span className="text-primary">💡</span> Categorias novas serão criadas automaticamente com sua permissão
+                    </p>
+                  </div>
+                </>
+              )}
             </div>
           )}
 
