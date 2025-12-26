@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Plus, Pencil, Trash2, Tag, Loader2 } from 'lucide-react';
+import { Plus, Pencil, Trash2, Tag, Loader2, RotateCcw, EyeOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -23,23 +23,44 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible';
 import { useCustomCategories, CustomCategory } from '@/hooks/useCustomCategories';
 import { incomeCategoryLabels, expenseCategoryLabels } from '@/types/transaction';
 
 export function CategoryManager() {
-  const { categories, loading, addCategory, updateCategory, deleteCategory, getCategoriesByType } = useCustomCategories();
+  const { 
+    loading, 
+    addCategory, 
+    updateCategory, 
+    deleteCategory, 
+    getCategoriesByType,
+    hideDefaultCategory,
+    restoreDefaultCategory,
+    getVisibleDefaultCategories,
+    getHiddenDefaultCategories,
+  } = useCustomCategories();
+  
   const [activeTab, setActiveTab] = useState<'receita' | 'despesa'>('receita');
   
   // Dialog states
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [isHideDefaultDialogOpen, setIsHideDefaultDialogOpen] = useState(false);
   
   // Form states
   const [newCategoryName, setNewCategoryName] = useState('');
   const [editingCategory, setEditingCategory] = useState<CustomCategory | null>(null);
   const [deletingCategory, setDeletingCategory] = useState<CustomCategory | null>(null);
+  const [hidingDefault, setHidingDefault] = useState<{ key: string; label: string; type: 'receita' | 'despesa' } | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
+  // Collapsible states
+  const [isHiddenOpen, setIsHiddenOpen] = useState(false);
 
   const handleAdd = async () => {
     if (!newCategoryName.trim()) return;
@@ -77,6 +98,22 @@ export function CategoryManager() {
     setIsDeleteDialogOpen(false);
   };
 
+  const handleHideDefault = async () => {
+    if (!hidingDefault) return;
+    
+    setIsSubmitting(true);
+    await hideDefaultCategory(hidingDefault.key, hidingDefault.type);
+    setIsSubmitting(false);
+    setHidingDefault(null);
+    setIsHideDefaultDialogOpen(false);
+  };
+
+  const handleRestoreDefault = async (key: string, type: 'receita' | 'despesa') => {
+    setIsSubmitting(true);
+    await restoreDefaultCategory(key, type);
+    setIsSubmitting(false);
+  };
+
   const openEditDialog = (category: CustomCategory) => {
     setEditingCategory({ ...category });
     setIsEditDialogOpen(true);
@@ -87,8 +124,19 @@ export function CategoryManager() {
     setIsDeleteDialogOpen(true);
   };
 
-  const defaultIncomeCategories = Object.entries(incomeCategoryLabels);
-  const defaultExpenseCategories = Object.entries(expenseCategoryLabels);
+  const openHideDefaultDialog = (key: string, label: string, type: 'receita' | 'despesa') => {
+    setHidingDefault({ key, label, type });
+    setIsHideDefaultDialogOpen(true);
+  };
+
+  const defaultIncomeCategories = Object.entries(incomeCategoryLabels) as [string, string][];
+  const defaultExpenseCategories = Object.entries(expenseCategoryLabels) as [string, string][];
+  
+  const visibleIncomeDefaults = getVisibleDefaultCategories('receita', defaultIncomeCategories);
+  const visibleExpenseDefaults = getVisibleDefaultCategories('despesa', defaultExpenseCategories);
+  const hiddenIncomeDefaults = getHiddenDefaultCategories('receita', defaultIncomeCategories);
+  const hiddenExpenseDefaults = getHiddenDefaultCategories('despesa', defaultExpenseCategories);
+  
   const customIncomeCategories = getCategoriesByType('receita');
   const customExpenseCategories = getCategoriesByType('despesa');
 
@@ -102,6 +150,127 @@ export function CategoryManager() {
     );
   }
 
+  const renderCategoryList = (
+    type: 'receita' | 'despesa',
+    visibleDefaults: [string, string][],
+    hiddenDefaults: [string, string][],
+    customCategories: CustomCategory[]
+  ) => (
+    <div className="space-y-4">
+      {/* Visible Default Categories */}
+      <div className="flex justify-between items-center">
+        <h4 className="text-sm font-medium text-muted-foreground">Categorias Padrão</h4>
+      </div>
+      {visibleDefaults.length === 0 ? (
+        <p className="text-sm text-muted-foreground text-center py-2">
+          Todas as categorias padrão foram ocultadas
+        </p>
+      ) : (
+        <div className="grid gap-2">
+          {visibleDefaults.map(([key, label]) => (
+            <div
+              key={key}
+              className="flex items-center justify-between px-3 py-2 bg-muted/50 rounded-lg"
+            >
+              <span className="text-sm">{label}</span>
+              <Button
+                size="icon"
+                variant="ghost"
+                className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                onClick={() => openHideDefaultDialog(key, label, type)}
+                title="Ocultar categoria"
+              >
+                <EyeOff className="w-4 h-4" />
+              </Button>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Hidden Default Categories (Collapsible) */}
+      {hiddenDefaults.length > 0 && (
+        <Collapsible open={isHiddenOpen} onOpenChange={setIsHiddenOpen}>
+          <CollapsibleTrigger asChild>
+            <Button variant="ghost" size="sm" className="w-full justify-start text-muted-foreground">
+              <RotateCcw className="w-4 h-4 mr-2" />
+              {hiddenDefaults.length} categoria{hiddenDefaults.length > 1 ? 's' : ''} oculta{hiddenDefaults.length > 1 ? 's' : ''}
+            </Button>
+          </CollapsibleTrigger>
+          <CollapsibleContent className="space-y-2 mt-2">
+            {hiddenDefaults.map(([key, label]) => (
+              <div
+                key={key}
+                className="flex items-center justify-between px-3 py-2 bg-muted/30 rounded-lg opacity-60"
+              >
+                <span className="text-sm line-through">{label}</span>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="h-8 text-xs"
+                  onClick={() => handleRestoreDefault(key, type)}
+                  disabled={isSubmitting}
+                >
+                  <RotateCcw className="w-3 h-3 mr-1" />
+                  Restaurar
+                </Button>
+              </div>
+            ))}
+          </CollapsibleContent>
+        </Collapsible>
+      )}
+
+      {/* Custom Categories */}
+      <div className="flex justify-between items-center pt-4">
+        <h4 className="text-sm font-medium text-muted-foreground">Categorias Personalizadas</h4>
+        <Button
+          size="sm"
+          onClick={() => {
+            setNewCategoryName('');
+            setIsAddDialogOpen(true);
+          }}
+        >
+          <Plus className="w-4 h-4 mr-1" />
+          Adicionar
+        </Button>
+      </div>
+      
+      {customCategories.length === 0 ? (
+        <p className="text-sm text-muted-foreground text-center py-4">
+          Nenhuma categoria personalizada de {type === 'receita' ? 'receita' : 'despesa'}
+        </p>
+      ) : (
+        <div className="grid gap-2">
+          {customCategories.map((category) => (
+            <div
+              key={category.id}
+              className="flex items-center justify-between px-3 py-2 bg-accent/30 rounded-lg"
+            >
+              <span className="text-sm">{category.name}</span>
+              <div className="flex gap-1">
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="h-8 w-8"
+                  onClick={() => openEditDialog(category)}
+                >
+                  <Pencil className="w-4 h-4" />
+                </Button>
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  className="h-8 w-8 text-destructive hover:text-destructive"
+                  onClick={() => openDeleteDialog(category)}
+                >
+                  <Trash2 className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+
   return (
     <>
       <Card>
@@ -111,7 +280,7 @@ export function CategoryManager() {
             Gerenciar Categorias
           </CardTitle>
           <CardDescription>
-            Adicione, edite ou exclua suas categorias personalizadas
+            Adicione, edite ou oculte categorias
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -121,136 +290,12 @@ export function CategoryManager() {
               <TabsTrigger value="despesa">Despesas</TabsTrigger>
             </TabsList>
 
-            <TabsContent value="receita" className="space-y-4">
-              <div className="flex justify-between items-center">
-                <h4 className="text-sm font-medium text-muted-foreground">Categorias Padrão</h4>
-              </div>
-              <div className="grid gap-2">
-                {defaultIncomeCategories.map(([key, label]) => (
-                  <div
-                    key={key}
-                    className="flex items-center justify-between px-3 py-2 bg-muted/50 rounded-lg"
-                  >
-                    <span className="text-sm">{label}</span>
-                    <span className="text-xs text-muted-foreground">Padrão</span>
-                  </div>
-                ))}
-              </div>
-
-              <div className="flex justify-between items-center pt-4">
-                <h4 className="text-sm font-medium text-muted-foreground">Categorias Personalizadas</h4>
-                <Button
-                  size="sm"
-                  onClick={() => {
-                    setNewCategoryName('');
-                    setIsAddDialogOpen(true);
-                  }}
-                >
-                  <Plus className="w-4 h-4 mr-1" />
-                  Adicionar
-                </Button>
-              </div>
-              
-              {customIncomeCategories.length === 0 ? (
-                <p className="text-sm text-muted-foreground text-center py-4">
-                  Nenhuma categoria personalizada de receita
-                </p>
-              ) : (
-                <div className="grid gap-2">
-                  {customIncomeCategories.map((category) => (
-                    <div
-                      key={category.id}
-                      className="flex items-center justify-between px-3 py-2 bg-accent/30 rounded-lg"
-                    >
-                      <span className="text-sm">{category.name}</span>
-                      <div className="flex gap-1">
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          className="h-8 w-8"
-                          onClick={() => openEditDialog(category)}
-                        >
-                          <Pencil className="w-4 h-4" />
-                        </Button>
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          className="h-8 w-8 text-destructive hover:text-destructive"
-                          onClick={() => openDeleteDialog(category)}
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
+            <TabsContent value="receita">
+              {renderCategoryList('receita', visibleIncomeDefaults, hiddenIncomeDefaults, customIncomeCategories)}
             </TabsContent>
 
-            <TabsContent value="despesa" className="space-y-4">
-              <div className="flex justify-between items-center">
-                <h4 className="text-sm font-medium text-muted-foreground">Categorias Padrão</h4>
-              </div>
-              <div className="grid gap-2">
-                {defaultExpenseCategories.map(([key, label]) => (
-                  <div
-                    key={key}
-                    className="flex items-center justify-between px-3 py-2 bg-muted/50 rounded-lg"
-                  >
-                    <span className="text-sm">{label}</span>
-                    <span className="text-xs text-muted-foreground">Padrão</span>
-                  </div>
-                ))}
-              </div>
-
-              <div className="flex justify-between items-center pt-4">
-                <h4 className="text-sm font-medium text-muted-foreground">Categorias Personalizadas</h4>
-                <Button
-                  size="sm"
-                  onClick={() => {
-                    setNewCategoryName('');
-                    setIsAddDialogOpen(true);
-                  }}
-                >
-                  <Plus className="w-4 h-4 mr-1" />
-                  Adicionar
-                </Button>
-              </div>
-              
-              {customExpenseCategories.length === 0 ? (
-                <p className="text-sm text-muted-foreground text-center py-4">
-                  Nenhuma categoria personalizada de despesa
-                </p>
-              ) : (
-                <div className="grid gap-2">
-                  {customExpenseCategories.map((category) => (
-                    <div
-                      key={category.id}
-                      className="flex items-center justify-between px-3 py-2 bg-accent/30 rounded-lg"
-                    >
-                      <span className="text-sm">{category.name}</span>
-                      <div className="flex gap-1">
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          className="h-8 w-8"
-                          onClick={() => openEditDialog(category)}
-                        >
-                          <Pencil className="w-4 h-4" />
-                        </Button>
-                        <Button
-                          size="icon"
-                          variant="ghost"
-                          className="h-8 w-8 text-destructive hover:text-destructive"
-                          onClick={() => openDeleteDialog(category)}
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
+            <TabsContent value="despesa">
+              {renderCategoryList('despesa', visibleExpenseDefaults, hiddenExpenseDefaults, customExpenseCategories)}
             </TabsContent>
           </Tabs>
         </CardContent>
@@ -320,7 +365,7 @@ export function CategoryManager() {
         </DialogContent>
       </Dialog>
 
-      {/* Delete Confirmation Dialog */}
+      {/* Delete Custom Category Confirmation */}
       <AlertDialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
@@ -338,6 +383,28 @@ export function CategoryManager() {
               disabled={isSubmitting}
             >
               {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Excluir'}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      {/* Hide Default Category Confirmation */}
+      <AlertDialog open={isHideDefaultDialogOpen} onOpenChange={setIsHideDefaultDialogOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Ocultar Categoria</AlertDialogTitle>
+            <AlertDialogDescription>
+              Tem certeza que deseja ocultar a categoria "{hidingDefault?.label}"? 
+              Você pode restaurá-la depois na seção de categorias ocultas.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleHideDefault}
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Ocultar'}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

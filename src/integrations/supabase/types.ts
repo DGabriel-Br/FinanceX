@@ -74,6 +74,30 @@ export type Database = {
         }
         Relationships: []
       }
+      hidden_default_categories: {
+        Row: {
+          category_key: string
+          created_at: string
+          id: string
+          type: string
+          user_id: string
+        }
+        Insert: {
+          category_key: string
+          created_at?: string
+          id?: string
+          type: string
+          user_id: string
+        }
+        Update: {
+          category_key?: string
+          created_at?: string
+          id?: string
+          type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       investment_goals: {
         Row: {
           created_at: string
