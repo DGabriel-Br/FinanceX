@@ -155,121 +155,127 @@ export function CategoryManager() {
     visibleDefaults: [string, string][],
     hiddenDefaults: [string, string][],
     customCategories: CustomCategory[]
-  ) => (
-    <div className="space-y-4">
-      {/* Visible Default Categories */}
-      <div className="flex justify-between items-center">
-        <h4 className="text-sm font-medium text-muted-foreground">Categorias Padrão</h4>
-      </div>
-      {visibleDefaults.length === 0 ? (
-        <p className="text-sm text-muted-foreground text-center py-2">
-          Todas as categorias padrão foram ocultadas
-        </p>
-      ) : (
-        <div className="grid gap-2">
-          {visibleDefaults.map(([key, label]) => (
-            <div
-              key={key}
-              className="flex items-center justify-between px-3 py-2 bg-muted/50 rounded-lg"
-            >
-              <span className="text-sm">{label}</span>
-              <Button
-                size="icon"
-                variant="ghost"
-                className="h-8 w-8 text-muted-foreground hover:text-destructive"
-                onClick={() => openHideDefaultDialog(key, label, type)}
-                title="Ocultar categoria"
-              >
-                <EyeOff className="w-4 h-4" />
-              </Button>
-            </div>
-          ))}
-        </div>
-      )}
+  ) => {
+    // Combine all visible categories (default + custom)
+    const allCategories: Array<{ 
+      id: string; 
+      name: string; 
+      isDefault: boolean; 
+      key?: string;
+    }> = [
+      ...visibleDefaults.map(([key, label]) => ({ 
+        id: key, 
+        name: label, 
+        isDefault: true, 
+        key 
+      })),
+      ...customCategories.map(cat => ({ 
+        id: cat.id, 
+        name: cat.name, 
+        isDefault: false 
+      }))
+    ].sort((a, b) => a.name.localeCompare(b.name));
 
-      {/* Hidden Default Categories (Collapsible) */}
-      {hiddenDefaults.length > 0 && (
-        <Collapsible open={isHiddenOpen} onOpenChange={setIsHiddenOpen}>
-          <CollapsibleTrigger asChild>
-            <Button variant="ghost" size="sm" className="w-full justify-start text-muted-foreground">
-              <RotateCcw className="w-4 h-4 mr-2" />
-              {hiddenDefaults.length} categoria{hiddenDefaults.length > 1 ? 's' : ''} oculta{hiddenDefaults.length > 1 ? 's' : ''}
-            </Button>
-          </CollapsibleTrigger>
-          <CollapsibleContent className="space-y-2 mt-2">
-            {hiddenDefaults.map(([key, label]) => (
+    return (
+      <div className="space-y-4">
+        {/* Add button */}
+        <div className="flex justify-end">
+          <Button
+            size="sm"
+            onClick={() => {
+              setNewCategoryName('');
+              setIsAddDialogOpen(true);
+            }}
+          >
+            <Plus className="w-4 h-4 mr-1" />
+            Adicionar
+          </Button>
+        </div>
+
+        {/* All Categories (unified list) */}
+        {allCategories.length === 0 ? (
+          <p className="text-sm text-muted-foreground text-center py-4">
+            Nenhuma categoria de {type === 'receita' ? 'receita' : 'despesa'}
+          </p>
+        ) : (
+          <div className="grid gap-2">
+            {allCategories.map((category) => (
               <div
-                key={key}
-                className="flex items-center justify-between px-3 py-2 bg-muted/30 rounded-lg opacity-60"
+                key={category.id}
+                className="flex items-center justify-between px-3 py-2 bg-muted/50 rounded-lg"
               >
-                <span className="text-sm line-through">{label}</span>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  className="h-8 text-xs"
-                  onClick={() => handleRestoreDefault(key, type)}
-                  disabled={isSubmitting}
-                >
-                  <RotateCcw className="w-3 h-3 mr-1" />
-                  Restaurar
-                </Button>
+                <span className="text-sm">{category.name}</span>
+                <div className="flex gap-1">
+                  {category.isDefault ? (
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      className="h-8 w-8 text-muted-foreground hover:text-destructive"
+                      onClick={() => openHideDefaultDialog(category.key!, category.name, type)}
+                      title="Ocultar categoria"
+                    >
+                      <EyeOff className="w-4 h-4" />
+                    </Button>
+                  ) : (
+                    <>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="h-8 w-8"
+                        onClick={() => openEditDialog({ id: category.id, name: category.name, type, icon: 'tag', created_at: '' })}
+                      >
+                        <Pencil className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="h-8 w-8 text-destructive hover:text-destructive"
+                        onClick={() => openDeleteDialog({ id: category.id, name: category.name, type, icon: 'tag', created_at: '' })}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </>
+                  )}
+                </div>
               </div>
             ))}
-          </CollapsibleContent>
-        </Collapsible>
-      )}
+          </div>
+        )}
 
-      {/* Custom Categories */}
-      <div className="flex justify-between items-center pt-4">
-        <h4 className="text-sm font-medium text-muted-foreground">Categorias Personalizadas</h4>
-        <Button
-          size="sm"
-          onClick={() => {
-            setNewCategoryName('');
-            setIsAddDialogOpen(true);
-          }}
-        >
-          <Plus className="w-4 h-4 mr-1" />
-          Adicionar
-        </Button>
+        {/* Hidden Default Categories (Collapsible) */}
+        {hiddenDefaults.length > 0 && (
+          <Collapsible open={isHiddenOpen} onOpenChange={setIsHiddenOpen}>
+            <CollapsibleTrigger asChild>
+              <Button variant="ghost" size="sm" className="w-full justify-start text-muted-foreground">
+                <RotateCcw className="w-4 h-4 mr-2" />
+                {hiddenDefaults.length} categoria{hiddenDefaults.length > 1 ? 's' : ''} oculta{hiddenDefaults.length > 1 ? 's' : ''}
+              </Button>
+            </CollapsibleTrigger>
+            <CollapsibleContent className="space-y-2 mt-2">
+              {hiddenDefaults.map(([key, label]) => (
+                <div
+                  key={key}
+                  className="flex items-center justify-between px-3 py-2 bg-muted/30 rounded-lg opacity-60"
+                >
+                  <span className="text-sm line-through">{label}</span>
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="h-8 text-xs"
+                    onClick={() => handleRestoreDefault(key, type)}
+                    disabled={isSubmitting}
+                  >
+                    <RotateCcw className="w-3 h-3 mr-1" />
+                    Restaurar
+                  </Button>
+                </div>
+              ))}
+            </CollapsibleContent>
+          </Collapsible>
+        )}
       </div>
-      
-      {customCategories.length === 0 ? (
-        <p className="text-sm text-muted-foreground text-center py-4">
-          Nenhuma categoria personalizada de {type === 'receita' ? 'receita' : 'despesa'}
-        </p>
-      ) : (
-        <div className="grid gap-2">
-          {customCategories.map((category) => (
-            <div
-              key={category.id}
-              className="flex items-center justify-between px-3 py-2 bg-accent/30 rounded-lg"
-            >
-              <span className="text-sm">{category.name}</span>
-              <div className="flex gap-1">
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  className="h-8 w-8"
-                  onClick={() => openEditDialog(category)}
-                >
-                  <Pencil className="w-4 h-4" />
-                </Button>
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  className="h-8 w-8 text-destructive hover:text-destructive"
-                  onClick={() => openDeleteDialog(category)}
-                >
-                  <Trash2 className="w-4 h-4" />
-                </Button>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  );
+    );
+  };
 
   return (
     <>
