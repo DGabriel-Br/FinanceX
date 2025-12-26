@@ -243,8 +243,8 @@ export default function Auth() {
 
   return (
     <>
-      {/* Desktop Version */}
-      <div className="hidden md:flex min-h-screen bg-gradient-to-br from-sidebar via-[hsl(220,50%,15%)] to-primary/30 relative overflow-hidden">
+      {/* Auth Form */}
+      <div className="flex min-h-screen bg-gradient-to-br from-sidebar via-[hsl(220,50%,15%)] to-primary/30 relative overflow-hidden">
         {/* Floating Particles */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
           {particles.map((particle) => (
@@ -579,12 +579,6 @@ export default function Auth() {
         </div>
       </div>
 
-      {/* Mobile Version - This will never be shown due to MobileGuard, but kept for safety */}
-      <div className="md:hidden min-h-screen flex flex-col bg-sidebar">
-        <div className="flex-1 flex items-center justify-center">
-          <p className="text-white/50">Acesse pelo aplicativo</p>
-        </div>
-      </div>
     </>
   );
 }
