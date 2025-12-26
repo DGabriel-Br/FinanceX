@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, CalendarIcon } from 'lucide-react';
+import { Plus, CalendarIcon, AlertCircle } from 'lucide-react';
 import { 
   TransactionType, 
   TransactionCategory, 
@@ -18,6 +18,8 @@ import { Button } from '@/components/ui/button';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { formatCurrencyInput, parseCurrency } from '@/lib/currency';
+import { transactionSchema, getFieldError } from '@/lib/validations/finance';
+import { z } from 'zod';
 
 interface TransactionFormProps {
   onSubmit: (transaction: {
@@ -39,6 +41,8 @@ export const TransactionForm = ({ onSubmit }: TransactionFormProps) => {
   const [description, setDescription] = useState('');
   const [value, setValue] = useState('');
   const [calendarOpen, setCalendarOpen] = useState(false);
+  const [errors, setErrors] = useState<z.ZodError | null>(null);
+  const [touched, setTouched] = useState<Record<string, boolean>>({});
 
   // Atualizar categoria quando tipo mudar
   useEffect(() => {
@@ -61,32 +65,62 @@ export const TransactionForm = ({ onSubmit }: TransactionFormProps) => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleBlur = (field: string) => {
+    setTouched(prev => ({ ...prev, [field]: true }));
+  };
 
-    const numericValue = parseCurrency(value);
-    
-    // Validação básica
-    if (!description.trim() || numericValue <= 0) {
-      return;
-    }
-
-    onSubmit({
+  const validateForm = () => {
+    const formData = {
       type,
       category,
       date: getLocalDateString(selectedDate),
       description: description.trim(),
-      value: numericValue,
+      value: parseCurrency(value),
+    };
+
+    const result = transactionSchema.safeParse(formData);
+    
+    if (!result.success) {
+      setErrors(result.error);
+      return null;
+    }
+    
+    setErrors(null);
+    return result.data;
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // Marcar todos os campos como tocados
+    setTouched({
+      description: true,
+      value: true,
+    });
+
+    const validatedData = validateForm();
+    if (!validatedData) return;
+
+    onSubmit({
+      type: validatedData.type as TransactionType,
+      category: validatedData.category as TransactionCategory,
+      date: validatedData.date,
+      description: validatedData.description,
+      value: validatedData.value,
     });
 
     // Limpar formulário
     setDescription('');
     setValue('');
+    setErrors(null);
+    setTouched({});
   };
 
-  const numericValue = parseCurrency(value);
   const currentCategories = type === 'receita' ? incomeCategories : expenseCategories;
   const categoryLabels = type === 'receita' ? incomeCategoryLabels : expenseCategoryLabels;
+
+  const descriptionError = touched.description ? getFieldError(errors, 'description') : undefined;
+  const valueError = touched.value ? getFieldError(errors, 'value') : undefined;
 
   return (
     <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
@@ -190,9 +224,19 @@ export const TransactionForm = ({ onSubmit }: TransactionFormProps) => {
             type="text"
             value={description}
             onChange={e => setDescription(e.target.value)}
+            onBlur={() => handleBlur('description')}
             placeholder="Ex: Salário, Aluguel, Mercado..."
-            className="w-full px-3 py-2 rounded-lg border border-input bg-background text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+            className={cn(
+              "w-full px-3 py-2 rounded-lg border bg-background text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring",
+              descriptionError ? "border-expense" : "border-input"
+            )}
           />
+          {descriptionError && (
+            <p className="mt-1 text-xs text-expense flex items-center gap-1">
+              <AlertCircle className="w-3 h-3" />
+              {descriptionError}
+            </p>
+          )}
         </div>
 
         {/* Valor */}
@@ -203,16 +247,25 @@ export const TransactionForm = ({ onSubmit }: TransactionFormProps) => {
             inputMode="numeric"
             value={value}
             onChange={handleValueChange}
+            onBlur={() => handleBlur('value')}
             placeholder="0,00"
-            className="w-full px-3 py-2 rounded-lg border border-input bg-background text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+            className={cn(
+              "w-full px-3 py-2 rounded-lg border bg-background text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring",
+              valueError ? "border-expense" : "border-input"
+            )}
           />
+          {valueError && (
+            <p className="mt-1 text-xs text-expense flex items-center gap-1">
+              <AlertCircle className="w-3 h-3" />
+              {valueError}
+            </p>
+          )}
         </div>
 
         {/* Botão */}
         <button
           type="submit"
-          disabled={!description.trim() || numericValue <= 0}
-          className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-lg bg-primary text-primary-foreground font-medium text-sm transition-all duration-200 hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-lg bg-primary text-primary-foreground font-medium text-sm transition-all duration-200 hover:bg-primary/90"
         >
           <Plus className="w-4 h-4" />
           Adicionar
