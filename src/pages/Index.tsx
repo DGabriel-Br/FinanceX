@@ -150,6 +150,7 @@ const Index = () => {
           onToggleTheme={toggleTheme}
           userName={user.user_metadata?.full_name}
           userEmail={user.email}
+          userAvatar={user.user_metadata?.avatar_url}
           onSignOut={handleSignOutRequest}
         />
 

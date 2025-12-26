@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, User, Lock, Eye, EyeOff, Loader2, Mail, Shield, Check } from 'lucide-react';
+import { ArrowLeft, User, Lock, Eye, EyeOff, Loader2, Mail, Shield, Check, Camera, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -15,6 +15,11 @@ export default function Settings() {
   const navigate = useNavigate();
   const { toast } = useToast();
   const { user, loading, refreshUser } = useAuthContext();
+  
+  // Estado para avatar
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   
   // Estado para nome
   const [name, setName] = useState('');
@@ -33,6 +38,9 @@ export default function Settings() {
     if (user?.user_metadata?.full_name) {
       setName(user.user_metadata.full_name);
     }
+    if (user?.user_metadata?.avatar_url) {
+      setAvatarUrl(user.user_metadata.avatar_url);
+    }
   }, [user]);
 
   useEffect(() => {
@@ -40,6 +48,105 @@ export default function Settings() {
       navigate('/auth');
     }
   }, [user, loading, navigate]);
+
+  const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file || !user) return;
+
+    // Validate file type
+    if (!file.type.startsWith('image/')) {
+      toast({
+        title: "Arquivo inválido",
+        description: "Por favor, selecione uma imagem.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Validate file size (max 2MB)
+    if (file.size > 2 * 1024 * 1024) {
+      toast({
+        title: "Arquivo muito grande",
+        description: "A imagem deve ter no máximo 2MB.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsUploadingAvatar(true);
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${user.id}/avatar.${fileExt}`;
+
+      // Upload file to storage
+      const { error: uploadError } = await supabase.storage
+        .from('avatars')
+        .upload(fileName, file, { upsert: true });
+
+      if (uploadError) throw uploadError;
+
+      // Get public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(fileName);
+
+      // Add cache buster to URL
+      const urlWithCacheBuster = `${publicUrl}?t=${Date.now()}`;
+
+      // Update user metadata
+      const { error: updateError } = await supabase.auth.updateUser({
+        data: { avatar_url: urlWithCacheBuster }
+      });
+
+      if (updateError) throw updateError;
+
+      setAvatarUrl(urlWithCacheBuster);
+      await refreshUser();
+
+      toast({
+        title: "Avatar atualizado",
+        description: "Sua foto de perfil foi atualizada com sucesso.",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Erro ao fazer upload",
+        description: error.message || "Ocorreu um erro ao atualizar o avatar.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsUploadingAvatar(false);
+    }
+  };
+
+  const handleRemoveAvatar = async () => {
+    if (!user) return;
+
+    setIsUploadingAvatar(true);
+    try {
+      // Remove from user metadata
+      const { error: updateError } = await supabase.auth.updateUser({
+        data: { avatar_url: null }
+      });
+
+      if (updateError) throw updateError;
+
+      setAvatarUrl(null);
+      await refreshUser();
+
+      toast({
+        title: "Avatar removido",
+        description: "Sua foto de perfil foi removida.",
+      });
+    } catch (error: any) {
+      toast({
+        title: "Erro ao remover avatar",
+        description: error.message || "Ocorreu um erro ao remover o avatar.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsUploadingAvatar(false);
+    }
+  };
 
   // Password strength calculation
   const calculatePasswordStrength = (password: string) => {
@@ -206,6 +313,84 @@ export default function Settings() {
 
       {/* Content */}
       <main className="px-4 py-6 space-y-6 max-w-2xl mx-auto pb-24">
+        {/* Card de Avatar */}
+        <Card className="border-border/50 shadow-sm overflow-hidden">
+          <CardHeader className="bg-gradient-to-r from-primary/10 to-transparent border-b border-border/30">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center">
+                <Camera className="w-5 h-5 text-primary" />
+              </div>
+              <div>
+                <CardTitle className="text-lg">Foto de Perfil</CardTitle>
+                <CardDescription>
+                  Personalize sua conta com uma foto
+                </CardDescription>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="p-4">
+            <div className="flex items-center gap-6">
+              {/* Avatar Preview */}
+              <div className="relative">
+                <div className="w-24 h-24 rounded-full bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center overflow-hidden ring-4 ring-primary/20">
+                  {avatarUrl ? (
+                    <img 
+                      src={avatarUrl} 
+                      alt="Avatar" 
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <User className="w-10 h-10 text-primary" />
+                  )}
+                </div>
+                {isUploadingAvatar && (
+                  <div className="absolute inset-0 bg-background/80 rounded-full flex items-center justify-center">
+                    <Loader2 className="w-6 h-6 animate-spin text-primary" />
+                  </div>
+                )}
+              </div>
+
+              {/* Upload Controls */}
+              <div className="flex-1 space-y-3">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleAvatarUpload}
+                  className="hidden"
+                />
+                <div className="flex flex-wrap gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={isUploadingAvatar}
+                    className="gap-2"
+                  >
+                    <Camera className="w-4 h-4" />
+                    {avatarUrl ? 'Alterar foto' : 'Escolher foto'}
+                  </Button>
+                  {avatarUrl && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={handleRemoveAvatar}
+                      disabled={isUploadingAvatar}
+                      className="gap-2 text-destructive hover:text-destructive hover:bg-destructive/10"
+                    >
+                      <X className="w-4 h-4" />
+                      Remover
+                    </Button>
+                  )}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  JPG, PNG ou GIF. Máximo 2MB.
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Card de Nome */}
         <Card className="border-border/50 shadow-sm overflow-hidden">
           <CardHeader className="bg-gradient-to-r from-blue-500/10 to-transparent border-b border-border/30">

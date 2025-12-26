@@ -14,6 +14,7 @@ export interface SidebarProps {
   onToggleTheme: () => void;
   userName?: string;
   userEmail?: string;
+  userAvatar?: string | null;
   onSignOut?: () => void;
 }
 
@@ -32,6 +33,7 @@ export const Sidebar = ({
   onToggleTheme,
   userName,
   userEmail,
+  userAvatar,
   onSignOut
 }: SidebarProps) => {
   return (
@@ -109,8 +111,12 @@ export const Sidebar = ({
             )}
           >
             <div className="relative flex-shrink-0">
-              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center ring-2 ring-primary/20">
-                <User className="w-4 h-4 text-primary" />
+              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center ring-2 ring-primary/20 overflow-hidden">
+                {userAvatar ? (
+                  <img src={userAvatar} alt="Avatar" className="w-full h-full object-cover" />
+                ) : (
+                  <User className="w-4 h-4 text-primary" />
+                )}
               </div>
               <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-income rounded-full border-2 border-sidebar" title="Online" />
             </div>
