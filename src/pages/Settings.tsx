@@ -258,11 +258,6 @@ export default function Settings() {
 
         <Separator />
 
-        {/* Category Manager */}
-        <CategoryManager />
-
-        <Separator />
-
         {/* Card de Senha */}
         <Card>
           <CardHeader>
@@ -354,6 +349,11 @@ export default function Settings() {
             </Button>
           </CardContent>
         </Card>
+
+        <Separator />
+
+        {/* Category Manager */}
+        <CategoryManager />
 
         {/* Info do Email */}
         <Card className="bg-muted/50">
