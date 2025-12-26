@@ -17,23 +17,32 @@ export interface HiddenDefaultCategory {
   type: 'receita' | 'despesa';
 }
 
+export interface CategoryOrder {
+  id: string;
+  category_key: string;
+  type: 'receita' | 'despesa';
+  position: number;
+}
+
 export function useCustomCategories() {
   const { user } = useAuthContext();
   const { toast } = useToast();
   const [categories, setCategories] = useState<CustomCategory[]>([]);
   const [hiddenDefaults, setHiddenDefaults] = useState<HiddenDefaultCategory[]>([]);
+  const [categoryOrder, setCategoryOrder] = useState<CategoryOrder[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchCategories = useCallback(async () => {
     if (!user) {
       setCategories([]);
       setHiddenDefaults([]);
+      setCategoryOrder([]);
       setLoading(false);
       return;
     }
 
     try {
-      const [categoriesResult, hiddenResult] = await Promise.all([
+      const [categoriesResult, hiddenResult, orderResult] = await Promise.all([
         supabase
           .from('custom_categories')
           .select('*')
@@ -42,14 +51,20 @@ export function useCustomCategories() {
         supabase
           .from('hidden_default_categories')
           .select('*')
+          .eq('user_id', user.id),
+        supabase
+          .from('category_order')
+          .select('*')
           .eq('user_id', user.id)
       ]);
 
       if (categoriesResult.error) throw categoriesResult.error;
       if (hiddenResult.error) throw hiddenResult.error;
+      if (orderResult.error) throw orderResult.error;
       
       setCategories((categoriesResult.data || []) as CustomCategory[]);
       setHiddenDefaults((hiddenResult.data || []) as HiddenDefaultCategory[]);
+      setCategoryOrder((orderResult.data || []) as CategoryOrder[]);
     } catch (error: any) {
       console.error('Error fetching categories:', error);
     } finally {
@@ -303,9 +318,103 @@ export function useCustomCategories() {
     return allDefaults.filter(([key]) => isDefaultHidden(key, type));
   };
 
+  const getCategoryPosition = (categoryKey: string, type: 'receita' | 'despesa') => {
+    const order = categoryOrder.find(o => o.category_key === categoryKey && o.type === type);
+    return order?.position ?? Infinity;
+  };
+
+  const updateCategoryOrder = async (orderedKeys: string[], type: 'receita' | 'despesa') => {
+    if (!user) return false;
+
+    try {
+      // Delete existing order for this type
+      await supabase
+        .from('category_order')
+        .delete()
+        .eq('user_id', user.id)
+        .eq('type', type);
+
+      // Insert new order
+      const newOrder = orderedKeys.map((key, index) => ({
+        user_id: user.id,
+        category_key: key,
+        type,
+        position: index,
+      }));
+
+      if (newOrder.length > 0) {
+        const { error } = await supabase
+          .from('category_order')
+          .insert(newOrder);
+
+        if (error) throw error;
+      }
+
+      // Update local state
+      setCategoryOrder(prev => {
+        const otherType = prev.filter(o => o.type !== type);
+        const newTypeOrder = orderedKeys.map((key, index) => ({
+          id: crypto.randomUUID(),
+          category_key: key,
+          type,
+          position: index,
+        }));
+        return [...otherType, ...newTypeOrder];
+      });
+
+      return true;
+    } catch (error: any) {
+      console.error('Error updating category order:', error);
+      toast({
+        title: 'Erro ao reordenar',
+        description: error.message || 'Ocorreu um erro ao salvar a ordem.',
+        variant: 'destructive',
+      });
+      return false;
+    }
+  };
+
+  const getSortedCategories = (
+    type: 'receita' | 'despesa',
+    visibleDefaults: [string, string][],
+    customCats: CustomCategory[]
+  ) => {
+    const allCategories: Array<{ 
+      id: string; 
+      name: string; 
+      isDefault: boolean; 
+      key: string;
+    }> = [
+      ...visibleDefaults.map(([key, label]) => ({ 
+        id: key, 
+        name: label, 
+        isDefault: true, 
+        key 
+      })),
+      ...customCats.map(cat => ({ 
+        id: cat.id, 
+        name: cat.name, 
+        isDefault: false,
+        key: `custom_${cat.id}`
+      }))
+    ];
+
+    // Sort by saved order, then alphabetically for new items
+    return allCategories.sort((a, b) => {
+      const posA = getCategoryPosition(a.key, type);
+      const posB = getCategoryPosition(b.key, type);
+      
+      if (posA === Infinity && posB === Infinity) {
+        return a.name.localeCompare(b.name);
+      }
+      return posA - posB;
+    });
+  };
+
   return {
     categories,
     hiddenDefaults,
+    categoryOrder,
     loading,
     addCategory,
     updateCategory,
@@ -316,6 +425,9 @@ export function useCustomCategories() {
     restoreDefaultCategory,
     getVisibleDefaultCategories,
     getHiddenDefaultCategories,
+    getCategoryPosition,
+    updateCategoryOrder,
+    getSortedCategories,
     refetch: fetchCategories,
   };
 }

@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { Plus, Pencil, Trash2, Tag, Loader2, RotateCcw, EyeOff } from 'lucide-react';
+import { useState, useMemo } from 'react';
+import { Plus, Pencil, Trash2, Tag, Loader2, RotateCcw, EyeOff, GripVertical } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -28,8 +28,112 @@ import {
   CollapsibleContent,
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
+import {
+  DndContext,
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  useSensor,
+  useSensors,
+  DragEndEvent,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import { useCustomCategories, CustomCategory } from '@/hooks/useCustomCategories';
 import { incomeCategoryLabels, expenseCategoryLabels } from '@/types/transaction';
+
+interface SortableCategoryItem {
+  id: string;
+  name: string;
+  isDefault: boolean;
+  key: string;
+}
+
+function SortableCategoryRow({
+  category,
+  type,
+  onEdit,
+  onDelete,
+  onHide,
+}: {
+  category: SortableCategoryItem;
+  type: 'receita' | 'despesa';
+  onEdit: (category: CustomCategory) => void;
+  onDelete: (category: CustomCategory) => void;
+  onHide: (key: string, label: string, type: 'receita' | 'despesa') => void;
+}) {
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: category.id });
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+    opacity: isDragging ? 0.5 : 1,
+  };
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={style}
+      className="flex items-center justify-between px-3 py-2 bg-muted/50 rounded-lg"
+    >
+      <div className="flex items-center gap-2">
+        <button
+          {...attributes}
+          {...listeners}
+          className="cursor-grab active:cursor-grabbing touch-none text-muted-foreground hover:text-foreground"
+        >
+          <GripVertical className="w-4 h-4" />
+        </button>
+        <span className="text-sm">{category.name}</span>
+      </div>
+      <div className="flex gap-1">
+        {category.isDefault ? (
+          <Button
+            size="icon"
+            variant="ghost"
+            className="h-8 w-8 text-muted-foreground hover:text-destructive"
+            onClick={() => onHide(category.key, category.name, type)}
+            title="Ocultar categoria"
+          >
+            <EyeOff className="w-4 h-4" />
+          </Button>
+        ) : (
+          <>
+            <Button
+              size="icon"
+              variant="ghost"
+              className="h-8 w-8"
+              onClick={() => onEdit({ id: category.id, name: category.name, type, icon: 'tag', created_at: '' })}
+            >
+              <Pencil className="w-4 h-4" />
+            </Button>
+            <Button
+              size="icon"
+              variant="ghost"
+              className="h-8 w-8 text-destructive hover:text-destructive"
+              onClick={() => onDelete({ id: category.id, name: category.name, type, icon: 'tag', created_at: '' })}
+            >
+              <Trash2 className="w-4 h-4" />
+            </Button>
+          </>
+        )}
+      </div>
+    </div>
+  );
+}
 
 export function CategoryManager() {
   const { 
@@ -42,6 +146,8 @@ export function CategoryManager() {
     restoreDefaultCategory,
     getVisibleDefaultCategories,
     getHiddenDefaultCategories,
+    getSortedCategories,
+    updateCategoryOrder,
   } = useCustomCategories();
   
   const [activeTab, setActiveTab] = useState<'receita' | 'despesa'>('receita');
@@ -61,6 +167,18 @@ export function CategoryManager() {
   
   // Collapsible states
   const [isHiddenOpen, setIsHiddenOpen] = useState(false);
+
+  // DnD sensors
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 8,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   const handleAdd = async () => {
     if (!newCategoryName.trim()) return;
@@ -140,6 +258,17 @@ export function CategoryManager() {
   const customIncomeCategories = getCategoriesByType('receita');
   const customExpenseCategories = getCategoriesByType('despesa');
 
+  // Memoized sorted categories
+  const sortedIncomeCategories = useMemo(
+    () => getSortedCategories('receita', visibleIncomeDefaults, customIncomeCategories),
+    [getSortedCategories, visibleIncomeDefaults, customIncomeCategories]
+  );
+
+  const sortedExpenseCategories = useMemo(
+    () => getSortedCategories('despesa', visibleExpenseDefaults, customExpenseCategories),
+    [getSortedCategories, visibleExpenseDefaults, customExpenseCategories]
+  );
+
   if (loading) {
     return (
       <Card>
@@ -150,132 +279,104 @@ export function CategoryManager() {
     );
   }
 
+  const handleDragEnd = async (event: DragEndEvent, type: 'receita' | 'despesa', categories: SortableCategoryItem[]) => {
+    const { active, over } = event;
+    
+    if (!over || active.id === over.id) return;
+
+    const oldIndex = categories.findIndex((cat) => cat.id === active.id);
+    const newIndex = categories.findIndex((cat) => cat.id === over.id);
+    
+    const newOrder = arrayMove(categories, oldIndex, newIndex);
+    const orderedKeys = newOrder.map((cat) => cat.key);
+    
+    await updateCategoryOrder(orderedKeys, type);
+  };
+
   const renderCategoryList = (
     type: 'receita' | 'despesa',
-    visibleDefaults: [string, string][],
-    hiddenDefaults: [string, string][],
-    customCategories: CustomCategory[]
-  ) => {
-    // Combine all visible categories (default + custom)
-    const allCategories: Array<{ 
-      id: string; 
-      name: string; 
-      isDefault: boolean; 
-      key?: string;
-    }> = [
-      ...visibleDefaults.map(([key, label]) => ({ 
-        id: key, 
-        name: label, 
-        isDefault: true, 
-        key 
-      })),
-      ...customCategories.map(cat => ({ 
-        id: cat.id, 
-        name: cat.name, 
-        isDefault: false 
-      }))
-    ].sort((a, b) => a.name.localeCompare(b.name));
+    sortedCategories: SortableCategoryItem[],
+    hiddenDefaults: [string, string][]
+  ) => (
+    <div className="space-y-4">
+      {/* Add button */}
+      <div className="flex justify-end">
+        <Button
+          size="sm"
+          onClick={() => {
+            setNewCategoryName('');
+            setIsAddDialogOpen(true);
+          }}
+        >
+          <Plus className="w-4 h-4 mr-1" />
+          Adicionar
+        </Button>
+      </div>
 
-    return (
-      <div className="space-y-4">
-        {/* Add button */}
-        <div className="flex justify-end">
-          <Button
-            size="sm"
-            onClick={() => {
-              setNewCategoryName('');
-              setIsAddDialogOpen(true);
-            }}
+      {/* All Categories (unified list with drag and drop) */}
+      {sortedCategories.length === 0 ? (
+        <p className="text-sm text-muted-foreground text-center py-4">
+          Nenhuma categoria de {type === 'receita' ? 'receita' : 'despesa'}
+        </p>
+      ) : (
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={(event) => handleDragEnd(event, type, sortedCategories)}
+        >
+          <SortableContext
+            items={sortedCategories.map((c) => c.id)}
+            strategy={verticalListSortingStrategy}
           >
-            <Plus className="w-4 h-4 mr-1" />
-            Adicionar
-          </Button>
-        </div>
+            <div className="grid gap-2">
+              {sortedCategories.map((category) => (
+                <SortableCategoryRow
+                  key={category.id}
+                  category={category}
+                  type={type}
+                  onEdit={openEditDialog}
+                  onDelete={openDeleteDialog}
+                  onHide={openHideDefaultDialog}
+                />
+              ))}
+            </div>
+          </SortableContext>
+        </DndContext>
+      )}
 
-        {/* All Categories (unified list) */}
-        {allCategories.length === 0 ? (
-          <p className="text-sm text-muted-foreground text-center py-4">
-            Nenhuma categoria de {type === 'receita' ? 'receita' : 'despesa'}
-          </p>
-        ) : (
-          <div className="grid gap-2">
-            {allCategories.map((category) => (
+      {/* Hidden Default Categories (Collapsible) */}
+      {hiddenDefaults.length > 0 && (
+        <Collapsible open={isHiddenOpen} onOpenChange={setIsHiddenOpen}>
+          <CollapsibleTrigger asChild>
+            <Button variant="ghost" size="sm" className="w-full justify-start text-muted-foreground">
+              <RotateCcw className="w-4 h-4 mr-2" />
+              {hiddenDefaults.length} categoria{hiddenDefaults.length > 1 ? 's' : ''} oculta{hiddenDefaults.length > 1 ? 's' : ''}
+            </Button>
+          </CollapsibleTrigger>
+          <CollapsibleContent className="space-y-2 mt-2">
+            {hiddenDefaults.map(([key, label]) => (
               <div
-                key={category.id}
-                className="flex items-center justify-between px-3 py-2 bg-muted/50 rounded-lg"
+                key={key}
+                className="flex items-center justify-between px-3 py-2 bg-muted/30 rounded-lg opacity-60"
               >
-                <span className="text-sm">{category.name}</span>
-                <div className="flex gap-1">
-                  {category.isDefault ? (
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      className="h-8 w-8 text-muted-foreground hover:text-destructive"
-                      onClick={() => openHideDefaultDialog(category.key!, category.name, type)}
-                      title="Ocultar categoria"
-                    >
-                      <EyeOff className="w-4 h-4" />
-                    </Button>
-                  ) : (
-                    <>
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        className="h-8 w-8"
-                        onClick={() => openEditDialog({ id: category.id, name: category.name, type, icon: 'tag', created_at: '' })}
-                      >
-                        <Pencil className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        size="icon"
-                        variant="ghost"
-                        className="h-8 w-8 text-destructive hover:text-destructive"
-                        onClick={() => openDeleteDialog({ id: category.id, name: category.name, type, icon: 'tag', created_at: '' })}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </>
-                  )}
-                </div>
+                <span className="text-sm line-through">{label}</span>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="h-8 text-xs"
+                  onClick={() => handleRestoreDefault(key, type)}
+                  disabled={isSubmitting}
+                >
+                  <RotateCcw className="w-3 h-3 mr-1" />
+                  Restaurar
+                </Button>
               </div>
             ))}
-          </div>
-        )}
-
-        {/* Hidden Default Categories (Collapsible) */}
-        {hiddenDefaults.length > 0 && (
-          <Collapsible open={isHiddenOpen} onOpenChange={setIsHiddenOpen}>
-            <CollapsibleTrigger asChild>
-              <Button variant="ghost" size="sm" className="w-full justify-start text-muted-foreground">
-                <RotateCcw className="w-4 h-4 mr-2" />
-                {hiddenDefaults.length} categoria{hiddenDefaults.length > 1 ? 's' : ''} oculta{hiddenDefaults.length > 1 ? 's' : ''}
-              </Button>
-            </CollapsibleTrigger>
-            <CollapsibleContent className="space-y-2 mt-2">
-              {hiddenDefaults.map(([key, label]) => (
-                <div
-                  key={key}
-                  className="flex items-center justify-between px-3 py-2 bg-muted/30 rounded-lg opacity-60"
-                >
-                  <span className="text-sm line-through">{label}</span>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    className="h-8 text-xs"
-                    onClick={() => handleRestoreDefault(key, type)}
-                    disabled={isSubmitting}
-                  >
-                    <RotateCcw className="w-3 h-3 mr-1" />
-                    Restaurar
-                  </Button>
-                </div>
-              ))}
-            </CollapsibleContent>
-          </Collapsible>
-        )}
-      </div>
-    );
-  };
+          </CollapsibleContent>
+        </Collapsible>
+      )}
+    </div>
+  );
 
   return (
     <>
@@ -286,7 +387,7 @@ export function CategoryManager() {
             Gerenciar Categorias
           </CardTitle>
           <CardDescription>
-            Adicione, edite ou oculte categorias
+            Adicione, edite ou arraste para reordenar
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -297,11 +398,11 @@ export function CategoryManager() {
             </TabsList>
 
             <TabsContent value="receita">
-              {renderCategoryList('receita', visibleIncomeDefaults, hiddenIncomeDefaults, customIncomeCategories)}
+              {renderCategoryList('receita', sortedIncomeCategories, hiddenIncomeDefaults)}
             </TabsContent>
 
             <TabsContent value="despesa">
-              {renderCategoryList('despesa', visibleExpenseDefaults, hiddenExpenseDefaults, customExpenseCategories)}
+              {renderCategoryList('despesa', sortedExpenseCategories, hiddenExpenseDefaults)}
             </TabsContent>
           </Tabs>
         </CardContent>

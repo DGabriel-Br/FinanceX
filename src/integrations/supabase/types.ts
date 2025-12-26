@@ -14,6 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      category_order: {
+        Row: {
+          category_key: string
+          created_at: string
+          id: string
+          position: number
+          type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category_key: string
+          created_at?: string
+          id?: string
+          position?: number
+          type: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category_key?: string
+          created_at?: string
+          id?: string
+          position?: number
+          type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       custom_categories: {
         Row: {
           created_at: string
