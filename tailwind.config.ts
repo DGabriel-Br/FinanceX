@@ -63,6 +63,7 @@ export default {
         // Cores financeiras
         income: "hsl(var(--income))",
         expense: "hsl(var(--expense))",
+        success: "hsl(var(--income))", // Alias para income (verde)
         // Mobile header
         "mobile-header": {
           DEFAULT: "hsl(var(--mobile-header))",
