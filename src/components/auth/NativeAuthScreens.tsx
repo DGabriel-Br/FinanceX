@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, forwardRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { PasswordStrengthMeter } from '@/components/ui/PasswordStrengthMeter';
@@ -15,6 +15,39 @@ const passwordSchema = z.string()
   .regex(/[A-Z]/, 'Deve conter pelo menos uma letra maiúscula')
   .regex(/[a-z]/, 'Deve conter pelo menos uma letra minúscula')
   .regex(/[0-9]/, 'Deve conter pelo menos um número');
+
+interface FloatingParticleProps {
+  delay: number;
+  duration: number;
+  size: number;
+  startX: number;
+  startY: number;
+  color: string;
+}
+
+// Floating particle component - moved outside to avoid ref warnings
+const FloatingParticle = forwardRef<HTMLDivElement, FloatingParticleProps>(
+  ({ delay, duration, size, startX, startY, color }, ref) => {
+    return (
+      <div
+        ref={ref}
+        className={cn(
+          "absolute rounded-full pointer-events-none",
+          color
+        )}
+        style={{
+          width: size,
+          height: size,
+          left: `${startX}%`,
+          top: `${startY}%`,
+          animation: `float-particle ${duration}s ease-in-out ${delay}s infinite`,
+        }}
+      />
+    );
+  }
+);
+
+FloatingParticle.displayName = "FloatingParticle";
 
 type Screen = 'welcome' | 'login' | 'register';
 
@@ -190,39 +223,6 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onSuccess }: NativeAuthS
       animation: shake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
     }
   `;
-
-  // Floating particle component - igual ao web
-  const FloatingParticle = ({ 
-    delay, 
-    duration, 
-    size, 
-    startX, 
-    startY,
-    color 
-  }: { 
-    delay: number; 
-    duration: number; 
-    size: number; 
-    startX: number; 
-    startY: number;
-    color: string;
-  }) => {
-    return (
-      <div
-        className={cn(
-          "absolute rounded-full pointer-events-none",
-          color
-        )}
-        style={{
-          width: size,
-          height: size,
-          left: `${startX}%`,
-          top: `${startY}%`,
-          animation: `float-particle ${duration}s ease-in-out ${delay}s infinite`,
-        }}
-      />
-    );
-  };
 
   // Generate random particles - igual ao web
   const particles = useMemo(() => {
