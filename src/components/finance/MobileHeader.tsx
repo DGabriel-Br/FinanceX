@@ -29,12 +29,12 @@ const getInitials = (name?: string, email?: string): string => {
   return 'US';
 };
 
-// Função para extrair nome e sobrenome
+// Função para extrair primeiro e segundo nome
 const getDisplayName = (name?: string, email?: string): string => {
   if (name) {
     const parts = name.split(' ');
     if (parts.length >= 2) {
-      return `${parts[0]} ${parts[parts.length - 1]}`;
+      return `${parts[0]} ${parts[1]}`;
     }
     return parts[0];
   }
