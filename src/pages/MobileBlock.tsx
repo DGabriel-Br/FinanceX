@@ -194,8 +194,10 @@ export default function MobileBlock() {
             </span>
             <br />
             <span 
-              className="bg-clip-text text-transparent animate-pulse"
-              style={{ backgroundImage: 'linear-gradient(to right, #06b6d4, #22d3ee, #4ade80)' }}
+              className="bg-clip-text text-transparent animate-pulse font-extrabold"
+              style={{ 
+                backgroundImage: 'linear-gradient(135deg, #06b6d4 0%, #22d3ee 50%, #4ade80 100%)',
+              }}
             >
               completa
             </span>
