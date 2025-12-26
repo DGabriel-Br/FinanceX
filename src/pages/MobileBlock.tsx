@@ -173,7 +173,7 @@ export default function MobileBlock() {
           <div className="relative flex items-end">
             <FinanceLogo size={28} className="mb-0.5" />
             <span 
-              className="text-2xl font-black tracking-tight text-white -ml-1"
+              className="text-2xl font-black tracking-wide text-white -ml-1"
               style={{ fontFamily: "'Orbitron', sans-serif" }}
             >
               inanceX
