@@ -364,7 +364,7 @@ export default function Auth() {
             {/* Text with slide-in animation */}
             <span 
               className={cn(
-                "text-xl font-black tracking-tight text-white -ml-1 relative transition-all duration-700 delay-400 ease-out",
+                "text-xl font-black tracking-wide text-white -ml-1 relative transition-all duration-700 delay-400 ease-out",
                 mounted ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-4"
               )}
               style={{ fontFamily: "'Orbitron', sans-serif" }}
