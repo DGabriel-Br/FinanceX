@@ -10,6 +10,8 @@ import { useDebts } from '@/hooks/useDebts';
 import { useTheme } from '@/hooks/useTheme';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { useValuesVisibility } from '@/hooks/useValuesVisibility';
+import { useOnboarding } from '@/hooks/useOnboarding';
+import { OnboardingTour } from '@/components/onboarding/OnboardingTour';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -43,6 +45,7 @@ const Index = () => {
   const { theme, toggleTheme } = useTheme();
   const { user, loading: authLoading, signOut } = useAuthContext();
   const { showValues, toggleValuesVisibility, formatValue } = useValuesVisibility();
+  const { showTour, completeTour, skipTour } = useOnboarding(user?.id);
 
   // IMPORTANTE: Todos os hooks devem ser chamados antes de qualquer early return
   const {
@@ -210,6 +213,14 @@ const Index = () => {
           </div>
         </main>
       </div>
+
+      {/* Tour de onboarding para novos usuários */}
+      {showTour && (
+        <OnboardingTour 
+          onComplete={completeTour} 
+          onSkip={skipTour} 
+        />
+      )}
 
       {/* Diálogo de confirmação de logout */}
       <AlertDialog open={showLogoutConfirm} onOpenChange={setShowLogoutConfirm}>
