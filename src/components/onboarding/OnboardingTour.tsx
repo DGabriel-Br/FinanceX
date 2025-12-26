@@ -43,18 +43,18 @@ const tourSteps: TourStep[] = [
     targetSelector: '[data-tour="transactions"]',
   },
   {
-    id: 'debts',
-    title: 'Dívidas',
-    description: 'Controle financiamentos e parcelamentos. Acompanhe o progresso de cada pagamento.',
-    icon: <CreditCard className="w-6 h-6" />,
-    targetSelector: '[data-tour="debts"]',
-  },
-  {
     id: 'investments',
     title: 'Investimentos',
     description: 'Monitore sua carteira por categoria: ações, renda fixa, cripto e mais.',
     icon: <TrendingUp className="w-6 h-6" />,
     targetSelector: '[data-tour="investments"]',
+  },
+  {
+    id: 'debts',
+    title: 'Dívidas',
+    description: 'Controle financiamentos e parcelamentos. Acompanhe o progresso de cada pagamento.',
+    icon: <CreditCard className="w-6 h-6" />,
+    targetSelector: '[data-tour="debts"]',
   },
   {
     id: 'complete',
