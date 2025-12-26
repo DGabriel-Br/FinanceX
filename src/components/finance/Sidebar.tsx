@@ -1,4 +1,4 @@
-import { LayoutDashboard, Receipt, ChevronLeft, ChevronRight, Moon, Sun, CreditCard, TrendingUp, LogOut, User } from 'lucide-react';
+import { LayoutDashboard, Receipt, ChevronLeft, ChevronRight, Moon, Sun, CreditCard, TrendingUp, LogOut, User, Settings } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { Switch } from '@/components/ui/switch';
@@ -98,13 +98,11 @@ export const Sidebar = ({
 
       {/* Footer com User e Theme Toggle */}
       <div className="p-3 mt-auto border-t border-sidebar-border space-y-2">
-        {/* User Info */}
+        {/* User Info - Only shows email, no navigation */}
         {userEmail && (
-          <Link
-            to="/settings"
-            title="Configurações do Perfil"
+          <div
             className={cn(
-              'flex items-center gap-3 px-3 py-2.5 rounded-lg bg-sidebar-accent/50 hover:bg-sidebar-accent transition-colors',
+              'flex items-center gap-3 px-3 py-2.5 rounded-lg bg-sidebar-accent/50',
               collapsed && 'justify-center px-0'
             )}
           >
@@ -116,8 +114,21 @@ export const Sidebar = ({
                 <p className="text-xs text-sidebar-foreground/60 truncate">{userEmail}</p>
               </div>
             )}
-          </Link>
+          </div>
         )}
+
+        {/* Settings Button */}
+        <Link
+          to="/settings"
+          title="Configurações"
+          className={cn(
+            'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
+            collapsed && 'justify-center px-0'
+          )}
+        >
+          <Settings className="w-5 h-5 flex-shrink-0" />
+          {!collapsed && <span>Configurações</span>}
+        </Link>
 
         {/* Theme Toggle */}
         <div
