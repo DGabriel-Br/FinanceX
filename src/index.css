@@ -112,10 +112,20 @@
 
   html {
     font-family: "Inter", system-ui, sans-serif;
+    background-color: hsl(var(--background));
   }
 
   body {
     @apply bg-background text-foreground antialiased;
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+  
+  /* Garante que o #root cubra toda a tela */
+  #root {
+    min-height: 100vh;
+    min-height: 100dvh;
+    background-color: hsl(var(--background));
   }
 
   /* Transição suave ao alternar tema - apenas elementos principais */
