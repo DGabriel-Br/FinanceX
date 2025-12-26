@@ -35,28 +35,31 @@ export const PasswordStrengthMeter = ({ password, className }: PasswordStrengthM
     <div className={cn("space-y-3", className)}>
       {/* Strength bar */}
       <div className="space-y-1.5">
+        <div className="flex items-center justify-between text-xs">
+          <span className="text-muted-foreground">Força da senha</span>
+          {strength.label && (
+            <span className={cn(
+              "font-medium transition-colors",
+              strength.level === 1 && "text-red-500",
+              strength.level === 2 && "text-orange-500",
+              strength.level === 3 && "text-yellow-500",
+              strength.level === 4 && "text-income"
+            )}>
+              {strength.label}
+            </span>
+          )}
+        </div>
         <div className="flex gap-1">
           {[1, 2, 3, 4].map((level) => (
             <div
               key={level}
               className={cn(
                 "h-1.5 flex-1 rounded-full transition-all duration-300",
-                level <= strength.level ? strength.color : "bg-white/10"
+                level <= strength.level ? strength.color : "bg-muted"
               )}
             />
           ))}
         </div>
-        {strength.label && (
-          <p className={cn(
-            "text-xs font-medium transition-colors",
-            strength.level === 1 && "text-red-400",
-            strength.level === 2 && "text-orange-400",
-            strength.level === 3 && "text-yellow-400",
-            strength.level === 4 && "text-income"
-          )}>
-            Força: {strength.label}
-          </p>
-        )}
       </div>
 
       {/* Criteria list */}
@@ -66,7 +69,7 @@ export const PasswordStrengthMeter = ({ password, className }: PasswordStrengthM
             key={index}
             className={cn(
               "flex items-center gap-1.5 text-xs transition-colors duration-200",
-              criterion.met ? "text-income" : "text-white/40"
+              criterion.met ? "text-income" : "text-muted-foreground"
             )}
           >
             {criterion.met ? (
