@@ -76,11 +76,15 @@ export default function MobileBlock() {
   const handleDownloadApp = () => {
     setIsDownloading(true);
     
-    // Simulate download animation
-    setTimeout(() => {
-      window.open('https://play.google.com/store', '_blank');
-      setTimeout(() => setIsDownloading(false), 500);
-    }, 1500);
+    // Create a link to download the APK directly
+    const link = document.createElement('a');
+    link.href = 'https://github.com/DGabriel-Br/hello-chat-buddy/releases/download/v1.0.0/app-debug.apk';
+    link.download = 'FinanceX.apk';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    setTimeout(() => setIsDownloading(false), 2000);
   };
 
   const features = [
