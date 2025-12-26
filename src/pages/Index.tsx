@@ -48,7 +48,7 @@ const Index = () => {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const { theme, toggleTheme } = useTheme();
-  const { user, loading: authLoading, signOut } = useAuthContext();
+  const { user, loading: authLoading, signOut, refreshUser } = useAuthContext();
   const { showValues, toggleValuesVisibility, formatValue } = useValuesVisibility();
   const { showTour, completeTour, skipTour } = useOnboarding(user?.id);
   const isNativeApp = useIsNativeApp();
@@ -100,10 +100,14 @@ const Index = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id]);
 
-  // Pull to refresh handler para mobile
+  // Pull to refresh handler para mobile - atualiza TODOS os dados
   const handlePullRefresh = useCallback(async () => {
-    await Promise.all([refetchTransactions(), refetchDebts()]);
-  }, [refetchTransactions, refetchDebts]);
+    await Promise.all([
+      refetchTransactions(),
+      refetchDebts(),
+      refreshUser(), // Atualiza dados do usuário (incluindo avatar)
+    ]);
+  }, [refetchTransactions, refetchDebts, refreshUser]);
 
   const handleSignOutRequest = () => {
     setShowLogoutConfirm(true);
