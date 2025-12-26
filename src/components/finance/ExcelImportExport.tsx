@@ -17,8 +17,7 @@ import { CustomCategory } from '@/hooks/useCustomCategories';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { Filesystem, Directory } from '@capacitor/filesystem';
-import { Share } from '@capacitor/share';
+import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
 
 interface ExcelImportExportProps {
   transactions: Transaction[];
@@ -156,29 +155,34 @@ export const ExcelImportExport = ({
         // Gerar o arquivo como base64
         const wbout = XLSX.write(workbook, { bookType: 'xlsx', type: 'base64' });
         
-        // Salvar o arquivo no dispositivo
-        const result = await Filesystem.writeFile({
-          path: fileName,
+        // Salvar o arquivo na pasta Downloads (ExternalStorage/Download)
+        await Filesystem.writeFile({
+          path: `Download/${fileName}`,
           data: wbout,
-          directory: Directory.Documents,
+          directory: Directory.ExternalStorage,
         });
 
-        // Compartilhar o arquivo (permite ao usuário escolher onde salvar/enviar)
-        await Share.share({
-          title: 'Exportar Lançamentos',
-          text: 'Lançamentos exportados do FinanceX',
-          url: result.uri,
-          dialogTitle: 'Salvar ou compartilhar arquivo',
+        toast.success(`Arquivo salvo em Downloads/${fileName}`, {
+          duration: 4000,
         });
-
-        toast.success(`Arquivo "${fileName}" exportado com sucesso!`);
       } catch (error: any) {
         console.error('Erro ao exportar no app nativo:', error);
-        // Se o usuário cancelou o compartilhamento, não mostrar erro
-        if (error?.message?.includes('cancel')) {
-          return;
+        
+        // Fallback: tentar salvar em Documents se ExternalStorage falhar
+        try {
+          const wbout = XLSX.write(workbook, { bookType: 'xlsx', type: 'base64' });
+          await Filesystem.writeFile({
+            path: fileName,
+            data: wbout,
+            directory: Directory.Documents,
+          });
+          toast.success(`Arquivo salvo em Documentos/${fileName}`, {
+            duration: 4000,
+          });
+        } catch (fallbackError) {
+          console.error('Erro no fallback:', fallbackError);
+          toast.error('Erro ao exportar arquivo. Verifique as permissões do app.');
         }
-        toast.error('Erro ao exportar arquivo. Tente novamente.');
       }
     } else {
       // Navegador web - usar método padrão
@@ -225,29 +229,34 @@ export const ExcelImportExport = ({
         // Gerar o arquivo como base64
         const wbout = XLSX.write(workbook, { bookType: 'xlsx', type: 'base64' });
         
-        // Salvar o arquivo no dispositivo
-        const result = await Filesystem.writeFile({
-          path: fileName,
+        // Salvar o arquivo na pasta Downloads (ExternalStorage/Download)
+        await Filesystem.writeFile({
+          path: `Download/${fileName}`,
           data: wbout,
-          directory: Directory.Documents,
+          directory: Directory.ExternalStorage,
         });
 
-        // Compartilhar o arquivo (permite ao usuário escolher onde salvar/enviar)
-        await Share.share({
-          title: 'Modelo de Lançamentos',
-          text: 'Modelo para importação de lançamentos no FinanceX',
-          url: result.uri,
-          dialogTitle: 'Salvar ou compartilhar arquivo',
+        toast.success(`Modelo salvo em Downloads/${fileName}`, {
+          duration: 4000,
         });
-
-        toast.success('Modelo baixado com sucesso!');
       } catch (error: any) {
         console.error('Erro ao baixar modelo no app nativo:', error);
-        // Se o usuário cancelou o compartilhamento, não mostrar erro
-        if (error?.message?.includes('cancel')) {
-          return;
+        
+        // Fallback: tentar salvar em Documents se ExternalStorage falhar
+        try {
+          const wbout = XLSX.write(workbook, { bookType: 'xlsx', type: 'base64' });
+          await Filesystem.writeFile({
+            path: fileName,
+            data: wbout,
+            directory: Directory.Documents,
+          });
+          toast.success(`Modelo salvo em Documentos/${fileName}`, {
+            duration: 4000,
+          });
+        } catch (fallbackError) {
+          console.error('Erro no fallback:', fallbackError);
+          toast.error('Erro ao baixar modelo. Verifique as permissões do app.');
         }
-        toast.error('Erro ao baixar modelo. Tente novamente.');
       }
     } else {
       // Navegador web - usar método padrão
