@@ -7,6 +7,7 @@ import { SyncIndicator } from './SyncIndicator';
 interface MobileHeaderProps {
   userName?: string;
   userEmail?: string;
+  userAvatar?: string;
   showValues?: boolean;
   onToggleValues?: () => void;
   theme?: 'light' | 'dark';
@@ -44,6 +45,7 @@ const getFirstName = (name?: string, email?: string): string => {
 export const MobileHeader = ({ 
   userName, 
   userEmail, 
+  userAvatar,
   showValues = true,
   onToggleValues,
   theme = 'light',
@@ -71,8 +73,16 @@ export const MobileHeader = ({
           <div className="flex items-center justify-between w-full">
             {/* Avatar e Nome */}
             <Link to="/settings" className="flex items-center gap-3 flex-1 min-w-0">
-              <div className="w-10 h-10 rounded-full bg-card flex items-center justify-center shadow-md flex-shrink-0">
-                <span className="text-sm font-bold text-foreground">{initials}</span>
+              <div className="w-10 h-10 rounded-full bg-card flex items-center justify-center shadow-md flex-shrink-0 overflow-hidden">
+                {userAvatar ? (
+                  <img 
+                    src={userAvatar} 
+                    alt="Avatar" 
+                    className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <span className="text-sm font-bold text-foreground">{initials}</span>
+                )}
               </div>
               <div className="flex flex-col min-w-0">
                 <span className="text-xs text-mobile-header-foreground/70">

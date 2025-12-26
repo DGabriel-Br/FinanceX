@@ -76,7 +76,18 @@ export default function Settings() {
     setIsUploadingAvatar(true);
     try {
       const fileExt = file.name.split('.').pop();
-      const fileName = `${user.id}/avatar.${fileExt}`;
+      const timestamp = Date.now();
+      const fileName = `${user.id}/avatar-${timestamp}.${fileExt}`;
+
+      // Delete old avatar files first (to avoid accumulation)
+      const { data: existingFiles } = await supabase.storage
+        .from('avatars')
+        .list(user.id);
+      
+      if (existingFiles && existingFiles.length > 0) {
+        const filesToDelete = existingFiles.map(f => `${user.id}/${f.name}`);
+        await supabase.storage.from('avatars').remove(filesToDelete);
+      }
 
       // Upload file to storage
       const { error: uploadError } = await supabase.storage
@@ -90,17 +101,14 @@ export default function Settings() {
         .from('avatars')
         .getPublicUrl(fileName);
 
-      // Add cache buster to URL
-      const urlWithCacheBuster = `${publicUrl}?t=${Date.now()}`;
-
-      // Update user metadata
+      // Update user metadata with the permanent URL (no cache buster needed since filename is unique)
       const { error: updateError } = await supabase.auth.updateUser({
-        data: { avatar_url: urlWithCacheBuster }
+        data: { avatar_url: publicUrl }
       });
 
       if (updateError) throw updateError;
 
-      setAvatarUrl(urlWithCacheBuster);
+      setAvatarUrl(publicUrl);
       await refreshUser();
 
       toast({
