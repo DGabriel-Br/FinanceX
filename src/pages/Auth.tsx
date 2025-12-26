@@ -8,7 +8,7 @@ import { toast } from 'sonner';
 import { Loader2, Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import { z } from 'zod';
 import { cn } from '@/lib/utils';
-import logo from '@/assets/logo.png';
+import { FinanceLogo } from '@/components/ui/FinanceLogo';
 
 const emailSchema = z.string().email('Email inválido');
 const passwordSchema = z.string()
@@ -111,7 +111,16 @@ export default function Auth() {
     return (
       <div className="min-h-screen flex items-center justify-center bg-sidebar">
         <div className="flex flex-col items-center gap-4">
-          <img src={logo} alt="FinanceX" className="w-16 h-16 rounded-2xl animate-pulse object-cover" />
+          <div className="relative flex items-end">
+            <div className="absolute -inset-4 bg-gradient-to-r from-primary/20 via-income/20 to-primary/20 rounded-2xl blur-2xl animate-pulse" />
+            <FinanceLogo size={40} className="relative" />
+            <span 
+              className="text-2xl font-black tracking-tight text-white -ml-1 relative"
+              style={{ fontFamily: "'Orbitron', sans-serif" }}
+            >
+              inanceX
+            </span>
+          </div>
           <Loader2 className="w-6 h-6 animate-spin text-primary" />
         </div>
       </div>
@@ -174,12 +183,20 @@ export default function Auth() {
         {/* Logo in top left */}
         <div 
           className={cn(
-            "absolute top-6 left-6 flex items-center gap-3 z-20 transition-all duration-700",
+            "absolute top-6 left-6 flex items-center z-20 transition-all duration-700",
             mounted ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4"
           )}
         >
-          <img src={logo} alt="FinanceX" className="w-10 h-10 rounded-xl object-cover shadow-lg" />
-          <span className="text-white font-bold text-lg">FinanceX</span>
+          <div className="relative flex items-end">
+            <div className="absolute -inset-2 bg-gradient-to-r from-primary/15 via-income/15 to-primary/15 rounded-xl blur-xl" />
+            <FinanceLogo size={32} className="relative mb-0.5" />
+            <span 
+              className="text-xl font-black tracking-tight text-white -ml-1 relative"
+              style={{ fontFamily: "'Orbitron', sans-serif" }}
+            >
+              inanceX
+            </span>
+          </div>
         </div>
 
         {/* Centered Card */}
