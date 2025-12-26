@@ -229,7 +229,7 @@ export default function Auth() {
             <div className="absolute -inset-4 bg-gradient-to-r from-primary/20 via-income/20 to-primary/20 rounded-2xl blur-2xl animate-pulse" />
             <FinanceLogo size={40} className="relative" />
             <span 
-              className="text-2xl font-black tracking-wide text-white -ml-1 relative"
+              className="text-2xl font-black tracking-wider text-white -ml-1 relative"
               style={{ fontFamily: "'Orbitron', sans-serif" }}
             >
               inanceX
@@ -364,7 +364,7 @@ export default function Auth() {
             {/* Text with slide-in animation */}
             <span 
               className={cn(
-                "text-xl font-black tracking-wide text-white -ml-1 relative transition-all duration-700 delay-400 ease-out",
+                "text-xl font-black tracking-wider text-white -ml-1 relative transition-all duration-700 delay-400 ease-out",
                 mounted ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-4"
               )}
               style={{ fontFamily: "'Orbitron', sans-serif" }}

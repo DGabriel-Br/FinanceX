@@ -117,7 +117,7 @@ const Index = () => {
             <div className="absolute -inset-4 bg-gradient-to-r from-primary/20 via-income/20 to-primary/20 rounded-2xl blur-2xl animate-pulse" />
             <FinanceLogo size={48} className="relative" />
             <span 
-              className="text-3xl font-black tracking-wide text-foreground -ml-1 relative"
+              className="text-3xl font-black tracking-wider text-foreground -ml-1 relative"
               style={{ fontFamily: "'Orbitron', sans-serif" }}
             >
               inanceX
