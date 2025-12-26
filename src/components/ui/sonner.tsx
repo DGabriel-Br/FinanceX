@@ -102,7 +102,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
       <Sonner
         theme={theme}
         position="top-center"
-        offset="80px"
+        offset="120px"
         className="toaster group"
         expand={false}
         richColors={false}
