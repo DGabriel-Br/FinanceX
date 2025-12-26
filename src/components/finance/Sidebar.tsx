@@ -53,8 +53,8 @@ export const Sidebar = ({
 
       {/* Header com Logo */}
       <div className={cn(
-        "p-4 flex items-center",
-        collapsed ? "justify-center" : "gap-2"
+        "p-4 flex flex-col",
+        collapsed ? "items-center" : "items-start"
       )}>
         {/* Logo */}
         <div className="relative flex items-end flex-shrink-0">
@@ -70,9 +70,7 @@ export const Sidebar = ({
         </div>
         
         {!collapsed && (
-          <div className="flex-1 min-w-0 ml-1">
-            <p className="text-xs text-sidebar-foreground/60 truncate">Controle Financeiro</p>
-          </div>
+          <p className="text-xs text-sidebar-foreground/60 mt-1">Controle Financeiro</p>
         )}
       </div>
 
