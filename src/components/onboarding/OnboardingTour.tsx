@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { 
   LayoutDashboard, 
@@ -18,6 +18,7 @@ interface TourStep {
   title: string;
   description: string;
   icon: React.ReactNode;
+  targetSelector?: string;
 }
 
 const tourSteps: TourStep[] = [
@@ -32,24 +33,28 @@ const tourSteps: TourStep[] = [
     title: 'Dashboard',
     description: 'Acompanhe receitas, despesas e saldo. Visualize gráficos de evolução financeira.',
     icon: <LayoutDashboard className="w-6 h-6" />,
+    targetSelector: '[data-tour="dashboard"]',
   },
   {
     id: 'transactions',
     title: 'Lançamentos',
     description: 'Registre e categorize suas transações para entender seus gastos.',
     icon: <Receipt className="w-6 h-6" />,
+    targetSelector: '[data-tour="transactions"]',
   },
   {
     id: 'debts',
     title: 'Dívidas',
     description: 'Controle financiamentos e parcelamentos. Acompanhe o progresso de cada pagamento.',
     icon: <CreditCard className="w-6 h-6" />,
+    targetSelector: '[data-tour="debts"]',
   },
   {
     id: 'investments',
     title: 'Investimentos',
     description: 'Monitore sua carteira por categoria: ações, renda fixa, cripto e mais.',
     icon: <TrendingUp className="w-6 h-6" />,
+    targetSelector: '[data-tour="investments"]',
   },
   {
     id: 'complete',
@@ -59,6 +64,13 @@ const tourSteps: TourStep[] = [
   },
 ];
 
+interface SpotlightPosition {
+  top: number;
+  left: number;
+  width: number;
+  height: number;
+}
+
 interface OnboardingTourProps {
   onComplete: () => void;
   onSkip: () => void;
@@ -67,10 +79,33 @@ interface OnboardingTourProps {
 export const OnboardingTour = ({ onComplete, onSkip }: OnboardingTourProps) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
+  const [spotlightPosition, setSpotlightPosition] = useState<SpotlightPosition | null>(null);
+  const cardRef = useRef<HTMLDivElement>(null);
 
   const step = tourSteps[currentStep];
   const isFirstStep = currentStep === 0;
   const isLastStep = currentStep === tourSteps.length - 1;
+
+  // Update spotlight position when step changes
+  useEffect(() => {
+    if (step.targetSelector) {
+      const targetElement = document.querySelector(step.targetSelector);
+      if (targetElement) {
+        const rect = targetElement.getBoundingClientRect();
+        const padding = 8;
+        setSpotlightPosition({
+          top: rect.top - padding,
+          left: rect.left - padding,
+          width: rect.width + padding * 2,
+          height: rect.height + padding * 2,
+        });
+      } else {
+        setSpotlightPosition(null);
+      }
+    } else {
+      setSpotlightPosition(null);
+    }
+  }, [currentStep, step.targetSelector]);
 
   const goToNextStep = useCallback(() => {
     if (isLastStep) {
@@ -104,18 +139,60 @@ export const OnboardingTour = ({ onComplete, onSkip }: OnboardingTourProps) => {
   }, [goToNextStep, goToPrevStep, onSkip]);
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center">
-      {/* Overlay */}
-      <div className="absolute inset-0 bg-background/95 backdrop-blur-sm" onClick={onSkip} />
+    <div className="fixed inset-0 z-[100]">
+      {/* Dark overlay with spotlight cutout */}
+      <svg className="absolute inset-0 w-full h-full" onClick={onSkip}>
+        <defs>
+          <mask id="spotlight-mask">
+            <rect x="0" y="0" width="100%" height="100%" fill="white" />
+            {spotlightPosition && (
+              <rect
+                x={spotlightPosition.left}
+                y={spotlightPosition.top}
+                width={spotlightPosition.width}
+                height={spotlightPosition.height}
+                rx="12"
+                fill="black"
+                className="transition-all duration-300 ease-out"
+              />
+            )}
+          </mask>
+        </defs>
+        <rect
+          x="0"
+          y="0"
+          width="100%"
+          height="100%"
+          fill="hsl(var(--background))"
+          fillOpacity="0.92"
+          mask="url(#spotlight-mask)"
+          className="backdrop-blur-sm"
+        />
+      </svg>
+
+      {/* Spotlight border glow */}
+      {spotlightPosition && (
+        <div
+          className="absolute rounded-xl border-2 border-primary/50 shadow-[0_0_20px_rgba(var(--primary),0.3)] pointer-events-none transition-all duration-300 ease-out"
+          style={{
+            top: spotlightPosition.top,
+            left: spotlightPosition.left,
+            width: spotlightPosition.width,
+            height: spotlightPosition.height,
+          }}
+        />
+      )}
 
       {/* Card */}
       <div
+        ref={cardRef}
         className={cn(
-          'relative w-full max-w-md mx-4 transition-all duration-200',
-          isAnimating ? 'opacity-0 translate-y-2' : 'opacity-100 translate-y-0'
+          'absolute w-full max-w-md mx-4 transition-all duration-300 ease-out',
+          isAnimating ? 'opacity-0 translate-y-2' : 'opacity-100 translate-y-0',
+          spotlightPosition ? 'left-1/2 -translate-x-1/2 bottom-8' : 'left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2'
         )}
       >
-        <div className="bg-card border border-border rounded-2xl shadow-xl">
+        <div className="bg-card border border-border rounded-2xl shadow-2xl">
           {/* Header */}
           <div className="flex items-center justify-between px-6 py-4 border-b border-border">
             <span className="text-sm text-muted-foreground">

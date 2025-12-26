@@ -19,10 +19,10 @@ export interface SidebarProps {
 }
 
 const menuItems = [
-  { id: 'dashboard' as Tab, label: 'Dashboard', icon: LayoutDashboard },
-  { id: 'lancamentos' as Tab, label: 'Lançamentos', icon: Receipt },
-  { id: 'investimentos' as Tab, label: 'Controle de Investimentos', icon: TrendingUp },
-  { id: 'dividas' as Tab, label: 'Controle de Dívidas', icon: CreditCard },
+  { id: 'dashboard' as Tab, label: 'Dashboard', icon: LayoutDashboard, tourId: 'dashboard' },
+  { id: 'lancamentos' as Tab, label: 'Lançamentos', icon: Receipt, tourId: 'transactions' },
+  { id: 'investimentos' as Tab, label: 'Controle de Investimentos', icon: TrendingUp, tourId: 'investments' },
+  { id: 'dividas' as Tab, label: 'Controle de Dívidas', icon: CreditCard, tourId: 'debts' },
 ];
 
 export const Sidebar = ({ 
@@ -81,6 +81,7 @@ export const Sidebar = ({
                 <Link
                   to={`/${item.id}`}
                   title={collapsed ? item.label : undefined}
+                  data-tour={item.tourId}
                   className={cn(
                     'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors duration-200',
                     collapsed && 'justify-center px-0',
