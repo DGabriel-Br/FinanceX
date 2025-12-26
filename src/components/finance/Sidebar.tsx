@@ -52,10 +52,7 @@ export const Sidebar = ({
       </button>
 
       {/* Header com Logo */}
-      <div className={cn(
-        "p-4 flex flex-col",
-        collapsed ? "items-center" : "items-start"
-      )}>
+      <div className="p-4 flex justify-center">
         {/* Logo com efeito de destaque */}
         <div className="relative flex items-end flex-shrink-0 group">
           {/* Glow effect background */}
@@ -72,10 +69,6 @@ export const Sidebar = ({
             </span>
           )}
         </div>
-        
-        {!collapsed && (
-          <p className="text-xs text-sidebar-foreground/60 mt-2">Controle Financeiro</p>
-        )}
       </div>
 
       {/* Menu */}
