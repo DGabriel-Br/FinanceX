@@ -123,7 +123,7 @@ export const Sidebar = ({
             {!collapsed && (
               <div className="flex-1 min-w-0">
                 <p className="text-[10px] uppercase tracking-wider text-sidebar-foreground/40 font-medium mb-0.5">Logado como</p>
-                <p className="text-xs text-sidebar-foreground/90 truncate font-medium uppercase">{userName || userEmail}</p>
+                <p className="text-sm text-primary font-semibold truncate uppercase tracking-wide">{userName || userEmail}</p>
               </div>
             )}
           </div>
