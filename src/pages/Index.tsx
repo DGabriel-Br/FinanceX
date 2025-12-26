@@ -181,6 +181,7 @@ const Index = () => {
           <MobileHeader
             userName={user.user_metadata?.full_name}
             userEmail={user.email}
+            userAvatar={user.user_metadata?.avatar_url}
             showValues={showValues}
             onToggleValues={toggleValuesVisibility}
             theme={theme}
