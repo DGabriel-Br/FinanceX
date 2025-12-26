@@ -56,12 +56,16 @@ export const Sidebar = ({
         "p-4 flex flex-col",
         collapsed ? "items-center" : "items-start"
       )}>
-        {/* Logo */}
-        <div className="relative flex items-end flex-shrink-0">
-          <FinanceLogo size={collapsed ? 28 : 24} />
+        {/* Logo com efeito de destaque */}
+        <div className="relative flex items-end flex-shrink-0 group">
+          {/* Glow effect background */}
+          <div className="absolute -inset-2 bg-gradient-to-r from-primary/20 via-income/20 to-primary/20 rounded-xl blur-lg opacity-60 group-hover:opacity-100 transition-opacity duration-300" />
+          <div className="absolute -inset-1 bg-gradient-to-r from-income/10 via-primary/15 to-income/10 rounded-lg blur-md animate-pulse" />
+          
+          <FinanceLogo size={collapsed ? 32 : 28} className="relative drop-shadow-[0_0_12px_rgba(34,211,238,0.5)]" />
           {!collapsed && (
             <span 
-              className="text-lg font-black tracking-tight text-white -ml-0.5"
+              className="text-xl font-black tracking-tight text-white -ml-0.5 relative drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]"
               style={{ fontFamily: "'Orbitron', sans-serif" }}
             >
               inanceX
@@ -70,7 +74,7 @@ export const Sidebar = ({
         </div>
         
         {!collapsed && (
-          <p className="text-xs text-sidebar-foreground/60 mt-1">Controle Financeiro</p>
+          <p className="text-xs text-sidebar-foreground/60 mt-2">Controle Financeiro</p>
         )}
       </div>
 
