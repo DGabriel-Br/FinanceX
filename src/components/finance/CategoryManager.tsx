@@ -347,21 +347,21 @@ export function CategoryManager() {
 
   return (
     <>
-      <Card className="border-border/50 shadow-sm overflow-hidden">
-        <CardHeader className="bg-gradient-to-r from-primary/5 to-transparent border-b border-border/30">
+      <Card className="border-border/50">
+        <CardHeader className="pb-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-              <Tag className="w-5 h-5 text-primary" />
+            <div className="w-9 h-9 rounded-lg bg-muted flex items-center justify-center">
+              <Tag className="w-4 h-4 text-muted-foreground" />
             </div>
             <div>
-              <CardTitle className="text-lg">Gerenciar Categorias</CardTitle>
-              <CardDescription>
+              <CardTitle className="text-base font-medium">Gerenciar Categorias</CardTitle>
+              <CardDescription className="text-sm">
                 Organize suas categorias de receitas e despesas
               </CardDescription>
             </div>
           </div>
         </CardHeader>
-        <CardContent className="p-4">
+        <CardContent className="pt-0">
           <Tabs value={activeTab} onValueChange={(v) => setActiveTab(v as 'receita' | 'despesa')}>
             <TabsList className="grid w-full grid-cols-2 p-1 bg-muted/50">
               <TabsTrigger 
