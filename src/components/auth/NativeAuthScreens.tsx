@@ -24,48 +24,6 @@ interface NativeAuthScreensProps {
   onSuccess: () => void;
 }
 
-// Floating blob component for background
-const FloatingBlob = ({ 
-  className,
-  delay = 0,
-  size = 200,
-  color = 'bg-purple-500/30'
-}: { 
-  className?: string;
-  delay?: number;
-  size?: number;
-  color?: string;
-}) => {
-  return (
-    <div
-      className={cn(
-        "absolute rounded-full blur-3xl pointer-events-none",
-        color,
-        className
-      )}
-      style={{
-        width: size,
-        height: size,
-        animation: `float-blob 20s ease-in-out ${delay}s infinite`,
-      }}
-    />
-  );
-};
-
-// Sparkle dot component
-const Sparkle = ({ x, y, delay = 0, size = 2 }: { x: number; y: number; delay?: number; size?: number }) => (
-  <div
-    className="absolute rounded-full bg-white/60"
-    style={{
-      left: `${x}%`,
-      top: `${y}%`,
-      width: size,
-      height: size,
-      animation: `sparkle 3s ease-in-out ${delay}s infinite`,
-    }}
-  />
-);
-
 export function NativeAuthScreens({ onSignIn, onSignUp, onSuccess }: NativeAuthScreensProps) {
   const [screen, setScreen] = useState<Screen>('welcome');
   const [mounted, setMounted] = useState(false);
@@ -81,17 +39,6 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onSuccess }: NativeAuthS
   const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isShaking, setIsShaking] = useState(false);
-
-  // Generate sparkles
-  const sparkles = useMemo(() => {
-    return Array.from({ length: 30 }, (_, i) => ({
-      id: i,
-      x: Math.random() * 100,
-      y: Math.random() * 100,
-      delay: Math.random() * 3,
-      size: 1 + Math.random() * 2,
-    }));
-  }, []);
 
   useEffect(() => {
     setMounted(true);
@@ -216,30 +163,22 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onSuccess }: NativeAuthS
     }
   };
 
-  // CSS Animations
+  // CSS Animations - mesmo estilo da versão web
   const cssAnimations = `
-    @keyframes float-blob {
+    @keyframes float-particle {
       0%, 100% {
-        transform: translate(0, 0) scale(1);
+        transform: translateY(0px) translateX(0px) scale(1);
+        opacity: 0;
       }
-      25% {
-        transform: translate(30px, -30px) scale(1.1);
-      }
-      50% {
-        transform: translate(-20px, 20px) scale(0.95);
-      }
-      75% {
-        transform: translate(20px, 30px) scale(1.05);
-      }
-    }
-    @keyframes sparkle {
-      0%, 100% {
-        opacity: 0.3;
-        transform: scale(1);
-      }
-      50% {
+      10% {
         opacity: 1;
-        transform: scale(1.5);
+      }
+      50% {
+        transform: translateY(-120px) translateX(30px) scale(1.3);
+        opacity: 0.8;
+      }
+      90% {
+        opacity: 1;
       }
     }
     @keyframes shake {
@@ -252,47 +191,122 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onSuccess }: NativeAuthS
     }
   `;
 
+  // Floating particle component - igual ao web
+  const FloatingParticle = ({ 
+    delay, 
+    duration, 
+    size, 
+    startX, 
+    startY,
+    color 
+  }: { 
+    delay: number; 
+    duration: number; 
+    size: number; 
+    startX: number; 
+    startY: number;
+    color: string;
+  }) => {
+    return (
+      <div
+        className={cn(
+          "absolute rounded-full pointer-events-none",
+          color
+        )}
+        style={{
+          width: size,
+          height: size,
+          left: `${startX}%`,
+          top: `${startY}%`,
+          animation: `float-particle ${duration}s ease-in-out ${delay}s infinite`,
+        }}
+      />
+    );
+  };
+
+  // Generate random particles - igual ao web
+  const particles = useMemo(() => {
+    const colors = [
+      'bg-primary/40',
+      'bg-income/30',
+      'bg-white/20',
+      'bg-primary/25',
+      'bg-income/20',
+      'bg-white/15',
+    ];
+    
+    return Array.from({ length: 25 }, (_, i) => ({
+      id: i,
+      delay: Math.random() * 5,
+      duration: 8 + Math.random() * 12,
+      size: 2 + Math.random() * 6,
+      startX: Math.random() * 100,
+      startY: Math.random() * 100,
+      color: colors[Math.floor(Math.random() * colors.length)],
+    }));
+  }, []);
+
   // Welcome Screen
   if (screen === 'welcome') {
     return (
-      <div className="min-h-screen bg-[#0f1629] relative overflow-hidden flex flex-col">
+      <div className="min-h-screen bg-gradient-to-br from-sidebar via-[hsl(220,50%,15%)] to-primary/30 relative overflow-hidden flex flex-col">
         <style>{cssAnimations}</style>
         
-        {/* Floating blobs */}
-        <FloatingBlob 
-          className="top-[5%] left-[-10%]" 
-          size={280} 
-          color="bg-gradient-to-br from-pink-500/40 to-purple-600/30"
-          delay={0}
-        />
-        <FloatingBlob 
-          className="top-[15%] right-[-5%]" 
-          size={200} 
-          color="bg-gradient-to-br from-blue-400/30 to-cyan-500/20"
-          delay={2}
-        />
-        <FloatingBlob 
-          className="bottom-[25%] left-[5%]" 
-          size={180} 
-          color="bg-gradient-to-br from-violet-500/35 to-fuchsia-500/25"
-          delay={4}
-        />
-        <FloatingBlob 
-          className="bottom-[10%] right-[10%]" 
-          size={150} 
-          color="bg-gradient-to-br from-rose-400/30 to-orange-400/20"
-          delay={6}
-        />
-
-        {/* Sparkles */}
-        <div className="absolute inset-0 pointer-events-none">
-          {sparkles.map((s) => (
-            <Sparkle key={s.id} x={s.x} y={s.y} delay={s.delay} size={s.size} />
+        {/* Floating Particles - igual ao web */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          {particles.map((particle) => (
+            <FloatingParticle key={particle.id} {...particle} />
           ))}
         </div>
 
-        {/* Gradient overlay */}
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#0f1629]/80 pointer-events-none" />
+        {/* Animated Background Elements - igual ao web */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          {/* Large floating circles */}
+          <div 
+            className={cn(
+              "absolute top-[10%] left-[5%] w-40 h-40 bg-gradient-to-br from-white/10 to-transparent rounded-full blur-xl transition-all duration-1000",
+              mounted ? "opacity-60 scale-100" : "opacity-0 scale-50"
+            )} 
+          />
+          <div 
+            className={cn(
+              "absolute top-[15%] right-[10%] w-32 h-32 bg-gradient-to-br from-income/20 to-primary/10 rounded-full blur-2xl transition-all duration-1000 delay-200",
+              mounted ? "opacity-50 scale-100" : "opacity-0 scale-50"
+            )} 
+          />
+          <div 
+            className={cn(
+              "absolute bottom-[20%] left-[8%] w-48 h-48 bg-gradient-to-br from-primary/15 to-income/20 rounded-full blur-3xl transition-all duration-1000 delay-300",
+              mounted ? "opacity-40 scale-100" : "opacity-0 scale-50"
+            )} 
+          />
+          <div 
+            className={cn(
+              "absolute bottom-[10%] right-[15%] w-36 h-36 bg-gradient-to-br from-income/15 to-primary/20 rounded-full blur-2xl transition-all duration-1000 delay-500",
+              mounted ? "opacity-50 scale-100" : "opacity-0 scale-50"
+            )} 
+          />
+          
+          {/* Decorative top element */}
+          <div 
+            className={cn(
+              "absolute top-[8%] left-1/2 -translate-x-1/2 w-20 h-20 bg-gradient-to-br from-primary/30 to-income/20 rounded-full blur-xl transition-all duration-1000 delay-400",
+              mounted ? "opacity-60 scale-100" : "opacity-0 scale-50"
+            )} 
+          />
+          
+          {/* Star-like dots scattered */}
+          <div className="absolute top-[20%] left-[20%] w-1 h-1 bg-white/40 rounded-full animate-pulse" />
+          <div className="absolute top-[30%] left-[70%] w-1.5 h-1.5 bg-white/30 rounded-full animate-pulse" style={{ animationDelay: '0.3s' }} />
+          <div className="absolute top-[60%] left-[85%] w-1 h-1 bg-white/35 rounded-full animate-pulse" style={{ animationDelay: '0.5s' }} />
+          <div className="absolute top-[70%] left-[10%] w-1 h-1 bg-white/25 rounded-full animate-pulse" style={{ animationDelay: '0.7s' }} />
+          <div className="absolute top-[40%] left-[30%] w-0.5 h-0.5 bg-white/40 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }} />
+          <div className="absolute top-[50%] left-[90%] w-1 h-1 bg-white/30 rounded-full animate-pulse" style={{ animationDelay: '0.4s' }} />
+          <div className="absolute top-[80%] left-[40%] w-0.5 h-0.5 bg-white/35 rounded-full animate-pulse" style={{ animationDelay: '0.6s' }} />
+          <div className="absolute top-[25%] left-[55%] w-1 h-1 bg-white/25 rounded-full animate-pulse" style={{ animationDelay: '0.1s' }} />
+          <div className="absolute top-[85%] left-[75%] w-1.5 h-1.5 bg-white/20 rounded-full animate-pulse" style={{ animationDelay: '0.8s' }} />
+          <div className="absolute top-[45%] left-[5%] w-1 h-1 bg-white/30 rounded-full animate-pulse" style={{ animationDelay: '0.35s' }} />
+        </div>
 
         {/* Content */}
         <div 
@@ -357,28 +371,28 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onSuccess }: NativeAuthS
   // Login Screen
   if (screen === 'login') {
     return (
-      <div className="min-h-screen bg-[#0f1219] relative overflow-hidden flex flex-col">
+      <div className="min-h-screen bg-gradient-to-br from-sidebar via-[hsl(220,50%,15%)] to-primary/30 relative overflow-hidden flex flex-col">
         <style>{cssAnimations}</style>
 
-        {/* Subtle background blobs */}
-        <FloatingBlob 
-          className="top-[20%] left-[-15%]" 
-          size={200} 
-          color="bg-violet-600/15"
-          delay={0}
-        />
-        <FloatingBlob 
-          className="bottom-[30%] right-[-10%]" 
-          size={180} 
-          color="bg-blue-500/10"
-          delay={3}
-        />
-
-        {/* Sparkles */}
-        <div className="absolute inset-0 pointer-events-none opacity-40">
-          {sparkles.slice(0, 15).map((s) => (
-            <Sparkle key={s.id} x={s.x} y={s.y} delay={s.delay} size={s.size} />
+        {/* Floating Particles - igual ao web */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          {particles.map((particle) => (
+            <FloatingParticle key={particle.id} {...particle} />
           ))}
+        </div>
+
+        {/* Animated Background Elements */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          <div className={cn("absolute top-[10%] left-[5%] w-40 h-40 bg-gradient-to-br from-white/10 to-transparent rounded-full blur-xl", mounted ? "opacity-60" : "opacity-0")} />
+          <div className={cn("absolute top-[15%] right-[10%] w-32 h-32 bg-gradient-to-br from-income/20 to-primary/10 rounded-full blur-2xl", mounted ? "opacity-50" : "opacity-0")} />
+          <div className={cn("absolute bottom-[20%] left-[8%] w-48 h-48 bg-gradient-to-br from-primary/15 to-income/20 rounded-full blur-3xl", mounted ? "opacity-40" : "opacity-0")} />
+          <div className={cn("absolute bottom-[10%] right-[15%] w-36 h-36 bg-gradient-to-br from-income/15 to-primary/20 rounded-full blur-2xl", mounted ? "opacity-50" : "opacity-0")} />
+          
+          {/* Star-like dots */}
+          <div className="absolute top-[20%] left-[20%] w-1 h-1 bg-white/40 rounded-full animate-pulse" />
+          <div className="absolute top-[30%] left-[70%] w-1.5 h-1.5 bg-white/30 rounded-full animate-pulse" />
+          <div className="absolute top-[60%] left-[85%] w-1 h-1 bg-white/35 rounded-full animate-pulse" />
+          <div className="absolute top-[70%] left-[10%] w-1 h-1 bg-white/25 rounded-full animate-pulse" />
         </div>
 
         {/* Header */}
@@ -478,28 +492,28 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onSuccess }: NativeAuthS
   // Register Screen
   if (screen === 'register') {
     return (
-      <div className="min-h-screen bg-[#0f1219] relative overflow-hidden flex flex-col">
+      <div className="min-h-screen bg-gradient-to-br from-sidebar via-[hsl(220,50%,15%)] to-primary/30 relative overflow-hidden flex flex-col">
         <style>{cssAnimations}</style>
 
-        {/* Subtle background blobs */}
-        <FloatingBlob 
-          className="top-[10%] right-[-15%]" 
-          size={200} 
-          color="bg-cyan-500/15"
-          delay={0}
-        />
-        <FloatingBlob 
-          className="bottom-[20%] left-[-10%]" 
-          size={180} 
-          color="bg-violet-500/10"
-          delay={3}
-        />
-
-        {/* Sparkles */}
-        <div className="absolute inset-0 pointer-events-none opacity-40">
-          {sparkles.slice(0, 15).map((s) => (
-            <Sparkle key={s.id} x={s.x} y={s.y} delay={s.delay} size={s.size} />
+        {/* Floating Particles - igual ao web */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          {particles.map((particle) => (
+            <FloatingParticle key={particle.id} {...particle} />
           ))}
+        </div>
+
+        {/* Animated Background Elements */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          <div className={cn("absolute top-[10%] left-[5%] w-40 h-40 bg-gradient-to-br from-white/10 to-transparent rounded-full blur-xl", mounted ? "opacity-60" : "opacity-0")} />
+          <div className={cn("absolute top-[15%] right-[10%] w-32 h-32 bg-gradient-to-br from-income/20 to-primary/10 rounded-full blur-2xl", mounted ? "opacity-50" : "opacity-0")} />
+          <div className={cn("absolute bottom-[20%] left-[8%] w-48 h-48 bg-gradient-to-br from-primary/15 to-income/20 rounded-full blur-3xl", mounted ? "opacity-40" : "opacity-0")} />
+          <div className={cn("absolute bottom-[10%] right-[15%] w-36 h-36 bg-gradient-to-br from-income/15 to-primary/20 rounded-full blur-2xl", mounted ? "opacity-50" : "opacity-0")} />
+          
+          {/* Star-like dots */}
+          <div className="absolute top-[20%] left-[20%] w-1 h-1 bg-white/40 rounded-full animate-pulse" />
+          <div className="absolute top-[30%] left-[70%] w-1.5 h-1.5 bg-white/30 rounded-full animate-pulse" />
+          <div className="absolute top-[60%] left-[85%] w-1 h-1 bg-white/35 rounded-full animate-pulse" />
+          <div className="absolute top-[70%] left-[10%] w-1 h-1 bg-white/25 rounded-full animate-pulse" />
         </div>
 
         {/* Header */}
