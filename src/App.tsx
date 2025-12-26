@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { Capacitor } from '@capacitor/core';
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import Settings from "./pages/Settings";
@@ -15,8 +16,11 @@ const queryClient = new QueryClient();
 
 // Check if running inside Capacitor native app
 function isNativeApp(): boolean {
-  return !!(window as any).Capacitor?.isNativePlatform?.() || 
-         !!(window as any).Capacitor?.isNative;
+  try {
+    return Capacitor.isNativePlatform();
+  } catch {
+    return false;
+  }
 }
 
 // Component to handle mobile blocking
