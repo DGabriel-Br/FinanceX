@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, User, Lock, Eye, EyeOff, Loader2, Mail, Shield, Check, Camera, X } from 'lucide-react';
+import { ArrowLeft, User, Lock, Eye, EyeOff, Loader2, Mail, Shield, Camera, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -9,7 +9,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { CategoryManager } from '@/components/finance/CategoryManager';
-import { Progress } from '@/components/ui/progress';
+import { PasswordStrengthMeter } from '@/components/ui/PasswordStrengthMeter';
 
 export default function Settings() {
   const navigate = useNavigate();
@@ -520,42 +520,7 @@ export default function Settings() {
               </div>
               
               {/* Password Strength Indicator */}
-              {newPassword && (
-                <div className="space-y-2 pt-1">
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="text-muted-foreground">Força da senha</span>
-                    <span className="text-muted-foreground">
-                      {getStrengthLabel()}
-                    </span>
-                  </div>
-                  <div className="h-1 bg-muted rounded-full overflow-hidden">
-                    <div 
-                      className={`h-full transition-all duration-300 ${getStrengthColor()}`}
-                      style={{ width: `${passwordStrength}%` }}
-                    />
-                  </div>
-                  <div className="flex flex-wrap gap-1.5 pt-1">
-                    {[
-                      { check: newPassword.length >= 8, label: '8+ caracteres' },
-                      { check: /[A-Z]/.test(newPassword), label: 'Maiúscula' },
-                      { check: /[a-z]/.test(newPassword), label: 'Minúscula' },
-                      { check: /[0-9]/.test(newPassword), label: 'Número' },
-                    ].map((req, i) => (
-                      <span 
-                        key={i}
-                        className={`text-xs px-2 py-0.5 rounded transition-colors ${
-                          req.check 
-                            ? 'bg-primary/10 text-primary' 
-                            : 'bg-muted text-muted-foreground'
-                        }`}
-                      >
-                        {req.check && <Check className="w-3 h-3 inline mr-0.5" />}
-                        {req.label}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
+              <PasswordStrengthMeter password={newPassword} />
             </div>
 
             <div className="space-y-2">
