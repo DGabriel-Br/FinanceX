@@ -14,25 +14,31 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
-// Check if running inside Capacitor native app
+// Check if running inside Capacitor native app or WebView
 function isNativeApp(): boolean {
+  // Check user agent for Android WebView or iOS WebView
+  const userAgent = navigator.userAgent || '';
+  const isAndroidWebView = /wv|Android.*Version\/[\d.]+.*Chrome\/[\d.]+ Mobile/.test(userAgent) && /Android/.test(userAgent);
+  const isIOSWebView = /(iPhone|iPod|iPad).*AppleWebKit(?!.*Safari)/i.test(userAgent);
+  
+  if (isAndroidWebView || isIOSWebView) {
+    return true;
+  }
+
   try {
-    // Multiple detection strategies for Capacitor
+    // Capacitor detection
     if (Capacitor.isNativePlatform()) {
       return true;
     }
-    // Fallback: check if running on Android/iOS platform
     const platform = Capacitor.getPlatform();
     if (platform === 'android' || platform === 'ios') {
       return true;
     }
-    // Additional fallback for older Capacitor versions
     if ((window as any).Capacitor?.isNative) {
       return true;
     }
     return false;
   } catch {
-    // If Capacitor throws, check window object directly
     return !!(window as any).Capacitor?.isNative || 
            (window as any).Capacitor?.getPlatform?.() !== 'web';
   }
