@@ -46,7 +46,7 @@ export const PullToRefresh = ({ children, onRefresh, className }: PullToRefreshP
           <Loader2 
             className={cn(
               "w-6 h-6 text-primary transition-opacity duration-200",
-              isRefreshing && "animate-spin"
+              isRefreshing && "animate-[spin_1.5s_linear_infinite]"
             )}
             style={{
               opacity: 0.4 + progress * 0.6,
