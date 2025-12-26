@@ -4,6 +4,7 @@ import { TransactionForm } from './TransactionForm';
 import { TransactionList } from './TransactionList';
 import { ExcelImportExport } from './ExcelImportExport';
 import { useCustomCategories, CustomCategory } from '@/hooks/useCustomCategories';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface TransactionsProps {
   transactions: Transaction[];
@@ -29,6 +30,7 @@ export const Transactions = ({
   onToggleValues,
 }: TransactionsProps) => {
   const { categories: customCategories, addCategory, refetch } = useCustomCategories();
+  const isMobile = useIsMobile();
 
   const handleImport = async (importedTransactions: Array<{ type: TransactionType; category: string; date: string; description: string; value: number }>) => {
     for (const t of importedTransactions) {
@@ -65,6 +67,15 @@ export const Transactions = ({
     return allSuccess;
   };
 
+  const excelImportExportComponent = (
+    <ExcelImportExport 
+      transactions={transactions} 
+      onImport={handleImport}
+      customCategories={customCategories}
+      onCreateCategories={handleCreateCategories}
+    />
+  );
+
   return (
     <div className="p-4 md:p-8">
       {/* Header */}
@@ -82,14 +93,7 @@ export const Transactions = ({
           showValues={showValues}
           onToggleValues={onToggleValues}
           hideToggleOnMobile
-          customAction={
-            <ExcelImportExport 
-              transactions={transactions} 
-              onImport={handleImport}
-              customCategories={customCategories}
-              onCreateCategories={handleCreateCategories}
-            />
-          }
+          customAction={!isMobile ? excelImportExportComponent : undefined}
         />
       </div>
 
@@ -102,6 +106,16 @@ export const Transactions = ({
         >
           <TransactionForm onSubmit={onAdd} />
         </div>
+
+        {/* Botão de Importar/Exportar - Apenas mobile, entre formulário e lista */}
+        {isMobile && (
+          <div 
+            className="flex justify-center opacity-0 animate-fade-in"
+            style={{ animationDelay: '0.12s' }}
+          >
+            {excelImportExportComponent}
+          </div>
+        )}
 
         {/* Lista */}
         <div 
