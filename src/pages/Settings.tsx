@@ -258,6 +258,20 @@ export default function Settings() {
 
         <Separator />
 
+        {/* Info do Email */}
+        <Card className="bg-muted/50">
+          <CardContent className="pt-6">
+            <p className="text-sm text-muted-foreground">
+              <strong>Email:</strong> {user?.email}
+            </p>
+            <p className="text-xs text-muted-foreground mt-2">
+              O email não pode ser alterado.
+            </p>
+          </CardContent>
+        </Card>
+
+        <Separator />
+
         {/* Card de Senha */}
         <Card>
           <CardHeader>
@@ -354,18 +368,6 @@ export default function Settings() {
 
         {/* Category Manager */}
         <CategoryManager />
-
-        {/* Info do Email */}
-        <Card className="bg-muted/50">
-          <CardContent className="pt-6">
-            <p className="text-sm text-muted-foreground">
-              <strong>Email:</strong> {user?.email}
-            </p>
-            <p className="text-xs text-muted-foreground mt-2">
-              O email não pode ser alterado.
-            </p>
-          </CardContent>
-        </Card>
       </main>
     </div>
   );
