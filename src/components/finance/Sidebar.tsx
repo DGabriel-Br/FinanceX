@@ -62,7 +62,7 @@ export const Sidebar = ({
           <FinanceLogo size={collapsed ? 36 : 32} className="relative drop-shadow-[0_0_12px_rgba(34,211,238,0.5)]" />
           {!collapsed && (
             <span 
-              className="text-2xl font-black tracking-tight text-white -ml-0.5 relative drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]"
+              className="text-2xl font-black tracking-wide text-white -ml-0.5 relative drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]"
               style={{ fontFamily: "'Orbitron', sans-serif" }}
             >
               inanceX
