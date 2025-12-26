@@ -2,7 +2,7 @@ import { Eye, EyeOff, Moon, Sun } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { useScrollDirection } from '@/hooks/useScrollDirection';
-
+import { getInitials, getDisplayName } from '@/lib/userUtils';
 
 interface MobileHeaderProps {
   userName?: string;
@@ -13,37 +13,6 @@ interface MobileHeaderProps {
   theme?: 'light' | 'dark';
   onToggleTheme?: () => void;
 }
-
-// Função para extrair iniciais do primeiro e segundo nome
-const getInitials = (name?: string, email?: string): string => {
-  if (name) {
-    const parts = name.split(' ');
-    if (parts.length >= 2) {
-      return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
-    }
-    return name.substring(0, 2).toUpperCase();
-  }
-  if (email) {
-    return email.substring(0, 2).toUpperCase();
-  }
-  return 'US';
-};
-
-// Função para extrair primeiro e segundo nome
-const getDisplayName = (name?: string, email?: string): string => {
-  if (name) {
-    const parts = name.split(' ');
-    if (parts.length >= 2) {
-      return `${parts[0]} ${parts[1]}`;
-    }
-    return parts[0];
-  }
-  if (email) {
-    const localPart = email.split('@')[0];
-    return localPart.charAt(0).toUpperCase() + localPart.slice(1).toLowerCase();
-  }
-  return 'Usuário';
-};
 
 export const MobileHeader = ({ 
   userName, 
