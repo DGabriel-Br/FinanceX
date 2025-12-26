@@ -288,7 +288,12 @@ export const TransactionList = ({ transactions, onUpdate, onDelete, formatValue 
       groups.get(dateKey)!.push(transaction);
     });
     
-    // Ordenar por data decrescente
+    // Ordenar transações dentro de cada grupo por created_at decrescente
+    groups.forEach((groupTransactions, key) => {
+      groupTransactions.sort((a, b) => b.createdAt - a.createdAt);
+    });
+    
+    // Ordenar grupos por data decrescente
     return Array.from(groups.entries())
       .sort(([dateA], [dateB]) => dateB.localeCompare(dateA));
   }, [transactions]);
