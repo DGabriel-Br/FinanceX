@@ -52,7 +52,10 @@ export const Sidebar = ({
       </button>
 
       {/* Header com Logo */}
-      <div className="p-4 flex justify-center">
+      <div className={cn(
+        "px-4 py-5 flex",
+        collapsed ? "justify-center" : "justify-start pl-6"
+      )}>
         {/* Logo com efeito de destaque */}
         <div className="relative flex items-end flex-shrink-0 group">
           {/* Glow effect background */}
@@ -72,7 +75,7 @@ export const Sidebar = ({
       </div>
 
       {/* Menu */}
-      <nav className="flex-1 px-3 mt-4 overflow-hidden">
+      <nav className="flex-1 px-3 mt-2 overflow-hidden">
         <ul className="space-y-1">
           {menuItems.map(item => {
             const isActive = activeTab === item.id;
