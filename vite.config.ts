@@ -70,7 +70,7 @@ export default defineConfig(({ mode }) => ({
   },
   build: {
     rollupOptions: {
-      external: ["@capgo/capacitor-navigation-bar", "@capacitor/status-bar"],
+      external: ["@capgo/capacitor-navigation-bar", "@capacitor/status-bar", "@capacitor/splash-screen"],
     },
   },
 }));
