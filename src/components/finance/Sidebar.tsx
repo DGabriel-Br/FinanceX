@@ -98,20 +98,24 @@ export const Sidebar = ({
 
       {/* Footer com User e Theme Toggle */}
       <div className="p-3 mt-auto border-t border-sidebar-border space-y-2">
-        {/* User Info - Only shows email, no navigation */}
+        {/* User Info - Enhanced design */}
         {userEmail && (
           <div
             className={cn(
-              'flex items-center gap-3 px-3 py-2.5 rounded-lg bg-sidebar-accent/50',
-              collapsed && 'justify-center px-0'
+              'flex items-center gap-3 px-3 py-3 rounded-xl bg-gradient-to-r from-primary/10 via-sidebar-accent/60 to-sidebar-accent/40 border border-primary/10 shadow-sm',
+              collapsed && 'justify-center px-2 py-2'
             )}
           >
-            <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
-              <User className="w-4 h-4 text-primary" />
+            <div className="relative flex-shrink-0">
+              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center ring-2 ring-primary/20">
+                <User className="w-4 h-4 text-primary" />
+              </div>
+              <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-income rounded-full border-2 border-sidebar" title="Online" />
             </div>
             {!collapsed && (
               <div className="flex-1 min-w-0">
-                <p className="text-xs text-sidebar-foreground/60 truncate">{userEmail}</p>
+                <p className="text-[10px] uppercase tracking-wider text-sidebar-foreground/40 font-medium mb-0.5">Logado como</p>
+                <p className="text-xs text-sidebar-foreground/90 truncate font-medium">{userEmail}</p>
               </div>
             )}
           </div>
