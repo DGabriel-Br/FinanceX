@@ -22,7 +22,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import logo from '@/assets/logo.png';
+import { FinanceLogo } from '@/components/ui/FinanceLogo';
 
 type Tab = 'dashboard' | 'lancamentos' | 'dividas' | 'investimentos';
 
@@ -113,16 +113,21 @@ const Index = () => {
       <div className="min-h-screen flex flex-col items-center justify-center bg-background">
         {/* Logo animada */}
         <div className="relative mb-6">
-          <img src={logo} alt="FinanceX" className="w-20 h-20 rounded-2xl animate-pulse object-cover" />
+          <div className="relative flex items-end">
+            <div className="absolute -inset-4 bg-gradient-to-r from-primary/20 via-income/20 to-primary/20 rounded-2xl blur-2xl animate-pulse" />
+            <FinanceLogo size={48} className="relative" />
+            <span 
+              className="text-3xl font-black tracking-tight text-foreground -ml-1 relative"
+              style={{ fontFamily: "'Orbitron', sans-serif" }}
+            >
+              inanceX
+            </span>
+          </div>
           {/* Anel de loading ao redor do logo */}
-          <div className="absolute -inset-2 rounded-3xl border-2 border-primary/30 animate-spin" style={{ animationDuration: '3s' }} />
-          <div className="absolute -inset-3 rounded-3xl border-2 border-t-primary border-r-transparent border-b-transparent border-l-transparent animate-spin" style={{ animationDuration: '1.5s' }} />
+          <div className="absolute -inset-4 rounded-3xl border-2 border-primary/30 animate-spin" style={{ animationDuration: '3s' }} />
+          <div className="absolute -inset-5 rounded-3xl border-2 border-t-primary border-r-transparent border-b-transparent border-l-transparent animate-spin" style={{ animationDuration: '1.5s' }} />
         </div>
         
-        {/* Nome do app */}
-        <h1 className="text-xl font-semibold text-foreground mb-2 animate-fade-in">
-          FinanceX
-        </h1>
         <p className="text-sm text-muted-foreground animate-fade-in" style={{ animationDelay: '0.1s' }}>
           {isLoggingOut ? 'Saindo...' : 'Carregando seu controle financeiro...'}
         </p>
