@@ -12,6 +12,7 @@ export interface SidebarProps {
   onToggleCollapse: () => void;
   theme: 'light' | 'dark';
   onToggleTheme: () => void;
+  userName?: string;
   userEmail?: string;
   onSignOut?: () => void;
 }
@@ -29,6 +30,7 @@ export const Sidebar = ({
   onToggleCollapse,
   theme,
   onToggleTheme,
+  userName,
   userEmail,
   onSignOut
 }: SidebarProps) => {
@@ -99,7 +101,7 @@ export const Sidebar = ({
       {/* Footer com User e Theme Toggle */}
       <div className="p-3 mt-auto border-t border-sidebar-border space-y-2">
         {/* User Info - Enhanced design */}
-        {userEmail && (
+        {(userName || userEmail) && (
           <div
             className={cn(
               'flex items-center gap-3 px-3 py-3 rounded-xl bg-gradient-to-r from-primary/10 via-sidebar-accent/60 to-sidebar-accent/40 border border-primary/10 shadow-sm',
@@ -115,7 +117,7 @@ export const Sidebar = ({
             {!collapsed && (
               <div className="flex-1 min-w-0">
                 <p className="text-[10px] uppercase tracking-wider text-sidebar-foreground/40 font-medium mb-0.5">Logado como</p>
-                <p className="text-xs text-sidebar-foreground/90 truncate font-medium">{userEmail}</p>
+                <p className="text-xs text-sidebar-foreground/90 truncate font-medium">{userName || userEmail}</p>
               </div>
             )}
           </div>
