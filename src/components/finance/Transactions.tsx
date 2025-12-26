@@ -69,12 +69,12 @@ export const Transactions = ({
     <div className="p-4 md:p-8">
       {/* Header */}
       <div 
-        className="flex items-start justify-between gap-3 mb-6 md:mb-8 opacity-0 animate-fade-in"
+        className="flex flex-col gap-3 mb-6 md:mb-8 opacity-0 animate-fade-in"
         style={{ animationDelay: '0.05s' }}
       >
-        <div className="min-w-0 flex-1">
+        <div className="flex items-center justify-between md:justify-start">
           <h2 className="text-xl md:text-2xl font-bold text-foreground">Lançamentos</h2>
-          <p className="text-sm md:text-base text-muted-foreground mt-1 hidden sm:block">Gerencie suas receitas e despesas</p>
+          <p className="text-sm md:text-base text-muted-foreground md:ml-3 hidden sm:block">Gerencie suas receitas e despesas</p>
         </div>
         <PeriodFilter 
           customRange={customRange}
