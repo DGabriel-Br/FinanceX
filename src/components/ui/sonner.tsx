@@ -42,11 +42,11 @@ const Toaster = ({ ...props }: ToasterProps) => {
           animation: toast-slide-out 0.3s cubic-bezier(0.06, 0.71, 0.55, 1) forwards;
         }
         
-        /* Animação de entrada deslizando de cima */
+        /* Animação de entrada deslizando de baixo */
         @keyframes toast-slide-in {
           0% {
             opacity: 0;
-            transform: translateY(-100%) scale(0.9);
+            transform: translateY(100%) scale(0.9);
           }
           100% {
             opacity: 1;
@@ -54,7 +54,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
           }
         }
         
-        /* Animação de saída deslizando para cima */
+        /* Animação de saída deslizando para baixo */
         @keyframes toast-slide-out {
           0% {
             opacity: 1;
@@ -62,7 +62,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
           }
           100% {
             opacity: 0;
-            transform: translateY(-50%) scale(0.9);
+            transform: translateY(50%) scale(0.9);
           }
         }
 
@@ -101,8 +101,8 @@ const Toaster = ({ ...props }: ToasterProps) => {
       `}</style>
       <Sonner
         theme={theme}
-        position="top-center"
-        offset="120px"
+        position="bottom-center"
+        offset="100px"
         className="toaster group"
         expand={false}
         richColors={false}
