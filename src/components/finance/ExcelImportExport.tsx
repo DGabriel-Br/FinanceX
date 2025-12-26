@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
-import { Download, Upload, FileSpreadsheet, AlertCircle } from 'lucide-react';
+import { Download, Upload, FileSpreadsheet, AlertCircle, Plus, Check } from 'lucide-react';
 import { Transaction, TransactionType, TransactionCategory, incomeCategoryLabels, expenseCategoryLabels } from '@/types/transaction';
 import { toast } from 'sonner';
 import * as XLSX from 'xlsx';
@@ -10,11 +10,31 @@ import {
   DialogDescription,
   DialogHeader,
   DialogTitle,
+  DialogFooter,
 } from '@/components/ui/dialog';
+import { Checkbox } from '@/components/ui/checkbox';
+import { CustomCategory } from '@/hooks/useCustomCategories';
 
 interface ExcelImportExportProps {
   transactions: Transaction[];
-  onImport: (transactions: Array<{ type: TransactionType; category: TransactionCategory; date: string; description: string; value: number }>) => Promise<void>;
+  onImport: (transactions: Array<{ type: TransactionType; category: string; date: string; description: string; value: number }>) => Promise<void>;
+  customCategories?: CustomCategory[];
+  onCreateCategories?: (categories: Array<{ name: string; type: 'receita' | 'despesa' }>) => Promise<boolean>;
+}
+
+interface UnknownCategory {
+  name: string;
+  type: TransactionType;
+  selected: boolean;
+}
+
+interface ParsedTransaction {
+  type: TransactionType;
+  category: string;
+  categoryIsCustom: boolean;
+  date: string;
+  description: string;
+  value: number;
 }
 
 // Mapas inversos para importação
@@ -47,10 +67,18 @@ const expenseCategoryKeysMap: Record<string, TransactionCategory> = {
   'outros_despesa': 'outros_despesa',
 };
 
-export const ExcelImportExport = ({ transactions, onImport }: ExcelImportExportProps) => {
+export const ExcelImportExport = ({ 
+  transactions, 
+  onImport,
+  customCategories = [],
+  onCreateCategories
+}: ExcelImportExportProps) => {
   const [isImportDialogOpen, setIsImportDialogOpen] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
   const [importErrors, setImportErrors] = useState<string[]>([]);
+  const [unknownCategories, setUnknownCategories] = useState<UnknownCategory[]>([]);
+  const [pendingTransactions, setPendingTransactions] = useState<ParsedTransaction[]>([]);
+  const [showCategoryConfirmation, setShowCategoryConfirmation] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const getCategoryLabel = (category: TransactionCategory, type: TransactionType): string => {
@@ -78,7 +106,6 @@ export const ExcelImportExport = ({ transactions, onImport }: ExcelImportExportP
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'Lançamentos');
 
-    // Ajustar largura das colunas
     worksheet['!cols'] = [
       { wch: 10 },
       { wch: 20 },
@@ -126,35 +153,45 @@ export const ExcelImportExport = ({ transactions, onImport }: ExcelImportExportP
     toast.success('Modelo baixado com sucesso!');
   };
 
-  const parseCategory = (categoryStr: string, type: TransactionType): TransactionCategory | null => {
+  const parseCategory = (categoryStr: string, type: TransactionType): { key: string | null; isCustom: boolean } => {
     const normalized = categoryStr.toLowerCase().trim();
     
+    // Verificar categorias padrão
     if (type === 'receita') {
-      return incomeCategoryKeysMap[normalized] || null;
+      const defaultKey = incomeCategoryKeysMap[normalized];
+      if (defaultKey) return { key: defaultKey, isCustom: false };
+    } else {
+      const defaultKey = expenseCategoryKeysMap[normalized];
+      if (defaultKey) return { key: defaultKey, isCustom: false };
     }
-    return expenseCategoryKeysMap[normalized] || null;
+    
+    // Verificar categorias personalizadas existentes
+    const existingCustom = customCategories.find(
+      c => c.name.toLowerCase() === normalized && c.type === type
+    );
+    if (existingCustom) {
+      return { key: `custom_${existingCustom.id}`, isCustom: true };
+    }
+    
+    return { key: null, isCustom: false };
   };
 
   const parseDate = (dateValue: unknown): string | null => {
     if (!dateValue) return null;
 
-    // Se for número (Excel serial date)
     if (typeof dateValue === 'number') {
       const excelEpoch = new Date(1899, 11, 30);
       const date = new Date(excelEpoch.getTime() + dateValue * 86400000);
       return date.toISOString().split('T')[0];
     }
 
-    // Se for string
     if (typeof dateValue === 'string') {
       const str = dateValue.trim();
       
-      // Formato YYYY-MM-DD
       if (/^\d{4}-\d{2}-\d{2}$/.test(str)) {
         return str;
       }
       
-      // Formato DD/MM/YYYY
       const brMatch = str.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
       if (brMatch) {
         return `${brMatch[3]}-${brMatch[2]}-${brMatch[1]}`;
@@ -170,6 +207,8 @@ export const ExcelImportExport = ({ transactions, onImport }: ExcelImportExportP
 
     setIsImporting(true);
     setImportErrors([]);
+    setUnknownCategories([]);
+    setPendingTransactions([]);
 
     try {
       const data = await file.arrayBuffer();
@@ -185,10 +224,11 @@ export const ExcelImportExport = ({ transactions, onImport }: ExcelImportExportP
       }
 
       const errors: string[] = [];
-      const validTransactions: Array<{ type: TransactionType; category: TransactionCategory; date: string; description: string; value: number }> = [];
+      const parsedTransactions: ParsedTransaction[] = [];
+      const unknownCats: Map<string, UnknownCategory> = new Map();
 
       jsonData.forEach((row: unknown, index: number) => {
-        const rowNum = index + 2; // +2 porque Excel começa em 1 e tem header
+        const rowNum = index + 2;
         const r = row as Record<string, unknown>;
 
         // Validar tipo
@@ -204,12 +244,13 @@ export const ExcelImportExport = ({ transactions, onImport }: ExcelImportExportP
         }
 
         // Validar categoria
-        const categoryStr = String(r['Categoria'] || '');
-        const category = parseCategory(categoryStr, type);
-        if (!category) {
-          errors.push(`Linha ${rowNum}: Categoria inválida "${categoryStr}" para ${type}.`);
+        const categoryStr = String(r['Categoria'] || '').trim();
+        if (!categoryStr) {
+          errors.push(`Linha ${rowNum}: Categoria é obrigatória.`);
           return;
         }
+
+        const { key: categoryKey, isCustom } = parseCategory(categoryStr, type);
 
         // Validar data
         const date = parseDate(r['Data']);
@@ -235,22 +276,60 @@ export const ExcelImportExport = ({ transactions, onImport }: ExcelImportExportP
           return;
         }
 
-        validTransactions.push({
-          type,
-          category,
-          date,
-          description,
-          value: Number(value),
-        });
+        // Se a categoria não existe, adicionar à lista de desconhecidas
+        if (!categoryKey) {
+          const catKey = `${type}:${categoryStr.toLowerCase()}`;
+          if (!unknownCats.has(catKey)) {
+            unknownCats.set(catKey, {
+              name: categoryStr,
+              type,
+              selected: true
+            });
+          }
+          // Usar o nome original temporariamente
+          parsedTransactions.push({
+            type,
+            category: categoryStr,
+            categoryIsCustom: true,
+            date,
+            description,
+            value: Number(value),
+          });
+        } else {
+          parsedTransactions.push({
+            type,
+            category: categoryKey,
+            categoryIsCustom: isCustom,
+            date,
+            description,
+            value: Number(value),
+          });
+        }
       });
 
       if (errors.length > 0) {
         setImportErrors(errors);
       }
 
-      if (validTransactions.length > 0) {
-        await onImport(validTransactions);
-        toast.success(`${validTransactions.length} lançamento(s) importado(s) com sucesso!`);
+      // Se há categorias desconhecidas, mostrar confirmação
+      if (unknownCats.size > 0 && onCreateCategories) {
+        setUnknownCategories(Array.from(unknownCats.values()));
+        setPendingTransactions(parsedTransactions);
+        setShowCategoryConfirmation(true);
+        setIsImporting(false);
+        return;
+      }
+
+      // Se não há categorias desconhecidas, importar diretamente
+      if (parsedTransactions.length > 0) {
+        await onImport(parsedTransactions.map(t => ({
+          type: t.type,
+          category: t.category,
+          date: t.date,
+          description: t.description,
+          value: t.value,
+        })));
+        toast.success(`${parsedTransactions.length} lançamento(s) importado(s) com sucesso!`);
         setIsImportDialogOpen(false);
       } else if (errors.length > 0) {
         toast.error('Nenhum lançamento válido encontrado');
@@ -264,6 +343,98 @@ export const ExcelImportExport = ({ transactions, onImport }: ExcelImportExportP
         fileInputRef.current.value = '';
       }
     }
+  };
+
+  const toggleCategory = (index: number) => {
+    setUnknownCategories(prev => 
+      prev.map((cat, i) => i === index ? { ...cat, selected: !cat.selected } : cat)
+    );
+  };
+
+  const handleConfirmCategories = async () => {
+    if (!onCreateCategories) return;
+
+    setIsImporting(true);
+    
+    try {
+      // Criar categorias selecionadas
+      const selectedCategories = unknownCategories.filter(c => c.selected);
+      
+      if (selectedCategories.length > 0) {
+        const success = await onCreateCategories(
+          selectedCategories.map(c => ({ name: c.name, type: c.type }))
+        );
+        
+        if (!success) {
+          toast.error('Erro ao criar algumas categorias');
+          setIsImporting(false);
+          return;
+        }
+      }
+
+      // Atualizar transações com categorias que não foram criadas para usar "outros"
+      const notSelectedCategories = unknownCategories.filter(c => !c.selected);
+      const updatedTransactions = pendingTransactions.map(t => {
+        const isNotSelected = notSelectedCategories.some(
+          c => c.name.toLowerCase() === t.category.toLowerCase() && c.type === t.type
+        );
+        
+        if (isNotSelected) {
+          return {
+            ...t,
+            category: t.type === 'receita' ? 'outros_receita' : 'outros_despesa'
+          };
+        }
+        
+        // Para categorias criadas, usar o nome como custom_[name]
+        const wasSelected = selectedCategories.some(
+          c => c.name.toLowerCase() === t.category.toLowerCase() && c.type === t.type
+        );
+        
+        if (wasSelected) {
+          return {
+            ...t,
+            category: `custom_new_${t.category}` // Marcador temporário para nova categoria
+          };
+        }
+        
+        return t;
+      });
+
+      // Importar transações
+      await onImport(updatedTransactions.map(t => ({
+        type: t.type,
+        category: t.category,
+        date: t.date,
+        description: t.description,
+        value: t.value,
+      })));
+
+      const totalCreated = selectedCategories.length;
+      const totalImported = updatedTransactions.length;
+      
+      if (totalCreated > 0) {
+        toast.success(`${totalCreated} categoria(s) criada(s) e ${totalImported} lançamento(s) importado(s)!`);
+      } else {
+        toast.success(`${totalImported} lançamento(s) importado(s) com sucesso!`);
+      }
+      
+      setShowCategoryConfirmation(false);
+      setIsImportDialogOpen(false);
+      setUnknownCategories([]);
+      setPendingTransactions([]);
+    } catch (error) {
+      console.error('Erro ao processar importação:', error);
+      toast.error('Erro ao processar importação');
+    } finally {
+      setIsImporting(false);
+    }
+  };
+
+  const handleCancelCategories = () => {
+    setShowCategoryConfirmation(false);
+    setUnknownCategories([]);
+    setPendingTransactions([]);
   };
 
   return (
@@ -290,7 +461,8 @@ export const ExcelImportExport = ({ transactions, onImport }: ExcelImportExportP
         <span className="hidden sm:inline text-xs md:text-sm">Exportar</span>
       </Button>
 
-      <Dialog open={isImportDialogOpen} onOpenChange={setIsImportDialogOpen}>
+      {/* Dialog de Importação */}
+      <Dialog open={isImportDialogOpen && !showCategoryConfirmation} onOpenChange={setIsImportDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Importar Lançamentos</DialogTitle>
@@ -355,8 +527,74 @@ export const ExcelImportExport = ({ transactions, onImport }: ExcelImportExportP
               <p className="font-medium mb-1">Categorias aceitas:</p>
               <p><strong>Receitas:</strong> Salário, 13º Salário, Férias, Freelance, Outros</p>
               <p><strong>Despesas:</strong> Contas Fixas Mensais, Investimentos, Dívidas, Educação, Transporte, Mercado, Delivery, Outros</p>
+              <p className="mt-2 text-primary">Categorias personalizadas serão criadas automaticamente (com sua permissão).</p>
             </div>
           </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Dialog de Confirmação de Categorias */}
+      <Dialog open={showCategoryConfirmation} onOpenChange={(open) => !open && handleCancelCategories()}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Plus className="w-5 h-5 text-primary" />
+              Novas Categorias Encontradas
+            </DialogTitle>
+            <DialogDescription>
+              Encontramos categorias que não existem no sistema. Deseja criá-las?
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-3 max-h-60 overflow-auto py-2">
+            {unknownCategories.map((cat, index) => (
+              <div
+                key={`${cat.type}-${cat.name}`}
+                className="flex items-center gap-3 p-3 rounded-lg border bg-card hover:bg-accent/50 transition-colors"
+              >
+                <Checkbox
+                  id={`cat-${index}`}
+                  checked={cat.selected}
+                  onCheckedChange={() => toggleCategory(index)}
+                />
+                <label
+                  htmlFor={`cat-${index}`}
+                  className="flex-1 cursor-pointer text-sm"
+                >
+                  <span className="font-medium">{cat.name}</span>
+                  <span className={`ml-2 text-xs px-2 py-0.5 rounded-full ${
+                    cat.type === 'receita' 
+                      ? 'bg-success/10 text-success' 
+                      : 'bg-destructive/10 text-destructive'
+                  }`}>
+                    {cat.type === 'receita' ? 'Receita' : 'Despesa'}
+                  </span>
+                </label>
+              </div>
+            ))}
+          </div>
+
+          <p className="text-xs text-muted-foreground">
+            Categorias não selecionadas serão importadas como "Outros".
+          </p>
+
+          <DialogFooter className="gap-2 sm:gap-0">
+            <Button
+              variant="outline"
+              onClick={handleCancelCategories}
+              disabled={isImporting}
+            >
+              Cancelar
+            </Button>
+            <Button
+              onClick={handleConfirmCategories}
+              disabled={isImporting}
+              className="gap-2"
+            >
+              <Check className="w-4 h-4" />
+              {isImporting ? 'Processando...' : 'Confirmar e Importar'}
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </>

@@ -1,14 +1,15 @@
-import { Transaction, TransactionType, TransactionCategory } from '@/types/transaction';
+import { Transaction, TransactionType } from '@/types/transaction';
 import { PeriodFilter, CustomDateRange } from './PeriodFilter';
 import { TransactionForm } from './TransactionForm';
 import { TransactionList } from './TransactionList';
 import { ExcelImportExport } from './ExcelImportExport';
+import { useCustomCategories, CustomCategory } from '@/hooks/useCustomCategories';
 
 interface TransactionsProps {
   transactions: Transaction[];
   customRange: CustomDateRange | null;
   onCustomRangeChange: (range: CustomDateRange | null) => void;
-  onAdd: (transaction: { type: TransactionType; category: TransactionCategory; date: string; description: string; value: number }) => void;
+  onAdd: (transaction: { type: TransactionType; category: string; date: string; description: string; value: number }) => void;
   onUpdate: (id: string, updates: Partial<Omit<Transaction, 'id' | 'createdAt'>>) => void;
   onDelete: (id: string) => void;
   formatValue?: (value: number) => string;
@@ -27,10 +28,41 @@ export const Transactions = ({
   showValues,
   onToggleValues,
 }: TransactionsProps) => {
-  const handleImport = async (importedTransactions: Array<{ type: TransactionType; category: TransactionCategory; date: string; description: string; value: number }>) => {
+  const { categories: customCategories, addCategory, refetch } = useCustomCategories();
+
+  const handleImport = async (importedTransactions: Array<{ type: TransactionType; category: string; date: string; description: string; value: number }>) => {
     for (const t of importedTransactions) {
-      await onAdd(t);
+      // Se a categoria começa com custom_new_, precisa buscar o ID da categoria recém-criada
+      let categoryToUse = t.category;
+      
+      if (t.category.startsWith('custom_new_')) {
+        const categoryName = t.category.replace('custom_new_', '');
+        const existingCategory = customCategories.find(
+          c => c.name.toLowerCase() === categoryName.toLowerCase() && c.type === t.type
+        );
+        if (existingCategory) {
+          categoryToUse = `custom_${existingCategory.id}`;
+        }
+      }
+      
+      await onAdd({ ...t, category: categoryToUse });
     }
+  };
+
+  const handleCreateCategories = async (categories: Array<{ name: string; type: 'receita' | 'despesa' }>) => {
+    let allSuccess = true;
+    
+    for (const cat of categories) {
+      const success = await addCategory(cat.name, cat.type, 'tag');
+      if (!success) {
+        allSuccess = false;
+      }
+    }
+    
+    // Atualizar lista de categorias
+    await refetch();
+    
+    return allSuccess;
   };
 
   return (
@@ -50,7 +82,14 @@ export const Transactions = ({
           showValues={showValues}
           onToggleValues={onToggleValues}
           hideToggleOnMobile
-          customAction={<ExcelImportExport transactions={transactions} onImport={handleImport} />}
+          customAction={
+            <ExcelImportExport 
+              transactions={transactions} 
+              onImport={handleImport}
+              customCategories={customCategories}
+              onCreateCategories={handleCreateCategories}
+            />
+          }
         />
       </div>
 
