@@ -1,6 +1,6 @@
 import { useState, useRef, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
-import { Download, Upload, FileSpreadsheet, AlertCircle, Plus, Check, Eye, ArrowLeft, ArrowRight, TrendingUp, TrendingDown, Loader2 } from 'lucide-react';
+import { Download, Upload, FileSpreadsheet, AlertCircle, Plus, Check, Eye, ArrowLeft, ArrowRight, TrendingUp, TrendingDown, Loader2, ExternalLink } from 'lucide-react';
 import { Transaction, TransactionType, TransactionCategory, incomeCategoryLabels, expenseCategoryLabels } from '@/types/transaction';
 import { toast } from 'sonner';
 import * as XLSX from 'xlsx';
@@ -17,7 +17,8 @@ import { CustomCategory } from '@/hooks/useCustomCategories';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { Filesystem, Directory, Encoding } from '@capacitor/filesystem';
+import { Filesystem, Directory } from '@capacitor/filesystem';
+import { FileOpener } from '@capawesome-team/capacitor-file-opener';
 
 interface ExcelImportExportProps {
   transactions: Transaction[];
@@ -121,6 +122,34 @@ export const ExcelImportExport = ({
     return !!(window as any).Capacitor?.isNativePlatform?.();
   };
 
+  const requestStoragePermission = async (): Promise<boolean> => {
+    try {
+      const permStatus = await Filesystem.checkPermissions();
+      
+      if (permStatus.publicStorage === 'granted') {
+        return true;
+      }
+      
+      const requestResult = await Filesystem.requestPermissions();
+      return requestResult.publicStorage === 'granted';
+    } catch (error) {
+      console.error('Erro ao solicitar permissão:', error);
+      return false;
+    }
+  };
+
+  const openFile = async (filePath: string) => {
+    try {
+      await FileOpener.openFile({
+        path: filePath,
+        mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      });
+    } catch (error) {
+      console.error('Erro ao abrir arquivo:', error);
+      toast.error('Não foi possível abrir o arquivo. Verifique se há um app compatível instalado.');
+    }
+  };
+
   const exportToExcel = async () => {
     if (transactions.length === 0) {
       toast.error('Não há lançamentos para exportar');
@@ -151,34 +180,70 @@ export const ExcelImportExport = ({
 
     // Verificar se está no app nativo
     if (isNativePlatform()) {
+      // Solicitar permissão de armazenamento
+      const hasPermission = await requestStoragePermission();
+      if (!hasPermission) {
+        toast.error('Permissão de armazenamento necessária para exportar arquivos.');
+        return;
+      }
+
       try {
         // Gerar o arquivo como base64
         const wbout = XLSX.write(workbook, { bookType: 'xlsx', type: 'base64' });
         
         // Salvar o arquivo na pasta Downloads (ExternalStorage/Download)
-        await Filesystem.writeFile({
+        const result = await Filesystem.writeFile({
           path: `Download/${fileName}`,
           data: wbout,
           directory: Directory.ExternalStorage,
         });
 
-        toast.success(`Arquivo salvo em Downloads/${fileName}`, {
-          duration: 4000,
-        });
+        const filePath = result.uri;
+
+        toast.success(
+          <div className="flex flex-col gap-2">
+            <span>Arquivo salvo em Downloads/{fileName}</span>
+            <Button 
+              size="sm" 
+              variant="outline" 
+              className="w-fit gap-1.5"
+              onClick={() => openFile(filePath)}
+            >
+              <ExternalLink className="w-3 h-3" />
+              Abrir arquivo
+            </Button>
+          </div>,
+          { duration: 6000 }
+        );
       } catch (error: any) {
         console.error('Erro ao exportar no app nativo:', error);
         
         // Fallback: tentar salvar em Documents se ExternalStorage falhar
         try {
           const wbout = XLSX.write(workbook, { bookType: 'xlsx', type: 'base64' });
-          await Filesystem.writeFile({
+          const result = await Filesystem.writeFile({
             path: fileName,
             data: wbout,
             directory: Directory.Documents,
           });
-          toast.success(`Arquivo salvo em Documentos/${fileName}`, {
-            duration: 4000,
-          });
+
+          const filePath = result.uri;
+
+          toast.success(
+            <div className="flex flex-col gap-2">
+              <span>Arquivo salvo em Documentos/{fileName}</span>
+              <Button 
+                size="sm" 
+                variant="outline" 
+                className="w-fit gap-1.5"
+                onClick={() => openFile(filePath)}
+              >
+                <ExternalLink className="w-3 h-3" />
+                Abrir arquivo
+              </Button>
+            </div>,
+            { duration: 6000 }
+          );
         } catch (fallbackError) {
           console.error('Erro no fallback:', fallbackError);
           toast.error('Erro ao exportar arquivo. Verifique as permissões do app.');
@@ -225,34 +290,70 @@ export const ExcelImportExport = ({
 
     // Verificar se está no app nativo
     if (isNativePlatform()) {
+      // Solicitar permissão de armazenamento
+      const hasPermission = await requestStoragePermission();
+      if (!hasPermission) {
+        toast.error('Permissão de armazenamento necessária para baixar o modelo.');
+        return;
+      }
+
       try {
         // Gerar o arquivo como base64
         const wbout = XLSX.write(workbook, { bookType: 'xlsx', type: 'base64' });
         
         // Salvar o arquivo na pasta Downloads (ExternalStorage/Download)
-        await Filesystem.writeFile({
+        const result = await Filesystem.writeFile({
           path: `Download/${fileName}`,
           data: wbout,
           directory: Directory.ExternalStorage,
         });
 
-        toast.success(`Modelo salvo em Downloads/${fileName}`, {
-          duration: 4000,
-        });
+        const filePath = result.uri;
+
+        toast.success(
+          <div className="flex flex-col gap-2">
+            <span>Modelo salvo em Downloads/{fileName}</span>
+            <Button 
+              size="sm" 
+              variant="outline" 
+              className="w-fit gap-1.5"
+              onClick={() => openFile(filePath)}
+            >
+              <ExternalLink className="w-3 h-3" />
+              Abrir arquivo
+            </Button>
+          </div>,
+          { duration: 6000 }
+        );
       } catch (error: any) {
         console.error('Erro ao baixar modelo no app nativo:', error);
         
         // Fallback: tentar salvar em Documents se ExternalStorage falhar
         try {
           const wbout = XLSX.write(workbook, { bookType: 'xlsx', type: 'base64' });
-          await Filesystem.writeFile({
+          const result = await Filesystem.writeFile({
             path: fileName,
             data: wbout,
             directory: Directory.Documents,
           });
-          toast.success(`Modelo salvo em Documentos/${fileName}`, {
-            duration: 4000,
-          });
+
+          const filePath = result.uri;
+
+          toast.success(
+            <div className="flex flex-col gap-2">
+              <span>Modelo salvo em Documentos/{fileName}</span>
+              <Button 
+                size="sm" 
+                variant="outline" 
+                className="w-fit gap-1.5"
+                onClick={() => openFile(filePath)}
+              >
+                <ExternalLink className="w-3 h-3" />
+                Abrir arquivo
+              </Button>
+            </div>,
+            { duration: 6000 }
+          );
         } catch (fallbackError) {
           console.error('Erro no fallback:', fallbackError);
           toast.error('Erro ao baixar modelo. Verifique as permissões do app.');
