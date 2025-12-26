@@ -314,25 +314,25 @@ export default function Settings() {
       {/* Content */}
       <main className="px-4 py-6 space-y-6 max-w-2xl mx-auto pb-24">
         {/* Card de Avatar */}
-        <Card className="border-border/50 shadow-sm overflow-hidden">
-          <CardHeader className="bg-gradient-to-r from-primary/10 to-transparent border-b border-border/30">
+        <Card className="border-border/50">
+          <CardHeader className="pb-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center">
-                <Camera className="w-5 h-5 text-primary" />
+              <div className="w-9 h-9 rounded-lg bg-muted flex items-center justify-center">
+                <Camera className="w-4 h-4 text-muted-foreground" />
               </div>
               <div>
-                <CardTitle className="text-lg">Foto de Perfil</CardTitle>
-                <CardDescription>
+                <CardTitle className="text-base font-medium">Foto de Perfil</CardTitle>
+                <CardDescription className="text-sm">
                   Personalize sua conta com uma foto
                 </CardDescription>
               </div>
             </div>
           </CardHeader>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-6">
+          <CardContent className="pt-0">
+            <div className="flex items-center gap-5">
               {/* Avatar Preview */}
               <div className="relative">
-                <div className="w-24 h-24 rounded-full bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center overflow-hidden ring-4 ring-primary/20">
+                <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center overflow-hidden border-2 border-border">
                   {avatarUrl ? (
                     <img 
                       src={avatarUrl} 
@@ -340,18 +340,18 @@ export default function Settings() {
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <User className="w-10 h-10 text-primary" />
+                    <User className="w-8 h-8 text-muted-foreground" />
                   )}
                 </div>
                 {isUploadingAvatar && (
                   <div className="absolute inset-0 bg-background/80 rounded-full flex items-center justify-center">
-                    <Loader2 className="w-6 h-6 animate-spin text-primary" />
+                    <Loader2 className="w-5 h-5 animate-spin text-foreground" />
                   </div>
                 )}
               </div>
 
               {/* Upload Controls */}
-              <div className="flex-1 space-y-3">
+              <div className="flex-1 space-y-2">
                 <input
                   ref={fileInputRef}
                   type="file"
@@ -365,9 +365,7 @@ export default function Settings() {
                     size="sm"
                     onClick={() => fileInputRef.current?.click()}
                     disabled={isUploadingAvatar}
-                    className="gap-2"
                   >
-                    <Camera className="w-4 h-4" />
                     {avatarUrl ? 'Alterar foto' : 'Escolher foto'}
                   </Button>
                   {avatarUrl && (
@@ -376,9 +374,8 @@ export default function Settings() {
                       size="sm"
                       onClick={handleRemoveAvatar}
                       disabled={isUploadingAvatar}
-                      className="gap-2 text-destructive hover:text-destructive hover:bg-destructive/10"
+                      className="text-muted-foreground hover:text-destructive"
                     >
-                      <X className="w-4 h-4" />
                       Remover
                     </Button>
                   )}
@@ -392,21 +389,21 @@ export default function Settings() {
         </Card>
 
         {/* Card de Nome */}
-        <Card className="border-border/50 shadow-sm overflow-hidden">
-          <CardHeader className="bg-gradient-to-r from-blue-500/10 to-transparent border-b border-border/30">
+        <Card className="border-border/50">
+          <CardHeader className="pb-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-blue-500/20 flex items-center justify-center">
-                <User className="w-5 h-5 text-blue-500" />
+              <div className="w-9 h-9 rounded-lg bg-muted flex items-center justify-center">
+                <User className="w-4 h-4 text-muted-foreground" />
               </div>
               <div>
-                <CardTitle className="text-lg">Nome de Usuário</CardTitle>
-                <CardDescription>
+                <CardTitle className="text-base font-medium">Nome de Usuário</CardTitle>
+                <CardDescription className="text-sm">
                   Como você aparece no aplicativo
                 </CardDescription>
               </div>
             </div>
           </CardHeader>
-          <CardContent className="p-4 space-y-4">
+          <CardContent className="pt-0 space-y-4">
             <div className="space-y-2">
               <Label htmlFor="name" className="text-sm font-medium">Nome completo</Label>
               <Input
@@ -415,76 +412,72 @@ export default function Settings() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Seu nome"
-                className="h-11"
+                className="h-10"
               />
             </div>
             <Button 
               onClick={handleUpdateName} 
               disabled={isUpdatingName}
-              className="w-full sm:w-auto gap-2"
+              size="sm"
             >
               {isUpdatingName ? (
                 <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <Loader2 className="w-4 h-4 animate-spin mr-2" />
                   Salvando...
                 </>
               ) : (
-                <>
-                  <Check className="w-4 h-4" />
-                  Salvar Nome
-                </>
+                'Salvar Nome'
               )}
             </Button>
           </CardContent>
         </Card>
 
         {/* Card de Email */}
-        <Card className="border-border/50 shadow-sm overflow-hidden">
-          <CardHeader className="bg-gradient-to-r from-purple-500/10 to-transparent border-b border-border/30">
+        <Card className="border-border/50">
+          <CardHeader className="pb-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-purple-500/20 flex items-center justify-center">
-                <Mail className="w-5 h-5 text-purple-500" />
+              <div className="w-9 h-9 rounded-lg bg-muted flex items-center justify-center">
+                <Mail className="w-4 h-4 text-muted-foreground" />
               </div>
               <div>
-                <CardTitle className="text-lg">Endereço de Email</CardTitle>
-                <CardDescription>
+                <CardTitle className="text-base font-medium">Endereço de Email</CardTitle>
+                <CardDescription className="text-sm">
                   Seu email de acesso à conta
                 </CardDescription>
               </div>
             </div>
           </CardHeader>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3 px-4 py-3 bg-muted/50 rounded-xl border border-border/30">
-              <div className="flex-1">
+          <CardContent className="pt-0">
+            <div className="flex items-center justify-between px-3 py-2.5 bg-muted/50 rounded-lg border border-border/50">
+              <div>
                 <p className="text-sm font-medium">{user?.email}</p>
                 <p className="text-xs text-muted-foreground mt-0.5">
                   Email vinculado à sua conta
                 </p>
               </div>
-              <div className="flex items-center gap-1.5 px-2 py-1 bg-emerald-500/10 rounded-full">
-                <div className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                <span className="text-xs font-medium text-emerald-600 dark:text-emerald-400">Verificado</span>
-              </div>
+              <span className="text-xs font-medium text-muted-foreground bg-background px-2 py-1 rounded border border-border/50">
+                Verificado
+              </span>
             </div>
           </CardContent>
         </Card>
 
         {/* Card de Senha */}
-        <Card className="border-border/50 shadow-sm overflow-hidden">
-          <CardHeader className="bg-gradient-to-r from-amber-500/10 to-transparent border-b border-border/30">
+        <Card className="border-border/50">
+          <CardHeader className="pb-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-amber-500/20 flex items-center justify-center">
-                <Shield className="w-5 h-5 text-amber-500" />
+              <div className="w-9 h-9 rounded-lg bg-muted flex items-center justify-center">
+                <Shield className="w-4 h-4 text-muted-foreground" />
               </div>
               <div>
-                <CardTitle className="text-lg">Alterar Senha</CardTitle>
-                <CardDescription>
+                <CardTitle className="text-base font-medium">Alterar Senha</CardTitle>
+                <CardDescription className="text-sm">
                   Mantenha sua conta segura
                 </CardDescription>
               </div>
             </div>
           </CardHeader>
-          <CardContent className="p-4 space-y-4">
+          <CardContent className="pt-0 space-y-4">
             <div className="space-y-2">
               <Label htmlFor="currentPassword" className="text-sm font-medium">Senha atual</Label>
               <div className="relative">
@@ -494,7 +487,7 @@ export default function Settings() {
                   value={currentPassword}
                   onChange={(e) => setCurrentPassword(e.target.value)}
                   placeholder="Digite sua senha atual"
-                  className="pr-10 h-11"
+                  className="pr-10 h-10"
                 />
                 <button
                   type="button"
@@ -515,7 +508,7 @@ export default function Settings() {
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
                   placeholder="Mínimo 8 caracteres"
-                  className="pr-10 h-11"
+                  className="pr-10 h-10"
                 />
                 <button
                   type="button"
@@ -531,17 +524,17 @@ export default function Settings() {
                 <div className="space-y-2 pt-1">
                   <div className="flex items-center justify-between text-xs">
                     <span className="text-muted-foreground">Força da senha</span>
-                    <span className={`font-medium ${passwordStrength === 100 ? 'text-emerald-500' : 'text-muted-foreground'}`}>
+                    <span className="text-muted-foreground">
                       {getStrengthLabel()}
                     </span>
                   </div>
-                  <div className="h-1.5 bg-muted rounded-full overflow-hidden">
+                  <div className="h-1 bg-muted rounded-full overflow-hidden">
                     <div 
                       className={`h-full transition-all duration-300 ${getStrengthColor()}`}
                       style={{ width: `${passwordStrength}%` }}
                     />
                   </div>
-                  <div className="flex flex-wrap gap-2 pt-1">
+                  <div className="flex flex-wrap gap-1.5 pt-1">
                     {[
                       { check: newPassword.length >= 8, label: '8+ caracteres' },
                       { check: /[A-Z]/.test(newPassword), label: 'Maiúscula' },
@@ -550,9 +543,9 @@ export default function Settings() {
                     ].map((req, i) => (
                       <span 
                         key={i}
-                        className={`text-xs px-2 py-0.5 rounded-full transition-colors ${
+                        className={`text-xs px-2 py-0.5 rounded transition-colors ${
                           req.check 
-                            ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400' 
+                            ? 'bg-primary/10 text-primary' 
                             : 'bg-muted text-muted-foreground'
                         }`}
                       >
@@ -574,7 +567,7 @@ export default function Settings() {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="Repita a nova senha"
-                  className={`pr-10 h-11 ${
+                  className={`pr-10 h-10 ${
                     confirmPassword && newPassword !== confirmPassword 
                       ? 'border-destructive focus-visible:ring-destructive' 
                       : ''
@@ -592,7 +585,7 @@ export default function Settings() {
                 <p className="text-xs text-destructive">As senhas não coincidem</p>
               )}
               {confirmPassword && newPassword === confirmPassword && confirmPassword.length > 0 && (
-                <p className="text-xs text-emerald-500 flex items-center gap-1">
+                <p className="text-xs text-muted-foreground flex items-center gap-1">
                   <Check className="w-3 h-3" />
                   Senhas coincidem
                 </p>
@@ -602,18 +595,15 @@ export default function Settings() {
             <Button 
               onClick={handleUpdatePassword} 
               disabled={isUpdatingPassword || !currentPassword || !newPassword || !confirmPassword || passwordStrength < 100 || newPassword !== confirmPassword}
-              className="w-full sm:w-auto gap-2"
+              size="sm"
             >
               {isUpdatingPassword ? (
                 <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
+                  <Loader2 className="w-4 h-4 animate-spin mr-2" />
                   Atualizando...
                 </>
               ) : (
-                <>
-                  <Lock className="w-4 h-4" />
-                  Atualizar Senha
-                </>
+                'Atualizar Senha'
               )}
             </Button>
           </CardContent>
