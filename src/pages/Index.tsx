@@ -5,12 +5,16 @@ import { Dashboard } from '@/components/finance/Dashboard';
 import { Transactions } from '@/components/finance/Transactions';
 import { Debts } from '@/components/finance/Debts';
 import { Investments } from '@/components/finance/Investments';
+import { MobileHeader } from '@/components/finance/MobileHeader';
+import { MobileNav } from '@/components/finance/MobileNav';
+import { FloatingAddButton } from '@/components/finance/FloatingAddButton';
 import { useTransactions } from '@/hooks/useTransactions';
 import { useDebts } from '@/hooks/useDebts';
 import { useTheme } from '@/hooks/useTheme';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { useValuesVisibility } from '@/hooks/useValuesVisibility';
 import { useOnboarding } from '@/hooks/useOnboarding';
+import { useIsNativeApp } from '@/hooks/useIsNativeApp';
 import { OnboardingTour } from '@/components/onboarding/OnboardingTour';
 import {
   AlertDialog,
@@ -46,6 +50,7 @@ const Index = () => {
   const { user, loading: authLoading, signOut } = useAuthContext();
   const { showValues, toggleValuesVisibility, formatValue } = useValuesVisibility();
   const { showTour, completeTour, skipTour } = useOnboarding(user?.id);
+  const isNativeApp = useIsNativeApp();
 
   // IMPORTANTE: Todos os hooks devem ser chamados antes de qualquer early return
   const {
@@ -150,21 +155,35 @@ const Index = () => {
   return (
     <>
       <div className="flex min-h-screen w-full relative">
-        {/* Sidebar - desktop */}
-        <Sidebar 
-          activeTab={activeTab} 
-          collapsed={sidebarCollapsed}
-          onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
-          theme={theme}
-          onToggleTheme={toggleTheme}
-          userName={user.user_metadata?.full_name}
-          userEmail={user.email}
-          userAvatar={user.user_metadata?.avatar_url}
-          onSignOut={handleSignOutRequest}
-        />
+        {/* Sidebar - desktop (oculta no app nativo) */}
+        {!isNativeApp && (
+          <Sidebar 
+            activeTab={activeTab} 
+            collapsed={sidebarCollapsed}
+            onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
+            theme={theme}
+            onToggleTheme={toggleTheme}
+            userName={user.user_metadata?.full_name}
+            userEmail={user.email}
+            userAvatar={user.user_metadata?.avatar_url}
+            onSignOut={handleSignOutRequest}
+          />
+        )}
+
+        {/* Mobile Header - apenas no app nativo */}
+        {isNativeApp && (
+          <MobileHeader
+            userName={user.user_metadata?.full_name}
+            userEmail={user.email}
+            showValues={showValues}
+            onToggleValues={toggleValuesVisibility}
+            theme={theme}
+            onToggleTheme={toggleTheme}
+          />
+        )}
 
         {/* Conteúdo principal */}
-        <main className="flex-1 flex flex-col overflow-auto bg-background">
+        <main className={`flex-1 flex flex-col overflow-auto bg-background ${isNativeApp ? 'pb-20' : ''}`}>
           <div key={activeTab} className="animate-fade-in flex-1" style={{ animationDuration: '0.3s' }}>
             {activeTab === 'dashboard' ? (
               <Dashboard
@@ -217,6 +236,20 @@ const Index = () => {
             )}
           </div>
         </main>
+
+        {/* Mobile Navigation - apenas no app nativo */}
+        {isNativeApp && (
+          <>
+            <FloatingAddButton onAddTransaction={addTransaction} />
+            <MobileNav
+              activeTab={activeTab}
+              theme={theme}
+              onToggleTheme={toggleTheme}
+              userEmail={user.email}
+              onSignOut={handleSignOutRequest}
+            />
+          </>
+        )}
       </div>
 
       {/* Tour de onboarding para novos usuários */}
