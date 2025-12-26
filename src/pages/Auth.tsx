@@ -180,22 +180,57 @@ export default function Auth() {
           <div className="absolute top-[45%] left-[5%] w-1 h-1 bg-white/30 rounded-full animate-pulse delay-350" />
         </div>
 
-        {/* Logo in top left */}
+        {/* Logo in top left with entrance animation */}
         <div 
           className={cn(
-            "absolute top-6 left-6 flex items-center z-20 transition-all duration-700",
-            mounted ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-4"
+            "absolute top-6 left-6 flex items-center z-20 transition-all duration-1000 ease-out",
+            mounted ? "opacity-100 translate-y-0 translate-x-0" : "opacity-0 -translate-y-8 -translate-x-4"
           )}
         >
-          <div className="relative flex items-end">
-            <div className="absolute -inset-2 bg-gradient-to-r from-primary/15 via-income/15 to-primary/15 rounded-xl blur-xl" />
-            <FinanceLogo size={32} className="relative mb-0.5" />
+          <div className="relative flex items-end group">
+            {/* Animated glow background */}
+            <div 
+              className={cn(
+                "absolute -inset-3 bg-gradient-to-r from-primary/20 via-income/25 to-primary/20 rounded-2xl blur-xl transition-all duration-1000 delay-300",
+                mounted ? "opacity-100 scale-100" : "opacity-0 scale-50"
+              )} 
+            />
+            <div 
+              className={cn(
+                "absolute -inset-2 bg-gradient-to-r from-income/10 via-primary/15 to-income/10 rounded-xl blur-lg animate-pulse transition-all duration-700 delay-500",
+                mounted ? "opacity-100" : "opacity-0"
+              )} 
+            />
+            
+            {/* Logo with scale animation */}
+            <div
+              className={cn(
+                "relative transition-all duration-700 delay-200 ease-out",
+                mounted ? "scale-100 rotate-0" : "scale-0 -rotate-12"
+              )}
+            >
+              <FinanceLogo size={32} className="mb-0.5 drop-shadow-[0_0_20px_rgba(34,211,238,0.6)]" />
+            </div>
+            
+            {/* Text with slide-in animation */}
             <span 
-              className="text-xl font-black tracking-tight text-white -ml-1 relative"
+              className={cn(
+                "text-xl font-black tracking-tight text-white -ml-1 relative transition-all duration-700 delay-400 ease-out",
+                mounted ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-4"
+              )}
               style={{ fontFamily: "'Orbitron', sans-serif" }}
             >
               inanceX
             </span>
+            
+            {/* Shimmer effect */}
+            <div 
+              className={cn(
+                "absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full transition-transform duration-1000 delay-1000",
+                mounted ? "translate-x-[200%]" : "-translate-x-full"
+              )}
+              style={{ transitionDuration: '1.5s' }}
+            />
           </div>
         </div>
 
