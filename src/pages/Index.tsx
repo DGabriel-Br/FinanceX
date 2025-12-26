@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Sidebar } from '@/components/finance/Sidebar';
 import { Dashboard } from '@/components/finance/Dashboard';
@@ -8,6 +8,7 @@ import { Investments } from '@/components/finance/Investments';
 import { MobileHeader } from '@/components/finance/MobileHeader';
 import { MobileNav } from '@/components/finance/MobileNav';
 import { FloatingAddButton } from '@/components/finance/FloatingAddButton';
+import { PullToRefresh } from '@/components/finance/PullToRefresh';
 import { useTransactions } from '@/hooks/useTransactions';
 import { useDebts } from '@/hooks/useDebts';
 import { useTheme } from '@/hooks/useTheme';
@@ -99,6 +100,11 @@ const Index = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id]);
 
+  // Pull to refresh handler para mobile
+  const handlePullRefresh = useCallback(async () => {
+    await Promise.all([refetchTransactions(), refetchDebts()]);
+  }, [refetchTransactions, refetchDebts]);
+
   const handleSignOutRequest = () => {
     setShowLogoutConfirm(true);
   };
@@ -184,57 +190,113 @@ const Index = () => {
 
         {/* Conteúdo principal */}
         <main className={`flex-1 flex flex-col overflow-auto bg-background ${isNativeApp ? 'pb-24' : ''}`}>
-          <div key={activeTab} className="animate-fade-in flex-1" style={{ animationDuration: '0.3s' }}>
-            {activeTab === 'dashboard' ? (
-              <Dashboard
-                totals={totals}
-                customRange={customRange}
-                onCustomRangeChange={setCustomRange}
-                transactions={filteredTransactions}
-                allTransactions={transactions}
-                debts={debts}
-                onNavigateToDebts={() => navigate('/dividas')}
-                showValues={showValues}
-                onToggleValues={toggleValuesVisibility}
-                formatValue={formatValue}
-              />
-            ) : activeTab === 'lancamentos' ? (
-              <Transactions
-                transactions={filteredTransactions}
-                customRange={customRange}
-                onCustomRangeChange={setCustomRange}
-                onAdd={addTransaction}
-                onUpdate={updateTransaction}
-                onDelete={deleteTransaction}
-                formatValue={formatValue}
-                showValues={showValues}
-                onToggleValues={toggleValuesVisibility}
-              />
-            ) : activeTab === 'investimentos' ? (
-              <Investments
-                transactions={filteredTransactions}
-                allTransactions={transactions}
-                customRange={customRange}
-                onCustomRangeChange={setCustomRange}
-                onNavigateToTransactions={() => navigate('/lancamentos')}
-                onAddTransaction={addTransaction}
-                formatValue={formatValue}
-                showValues={showValues}
-                onToggleValues={toggleValuesVisibility}
-              />
-            ) : (
-              <Debts
-                debts={debts}
-                transactions={transactions}
-                onAddDebt={addDebt}
-                onUpdateDebt={updateDebt}
-                onDeleteDebt={deleteDebt}
-                formatValue={formatValue}
-                showValues={showValues}
-                onToggleValues={toggleValuesVisibility}
-              />
-            )}
-          </div>
+          {isNativeApp ? (
+            <PullToRefresh onRefresh={handlePullRefresh} className="flex-1">
+              <div key={activeTab} className="animate-fade-in flex-1" style={{ animationDuration: '0.3s' }}>
+                {activeTab === 'dashboard' ? (
+                  <Dashboard
+                    totals={totals}
+                    customRange={customRange}
+                    onCustomRangeChange={setCustomRange}
+                    transactions={filteredTransactions}
+                    allTransactions={transactions}
+                    debts={debts}
+                    onNavigateToDebts={() => navigate('/dividas')}
+                    showValues={showValues}
+                    onToggleValues={toggleValuesVisibility}
+                    formatValue={formatValue}
+                  />
+                ) : activeTab === 'lancamentos' ? (
+                  <Transactions
+                    transactions={filteredTransactions}
+                    customRange={customRange}
+                    onCustomRangeChange={setCustomRange}
+                    onAdd={addTransaction}
+                    onUpdate={updateTransaction}
+                    onDelete={deleteTransaction}
+                    formatValue={formatValue}
+                    showValues={showValues}
+                    onToggleValues={toggleValuesVisibility}
+                  />
+                ) : activeTab === 'investimentos' ? (
+                  <Investments
+                    transactions={filteredTransactions}
+                    allTransactions={transactions}
+                    customRange={customRange}
+                    onCustomRangeChange={setCustomRange}
+                    onNavigateToTransactions={() => navigate('/lancamentos')}
+                    onAddTransaction={addTransaction}
+                    formatValue={formatValue}
+                    showValues={showValues}
+                    onToggleValues={toggleValuesVisibility}
+                  />
+                ) : (
+                  <Debts
+                    debts={debts}
+                    transactions={transactions}
+                    onAddDebt={addDebt}
+                    onUpdateDebt={updateDebt}
+                    onDeleteDebt={deleteDebt}
+                    formatValue={formatValue}
+                    showValues={showValues}
+                    onToggleValues={toggleValuesVisibility}
+                  />
+                )}
+              </div>
+            </PullToRefresh>
+          ) : (
+            <div key={activeTab} className="animate-fade-in flex-1" style={{ animationDuration: '0.3s' }}>
+              {activeTab === 'dashboard' ? (
+                <Dashboard
+                  totals={totals}
+                  customRange={customRange}
+                  onCustomRangeChange={setCustomRange}
+                  transactions={filteredTransactions}
+                  allTransactions={transactions}
+                  debts={debts}
+                  onNavigateToDebts={() => navigate('/dividas')}
+                  showValues={showValues}
+                  onToggleValues={toggleValuesVisibility}
+                  formatValue={formatValue}
+                />
+              ) : activeTab === 'lancamentos' ? (
+                <Transactions
+                  transactions={filteredTransactions}
+                  customRange={customRange}
+                  onCustomRangeChange={setCustomRange}
+                  onAdd={addTransaction}
+                  onUpdate={updateTransaction}
+                  onDelete={deleteTransaction}
+                  formatValue={formatValue}
+                  showValues={showValues}
+                  onToggleValues={toggleValuesVisibility}
+                />
+              ) : activeTab === 'investimentos' ? (
+                <Investments
+                  transactions={filteredTransactions}
+                  allTransactions={transactions}
+                  customRange={customRange}
+                  onCustomRangeChange={setCustomRange}
+                  onNavigateToTransactions={() => navigate('/lancamentos')}
+                  onAddTransaction={addTransaction}
+                  formatValue={formatValue}
+                  showValues={showValues}
+                  onToggleValues={toggleValuesVisibility}
+                />
+              ) : (
+                <Debts
+                  debts={debts}
+                  transactions={transactions}
+                  onAddDebt={addDebt}
+                  onUpdateDebt={updateDebt}
+                  onDeleteDebt={deleteDebt}
+                  formatValue={formatValue}
+                  showValues={showValues}
+                  onToggleValues={toggleValuesVisibility}
+                />
+              )}
+            </div>
+          )}
         </main>
 
         {/* Mobile Navigation - apenas no app nativo */}
