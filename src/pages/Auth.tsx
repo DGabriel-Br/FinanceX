@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
@@ -17,6 +17,39 @@ const passwordSchema = z.string()
   .regex(/[a-z]/, 'Deve conter pelo menos uma letra minúscula')
   .regex(/[0-9]/, 'Deve conter pelo menos um número');
 
+// Floating particle component
+const FloatingParticle = ({ 
+  delay, 
+  duration, 
+  size, 
+  startX, 
+  startY,
+  color 
+}: { 
+  delay: number; 
+  duration: number; 
+  size: number; 
+  startX: number; 
+  startY: number;
+  color: string;
+}) => {
+  return (
+    <div
+      className={cn(
+        "absolute rounded-full pointer-events-none",
+        color
+      )}
+      style={{
+        width: size,
+        height: size,
+        left: `${startX}%`,
+        top: `${startY}%`,
+        animation: `float-particle ${duration}s ease-in-out ${delay}s infinite`,
+      }}
+    />
+  );
+};
+
 export default function Auth() {
   const location = useLocation();
   const isRegisterRoute = location.pathname === '/cadastro';
@@ -31,6 +64,28 @@ export default function Auth() {
   const [mounted, setMounted] = useState(false);
   const { user, loading, signIn, signUp } = useAuthContext();
   const navigate = useNavigate();
+
+  // Generate random particles
+  const particles = useMemo(() => {
+    const colors = [
+      'bg-primary/40',
+      'bg-income/30',
+      'bg-white/20',
+      'bg-primary/25',
+      'bg-income/20',
+      'bg-white/15',
+    ];
+    
+    return Array.from({ length: 25 }, (_, i) => ({
+      id: i,
+      delay: Math.random() * 5,
+      duration: 8 + Math.random() * 12,
+      size: 2 + Math.random() * 6,
+      startX: Math.random() * 100,
+      startY: Math.random() * 100,
+      color: colors[Math.floor(Math.random() * colors.length)],
+    }));
+  }, []);
 
   useEffect(() => {
     setMounted(true);
@@ -131,6 +186,33 @@ export default function Auth() {
     <>
       {/* Desktop Version */}
       <div className="hidden md:flex min-h-screen bg-gradient-to-br from-sidebar via-[hsl(220,50%,15%)] to-primary/30 relative overflow-hidden">
+        {/* Floating Particles */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          {particles.map((particle) => (
+            <FloatingParticle key={particle.id} {...particle} />
+          ))}
+        </div>
+
+        {/* CSS Animation for particles */}
+        <style>{`
+          @keyframes float-particle {
+            0%, 100% {
+              transform: translateY(0px) translateX(0px) scale(1);
+              opacity: 0;
+            }
+            10% {
+              opacity: 1;
+            }
+            50% {
+              transform: translateY(-120px) translateX(30px) scale(1.3);
+              opacity: 0.8;
+            }
+            90% {
+              opacity: 1;
+            }
+          }
+        `}</style>
+
         {/* Animated Background Elements */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
           {/* Large floating circles */}
