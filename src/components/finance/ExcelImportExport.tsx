@@ -1,6 +1,6 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useMemo } from 'react';
 import { Button } from '@/components/ui/button';
-import { Download, Upload, FileSpreadsheet, AlertCircle, Plus, Check } from 'lucide-react';
+import { Download, Upload, FileSpreadsheet, AlertCircle, Plus, Check, Eye, ArrowLeft, ArrowRight, TrendingUp, TrendingDown } from 'lucide-react';
 import { Transaction, TransactionType, TransactionCategory, incomeCategoryLabels, expenseCategoryLabels } from '@/types/transaction';
 import { toast } from 'sonner';
 import * as XLSX from 'xlsx';
@@ -14,6 +14,9 @@ import {
 } from '@/components/ui/dialog';
 import { Checkbox } from '@/components/ui/checkbox';
 import { CustomCategory } from '@/hooks/useCustomCategories';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { format } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 
 interface ExcelImportExportProps {
   transactions: Transaction[];
@@ -31,11 +34,15 @@ interface UnknownCategory {
 interface ParsedTransaction {
   type: TransactionType;
   category: string;
+  categoryLabel: string;
   categoryIsCustom: boolean;
+  categoryIsNew: boolean;
   date: string;
   description: string;
   value: number;
 }
+
+type ImportStep = 'upload' | 'preview' | 'categories';
 
 // Mapas inversos para importação
 const incomeCategoryKeysMap: Record<string, TransactionCategory> = {
@@ -78,14 +85,35 @@ export const ExcelImportExport = ({
   const [importErrors, setImportErrors] = useState<string[]>([]);
   const [unknownCategories, setUnknownCategories] = useState<UnknownCategory[]>([]);
   const [pendingTransactions, setPendingTransactions] = useState<ParsedTransaction[]>([]);
-  const [showCategoryConfirmation, setShowCategoryConfirmation] = useState(false);
+  const [currentStep, setCurrentStep] = useState<ImportStep>('upload');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const getCategoryLabel = (category: TransactionCategory, type: TransactionType): string => {
+  const getCategoryLabel = (category: TransactionCategory | string, type: TransactionType): string => {
     if (type === 'receita') {
       return incomeCategoryLabels[category as keyof typeof incomeCategoryLabels] || category;
     }
     return expenseCategoryLabels[category as keyof typeof expenseCategoryLabels] || category;
+  };
+
+  const previewSummary = useMemo(() => {
+    const income = pendingTransactions.filter(t => t.type === 'receita').reduce((sum, t) => sum + t.value, 0);
+    const expense = pendingTransactions.filter(t => t.type === 'despesa').reduce((sum, t) => sum + t.value, 0);
+    const newCategories = unknownCategories.length;
+    return { income, expense, total: pendingTransactions.length, newCategories };
+  }, [pendingTransactions, unknownCategories]);
+
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(value);
+  };
+
+  const formatDate = (dateStr: string) => {
+    try {
+      const [year, month, day] = dateStr.split('-').map(Number);
+      const date = new Date(year, month - 1, day);
+      return format(date, "dd/MM/yyyy", { locale: ptBR });
+    } catch {
+      return dateStr;
+    }
   };
 
   const exportToExcel = () => {
@@ -153,16 +181,16 @@ export const ExcelImportExport = ({
     toast.success('Modelo baixado com sucesso!');
   };
 
-  const parseCategory = (categoryStr: string, type: TransactionType): { key: string | null; isCustom: boolean } => {
+  const parseCategory = (categoryStr: string, type: TransactionType): { key: string | null; isCustom: boolean; label: string } => {
     const normalized = categoryStr.toLowerCase().trim();
     
     // Verificar categorias padrão
     if (type === 'receita') {
       const defaultKey = incomeCategoryKeysMap[normalized];
-      if (defaultKey) return { key: defaultKey, isCustom: false };
+      if (defaultKey) return { key: defaultKey, isCustom: false, label: incomeCategoryLabels[defaultKey as keyof typeof incomeCategoryLabels] || categoryStr };
     } else {
       const defaultKey = expenseCategoryKeysMap[normalized];
-      if (defaultKey) return { key: defaultKey, isCustom: false };
+      if (defaultKey) return { key: defaultKey, isCustom: false, label: expenseCategoryLabels[defaultKey as keyof typeof expenseCategoryLabels] || categoryStr };
     }
     
     // Verificar categorias personalizadas existentes
@@ -170,10 +198,10 @@ export const ExcelImportExport = ({
       c => c.name.toLowerCase() === normalized && c.type === type
     );
     if (existingCustom) {
-      return { key: `custom_${existingCustom.id}`, isCustom: true };
+      return { key: `custom_${existingCustom.id}`, isCustom: true, label: existingCustom.name };
     }
     
-    return { key: null, isCustom: false };
+    return { key: null, isCustom: false, label: categoryStr };
   };
 
   const parseDate = (dateValue: unknown): string | null => {
@@ -199,6 +227,21 @@ export const ExcelImportExport = ({
     }
 
     return null;
+  };
+
+  const resetImport = () => {
+    setCurrentStep('upload');
+    setImportErrors([]);
+    setUnknownCategories([]);
+    setPendingTransactions([]);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
+
+  const handleClose = () => {
+    setIsImportDialogOpen(false);
+    resetImport();
   };
 
   const handleFileSelect = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -250,7 +293,7 @@ export const ExcelImportExport = ({
           return;
         }
 
-        const { key: categoryKey, isCustom } = parseCategory(categoryStr, type);
+        const { key: categoryKey, isCustom, label } = parseCategory(categoryStr, type);
 
         // Validar data
         const date = parseDate(r['Data']);
@@ -286,11 +329,12 @@ export const ExcelImportExport = ({
               selected: true
             });
           }
-          // Usar o nome original temporariamente
           parsedTransactions.push({
             type,
             category: categoryStr,
+            categoryLabel: categoryStr,
             categoryIsCustom: true,
+            categoryIsNew: true,
             date,
             description,
             value: Number(value),
@@ -299,7 +343,9 @@ export const ExcelImportExport = ({
           parsedTransactions.push({
             type,
             category: categoryKey,
+            categoryLabel: label,
             categoryIsCustom: isCustom,
+            categoryIsNew: false,
             date,
             description,
             value: Number(value),
@@ -311,26 +357,10 @@ export const ExcelImportExport = ({
         setImportErrors(errors);
       }
 
-      // Se há categorias desconhecidas, mostrar confirmação
-      if (unknownCats.size > 0 && onCreateCategories) {
-        setUnknownCategories(Array.from(unknownCats.values()));
-        setPendingTransactions(parsedTransactions);
-        setShowCategoryConfirmation(true);
-        setIsImporting(false);
-        return;
-      }
-
-      // Se não há categorias desconhecidas, importar diretamente
       if (parsedTransactions.length > 0) {
-        await onImport(parsedTransactions.map(t => ({
-          type: t.type,
-          category: t.category,
-          date: t.date,
-          description: t.description,
-          value: t.value,
-        })));
-        toast.success(`${parsedTransactions.length} lançamento(s) importado(s) com sucesso!`);
-        setIsImportDialogOpen(false);
+        setPendingTransactions(parsedTransactions);
+        setUnknownCategories(Array.from(unknownCats.values()));
+        setCurrentStep('preview');
       } else if (errors.length > 0) {
         toast.error('Nenhum lançamento válido encontrado');
       }
@@ -351,90 +381,97 @@ export const ExcelImportExport = ({
     );
   };
 
-  const handleConfirmCategories = async () => {
-    if (!onCreateCategories) return;
+  const handleProceedFromPreview = () => {
+    if (unknownCategories.length > 0 && onCreateCategories) {
+      setCurrentStep('categories');
+    } else {
+      handleConfirmImport();
+    }
+  };
 
+  const handleConfirmImport = async () => {
     setIsImporting(true);
     
     try {
-      // Criar categorias selecionadas
-      const selectedCategories = unknownCategories.filter(c => c.selected);
-      
-      if (selectedCategories.length > 0) {
-        const success = await onCreateCategories(
-          selectedCategories.map(c => ({ name: c.name, type: c.type }))
-        );
+      // Se há categorias para criar
+      if (unknownCategories.length > 0 && onCreateCategories) {
+        const selectedCategories = unknownCategories.filter(c => c.selected);
         
-        if (!success) {
-          toast.error('Erro ao criar algumas categorias');
-          setIsImporting(false);
-          return;
+        if (selectedCategories.length > 0) {
+          const success = await onCreateCategories(
+            selectedCategories.map(c => ({ name: c.name, type: c.type }))
+          );
+          
+          if (!success) {
+            toast.error('Erro ao criar algumas categorias');
+            setIsImporting(false);
+            return;
+          }
         }
-      }
 
-      // Atualizar transações com categorias que não foram criadas para usar "outros"
-      const notSelectedCategories = unknownCategories.filter(c => !c.selected);
-      const updatedTransactions = pendingTransactions.map(t => {
-        const isNotSelected = notSelectedCategories.some(
-          c => c.name.toLowerCase() === t.category.toLowerCase() && c.type === t.type
-        );
-        
-        if (isNotSelected) {
-          return {
-            ...t,
-            category: t.type === 'receita' ? 'outros_receita' : 'outros_despesa'
-          };
+        // Atualizar transações com categorias que não foram criadas para usar "outros"
+        const notSelectedCategories = unknownCategories.filter(c => !c.selected);
+        const updatedTransactions = pendingTransactions.map(t => {
+          if (!t.categoryIsNew) return t;
+          
+          const isNotSelected = notSelectedCategories.some(
+            c => c.name.toLowerCase() === t.category.toLowerCase() && c.type === t.type
+          );
+          
+          if (isNotSelected) {
+            return {
+              ...t,
+              category: t.type === 'receita' ? 'outros_receita' : 'outros_despesa'
+            };
+          }
+          
+          const wasSelected = selectedCategories.some(
+            c => c.name.toLowerCase() === t.category.toLowerCase() && c.type === t.type
+          );
+          
+          if (wasSelected) {
+            return {
+              ...t,
+              category: `custom_new_${t.category}`
+            };
+          }
+          
+          return t;
+        });
+
+        await onImport(updatedTransactions.map(t => ({
+          type: t.type,
+          category: t.category,
+          date: t.date,
+          description: t.description,
+          value: t.value,
+        })));
+
+        const totalCreated = selectedCategories.length;
+        if (totalCreated > 0) {
+          toast.success(`${totalCreated} categoria(s) criada(s) e ${updatedTransactions.length} lançamento(s) importado(s)!`);
+        } else {
+          toast.success(`${updatedTransactions.length} lançamento(s) importado(s) com sucesso!`);
         }
-        
-        // Para categorias criadas, usar o nome como custom_[name]
-        const wasSelected = selectedCategories.some(
-          c => c.name.toLowerCase() === t.category.toLowerCase() && c.type === t.type
-        );
-        
-        if (wasSelected) {
-          return {
-            ...t,
-            category: `custom_new_${t.category}` // Marcador temporário para nova categoria
-          };
-        }
-        
-        return t;
-      });
-
-      // Importar transações
-      await onImport(updatedTransactions.map(t => ({
-        type: t.type,
-        category: t.category,
-        date: t.date,
-        description: t.description,
-        value: t.value,
-      })));
-
-      const totalCreated = selectedCategories.length;
-      const totalImported = updatedTransactions.length;
-      
-      if (totalCreated > 0) {
-        toast.success(`${totalCreated} categoria(s) criada(s) e ${totalImported} lançamento(s) importado(s)!`);
       } else {
-        toast.success(`${totalImported} lançamento(s) importado(s) com sucesso!`);
+        // Importar diretamente
+        await onImport(pendingTransactions.map(t => ({
+          type: t.type,
+          category: t.category,
+          date: t.date,
+          description: t.description,
+          value: t.value,
+        })));
+        toast.success(`${pendingTransactions.length} lançamento(s) importado(s) com sucesso!`);
       }
       
-      setShowCategoryConfirmation(false);
-      setIsImportDialogOpen(false);
-      setUnknownCategories([]);
-      setPendingTransactions([]);
+      handleClose();
     } catch (error) {
       console.error('Erro ao processar importação:', error);
       toast.error('Erro ao processar importação');
     } finally {
       setIsImporting(false);
     }
-  };
-
-  const handleCancelCategories = () => {
-    setShowCategoryConfirmation(false);
-    setUnknownCategories([]);
-    setPendingTransactions([]);
   };
 
   return (
@@ -462,138 +499,276 @@ export const ExcelImportExport = ({
       </Button>
 
       {/* Dialog de Importação */}
-      <Dialog open={isImportDialogOpen && !showCategoryConfirmation} onOpenChange={setIsImportDialogOpen}>
-        <DialogContent className="sm:max-w-md">
+      <Dialog open={isImportDialogOpen} onOpenChange={handleClose}>
+        <DialogContent className="sm:max-w-2xl max-h-[90vh] flex flex-col">
           <DialogHeader>
-            <DialogTitle>Importar Lançamentos</DialogTitle>
+            <DialogTitle className="flex items-center gap-2">
+              {currentStep === 'upload' && (
+                <>
+                  <FileSpreadsheet className="w-5 h-5 text-primary" />
+                  Importar Lançamentos
+                </>
+              )}
+              {currentStep === 'preview' && (
+                <>
+                  <Eye className="w-5 h-5 text-primary" />
+                  Preview da Importação
+                </>
+              )}
+              {currentStep === 'categories' && (
+                <>
+                  <Plus className="w-5 h-5 text-primary" />
+                  Novas Categorias
+                </>
+              )}
+            </DialogTitle>
             <DialogDescription>
-              Selecione um arquivo Excel (.xlsx) para importar lançamentos.
+              {currentStep === 'upload' && 'Selecione um arquivo Excel (.xlsx) para importar lançamentos.'}
+              {currentStep === 'preview' && 'Revise os lançamentos antes de importar.'}
+              {currentStep === 'categories' && 'Encontramos categorias que não existem. Deseja criá-las?'}
             </DialogDescription>
           </DialogHeader>
 
-          <div className="space-y-4">
-            <div className="rounded-lg border border-dashed border-muted-foreground/30 p-6 text-center">
-              <FileSpreadsheet className="w-10 h-10 mx-auto text-muted-foreground mb-3" />
-              <p className="text-sm text-muted-foreground mb-3">
-                O arquivo deve conter as colunas: Tipo, Categoria, Data, Descrição, Valor
+          {/* Step: Upload */}
+          {currentStep === 'upload' && (
+            <div className="space-y-4">
+              <div className="rounded-lg border border-dashed border-muted-foreground/30 p-6 text-center">
+                <FileSpreadsheet className="w-10 h-10 mx-auto text-muted-foreground mb-3" />
+                <p className="text-sm text-muted-foreground mb-3">
+                  O arquivo deve conter as colunas: Tipo, Categoria, Data, Descrição, Valor
+                </p>
+                <div className="flex flex-col sm:flex-row gap-2 justify-center">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={downloadTemplate}
+                    className="gap-2"
+                  >
+                    <Download className="w-4 h-4" />
+                    Baixar modelo
+                  </Button>
+                  <Button
+                    size="sm"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={isImporting}
+                    className="gap-2"
+                  >
+                    <Upload className="w-4 h-4" />
+                    {isImporting ? 'Processando...' : 'Selecionar arquivo'}
+                  </Button>
+                </div>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept=".xlsx,.xls"
+                  onChange={handleFileSelect}
+                  className="hidden"
+                />
+              </div>
+
+              {importErrors.length > 0 && (
+                <div className="rounded-lg bg-destructive/10 p-3 max-h-40 overflow-auto">
+                  <div className="flex items-center gap-2 text-destructive mb-2">
+                    <AlertCircle className="w-4 h-4" />
+                    <span className="text-sm font-medium">Erros encontrados:</span>
+                  </div>
+                  <ul className="text-xs text-destructive space-y-1">
+                    {importErrors.slice(0, 10).map((error, i) => (
+                      <li key={i}>• {error}</li>
+                    ))}
+                    {importErrors.length > 10 && (
+                      <li className="font-medium">...e mais {importErrors.length - 10} erro(s)</li>
+                    )}
+                  </ul>
+                </div>
+              )}
+
+              <div className="text-xs text-muted-foreground">
+                <p className="font-medium mb-1">Categorias aceitas:</p>
+                <p><strong>Receitas:</strong> Salário, 13º Salário, Férias, Freelance, Outros</p>
+                <p><strong>Despesas:</strong> Contas Fixas Mensais, Investimentos, Dívidas, Educação, Transporte, Mercado, Delivery, Outros</p>
+                <p className="mt-2 text-primary">Categorias personalizadas serão criadas automaticamente (com sua permissão).</p>
+              </div>
+            </div>
+          )}
+
+          {/* Step: Preview */}
+          {currentStep === 'preview' && (
+            <div className="flex-1 flex flex-col min-h-0 space-y-4">
+              {/* Summary Cards */}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                <div className="rounded-lg bg-muted/50 p-3 text-center">
+                  <p className="text-xs text-muted-foreground">Total</p>
+                  <p className="text-lg font-bold">{previewSummary.total}</p>
+                </div>
+                <div className="rounded-lg bg-success/10 p-3 text-center">
+                  <p className="text-xs text-success flex items-center justify-center gap-1">
+                    <TrendingUp className="w-3 h-3" /> Receitas
+                  </p>
+                  <p className="text-sm font-bold text-success">{formatCurrency(previewSummary.income)}</p>
+                </div>
+                <div className="rounded-lg bg-destructive/10 p-3 text-center">
+                  <p className="text-xs text-destructive flex items-center justify-center gap-1">
+                    <TrendingDown className="w-3 h-3" /> Despesas
+                  </p>
+                  <p className="text-sm font-bold text-destructive">{formatCurrency(previewSummary.expense)}</p>
+                </div>
+                {previewSummary.newCategories > 0 && (
+                  <div className="rounded-lg bg-primary/10 p-3 text-center">
+                    <p className="text-xs text-primary flex items-center justify-center gap-1">
+                      <Plus className="w-3 h-3" /> Novas Cat.
+                    </p>
+                    <p className="text-lg font-bold text-primary">{previewSummary.newCategories}</p>
+                  </div>
+                )}
+              </div>
+
+              {/* Transactions List */}
+              <ScrollArea className="flex-1 border rounded-lg">
+                <div className="divide-y">
+                  {pendingTransactions.map((t, index) => (
+                    <div 
+                      key={index} 
+                      className="flex items-center gap-3 p-3 hover:bg-muted/30 transition-colors"
+                    >
+                      <div className={`w-2 h-2 rounded-full flex-shrink-0 ${
+                        t.type === 'receita' ? 'bg-success' : 'bg-destructive'
+                      }`} />
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium truncate">{t.description}</p>
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                          <span>{formatDate(t.date)}</span>
+                          <span>•</span>
+                          <span className={`${t.categoryIsNew ? 'text-primary font-medium' : ''}`}>
+                            {t.categoryLabel}
+                            {t.categoryIsNew && ' (nova)'}
+                          </span>
+                        </div>
+                      </div>
+                      <p className={`text-sm font-semibold flex-shrink-0 ${
+                        t.type === 'receita' ? 'text-success' : 'text-destructive'
+                      }`}>
+                        {t.type === 'receita' ? '+' : '-'}{formatCurrency(t.value)}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </ScrollArea>
+
+              {importErrors.length > 0 && (
+                <div className="rounded-lg bg-amber-500/10 p-3">
+                  <div className="flex items-center gap-2 text-amber-600 dark:text-amber-400 mb-1">
+                    <AlertCircle className="w-4 h-4" />
+                    <span className="text-xs font-medium">{importErrors.length} linha(s) ignorada(s) por erros</span>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Step: Categories */}
+          {currentStep === 'categories' && (
+            <div className="space-y-4">
+              <ScrollArea className="max-h-60">
+                <div className="space-y-2 pr-4">
+                  {unknownCategories.map((cat, index) => (
+                    <div
+                      key={`${cat.type}-${cat.name}`}
+                      className="flex items-center gap-3 p-3 rounded-lg border bg-card hover:bg-accent/50 transition-colors"
+                    >
+                      <Checkbox
+                        id={`cat-${index}`}
+                        checked={cat.selected}
+                        onCheckedChange={() => toggleCategory(index)}
+                      />
+                      <label
+                        htmlFor={`cat-${index}`}
+                        className="flex-1 cursor-pointer text-sm"
+                      >
+                        <span className="font-medium">{cat.name}</span>
+                        <span className={`ml-2 text-xs px-2 py-0.5 rounded-full ${
+                          cat.type === 'receita' 
+                            ? 'bg-success/10 text-success' 
+                            : 'bg-destructive/10 text-destructive'
+                        }`}>
+                          {cat.type === 'receita' ? 'Receita' : 'Despesa'}
+                        </span>
+                      </label>
+                    </div>
+                  ))}
+                </div>
+              </ScrollArea>
+
+              <p className="text-xs text-muted-foreground">
+                Categorias não selecionadas serão importadas como "Outros".
               </p>
-              <div className="flex flex-col sm:flex-row gap-2 justify-center">
+            </div>
+          )}
+
+          {/* Footer */}
+          <DialogFooter className="gap-2 sm:gap-0 flex-row justify-between">
+            {currentStep === 'preview' && (
+              <Button
+                variant="ghost"
+                onClick={resetImport}
+                className="gap-2"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                Voltar
+              </Button>
+            )}
+            {currentStep === 'categories' && (
+              <Button
+                variant="ghost"
+                onClick={() => setCurrentStep('preview')}
+                className="gap-2"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                Voltar
+              </Button>
+            )}
+            {currentStep === 'upload' && <div />}
+            
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                onClick={handleClose}
+                disabled={isImporting}
+              >
+                Cancelar
+              </Button>
+              
+              {currentStep === 'preview' && (
                 <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={downloadTemplate}
-                  className="gap-2"
-                >
-                  <Download className="w-4 h-4" />
-                  Baixar modelo
-                </Button>
-                <Button
-                  size="sm"
-                  onClick={() => fileInputRef.current?.click()}
+                  onClick={handleProceedFromPreview}
                   disabled={isImporting}
                   className="gap-2"
                 >
-                  <Upload className="w-4 h-4" />
-                  {isImporting ? 'Importando...' : 'Selecionar arquivo'}
-                </Button>
-              </div>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept=".xlsx,.xls"
-                onChange={handleFileSelect}
-                className="hidden"
-              />
-            </div>
-
-            {importErrors.length > 0 && (
-              <div className="rounded-lg bg-destructive/10 p-3 max-h-40 overflow-auto">
-                <div className="flex items-center gap-2 text-destructive mb-2">
-                  <AlertCircle className="w-4 h-4" />
-                  <span className="text-sm font-medium">Erros encontrados:</span>
-                </div>
-                <ul className="text-xs text-destructive space-y-1">
-                  {importErrors.slice(0, 10).map((error, i) => (
-                    <li key={i}>• {error}</li>
-                  ))}
-                  {importErrors.length > 10 && (
-                    <li className="font-medium">...e mais {importErrors.length - 10} erro(s)</li>
+                  {unknownCategories.length > 0 ? (
+                    <>
+                      Continuar
+                      <ArrowRight className="w-4 h-4" />
+                    </>
+                  ) : (
+                    <>
+                      <Check className="w-4 h-4" />
+                      {isImporting ? 'Importando...' : 'Importar'}
+                    </>
                   )}
-                </ul>
-              </div>
-            )}
-
-            <div className="text-xs text-muted-foreground">
-              <p className="font-medium mb-1">Categorias aceitas:</p>
-              <p><strong>Receitas:</strong> Salário, 13º Salário, Férias, Freelance, Outros</p>
-              <p><strong>Despesas:</strong> Contas Fixas Mensais, Investimentos, Dívidas, Educação, Transporte, Mercado, Delivery, Outros</p>
-              <p className="mt-2 text-primary">Categorias personalizadas serão criadas automaticamente (com sua permissão).</p>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      {/* Dialog de Confirmação de Categorias */}
-      <Dialog open={showCategoryConfirmation} onOpenChange={(open) => !open && handleCancelCategories()}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle className="flex items-center gap-2">
-              <Plus className="w-5 h-5 text-primary" />
-              Novas Categorias Encontradas
-            </DialogTitle>
-            <DialogDescription>
-              Encontramos categorias que não existem no sistema. Deseja criá-las?
-            </DialogDescription>
-          </DialogHeader>
-
-          <div className="space-y-3 max-h-60 overflow-auto py-2">
-            {unknownCategories.map((cat, index) => (
-              <div
-                key={`${cat.type}-${cat.name}`}
-                className="flex items-center gap-3 p-3 rounded-lg border bg-card hover:bg-accent/50 transition-colors"
-              >
-                <Checkbox
-                  id={`cat-${index}`}
-                  checked={cat.selected}
-                  onCheckedChange={() => toggleCategory(index)}
-                />
-                <label
-                  htmlFor={`cat-${index}`}
-                  className="flex-1 cursor-pointer text-sm"
+                </Button>
+              )}
+              
+              {currentStep === 'categories' && (
+                <Button
+                  onClick={handleConfirmImport}
+                  disabled={isImporting}
+                  className="gap-2"
                 >
-                  <span className="font-medium">{cat.name}</span>
-                  <span className={`ml-2 text-xs px-2 py-0.5 rounded-full ${
-                    cat.type === 'receita' 
-                      ? 'bg-success/10 text-success' 
-                      : 'bg-destructive/10 text-destructive'
-                  }`}>
-                    {cat.type === 'receita' ? 'Receita' : 'Despesa'}
-                  </span>
-                </label>
-              </div>
-            ))}
-          </div>
-
-          <p className="text-xs text-muted-foreground">
-            Categorias não selecionadas serão importadas como "Outros".
-          </p>
-
-          <DialogFooter className="gap-2 sm:gap-0">
-            <Button
-              variant="outline"
-              onClick={handleCancelCategories}
-              disabled={isImporting}
-            >
-              Cancelar
-            </Button>
-            <Button
-              onClick={handleConfirmCategories}
-              disabled={isImporting}
-              className="gap-2"
-            >
-              <Check className="w-4 h-4" />
-              {isImporting ? 'Processando...' : 'Confirmar e Importar'}
-            </Button>
+                  <Check className="w-4 h-4" />
+                  {isImporting ? 'Processando...' : 'Confirmar e Importar'}
+                </Button>
+              )}
+            </div>
           </DialogFooter>
         </DialogContent>
       </Dialog>
