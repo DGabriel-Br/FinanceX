@@ -531,32 +531,21 @@ export const ExcelImportExport = ({
 
           {/* Step: Upload */}
           {currentStep === 'upload' && (
-            <div className="space-y-4">
-              <div className="rounded-lg border border-dashed border-muted-foreground/30 p-6 text-center">
-                <FileSpreadsheet className="w-10 h-10 mx-auto text-muted-foreground mb-3" />
-                <p className="text-sm text-muted-foreground mb-3">
-                  O arquivo deve conter as colunas: Tipo, Categoria, Data, Descrição, Valor
-                </p>
-                <div className="flex flex-col sm:flex-row gap-2 justify-center">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={downloadTemplate}
-                    className="gap-2"
-                  >
-                    <Download className="w-4 h-4" />
-                    Baixar modelo
-                  </Button>
-                  <Button
-                    size="sm"
-                    onClick={() => fileInputRef.current?.click()}
-                    disabled={isImporting}
-                    className="gap-2"
-                  >
-                    <Upload className="w-4 h-4" />
-                    {isImporting ? 'Processando...' : 'Selecionar arquivo'}
-                  </Button>
+            <div className="space-y-6">
+              {/* Drop Zone */}
+              <div 
+                className="rounded-xl border-2 border-dashed border-primary/30 bg-primary/5 p-8 text-center hover:border-primary/50 hover:bg-primary/10 transition-colors cursor-pointer"
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-primary/10 flex items-center justify-center">
+                  <Upload className="w-7 h-7 text-primary" />
                 </div>
+                <p className="text-base font-medium text-foreground mb-1">
+                  Arraste seu arquivo ou clique para selecionar
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  Formatos aceitos: .xlsx, .xls
+                </p>
                 <input
                   ref={fileInputRef}
                   type="file"
@@ -564,6 +553,19 @@ export const ExcelImportExport = ({
                   onChange={handleFileSelect}
                   className="hidden"
                 />
+              </div>
+
+              {/* Quick Actions */}
+              <div className="flex items-center justify-center gap-3">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={downloadTemplate}
+                  className="gap-2 text-muted-foreground hover:text-foreground"
+                >
+                  <Download className="w-4 h-4" />
+                  Baixar modelo de exemplo
+                </Button>
               </div>
 
               {importErrors.length > 0 && (
@@ -583,11 +585,11 @@ export const ExcelImportExport = ({
                 </div>
               )}
 
-              <div className="text-xs text-muted-foreground">
-                <p className="font-medium mb-1">Categorias aceitas:</p>
-                <p><strong>Receitas:</strong> Salário, 13º Salário, Férias, Freelance, Outros</p>
-                <p><strong>Despesas:</strong> Contas Fixas Mensais, Investimentos, Dívidas, Educação, Transporte, Mercado, Delivery, Outros</p>
-                <p className="mt-2 text-primary">Categorias personalizadas serão criadas automaticamente (com sua permissão).</p>
+              {/* Info */}
+              <div className="rounded-lg bg-muted/30 p-4">
+                <p className="text-xs text-muted-foreground text-center">
+                  <span className="text-primary">💡</span> Categorias novas serão criadas automaticamente com sua permissão
+                </p>
               </div>
             </div>
           )}
