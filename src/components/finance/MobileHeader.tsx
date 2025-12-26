@@ -29,14 +29,17 @@ const getInitials = (name?: string, email?: string): string => {
   return 'US';
 };
 
-// Função para extrair primeiro nome do email
-const getFirstName = (name?: string, email?: string): string => {
+// Função para extrair nome e sobrenome
+const getDisplayName = (name?: string, email?: string): string => {
   if (name) {
-    return name.split(' ')[0];
+    const parts = name.split(' ');
+    if (parts.length >= 2) {
+      return `${parts[0]} ${parts[parts.length - 1]}`;
+    }
+    return parts[0];
   }
   if (email) {
     const localPart = email.split('@')[0];
-    // Capitaliza a primeira letra
     return localPart.charAt(0).toUpperCase() + localPart.slice(1).toLowerCase();
   }
   return 'Usuário';
@@ -52,7 +55,7 @@ export const MobileHeader = ({
   onToggleTheme
 }: MobileHeaderProps) => {
   const initials = getInitials(userName, userEmail);
-  const firstName = getFirstName(userName, userEmail);
+  const firstName = getDisplayName(userName, userEmail);
   const { scrollDirection, isAtTop } = useScrollDirection({ threshold: 15 });
 
   // Header visível quando: no topo, rolando para cima, ou direção ainda não definida
