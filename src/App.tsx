@@ -17,9 +17,24 @@ const queryClient = new QueryClient();
 // Check if running inside Capacitor native app
 function isNativeApp(): boolean {
   try {
-    return Capacitor.isNativePlatform();
-  } catch {
+    // Multiple detection strategies for Capacitor
+    if (Capacitor.isNativePlatform()) {
+      return true;
+    }
+    // Fallback: check if running on Android/iOS platform
+    const platform = Capacitor.getPlatform();
+    if (platform === 'android' || platform === 'ios') {
+      return true;
+    }
+    // Additional fallback for older Capacitor versions
+    if ((window as any).Capacitor?.isNative) {
+      return true;
+    }
     return false;
+  } catch {
+    // If Capacitor throws, check window object directly
+    return !!(window as any).Capacitor?.isNative || 
+           (window as any).Capacitor?.getPlatform?.() !== 'web';
   }
 }
 
