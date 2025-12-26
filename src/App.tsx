@@ -14,19 +14,10 @@ import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
 
-// Check if running inside Capacitor native app or WebView
+// Check if running inside Capacitor native app
 function isNativeApp(): boolean {
-  // Check user agent for Android WebView or iOS WebView
-  const userAgent = navigator.userAgent || '';
-  const isAndroidWebView = /wv|Android.*Version\/[\d.]+.*Chrome\/[\d.]+ Mobile/.test(userAgent) && /Android/.test(userAgent);
-  const isIOSWebView = /(iPhone|iPod|iPad).*AppleWebKit(?!.*Safari)/i.test(userAgent);
-  
-  if (isAndroidWebView || isIOSWebView) {
-    return true;
-  }
-
+  // Primary check: Capacitor native platform
   try {
-    // Capacitor detection
     if (Capacitor.isNativePlatform()) {
       return true;
     }
@@ -34,14 +25,26 @@ function isNativeApp(): boolean {
     if (platform === 'android' || platform === 'ios') {
       return true;
     }
-    if ((window as any).Capacitor?.isNative) {
-      return true;
-    }
-    return false;
   } catch {
-    return !!(window as any).Capacitor?.isNative || 
-           (window as any).Capacitor?.getPlatform?.() !== 'web';
+    // Ignore errors
   }
+
+  // Secondary check: file:// protocol (local app)
+  if (window.location.protocol === 'file:') {
+    return true;
+  }
+
+  // Tertiary check: capacitor:// protocol
+  if (window.location.protocol === 'capacitor:') {
+    return true;
+  }
+
+  // Check for Capacitor global
+  if ((window as any).Capacitor?.isNative) {
+    return true;
+  }
+
+  return false;
 }
 
 // Component to handle mobile blocking
