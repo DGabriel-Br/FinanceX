@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from 'sonner';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { CategoryManager } from '@/components/finance/CategoryManager';
@@ -13,7 +13,6 @@ import { PasswordStrengthMeter } from '@/components/ui/PasswordStrengthMeter';
 
 export default function Settings() {
   const navigate = useNavigate();
-  const { toast } = useToast();
   const { user, loading, refreshUser } = useAuthContext();
   
   // Estado para avatar
@@ -55,21 +54,13 @@ export default function Settings() {
 
     // Validate file type
     if (!file.type.startsWith('image/')) {
-      toast({
-        title: "Arquivo inválido",
-        description: "Por favor, selecione uma imagem.",
-        variant: "destructive",
-      });
+      toast.error('Por favor, selecione uma imagem.');
       return;
     }
 
     // Validate file size (max 2MB)
     if (file.size > 2 * 1024 * 1024) {
-      toast({
-        title: "Arquivo muito grande",
-        description: "A imagem deve ter no máximo 2MB.",
-        variant: "destructive",
-      });
+      toast.error('A imagem deve ter no máximo 2MB.');
       return;
     }
 
@@ -111,16 +102,9 @@ export default function Settings() {
       setAvatarUrl(publicUrl);
       await refreshUser();
 
-      toast({
-        title: "Avatar atualizado",
-        description: "Sua foto de perfil foi atualizada com sucesso.",
-      });
+      toast.success('Sua foto de perfil foi atualizada com sucesso.');
     } catch (error: any) {
-      toast({
-        title: "Erro ao fazer upload",
-        description: error.message || "Ocorreu um erro ao atualizar o avatar.",
-        variant: "destructive",
-      });
+      toast.error(error.message || 'Ocorreu um erro ao atualizar o avatar.');
     } finally {
       setIsUploadingAvatar(false);
     }
@@ -141,16 +125,9 @@ export default function Settings() {
       setAvatarUrl(null);
       await refreshUser();
 
-      toast({
-        title: "Avatar removido",
-        description: "Sua foto de perfil foi removida.",
-      });
+      toast.success('Sua foto de perfil foi removida.');
     } catch (error: any) {
-      toast({
-        title: "Erro ao remover avatar",
-        description: error.message || "Ocorreu um erro ao remover o avatar.",
-        variant: "destructive",
-      });
+      toast.error(error.message || 'Ocorreu um erro ao remover o avatar.');
     } finally {
       setIsUploadingAvatar(false);
     }
@@ -182,11 +159,7 @@ export default function Settings() {
 
   const handleUpdateName = async () => {
     if (!name.trim() || name.trim().length < 2) {
-      toast({
-        title: "Nome inválido",
-        description: "O nome deve ter pelo menos 2 caracteres.",
-        variant: "destructive",
-      });
+      toast.error('O nome deve ter pelo menos 2 caracteres.');
       return;
     }
 
@@ -200,16 +173,9 @@ export default function Settings() {
 
       await refreshUser();
 
-      toast({
-        title: "Nome atualizado",
-        description: "Seu nome foi atualizado com sucesso.",
-      });
+      toast.success('Seu nome foi atualizado com sucesso.');
     } catch (error: any) {
-      toast({
-        title: "Erro ao atualizar nome",
-        description: error.message || "Ocorreu um erro ao atualizar o nome.",
-        variant: "destructive",
-      });
+      toast.error(error.message || 'Ocorreu um erro ao atualizar o nome.');
     } finally {
       setIsUpdatingName(false);
     }
@@ -217,29 +183,17 @@ export default function Settings() {
 
   const handleUpdatePassword = async () => {
     if (!currentPassword) {
-      toast({
-        title: "Senha atual obrigatória",
-        description: "Por favor, informe sua senha atual.",
-        variant: "destructive",
-      });
+      toast.error('Por favor, informe sua senha atual.');
       return;
     }
 
     if (passwordStrength < 100) {
-      toast({
-        title: "Senha fraca",
-        description: "A senha deve ter 8+ caracteres, maiúsculas, minúsculas e números.",
-        variant: "destructive",
-      });
+      toast.error('A senha deve ter 8+ caracteres, maiúsculas, minúsculas e números.');
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      toast({
-        title: "Senhas não coincidem",
-        description: "A nova senha e a confirmação devem ser iguais.",
-        variant: "destructive",
-      });
+      toast.error('A nova senha e a confirmação devem ser iguais.');
       return;
     }
 
@@ -251,11 +205,7 @@ export default function Settings() {
       });
 
       if (verifyError) {
-        toast({
-          title: "Senha atual incorreta",
-          description: "A senha atual informada está incorreta.",
-          variant: "destructive",
-        });
+        toast.error('A senha atual informada está incorreta.');
         return;
       }
 
@@ -265,20 +215,13 @@ export default function Settings() {
 
       if (error) throw error;
 
-      toast({
-        title: "Senha atualizada",
-        description: "Sua senha foi atualizada com sucesso.",
-      });
+      toast.success('Sua senha foi atualizada com sucesso.');
       
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
     } catch (error: any) {
-      toast({
-        title: "Erro ao atualizar senha",
-        description: error.message || "Ocorreu um erro ao atualizar a senha.",
-        variant: "destructive",
-      });
+      toast.error(error.message || 'Ocorreu um erro ao atualizar a senha.');
     } finally {
       setIsUpdatingPassword(false);
     }
