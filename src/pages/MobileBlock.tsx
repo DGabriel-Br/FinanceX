@@ -193,7 +193,10 @@ export default function MobileBlock() {
               Leve a experiência
             </span>
             <br />
-            <span className="bg-gradient-to-r from-primary via-income to-primary bg-clip-text text-transparent animate-pulse">
+            <span 
+              className="bg-clip-text text-transparent animate-pulse"
+              style={{ backgroundImage: 'linear-gradient(to right, #06b6d4, #22d3ee, #4ade80)' }}
+            >
               completa
             </span>
             <span className="bg-gradient-to-r from-white/90 via-white to-white/80 bg-clip-text text-transparent">
