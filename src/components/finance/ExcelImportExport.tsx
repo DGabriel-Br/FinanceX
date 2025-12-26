@@ -17,6 +17,8 @@ import { CustomCategory } from '@/hooks/useCustomCategories';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { Filesystem, Directory } from '@capacitor/filesystem';
+import { Share } from '@capacitor/share';
 
 interface ExcelImportExportProps {
   transactions: Transaction[];
@@ -116,7 +118,11 @@ export const ExcelImportExport = ({
     }
   };
 
-  const exportToExcel = () => {
+  const isNativePlatform = (): boolean => {
+    return !!(window as any).Capacitor?.isNativePlatform?.();
+  };
+
+  const exportToExcel = async () => {
     if (transactions.length === 0) {
       toast.error('Não há lançamentos para exportar');
       return;
@@ -143,8 +149,42 @@ export const ExcelImportExport = ({
     ];
 
     const fileName = `lancamentos_${new Date().toISOString().split('T')[0]}.xlsx`;
-    XLSX.writeFile(workbook, fileName);
-    toast.success('Lançamentos exportados com sucesso!');
+
+    // Verificar se está no app nativo
+    if (isNativePlatform()) {
+      try {
+        // Gerar o arquivo como base64
+        const wbout = XLSX.write(workbook, { bookType: 'xlsx', type: 'base64' });
+        
+        // Salvar o arquivo no dispositivo
+        const result = await Filesystem.writeFile({
+          path: fileName,
+          data: wbout,
+          directory: Directory.Documents,
+        });
+
+        // Compartilhar o arquivo (permite ao usuário escolher onde salvar/enviar)
+        await Share.share({
+          title: 'Exportar Lançamentos',
+          text: 'Lançamentos exportados do FinanceX',
+          url: result.uri,
+          dialogTitle: 'Salvar ou compartilhar arquivo',
+        });
+
+        toast.success(`Arquivo "${fileName}" exportado com sucesso!`);
+      } catch (error: any) {
+        console.error('Erro ao exportar no app nativo:', error);
+        // Se o usuário cancelou o compartilhamento, não mostrar erro
+        if (error?.message?.includes('cancel')) {
+          return;
+        }
+        toast.error('Erro ao exportar arquivo. Tente novamente.');
+      }
+    } else {
+      // Navegador web - usar método padrão
+      XLSX.writeFile(workbook, fileName);
+      toast.success('Lançamentos exportados com sucesso!');
+    }
   };
 
   const downloadTemplate = () => {
