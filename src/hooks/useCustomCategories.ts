@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuthContext } from '@/contexts/AuthContext';
-import { useToast } from '@/hooks/use-toast';
+import { toast } from 'sonner';
 
 export interface CustomCategory {
   id: string;
@@ -26,7 +26,6 @@ export interface CategoryOrder {
 
 export function useCustomCategories() {
   const { user } = useAuthContext();
-  const { toast } = useToast();
   const [categories, setCategories] = useState<CustomCategory[]>([]);
   const [hiddenDefaults, setHiddenDefaults] = useState<HiddenDefaultCategory[]>([]);
   const [categoryOrder, setCategoryOrder] = useState<CategoryOrder[]>([]);
@@ -78,30 +77,18 @@ export function useCustomCategories() {
 
   const addCategory = async (name: string, type: 'receita' | 'despesa', icon: string = 'tag') => {
     if (!user) {
-      toast({
-        title: 'Erro',
-        description: 'Você precisa estar logado para criar categorias.',
-        variant: 'destructive',
-      });
+      toast.error('Você precisa estar logado para criar categorias.');
       return false;
     }
 
     const trimmedName = name.trim();
     if (!trimmedName) {
-      toast({
-        title: 'Nome inválido',
-        description: 'O nome da categoria não pode ser vazio.',
-        variant: 'destructive',
-      });
+      toast.error('O nome da categoria não pode ser vazio.');
       return false;
     }
 
     if (trimmedName.length > 50) {
-      toast({
-        title: 'Nome muito longo',
-        description: 'O nome da categoria deve ter no máximo 50 caracteres.',
-        variant: 'destructive',
-      });
+      toast.error('O nome da categoria deve ter no máximo 50 caracteres.');
       return false;
     }
 
@@ -119,29 +106,18 @@ export function useCustomCategories() {
 
       if (error) {
         if (error.code === '23505') {
-          toast({
-            title: 'Categoria já existe',
-            description: `Já existe uma categoria "${trimmedName}" para ${type === 'receita' ? 'receitas' : 'despesas'}.`,
-            variant: 'destructive',
-          });
+          toast.error(`Já existe uma categoria "${trimmedName}" para ${type === 'receita' ? 'receitas' : 'despesas'}.`);
           return false;
         }
         throw error;
       }
 
       setCategories(prev => [...prev, data as CustomCategory].sort((a, b) => a.name.localeCompare(b.name)));
-      toast({
-        title: 'Categoria criada',
-        description: `A categoria "${trimmedName}" foi criada com sucesso.`,
-      });
+      toast.success(`Categoria "${trimmedName}" criada com sucesso.`);
       return true;
     } catch (error: any) {
       console.error('Error creating category:', error);
-      toast({
-        title: 'Erro ao criar categoria',
-        description: error.message || 'Ocorreu um erro ao criar a categoria.',
-        variant: 'destructive',
-      });
+      toast.error(error.message || 'Ocorreu um erro ao criar a categoria.');
       return false;
     }
   };
@@ -151,20 +127,12 @@ export function useCustomCategories() {
 
     const trimmedName = name.trim();
     if (!trimmedName) {
-      toast({
-        title: 'Nome inválido',
-        description: 'O nome da categoria não pode ser vazio.',
-        variant: 'destructive',
-      });
+      toast.error('O nome da categoria não pode ser vazio.');
       return false;
     }
 
     if (trimmedName.length > 50) {
-      toast({
-        title: 'Nome muito longo',
-        description: 'O nome da categoria deve ter no máximo 50 caracteres.',
-        variant: 'destructive',
-      });
+      toast.error('O nome da categoria deve ter no máximo 50 caracteres.');
       return false;
     }
 
@@ -180,11 +148,7 @@ export function useCustomCategories() {
 
       if (error) {
         if (error.code === '23505') {
-          toast({
-            title: 'Categoria já existe',
-            description: 'Já existe uma categoria com este nome.',
-            variant: 'destructive',
-          });
+          toast.error('Já existe uma categoria com este nome.');
           return false;
         }
         throw error;
@@ -194,18 +158,11 @@ export function useCustomCategories() {
         prev.map(cat => cat.id === id ? { ...cat, name: trimmedName, icon: icon || cat.icon } : cat)
           .sort((a, b) => a.name.localeCompare(b.name))
       );
-      toast({
-        title: 'Categoria atualizada',
-        description: `A categoria foi atualizada com sucesso.`,
-      });
+      toast.success('Categoria atualizada com sucesso.');
       return true;
     } catch (error: any) {
       console.error('Error updating category:', error);
-      toast({
-        title: 'Erro ao atualizar categoria',
-        description: error.message || 'Ocorreu um erro ao atualizar a categoria.',
-        variant: 'destructive',
-      });
+      toast.error(error.message || 'Ocorreu um erro ao atualizar a categoria.');
       return false;
     }
   };
@@ -223,18 +180,11 @@ export function useCustomCategories() {
       if (error) throw error;
 
       setCategories(prev => prev.filter(cat => cat.id !== id));
-      toast({
-        title: 'Categoria excluída',
-        description: 'A categoria foi excluída com sucesso.',
-      });
+      toast.success('Categoria excluída com sucesso.');
       return true;
     } catch (error: any) {
       console.error('Error deleting category:', error);
-      toast({
-        title: 'Erro ao excluir categoria',
-        description: error.message || 'Ocorreu um erro ao excluir a categoria.',
-        variant: 'destructive',
-      });
+      toast.error(error.message || 'Ocorreu um erro ao excluir a categoria.');
       return false;
     }
   };
@@ -264,18 +214,11 @@ export function useCustomCategories() {
       if (error) throw error;
 
       setHiddenDefaults(prev => [...prev, data as HiddenDefaultCategory]);
-      toast({
-        title: 'Categoria oculta',
-        description: 'A categoria padrão foi ocultada.',
-      });
+      toast.success('Categoria padrão ocultada.');
       return true;
     } catch (error: any) {
       console.error('Error hiding default category:', error);
-      toast({
-        title: 'Erro ao ocultar categoria',
-        description: error.message || 'Ocorreu um erro.',
-        variant: 'destructive',
-      });
+      toast.error(error.message || 'Ocorreu um erro.');
       return false;
     }
   };
@@ -294,18 +237,11 @@ export function useCustomCategories() {
       if (error) throw error;
 
       setHiddenDefaults(prev => prev.filter(h => !(h.category_key === categoryKey && h.type === type)));
-      toast({
-        title: 'Categoria restaurada',
-        description: 'A categoria padrão foi restaurada.',
-      });
+      toast.success('Categoria padrão restaurada.');
       return true;
     } catch (error: any) {
       console.error('Error restoring default category:', error);
-      toast({
-        title: 'Erro ao restaurar categoria',
-        description: error.message || 'Ocorreu um erro.',
-        variant: 'destructive',
-      });
+      toast.error(error.message || 'Ocorreu um erro.');
       return false;
     }
   };
@@ -365,11 +301,7 @@ export function useCustomCategories() {
       return true;
     } catch (error: any) {
       console.error('Error updating category order:', error);
-      toast({
-        title: 'Erro ao reordenar',
-        description: error.message || 'Ocorreu um erro ao salvar a ordem.',
-        variant: 'destructive',
-      });
+      toast.error(error.message || 'Ocorreu um erro ao salvar a ordem.');
       return false;
     }
   };
