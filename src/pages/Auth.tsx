@@ -10,6 +10,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { z } from 'zod';
 import { cn } from '@/lib/utils';
 import { FinanceLogo } from '@/components/ui/FinanceLogo';
+import { useIsNativeApp } from '@/hooks/useIsNativeApp';
 
 const emailSchema = z.string().email('Email inválido');
 const passwordSchema = z.string()
@@ -54,6 +55,11 @@ const FloatingParticle = ({
 export default function Auth() {
   const location = useLocation();
   const isRegisterRoute = location.pathname === '/cadastro';
+  const isNativeApp = useIsNativeApp();
+  
+  // Estado para controlar se mostra a tela de apresentação (landing) no app nativo
+  const [showLanding, setShowLanding] = useState(true);
+  const [landingChoice, setLandingChoice] = useState<'login' | 'register' | null>(null);
   
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -110,7 +116,19 @@ export default function Auth() {
 
   // Handle route transitions with animation
   useEffect(() => {
-    if (isRegisterRoute !== displayedIsRegister) {
+    // No app nativo, se o usuário fez uma escolha na landing, usamos essa escolha
+    if (isNativeApp && landingChoice !== null) {
+      const shouldBeRegister = landingChoice === 'register';
+      if (shouldBeRegister !== displayedIsRegister) {
+        setSlideDirection(shouldBeRegister ? 'right' : 'left');
+        setIsTransitioning(true);
+        const timer = setTimeout(() => {
+          setDisplayedIsRegister(shouldBeRegister);
+          setIsTransitioning(false);
+        }, 300);
+        return () => clearTimeout(timer);
+      }
+    } else if (isRegisterRoute !== displayedIsRegister) {
       // Determine slide direction
       setSlideDirection(isRegisterRoute ? 'right' : 'left');
       setIsTransitioning(true);
@@ -123,12 +141,32 @@ export default function Auth() {
       
       return () => clearTimeout(timer);
     }
-  }, [isRegisterRoute, displayedIsRegister]);
+  }, [isRegisterRoute, displayedIsRegister, isNativeApp, landingChoice]);
 
   const handleNavigateToPage = (path: string) => {
-    const goingToRegister = path === '/cadastro';
-    setSlideDirection(goingToRegister ? 'right' : 'left');
-    navigate(path);
+    if (isNativeApp) {
+      // No app nativo, só mudamos o estado interno
+      const goingToRegister = path === '/cadastro';
+      setLandingChoice(goingToRegister ? 'register' : 'login');
+      setSlideDirection(goingToRegister ? 'right' : 'left');
+    } else {
+      const goingToRegister = path === '/cadastro';
+      setSlideDirection(goingToRegister ? 'right' : 'left');
+      navigate(path);
+    }
+  };
+
+  // Handler para escolha na tela de landing (app nativo)
+  const handleLandingChoice = (choice: 'login' | 'register') => {
+    setLandingChoice(choice);
+    setDisplayedIsRegister(choice === 'register');
+    setShowLanding(false);
+  };
+
+  // Handler para voltar à landing
+  const handleBackToLanding = () => {
+    setShowLanding(true);
+    setLandingChoice(null);
   };
 
   useEffect(() => {
@@ -236,6 +274,136 @@ export default function Auth() {
             </span>
           </div>
           <Loader2 className="w-6 h-6 animate-spin text-primary" />
+        </div>
+      </div>
+    );
+  }
+
+  // Tela de apresentação (landing) para app nativo
+  if (isNativeApp && showLanding) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-sidebar via-[hsl(220,50%,15%)] to-primary/30 relative overflow-hidden flex flex-col">
+        {/* Floating Particles */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          {particles.map((particle) => (
+            <FloatingParticle key={particle.id} {...particle} />
+          ))}
+        </div>
+
+        {/* CSS Animation for particles */}
+        <style>{`
+          @keyframes float-particle {
+            0%, 100% {
+              transform: translateY(0px) translateX(0px) scale(1);
+              opacity: 0;
+            }
+            10% {
+              opacity: 1;
+            }
+            50% {
+              transform: translateY(-120px) translateX(30px) scale(1.3);
+              opacity: 0.8;
+            }
+            90% {
+              opacity: 1;
+            }
+          }
+        `}</style>
+
+        {/* Animated Background Elements */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          <div 
+            className={cn(
+              "absolute top-[10%] left-[5%] w-40 h-40 bg-gradient-to-br from-white/10 to-transparent rounded-full blur-xl transition-all duration-1000",
+              mounted ? "opacity-60 scale-100" : "opacity-0 scale-50"
+            )} 
+          />
+          <div 
+            className={cn(
+              "absolute top-[15%] right-[10%] w-32 h-32 bg-gradient-to-br from-income/20 to-primary/10 rounded-full blur-2xl transition-all duration-1000 delay-200",
+              mounted ? "opacity-50 scale-100" : "opacity-0 scale-50"
+            )} 
+          />
+          <div 
+            className={cn(
+              "absolute bottom-[30%] left-[8%] w-48 h-48 bg-gradient-to-br from-primary/15 to-income/20 rounded-full blur-3xl transition-all duration-1000 delay-300",
+              mounted ? "opacity-40 scale-100" : "opacity-0 scale-50"
+            )} 
+          />
+          <div 
+            className={cn(
+              "absolute bottom-[20%] right-[15%] w-36 h-36 bg-gradient-to-br from-income/15 to-primary/20 rounded-full blur-2xl transition-all duration-1000 delay-500",
+              mounted ? "opacity-50 scale-100" : "opacity-0 scale-50"
+            )} 
+          />
+        </div>
+
+        {/* Conteúdo principal da landing */}
+        <div className="flex-1 flex flex-col items-center justify-center px-8 relative z-10">
+          {/* Logo grande centralizada */}
+          <div 
+            className={cn(
+              "flex flex-col items-center mb-12 transition-all duration-1000 ease-out",
+              mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+            )}
+          >
+            <div className="relative mb-6">
+              {/* Glow effect */}
+              <div className="absolute -inset-8 bg-gradient-to-r from-primary/30 via-income/40 to-primary/30 rounded-full blur-3xl animate-pulse" />
+              <FinanceLogo size={80} className="relative drop-shadow-[0_0_30px_rgba(34,211,238,0.6)]" />
+            </div>
+            <div className="flex items-end">
+              <span 
+                className="text-4xl font-black tracking-wider text-primary"
+                style={{ fontFamily: "'Orbitron', sans-serif" }}
+              >
+                F
+              </span>
+              <span 
+                className="text-4xl font-black tracking-wider text-white"
+                style={{ fontFamily: "'Orbitron', sans-serif" }}
+              >
+                inanceX
+              </span>
+            </div>
+            <p className="text-white/60 text-center mt-4 text-sm max-w-xs">
+              Gerencie suas finanças de forma simples e inteligente
+            </p>
+          </div>
+
+          {/* Botões de ação */}
+          <div 
+            className={cn(
+              "w-full max-w-xs space-y-4 transition-all duration-1000 delay-300 ease-out",
+              mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+            )}
+          >
+            <Button
+              onClick={() => handleLandingChoice('login')}
+              className="w-full h-14 text-base font-semibold rounded-xl bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg shadow-primary/30"
+            >
+              Entrar
+            </Button>
+            <Button
+              onClick={() => handleLandingChoice('register')}
+              variant="outline"
+              className="w-full h-14 text-base font-semibold rounded-xl border-2 border-white/20 bg-white/5 hover:bg-white/10 text-white"
+            >
+              Criar conta
+            </Button>
+          </div>
+        </div>
+
+        {/* Footer */}
+        <div 
+          className={cn(
+            "py-8 text-center transition-all duration-1000 delay-500 ease-out",
+            mounted ? "opacity-100" : "opacity-0"
+          )}
+        >
+          <p className="text-white/40 text-xs">
+            © 2024 FinanceX. Todos os direitos reservados.
+          </p>
         </div>
       </div>
     );
@@ -395,6 +563,18 @@ export default function Auth() {
               isShaking && "animate-shake"
             )}
           >
+            {/* Botão voltar - apenas no app nativo */}
+            {isNativeApp && (
+              <button
+                type="button"
+                onClick={handleBackToLanding}
+                className="flex items-center gap-2 text-white/60 hover:text-white mb-4 -mt-2 transition-colors"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                <span className="text-sm">Voltar</span>
+              </button>
+            )}
+
             {/* Card Header */}
             <div className="text-center mb-8">
               <h1 className="text-2xl font-bold text-white mb-2">
