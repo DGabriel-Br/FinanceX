@@ -125,19 +125,22 @@ const Index = () => {
 
   if (authLoading || showSplash || isLoggingOut) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-[#0a0f1a]">
-        {/* Logo pulsando */}
-        <div className="relative mb-8">
-          {/* Glow effect */}
-          <div className="absolute inset-0 bg-gradient-to-r from-primary/30 via-income/40 to-primary/30 rounded-full blur-3xl animate-pulse" 
-               style={{ animationDuration: '2s' }} />
-          
-          {/* Logo image with pulse animation */}
-          <img 
-            src="/splash.png" 
-            alt="FinanceX" 
-            className="relative w-48 h-auto animate-[pulse_2s_cubic-bezier(0.4,0,0.6,1)_infinite]"
-          />
+      <div className="min-h-screen flex flex-col items-center justify-center bg-background">
+        {/* Logo animada */}
+        <div className="relative mb-6">
+          <div className="relative flex items-end">
+            <div className="absolute -inset-4 bg-gradient-to-r from-primary/20 via-income/20 to-primary/20 rounded-2xl blur-2xl animate-pulse" />
+            <FinanceLogo size={48} className="relative" />
+            <span 
+              className="text-3xl font-black tracking-wider text-foreground -ml-1 relative"
+              style={{ fontFamily: "'Orbitron', sans-serif" }}
+            >
+              inanceX
+            </span>
+          </div>
+          {/* Anel de loading ao redor do logo */}
+          <div className="absolute -inset-4 rounded-3xl border-2 border-primary/30 animate-spin" style={{ animationDuration: '3s' }} />
+          <div className="absolute -inset-5 rounded-3xl border-2 border-t-primary border-r-transparent border-b-transparent border-l-transparent animate-spin" style={{ animationDuration: '1.5s' }} />
         </div>
         
         <p className="text-sm text-muted-foreground animate-fade-in" style={{ animationDelay: '0.1s' }}>

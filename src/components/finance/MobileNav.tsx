@@ -38,7 +38,7 @@ export const MobileNav = ({ activeTab, theme, onToggleTheme, userEmail, onSignOu
 
   return (
     <>
-      <nav className="fixed bottom-0 left-0 right-0 z-50 bg-card border-t border-border md:hidden">
+      <nav className="fixed bottom-0 left-0 right-0 z-50 bg-card border-t border-border md:hidden safe-area-bottom">
         <div className="flex items-center justify-around h-16 px-2">
           {/* Itens da esquerda */}
           {navItemsLeft.map((item) => {
@@ -129,12 +129,6 @@ export const MobileNav = ({ activeTab, theme, onToggleTheme, userEmail, onSignOu
             <span className="text-[10px] font-medium">Config</span>
           </button>
         </div>
-        
-        {/* Safe area filler com a mesma cor de fundo */}
-        <div 
-          className="bg-card" 
-          style={{ height: 'env(safe-area-inset-bottom, 0px)' }} 
-        />
       </nav>
 
       {/* Sheet de Configurações */}
