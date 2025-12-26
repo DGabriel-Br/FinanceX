@@ -138,7 +138,7 @@ export const DebtTracker = ({ debts, transactions, onNavigateToDebts, formatValu
                 </h4>
                 <div className="flex items-center gap-1 text-xs text-muted-foreground bg-muted/50 px-2 py-1 rounded">
                   <Calendar className="w-3 h-3" />
-                  {formatMonthYear(expectedEndDate)}
+                  <span>Acaba em: {formatMonthYear(expectedEndDate)}</span>
                 </div>
               </div>
 
