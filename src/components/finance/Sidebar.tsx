@@ -107,18 +107,22 @@ export const Sidebar = ({
           <div
             className={cn(
               'flex items-center gap-3 px-3 py-3 rounded-xl bg-gradient-to-r from-primary/10 via-sidebar-accent/60 to-sidebar-accent/40 border border-primary/10 shadow-sm',
+              'transition-all duration-300 ease-out cursor-default',
+              'hover:from-primary/20 hover:via-sidebar-accent/80 hover:to-sidebar-accent/60',
+              'hover:border-primary/30 hover:shadow-md hover:shadow-primary/10',
+              'hover:scale-[1.02] hover:-translate-y-0.5',
               collapsed && 'justify-center px-2 py-2'
             )}
           >
-            <div className="relative flex-shrink-0">
-              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center ring-2 ring-primary/20 overflow-hidden">
+            <div className="relative flex-shrink-0 transition-transform duration-300 group-hover:scale-110">
+              <div className="w-9 h-9 rounded-full bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center ring-2 ring-primary/20 overflow-hidden transition-all duration-300 hover:ring-primary/40 hover:ring-offset-1 hover:ring-offset-sidebar">
                 {userAvatar ? (
                   <img src={userAvatar} alt="Avatar" className="w-full h-full object-cover" />
                 ) : (
                   <User className="w-4 h-4 text-primary" />
                 )}
               </div>
-              <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-income rounded-full border-2 border-sidebar" title="Online" />
+              <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-income rounded-full border-2 border-sidebar animate-pulse" title="Online" />
             </div>
             {!collapsed && (
               <div className="flex-1 min-w-0">
