@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, forwardRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
@@ -20,38 +20,38 @@ const passwordSchema = z.string()
   .regex(/[a-z]/, 'Deve conter pelo menos uma letra minúscula')
   .regex(/[0-9]/, 'Deve conter pelo menos um número');
 
-// Floating particle component
-const FloatingParticle = ({ 
-  delay, 
-  duration, 
-  size, 
-  startX, 
-  startY,
-  color 
-}: { 
-  delay: number; 
-  duration: number; 
-  size: number; 
-  startX: number; 
+interface FloatingParticleProps {
+  delay: number;
+  duration: number;
+  size: number;
+  startX: number;
   startY: number;
   color: string;
-}) => {
-  return (
-    <div
-      className={cn(
-        "absolute rounded-full pointer-events-none",
-        color
-      )}
-      style={{
-        width: size,
-        height: size,
-        left: `${startX}%`,
-        top: `${startY}%`,
-        animation: `float-particle ${duration}s ease-in-out ${delay}s infinite`,
-      }}
-    />
-  );
-};
+}
+
+// Floating particle component with forwardRef
+const FloatingParticle = forwardRef<HTMLDivElement, FloatingParticleProps>(
+  ({ delay, duration, size, startX, startY, color }, ref) => {
+    return (
+      <div
+        ref={ref}
+        className={cn(
+          "absolute rounded-full pointer-events-none",
+          color
+        )}
+        style={{
+          width: size,
+          height: size,
+          left: `${startX}%`,
+          top: `${startY}%`,
+          animation: `float-particle ${duration}s ease-in-out ${delay}s infinite`,
+        }}
+      />
+    );
+  }
+);
+
+FloatingParticle.displayName = "FloatingParticle";
 
 export default function Auth() {
   const location = useLocation();
