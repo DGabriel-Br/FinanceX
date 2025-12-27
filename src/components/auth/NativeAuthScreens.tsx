@@ -8,8 +8,6 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { z } from 'zod';
 import { cn } from '@/lib/utils';
 import { FinanceLogo } from '@/components/ui/FinanceLogo';
-import { OfflineStatusBar } from '@/components/finance/OfflineStatusBar';
-import { OfflineModal } from '@/components/finance/OfflineModal';
 
 const emailSchema = z.string().email('Email inválido');
 const passwordSchema = z.string()
@@ -284,13 +282,10 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onSuccess }: NativeAuthS
   // Welcome Screen
   if (screen === 'welcome') {
     return (
-      <>
-        <OfflineModal />
-        <div className={cn(
-          "min-h-screen bg-gradient-to-br from-sidebar via-[hsl(220,50%,15%)] to-primary/30 relative overflow-hidden flex flex-col transition-opacity duration-300",
-          bgFading && "opacity-80"
-        )}>
-          <OfflineStatusBar />
+      <div className={cn(
+        "min-h-screen bg-gradient-to-br from-sidebar via-[hsl(220,50%,15%)] to-primary/30 relative overflow-hidden flex flex-col transition-opacity duration-300",
+        bgFading && "opacity-80"
+      )}>
           <style>{cssAnimations}</style>
         
         {/* Floating Particles - igual ao web */}
@@ -410,20 +405,16 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onSuccess }: NativeAuthS
           </Button>
         </div>
         </div>
-      </>
     );
   }
 
   // Login Screen
   if (screen === 'login') {
     return (
-      <>
-        <OfflineModal />
-        <div className={cn(
-          "min-h-screen bg-gradient-to-br from-sidebar via-[hsl(220,50%,15%)] to-primary/30 relative overflow-hidden flex flex-col transition-opacity duration-300",
-          bgFading && "opacity-80"
-        )}>
-          <OfflineStatusBar />
+      <div className={cn(
+        "min-h-screen bg-gradient-to-br from-sidebar via-[hsl(220,50%,15%)] to-primary/30 relative overflow-hidden flex flex-col transition-opacity duration-300",
+        bgFading && "opacity-80"
+      )}>
           <style>{cssAnimations}</style>
 
         {/* Floating Particles - igual ao web */}
@@ -540,20 +531,16 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onSuccess }: NativeAuthS
           </form>
         </div>
         </div>
-      </>
     );
   }
 
   // Register Screen
   if (screen === 'register') {
     return (
-      <>
-        <OfflineModal />
-        <div className={cn(
-          "min-h-screen bg-gradient-to-br from-sidebar via-[hsl(220,50%,15%)] to-primary/30 relative overflow-hidden flex flex-col transition-opacity duration-300",
-          bgFading && "opacity-80"
-        )}>
-          <OfflineStatusBar />
+      <div className={cn(
+        "min-h-screen bg-gradient-to-br from-sidebar via-[hsl(220,50%,15%)] to-primary/30 relative overflow-hidden flex flex-col transition-opacity duration-300",
+        bgFading && "opacity-80"
+      )}>
           <style>{cssAnimations}</style>
 
         {/* Floating Particles - igual ao web */}
@@ -708,7 +695,6 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onSuccess }: NativeAuthS
           </form>
         </div>
         </div>
-      </>
     );
   }
 
