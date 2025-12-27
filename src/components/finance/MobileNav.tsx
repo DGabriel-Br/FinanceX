@@ -130,8 +130,6 @@ export const MobileNav = ({ activeTab, theme, onToggleTheme, userEmail, onSignOu
             <span className="text-[10px] font-medium">Config</span>
           </button>
         </div>
-        {/* Safe area transparent */}
-        <div className="safe-area-bottom" />
       </nav>
 
       {/* Sheet de Configurações */}
