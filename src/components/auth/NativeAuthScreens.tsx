@@ -59,9 +59,10 @@ interface NativeAuthScreensProps {
 
 export function NativeAuthScreens({ onSignIn, onSignUp, onSuccess }: NativeAuthScreensProps) {
   const [screen, setScreen] = useState<Screen>('welcome');
+  const [nextScreen, setNextScreen] = useState<Screen | null>(null);
   const [mounted, setMounted] = useState(false);
-  const [isVisible, setIsVisible] = useState(false);
-  const [slideDirection, setSlideDirection] = useState<'left' | 'right' | null>(null);
+  const [phase, setPhase] = useState<'idle' | 'exiting' | 'entering'>('idle');
+  const [isGoingBack, setIsGoingBack] = useState(false);
   
   // Form states
   const [name, setName] = useState('');
@@ -76,8 +77,6 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onSuccess }: NativeAuthS
 
   useEffect(() => {
     setMounted(true);
-    // Small delay to ensure smooth initial animation
-    const timer = setTimeout(() => setIsVisible(true), 50);
     // Load saved credentials
     const savedEmail = localStorage.getItem('financex_saved_email');
     const savedPassword = localStorage.getItem('financex_saved_password');
@@ -86,43 +85,49 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onSuccess }: NativeAuthS
       setPassword(savedPassword);
       setRememberMe(true);
     }
-    return () => clearTimeout(timer);
   }, []);
 
   const handleNavigate = (newScreen: Screen) => {
-    const isGoingBack = newScreen === 'welcome';
-    // Exit: content slides OUT in this direction
-    // Going back = slide right (exit right), Going forward = slide left (exit left)
-    setSlideDirection(isGoingBack ? 'right' : 'left');
-    setIsVisible(false);
+    const goingBack = newScreen === 'welcome';
+    setIsGoingBack(goingBack);
+    setNextScreen(newScreen);
+    setPhase('exiting');
     
     setTimeout(() => {
       setScreen(newScreen);
-      // Enter: new content comes FROM this direction
-      // Going back = come from left, Going forward = come from right
-      setSlideDirection(isGoingBack ? 'left' : 'right');
-      setTimeout(() => setIsVisible(true), 50);
+      setPhase('entering');
+      
+      setTimeout(() => {
+        setPhase('idle');
+        setNextScreen(null);
+      }, 300);
     }, 300);
   };
   
-  // Get animation classes - simpler logic
-  // slideDirection indicates where content should GO when exiting
-  // or where content should COME FROM when entering
+  // Get animation classes based on phase and direction
   const getAnimationClasses = () => {
-    if (isVisible) {
+    // Idle = fully visible
+    if (phase === 'idle') {
       return "opacity-100 translate-x-0";
     }
-    // Not visible - position content off-screen in the slide direction
-    if (slideDirection === 'left') {
-      // Exit to left OR enter from left
-      return "opacity-0 -translate-x-8";
+    
+    // Exiting: slide content OUT
+    if (phase === 'exiting') {
+      // Going back = exit to RIGHT, Going forward = exit to LEFT
+      return isGoingBack 
+        ? "opacity-0 translate-x-12" 
+        : "opacity-0 -translate-x-12";
     }
-    if (slideDirection === 'right') {
-      // Exit to right OR enter from right  
-      return "opacity-0 translate-x-8";
+    
+    // Entering: new content comes IN from the opposite side
+    if (phase === 'entering') {
+      // Going back = enter from LEFT, Going forward = enter from RIGHT
+      return isGoingBack 
+        ? "opacity-0 -translate-x-12" 
+        : "opacity-0 translate-x-12";
     }
-    // Initial state
-    return "opacity-0";
+    
+    return "opacity-100 translate-x-0";
   };
 
   const triggerShake = () => {
