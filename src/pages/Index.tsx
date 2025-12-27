@@ -10,6 +10,7 @@ import { MobileHeader } from '@/components/finance/MobileHeader';
 import { MobileNav } from '@/components/finance/MobileNav';
 import { FloatingAddButton } from '@/components/finance/FloatingAddButton';
 import { PullToRefresh } from '@/components/finance/PullToRefresh';
+import { OfflineStatusBar } from '@/components/finance/OfflineStatusBar';
 import { useTransactions } from '@/hooks/useTransactions';
 import { useDebts } from '@/hooks/useDebts';
 import { useTheme } from '@/hooks/useTheme';
@@ -203,15 +204,18 @@ const Index = () => {
 
         {/* Mobile Header - apenas no app nativo */}
         {isNativeApp && (
-          <MobileHeader
-            userName={user.user_metadata?.full_name}
-            userEmail={user.email}
-            userAvatar={user.user_metadata?.avatar_url}
-            showValues={showValues}
-            onToggleValues={toggleValuesVisibility}
-            theme={theme}
-            onToggleTheme={toggleTheme}
-          />
+          <>
+            <OfflineStatusBar />
+            <MobileHeader
+              userName={user.user_metadata?.full_name}
+              userEmail={user.email}
+              userAvatar={user.user_metadata?.avatar_url}
+              showValues={showValues}
+              onToggleValues={toggleValuesVisibility}
+              theme={theme}
+              onToggleTheme={toggleTheme}
+            />
+          </>
         )}
 
         {/* Conteúdo principal */}
