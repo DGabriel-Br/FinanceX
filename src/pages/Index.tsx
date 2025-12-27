@@ -1,5 +1,6 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { cn } from '@/lib/utils';
 import { Sidebar } from '@/components/finance/Sidebar';
 import { Dashboard } from '@/components/finance/Dashboard';
 import { Transactions } from '@/components/finance/Transactions';
@@ -30,24 +31,40 @@ import {
 } from '@/components/ui/alert-dialog';
 import { FinanceLogo } from '@/components/ui/FinanceLogo';
 
-type Tab = 'dashboard' | 'lancamentos' | 'dividas' | 'investimentos';
+type Tab = 'dashboard' | 'lancamentos' | 'investimentos' | 'dividas';
+
+const tabOrder: Tab[] = ['dashboard', 'lancamentos', 'investimentos', 'dividas'];
 
 const getTabFromPath = (pathname: string): Tab => {
   const path = pathname.replace('/', '') as Tab;
-  if (['dashboard', 'lancamentos', 'dividas', 'investimentos'].includes(path)) {
+  if (tabOrder.includes(path)) {
     return path;
   }
   return 'dashboard';
 };
 
+const getTabIndex = (tab: Tab): number => tabOrder.indexOf(tab);
+
 const Index = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const activeTab = getTabFromPath(location.pathname);
+  const [prevTab, setPrevTab] = useState<Tab>(activeTab);
+  const [slideDirection, setSlideDirection] = useState<'left' | 'right' | 'none'>('none');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [showSplash, setShowSplash] = useState(true);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+
+  // Detecta direção da navegação entre abas
+  useEffect(() => {
+    if (activeTab !== prevTab) {
+      const prevIndex = getTabIndex(prevTab);
+      const newIndex = getTabIndex(activeTab);
+      setSlideDirection(newIndex > prevIndex ? 'left' : 'right');
+      setPrevTab(activeTab);
+    }
+  }, [activeTab, prevTab]);
   const { theme, toggleTheme } = useTheme();
   const { user, loading: authLoading, signOut, refreshUser } = useAuthContext();
   const { showValues, toggleValuesVisibility, formatValue } = useValuesVisibility();
@@ -201,7 +218,15 @@ const Index = () => {
         <main className={`flex-1 flex flex-col overflow-auto ${isNativeApp ? 'pb-24' : 'bg-background'}`}>
           {isNativeApp ? (
             <PullToRefresh onRefresh={handlePullRefresh} className="flex-1">
-              <div key={activeTab} className="animate-fade-in flex-1" style={{ animationDuration: '0.3s' }}>
+              <div 
+                key={activeTab} 
+                className={cn(
+                  "flex-1",
+                  slideDirection === 'left' && "animate-slide-in-right",
+                  slideDirection === 'right' && "animate-slide-in-left",
+                  slideDirection === 'none' && "animate-fade-in"
+                )}
+              >
                 {activeTab === 'dashboard' ? (
                   <Dashboard
                     totals={totals}
@@ -254,7 +279,15 @@ const Index = () => {
               </div>
             </PullToRefresh>
           ) : (
-            <div key={activeTab} className="animate-fade-in flex-1" style={{ animationDuration: '0.3s' }}>
+            <div 
+              key={activeTab} 
+              className={cn(
+                "flex-1",
+                slideDirection === 'left' && "animate-slide-in-right",
+                slideDirection === 'right' && "animate-slide-in-left",
+                slideDirection === 'none' && "animate-fade-in"
+              )}
+            >
               {activeTab === 'dashboard' ? (
                 <Dashboard
                   totals={totals}
