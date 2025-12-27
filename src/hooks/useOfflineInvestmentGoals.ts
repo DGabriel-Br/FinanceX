@@ -105,6 +105,7 @@ export const useOfflineInvestmentGoals = () => {
           userId,
           syncStatus: 'pending',
           localUpdatedAt: now,
+          version: 1,
         };
 
         await db.investmentGoals.add(localGoal);

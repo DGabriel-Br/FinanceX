@@ -77,6 +77,7 @@ export const useOfflineDebts = () => {
         userId,
         syncStatus: 'pending',
         localUpdatedAt: now,
+        version: 1,
       };
 
       await db.debts.add(localDebt);
