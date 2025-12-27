@@ -11,6 +11,7 @@ import { MobileNav } from '@/components/finance/MobileNav';
 import { FloatingAddButton } from '@/components/finance/FloatingAddButton';
 import { PullToRefresh } from '@/components/finance/PullToRefresh';
 import { OfflineStatusBar } from '@/components/finance/OfflineStatusBar';
+import { OfflineModal } from '@/components/finance/OfflineModal';
 import { useTransactions } from '@/hooks/useTransactions';
 import { useDebts } from '@/hooks/useDebts';
 import { useTheme } from '@/hooks/useTheme';
@@ -186,6 +187,9 @@ const Index = () => {
 
   return (
     <>
+      {/* Modal de aviso offline - apenas no app nativo */}
+      {isNativeApp && <OfflineModal />}
+      
       <div className={`flex ${isNativeApp ? 'flex-col' : ''} min-h-screen w-full relative`}>
         {/* Sidebar - desktop (oculta no app nativo) */}
         {!isNativeApp && (
