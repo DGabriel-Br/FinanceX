@@ -9,7 +9,7 @@ import {
   User, 
   Check, 
   Shield, 
-  Settings2, 
+  Cog, 
   LogOut,
   Mail,
   Sun,
@@ -351,7 +351,7 @@ export default function Settings() {
             className="group flex flex-col items-start p-4 bg-muted/50 rounded-2xl hover:bg-muted active:scale-[0.97] transition-all aspect-square animate-fade-in opacity-0"
             style={{ animationDelay: '0.1s', animationFillMode: 'forwards' }}
           >
-            <User className="w-7 h-7 text-primary stroke-[1.5] group-hover:scale-110 transition-transform" />
+            <User className="w-5 h-5 text-primary stroke-[1.5] group-hover:scale-110 transition-transform" />
             <div className="mt-auto text-left">
               <span className="text-[13px] font-medium text-foreground leading-tight block">
                 Dados
@@ -368,7 +368,7 @@ export default function Settings() {
             className="group flex flex-col items-start p-4 bg-muted/50 rounded-2xl hover:bg-muted active:scale-[0.97] transition-all aspect-square animate-fade-in opacity-0"
             style={{ animationDelay: '0.2s', animationFillMode: 'forwards' }}
           >
-            <Shield className="w-7 h-7 text-primary stroke-[1.5] group-hover:scale-110 transition-transform" />
+            <Shield className="w-5 h-5 text-primary stroke-[1.5] group-hover:scale-110 transition-transform" />
             <div className="mt-auto text-left">
               <span className="text-[13px] font-medium text-foreground leading-tight block">
                 &nbsp;
@@ -385,7 +385,7 @@ export default function Settings() {
             className="group flex flex-col items-start p-4 bg-muted/50 rounded-2xl hover:bg-muted active:scale-[0.97] transition-all aspect-square animate-fade-in opacity-0"
             style={{ animationDelay: '0.3s', animationFillMode: 'forwards' }}
           >
-            <Settings2 className="w-7 h-7 text-primary stroke-[1.5] group-hover:scale-110 transition-transform" />
+            <Cog className="w-5 h-5 text-primary stroke-[1.5] group-hover:scale-110 transition-transform" />
             <div className="mt-auto text-left">
               <span className="text-[13px] font-medium text-foreground leading-tight block">
                 &nbsp;
