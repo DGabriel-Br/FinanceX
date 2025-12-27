@@ -6,6 +6,7 @@ import { syncService } from '@/lib/offline/syncService';
 import { toast } from 'sonner';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { logger } from '@/lib/logger';
+import { useAuthContext } from '@/contexts/AuthContext';
 
 export interface InvestmentGoal {
   type: InvestmentType;
@@ -13,8 +14,10 @@ export interface InvestmentGoal {
 }
 
 export const useOfflineInvestmentGoals = () => {
+  const { user, loading: authLoading } = useAuthContext();
   const [loading, setLoading] = useState(true);
-  const [userId, setUserId] = useState<string | null>(null);
+
+  const userId = user?.id || null;
 
   // Observar metas do IndexedDB em tempo real
   const localGoals = useLiveQuery(
@@ -36,27 +39,24 @@ export const useOfflineInvestmentGoals = () => {
     targetValue: g.targetValue,
   }));
 
-  // Inicialização
+  // Inicialização - sincronizar apenas se online
   useEffect(() => {
+    if (authLoading) return;
+    
     const init = async () => {
       try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (user) {
-          setUserId(user.id);
-          
-          if (navigator.onLine) {
-            await syncService.syncAll();
-          }
+        if (userId && navigator.onLine) {
+          await syncService.syncAll();
         }
       } catch (error) {
-        logger.error('Erro ao inicializar:', error);
+        logger.error('Erro ao sincronizar:', error);
       } finally {
         setLoading(false);
       }
     };
     
     init();
-  }, []);
+  }, [userId, authLoading]);
 
   // Adicionar ou atualizar meta
   const setGoal = useCallback(async (type: InvestmentType, targetValue: number) => {

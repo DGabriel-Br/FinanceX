@@ -43,7 +43,17 @@ class SyncService {
     };
 
     try {
-      const { data: { user } } = await supabase.auth.getUser();
+      // Verificar se está online primeiro
+      if (!navigator.onLine) {
+        result.success = false;
+        result.errors.push('Sem conexão com a internet');
+        return result;
+      }
+
+      // Usar getSession que funciona mesmo offline (usa cache local)
+      const { data: { session } } = await supabase.auth.getSession();
+      const user = session?.user;
+      
       if (!user) {
         result.success = false;
         result.errors.push('Usuário não autenticado');

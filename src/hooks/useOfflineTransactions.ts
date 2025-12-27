@@ -8,6 +8,7 @@ import { syncService } from '@/lib/offline/syncService';
 import { toast } from 'sonner';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { logger } from '@/lib/logger';
+import { useAuthContext } from '@/contexts/AuthContext';
 
 // Função para obter data local no formato YYYY-MM-DD
 export const getLocalDateString = (date: Date = new Date()): string => {
@@ -24,12 +25,14 @@ export const parseLocalDate = (dateString: string): Date => {
 };
 
 export const useOfflineTransactions = () => {
+  const { user, loading: authLoading } = useAuthContext();
   const [loading, setLoading] = useState(true);
-  const [userId, setUserId] = useState<string | null>(null);
   const [customRange, setCustomRange] = useState<CustomDateRange | null>(() => {
     const today = new Date();
     return { start: startOfMonth(today), end: endOfMonth(today) };
   });
+
+  const userId = user?.id || null;
 
   // Observar transações do IndexedDB em tempo real
   const localTransactions = useLiveQuery(
@@ -56,28 +59,25 @@ export const useOfflineTransactions = () => {
     createdAt: t.createdAt,
   }));
 
-  // Inicialização
+  // Inicialização - sincronizar apenas se online
   useEffect(() => {
+    if (authLoading) return;
+    
     const init = async () => {
       try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (user) {
-          setUserId(user.id);
-          
-          // Se online, sincronizar
-          if (navigator.onLine) {
-            await syncService.syncAll();
-          }
+        // Se online e temos usuário, sincronizar
+        if (userId && navigator.onLine) {
+          await syncService.syncAll();
         }
       } catch (error) {
-        logger.error('Erro ao inicializar:', error);
+        logger.error('Erro ao sincronizar:', error);
       } finally {
         setLoading(false);
       }
     };
     
     init();
-  }, []);
+  }, [userId, authLoading]);
 
   // Adicionar transação (funciona offline)
   const addTransaction = useCallback(async (transaction: Omit<Transaction, 'id' | 'createdAt'>) => {
