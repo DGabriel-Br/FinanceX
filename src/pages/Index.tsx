@@ -194,7 +194,7 @@ const Index = () => {
         )}
 
         {/* Conteúdo principal */}
-        <main className={`flex-1 flex flex-col overflow-auto bg-background ${isNativeApp ? 'pb-24' : ''}`}>
+        <main className={`flex-1 flex flex-col overflow-auto ${isNativeApp ? 'pb-24' : 'bg-background'}`}>
           {isNativeApp ? (
             <PullToRefresh onRefresh={handlePullRefresh} className="flex-1">
               <div key={activeTab} className="animate-fade-in flex-1" style={{ animationDuration: '0.3s' }}>
