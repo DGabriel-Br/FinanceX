@@ -340,7 +340,7 @@ export default function Settings() {
 
       {/* Settings Cards */}
       <div className="flex-1 px-4">
-        <h3 className="text-base font-bold text-foreground mb-4">
+        <h3 className="text-base font-bold text-foreground mb-4 animate-fade-in opacity-0" style={{ animationDelay: '0.05s', animationFillMode: 'forwards' }}>
           Configurações
         </h3>
         
@@ -398,17 +398,17 @@ export default function Settings() {
         </div>
 
         {/* Versão do app */}
-        <p className="text-xs text-muted-foreground text-center">
+        <p className="text-xs text-muted-foreground text-center animate-fade-in opacity-0" style={{ animationDelay: '0.4s', animationFillMode: 'forwards' }}>
           FinanceX v1.0.0
         </p>
       </div>
 
       {/* Logout Button */}
-      <div className="px-4 py-6 safe-area-bottom mt-auto">
+      <div className="px-4 py-6 safe-area-bottom mt-auto animate-fade-in opacity-0" style={{ animationDelay: '0.5s', animationFillMode: 'forwards' }}>
         <Button
           onClick={handleSignOut}
           variant="destructive"
-          className="w-full h-14 text-base font-semibold rounded-xl shadow-lg shadow-destructive/20"
+          className="w-full h-14 text-base font-semibold rounded-xl shadow-lg shadow-destructive/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
         >
           <span>Sair do app</span>
           <LogOut className="w-5 h-5 ml-auto" />
@@ -613,9 +613,12 @@ export default function Settings() {
 
           <div className="space-y-3">
             {/* Theme Toggle */}
-            <div className="flex items-center justify-between p-4 bg-muted/50 rounded-xl">
+            <div 
+              className="flex items-center justify-between p-4 bg-muted/50 rounded-xl animate-fade-in opacity-0"
+              style={{ animationDelay: '0.1s', animationFillMode: 'forwards' }}
+            >
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
                   {theme === 'dark' ? (
                     <Moon className="w-5 h-5 text-primary" />
                   ) : (
@@ -636,9 +639,12 @@ export default function Settings() {
             </div>
 
             {/* Notifications Toggle */}
-            <div className="flex items-center justify-between p-4 bg-muted/50 rounded-xl">
+            <div 
+              className="flex items-center justify-between p-4 bg-muted/50 rounded-xl animate-fade-in opacity-0"
+              style={{ animationDelay: '0.15s', animationFillMode: 'forwards' }}
+            >
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
                   <Bell className="w-5 h-5 text-primary" />
                 </div>
                 <div>
@@ -654,11 +660,12 @@ export default function Settings() {
 
             {/* Language Selector */}
             <button
-              className="w-full flex items-center justify-between p-4 bg-muted/50 rounded-xl opacity-60 cursor-not-allowed"
+              className="w-full flex items-center justify-between p-4 bg-muted/50 rounded-xl opacity-60 cursor-not-allowed animate-fade-in"
+              style={{ animationDelay: '0.2s', animationFillMode: 'forwards' }}
               disabled
             >
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
                   <Globe className="w-5 h-5 text-primary" />
                 </div>
                 <div className="text-left">
@@ -671,11 +678,12 @@ export default function Settings() {
 
             {/* Currency Selector */}
             <button
-              className="w-full flex items-center justify-between p-4 bg-muted/50 rounded-xl opacity-60 cursor-not-allowed"
+              className="w-full flex items-center justify-between p-4 bg-muted/50 rounded-xl opacity-60 cursor-not-allowed animate-fade-in"
+              style={{ animationDelay: '0.25s', animationFillMode: 'forwards' }}
               disabled
             >
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
                   <DollarSign className="w-5 h-5 text-primary" />
                 </div>
                 <div className="text-left">
@@ -692,10 +700,11 @@ export default function Settings() {
                 setActiveSection(null);
                 setTimeout(() => setActiveSection('categories'), 150);
               }}
-              className="w-full flex items-center justify-between p-4 bg-muted/50 rounded-xl hover:bg-muted transition-colors"
+              className="w-full flex items-center justify-between p-4 bg-muted/50 rounded-xl hover:bg-muted active:scale-[0.98] transition-all animate-fade-in opacity-0"
+              style={{ animationDelay: '0.3s', animationFillMode: 'forwards' }}
             >
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
                   <Tag className="w-5 h-5 text-primary" />
                 </div>
                 <div className="text-left">
@@ -707,7 +716,10 @@ export default function Settings() {
             </button>
 
             {/* Coming soon note */}
-            <p className="text-xs text-muted-foreground text-center pt-4">
+            <p 
+              className="text-xs text-muted-foreground text-center pt-4 animate-fade-in opacity-0"
+              style={{ animationDelay: '0.35s', animationFillMode: 'forwards' }}
+            >
               Algumas opções estarão disponíveis em breve
             </p>
           </div>
