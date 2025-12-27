@@ -343,19 +343,19 @@ export default function Settings() {
           Configurações
         </h3>
         
-        <div className="grid grid-cols-3 gap-3 mb-8">
+        <div className="flex justify-center gap-4 mb-8">
           {/* Card Dados Pessoais */}
           <button
             onClick={() => setActiveSection('profile')}
-            className="group flex flex-col items-start p-5 bg-muted/50 rounded-2xl hover:bg-muted active:scale-[0.97] transition-all min-h-[120px] animate-fade-in opacity-0"
+            className="group flex flex-col items-start p-4 bg-muted/40 rounded-3xl hover:bg-muted/60 active:scale-[0.97] transition-all w-[110px] h-[110px] animate-fade-in opacity-0"
             style={{ animationDelay: '0.1s', animationFillMode: 'forwards' }}
           >
-            <User className="w-5 h-5 text-primary stroke-[1.5] group-hover:scale-110 transition-transform" />
+            <User className="w-6 h-6 text-primary stroke-[1.5] group-hover:scale-110 transition-transform" />
             <div className="mt-auto text-left">
-              <span className="text-[13px] font-medium text-foreground leading-tight block">
+              <span className="text-sm font-medium text-foreground leading-tight block">
                 Dados
               </span>
-              <span className="text-[13px] font-medium text-foreground leading-tight block">
+              <span className="text-sm font-medium text-foreground leading-tight block">
                 pessoais
               </span>
             </div>
@@ -364,15 +364,12 @@ export default function Settings() {
           {/* Card Segurança */}
           <button
             onClick={() => setActiveSection('security')}
-            className="group flex flex-col items-start p-5 bg-muted/50 rounded-2xl hover:bg-muted active:scale-[0.97] transition-all min-h-[120px] animate-fade-in opacity-0"
+            className="group flex flex-col items-start p-4 bg-muted/40 rounded-3xl hover:bg-muted/60 active:scale-[0.97] transition-all w-[110px] h-[110px] animate-fade-in opacity-0"
             style={{ animationDelay: '0.2s', animationFillMode: 'forwards' }}
           >
-            <Shield className="w-5 h-5 text-primary stroke-[1.5] group-hover:scale-110 transition-transform" />
+            <Shield className="w-6 h-6 text-primary stroke-[1.5] group-hover:scale-110 transition-transform" />
             <div className="mt-auto text-left">
-              <span className="text-[13px] font-medium text-foreground leading-tight block">
-                &nbsp;
-              </span>
-              <span className="text-[13px] font-medium text-foreground leading-tight block">
+              <span className="text-sm font-medium text-foreground leading-tight block">
                 Segurança
               </span>
             </div>
@@ -381,15 +378,12 @@ export default function Settings() {
           {/* Card Preferências */}
           <button
             onClick={() => setActiveSection('preferences')}
-            className="group flex flex-col items-start p-5 bg-muted/50 rounded-2xl hover:bg-muted active:scale-[0.97] transition-all min-h-[120px] animate-fade-in opacity-0"
+            className="group flex flex-col items-start p-4 bg-muted/40 rounded-3xl hover:bg-muted/60 active:scale-[0.97] transition-all w-[110px] h-[110px] animate-fade-in opacity-0"
             style={{ animationDelay: '0.3s', animationFillMode: 'forwards' }}
           >
-            <Cog className="w-5 h-5 text-primary stroke-[1.5] group-hover:scale-110 transition-transform" />
+            <Cog className="w-6 h-6 text-primary stroke-[1.5] group-hover:scale-110 transition-transform" />
             <div className="mt-auto text-left">
-              <span className="text-[13px] font-medium text-foreground leading-tight block">
-                &nbsp;
-              </span>
-              <span className="text-[13px] font-medium text-foreground leading-tight block">
+              <span className="text-sm font-medium text-foreground leading-tight block">
                 Preferências
               </span>
             </div>
