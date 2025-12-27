@@ -16,13 +16,9 @@ export function useNavigationBar(theme: 'light' | 'dark') {
       try {
         const { NavigationBar } = await import('@capgo/capacitor-navigation-bar');
         
-        // Define a cor da barra de navegação baseado no tema
-        // Tema escuro: fundo escuro com botões claros
-        // Tema claro: fundo claro com botões escuros
-        const backgroundColor = theme === 'dark' ? '#0f1419' : '#f5f7fa';
-        
+        // Define a barra de navegação como transparente
         await NavigationBar.setNavigationBarColor({
-          color: backgroundColor,
+          color: 'transparent',
           darkButtons: theme === 'light', // botões escuros no tema claro
         });
       } catch (error) {
