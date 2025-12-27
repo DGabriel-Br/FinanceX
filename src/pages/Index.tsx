@@ -21,6 +21,7 @@ import { useValuesVisibility } from '@/hooks/useValuesVisibility';
 import { useOnboarding } from '@/hooks/useOnboarding';
 import { useIsNativeApp } from '@/hooks/useIsNativeApp';
 import { useNavigationBar } from '@/hooks/useNavigationBar';
+import { useRealtimeSync } from '@/hooks/useRealtimeSync';
 import { OnboardingTour } from '@/components/onboarding/OnboardingTour';
 import {
   AlertDialog,
@@ -76,6 +77,9 @@ const Index = () => {
   
   // Configura a cor da barra de navegação do Android
   useNavigationBar(theme);
+  
+  // Ativa sincronização em tempo real com o servidor
+  useRealtimeSync();
 
   // IMPORTANTE: Todos os hooks devem ser chamados antes de qualquer early return
   const {
