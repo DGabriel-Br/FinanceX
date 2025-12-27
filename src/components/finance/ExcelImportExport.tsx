@@ -200,21 +200,10 @@ export const ExcelImportExport = ({
 
         const filePath = result.uri;
 
-        toast.success(
-          <div className="flex flex-col gap-2">
-            <span>Arquivo salvo em Downloads/{fileName}</span>
-            <Button 
-              size="sm" 
-              variant="outline" 
-              className="w-fit gap-1.5"
-              onClick={() => openFile(filePath)}
-            >
-              <ExternalLink className="w-3 h-3" />
-              Abrir arquivo
-            </Button>
-          </div>,
-          { duration: 6000 }
-        );
+        toast.success(`Arquivo salvo em Downloads/${fileName}`);
+        
+        // Abrir arquivo automaticamente
+        await openFile(filePath);
       } catch (error: any) {
         console.error('Erro ao exportar no app nativo:', error);
         
@@ -229,21 +218,10 @@ export const ExcelImportExport = ({
 
           const filePath = result.uri;
 
-          toast.success(
-            <div className="flex flex-col gap-2">
-              <span>Arquivo salvo em Documentos/{fileName}</span>
-              <Button 
-                size="sm" 
-                variant="outline" 
-                className="w-fit gap-1.5"
-                onClick={() => openFile(filePath)}
-              >
-                <ExternalLink className="w-3 h-3" />
-                Abrir arquivo
-              </Button>
-            </div>,
-            { duration: 6000 }
-          );
+          toast.success(`Arquivo salvo em Documentos/${fileName}`);
+          
+          // Abrir arquivo automaticamente
+          await openFile(filePath);
         } catch (fallbackError) {
           console.error('Erro no fallback:', fallbackError);
           toast.error('Erro ao exportar arquivo. Verifique as permissões do app.');
@@ -310,21 +288,10 @@ export const ExcelImportExport = ({
 
         const filePath = result.uri;
 
-        toast.success(
-          <div className="flex flex-col gap-2">
-            <span>Modelo salvo em Downloads/{fileName}</span>
-            <Button 
-              size="sm" 
-              variant="outline" 
-              className="w-fit gap-1.5"
-              onClick={() => openFile(filePath)}
-            >
-              <ExternalLink className="w-3 h-3" />
-              Abrir arquivo
-            </Button>
-          </div>,
-          { duration: 6000 }
-        );
+        toast.success(`Modelo salvo em Downloads/${fileName}`);
+        
+        // Abrir arquivo automaticamente
+        await openFile(filePath);
       } catch (error: any) {
         console.error('Erro ao baixar modelo no app nativo:', error);
         
@@ -339,21 +306,10 @@ export const ExcelImportExport = ({
 
           const filePath = result.uri;
 
-          toast.success(
-            <div className="flex flex-col gap-2">
-              <span>Modelo salvo em Documentos/{fileName}</span>
-              <Button 
-                size="sm" 
-                variant="outline" 
-                className="w-fit gap-1.5"
-                onClick={() => openFile(filePath)}
-              >
-                <ExternalLink className="w-3 h-3" />
-                Abrir arquivo
-              </Button>
-            </div>,
-            { duration: 6000 }
-          );
+          toast.success(`Modelo salvo em Documentos/${fileName}`);
+          
+          // Abrir arquivo automaticamente
+          await openFile(filePath);
         } catch (fallbackError) {
           console.error('Erro no fallback:', fallbackError);
           toast.error('Erro ao baixar modelo. Verifique as permissões do app.');
