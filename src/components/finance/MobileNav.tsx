@@ -38,8 +38,9 @@ export const MobileNav = ({ activeTab, theme, onToggleTheme, userEmail, onSignOu
 
   return (
     <>
-      <nav className="fixed bottom-0 left-0 right-0 z-50 bg-card border-t border-border md:hidden">
-        <div className="flex items-center justify-around h-16 px-2">
+      <nav className="fixed bottom-0 left-0 right-0 z-50 md:hidden">
+        <div className="flex items-center justify-around h-16 px-2 bg-card border-t border-border">
+
           {/* Itens da esquerda */}
           {navItemsLeft.map((item) => {
             const isActive = activeTab === item.id;
@@ -129,6 +130,8 @@ export const MobileNav = ({ activeTab, theme, onToggleTheme, userEmail, onSignOu
             <span className="text-[10px] font-medium">Config</span>
           </button>
         </div>
+        {/* Safe area transparent */}
+        <div className="safe-area-bottom" />
       </nav>
 
       {/* Sheet de Configurações */}
