@@ -34,6 +34,13 @@ const Toaster = ({ ...props }: ToasterProps) => {
   return (
     <>
       <style>{`
+        /* Posicionamento do container de toasts para app nativo */
+        ${isNativeApp ? `
+        [data-sonner-toaster] {
+          bottom: 120px !important;
+        }
+        ` : ''}
+
         /* Animações de entrada - arrasta suavemente para cima */
         [data-sonner-toast][data-mounted="true"] {
           animation: toast-drag-up 0.5s cubic-bezier(0.32, 0.72, 0, 1) forwards;
