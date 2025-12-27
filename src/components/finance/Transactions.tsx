@@ -110,7 +110,7 @@ export const Transactions = ({
         {/* Botão de Importar/Exportar - Apenas mobile, entre formulário e lista */}
         {isMobile && (
           <div 
-            className="flex justify-center opacity-0 animate-fade-in"
+            className="flex justify-center gap-3 opacity-0 animate-fade-in"
             style={{ animationDelay: '0.12s' }}
           >
             {excelImportExportComponent}
