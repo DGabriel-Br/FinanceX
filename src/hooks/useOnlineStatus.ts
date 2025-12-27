@@ -1,7 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { syncService } from '@/lib/offline/syncService';
 import { toast } from 'sonner';
-import { logger } from '@/lib/logger';
 
 /**
  * Verifica conectividade real fazendo um ping para um endpoint confiável
@@ -30,8 +29,7 @@ const checkRealConnectivity = async (): Promise<boolean> => {
     });
     clearTimeout(timeoutId);
     return response.ok;
-  } catch (error) {
-    logger.info('[useOnlineStatus] Connectivity check failed:', error);
+  } catch {
     return false;
   }
 };
@@ -77,8 +75,6 @@ export const useOnlineStatus = () => {
     const wasOnline = isOnlineRef.current;
     const reallyOnline = await checkRealConnectivity();
     
-    logger.info('[useOnlineStatus] Connectivity check:', { wasOnline, reallyOnline });
-    
     if (reallyOnline !== wasOnline) {
       setIsOnline(reallyOnline);
       
@@ -99,8 +95,6 @@ export const useOnlineStatus = () => {
   }, [triggerSync]);
 
   useEffect(() => {
-    logger.info('[useOnlineStatus] Setting up connectivity monitoring');
-    
     checkConnectivity(false);
     
     const intervalId = setInterval(() => {
@@ -108,12 +102,10 @@ export const useOnlineStatus = () => {
     }, 10000);
 
     const handleOnline = () => {
-      logger.info('[useOnlineStatus] Online event triggered');
       checkConnectivity(true);
     };
 
     const handleOffline = () => {
-      logger.info('[useOnlineStatus] Offline event triggered');
       setIsOnline(false);
       toast.warning('Você está offline. As alterações serão salvas localmente.');
     };
