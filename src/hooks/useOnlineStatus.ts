@@ -1,14 +1,22 @@
 import { useState, useEffect, useCallback } from 'react';
 import { syncService } from '@/lib/offline/syncService';
 import { toast } from 'sonner';
+import { logger } from '@/lib/logger';
 
 export const useOnlineStatus = () => {
-  const [isOnline, setIsOnline] = useState(navigator.onLine);
+  const [isOnline, setIsOnline] = useState(() => {
+    const online = navigator.onLine;
+    logger.info('[useOnlineStatus] Initial online status:', online);
+    return online;
+  });
   const [isSyncing, setIsSyncing] = useState(false);
   const [lastSyncAt, setLastSyncAt] = useState<Date | null>(null);
 
   useEffect(() => {
+    logger.info('[useOnlineStatus] Setting up online/offline listeners');
+    
     const handleOnline = () => {
+      logger.info('[useOnlineStatus] Online event triggered');
       setIsOnline(true);
       toast.success('Conexão restaurada! Sincronizando dados...');
       // Auto-sync quando voltar online
@@ -16,6 +24,7 @@ export const useOnlineStatus = () => {
     };
 
     const handleOffline = () => {
+      logger.info('[useOnlineStatus] Offline event triggered');
       setIsOnline(false);
       toast.warning('Você está offline. As alterações serão salvas localmente.');
     };
