@@ -262,22 +262,28 @@ export const useOfflineTransactions = () => {
     const filtered = getFilteredTransactions();
     const previousBalance = getPreviousBalance();
     
-    const receitas = filtered
+    // Receitas do período
+    const receitasPeriodo = filtered
       .filter(t => t.type === 'receita')
       .reduce((sum, t) => sum + t.value, 0);
     
-    const despesas = filtered
+    // Despesas do período
+    const despesasPeriodo = filtered
       .filter(t => t.type === 'despesa')
       .reduce((sum, t) => sum + t.value, 0);
     
-    const saldoPeriodo = receitas - despesas;
+    // Se saldo anterior é positivo, soma nas receitas; se negativo, soma nas despesas
+    const receitas = receitasPeriodo + (previousBalance > 0 ? previousBalance : 0);
+    const despesas = despesasPeriodo + (previousBalance < 0 ? Math.abs(previousBalance) : 0);
+    
+    const saldoPeriodo = receitasPeriodo - despesasPeriodo;
     
     return {
       receitas,
       despesas,
       saldoAnterior: previousBalance,
       saldoPeriodo,
-      saldo: previousBalance + saldoPeriodo,
+      saldo: receitas - despesas,
     };
   }, [getFilteredTransactions, getPreviousBalance]);
 
