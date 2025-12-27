@@ -80,32 +80,53 @@ export const OnboardingTour = ({ onComplete, onSkip }: OnboardingTourProps) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
   const [spotlightPosition, setSpotlightPosition] = useState<SpotlightPosition | null>(null);
-  const cardRef = useRef<HTMLDivElement>(null);
+  const [isReady, setIsReady] = useState(false);
 
   const step = tourSteps[currentStep];
   const isFirstStep = currentStep === 0;
   const isLastStep = currentStep === tourSteps.length - 1;
 
+  // Wait for elements to be ready
+  useEffect(() => {
+    const timer = setTimeout(() => setIsReady(true), 300);
+    return () => clearTimeout(timer);
+  }, []);
+
   // Update spotlight position when step changes
   useEffect(() => {
-    if (step.targetSelector) {
-      const targetElement = document.querySelector(step.targetSelector);
-      if (targetElement) {
-        const rect = targetElement.getBoundingClientRect();
-        const padding = 8;
-        setSpotlightPosition({
-          top: rect.top - padding,
-          left: rect.left - padding,
-          width: rect.width + padding * 2,
-          height: rect.height + padding * 2,
-        });
+    if (!isReady) return;
+    
+    const updatePosition = () => {
+      if (step.targetSelector) {
+        const targetElement = document.querySelector(step.targetSelector);
+        if (targetElement) {
+          const rect = targetElement.getBoundingClientRect();
+          const padding = 8;
+          setSpotlightPosition({
+            top: rect.top - padding,
+            left: rect.left - padding,
+            width: rect.width + padding * 2,
+            height: rect.height + padding * 2,
+          });
+        } else {
+          setSpotlightPosition(null);
+        }
       } else {
         setSpotlightPosition(null);
       }
-    } else {
-      setSpotlightPosition(null);
-    }
-  }, [currentStep, step.targetSelector]);
+    };
+
+    updatePosition();
+    
+    // Re-calculate on resize/scroll
+    window.addEventListener('resize', updatePosition);
+    window.addEventListener('scroll', updatePosition);
+    
+    return () => {
+      window.removeEventListener('resize', updatePosition);
+      window.removeEventListener('scroll', updatePosition);
+    };
+  }, [currentStep, step.targetSelector, isReady]);
 
   const goToNextStep = useCallback(() => {
     if (isLastStep) {
@@ -138,10 +159,28 @@ export const OnboardingTour = ({ onComplete, onSkip }: OnboardingTourProps) => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [goToNextStep, goToPrevStep, onSkip]);
 
+  // Calculate card position - ensure it doesn't overlap with spotlight
+  const getCardPosition = () => {
+    if (!spotlightPosition) {
+      return 'top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2';
+    }
+    
+    // If spotlight is at bottom (navbar), show card at top
+    const isSpotlightAtBottom = spotlightPosition.top > window.innerHeight / 2;
+    
+    if (isSpotlightAtBottom) {
+      return 'top-20 left-4 right-4 mx-auto';
+    }
+    
+    return 'bottom-24 left-4 right-4 mx-auto';
+  };
+
+  if (!isReady) return null;
+
   return (
-    <div className="fixed inset-0 z-[100]">
+    <div className="fixed inset-0 z-[9999]">
       {/* Dark overlay with spotlight cutout */}
-      <svg className="absolute inset-0 w-full h-full" onClick={onSkip}>
+      <svg className="absolute inset-0 w-full h-full pointer-events-auto" onClick={onSkip}>
         <defs>
           <mask id="spotlight-mask">
             <rect x="0" y="0" width="100%" height="100%" fill="white" />
@@ -166,14 +205,13 @@ export const OnboardingTour = ({ onComplete, onSkip }: OnboardingTourProps) => {
           fill="hsl(var(--background))"
           fillOpacity="0.92"
           mask="url(#spotlight-mask)"
-          className="backdrop-blur-sm"
         />
       </svg>
 
       {/* Spotlight border glow */}
       {spotlightPosition && (
         <div
-          className="absolute rounded-xl border-2 border-primary/50 shadow-[0_0_20px_rgba(var(--primary),0.3)] pointer-events-none transition-all duration-300 ease-out"
+          className="absolute rounded-xl border-2 border-primary/50 shadow-[0_0_20px_hsl(var(--primary)/0.3)] pointer-events-none transition-all duration-300 ease-out z-[10000]"
           style={{
             top: spotlightPosition.top,
             left: spotlightPosition.left,
@@ -185,11 +223,10 @@ export const OnboardingTour = ({ onComplete, onSkip }: OnboardingTourProps) => {
 
       {/* Card */}
       <div
-        ref={cardRef}
         className={cn(
-          'absolute left-4 right-4 max-w-md mx-auto transition-all duration-300 ease-out',
-          isAnimating ? 'opacity-0 translate-y-2' : 'opacity-100 translate-y-0',
-          spotlightPosition ? 'bottom-8' : 'top-1/2 -translate-y-1/2'
+          'absolute max-w-md transition-all duration-300 ease-out z-[10001] pointer-events-auto',
+          isAnimating ? 'opacity-0 scale-95' : 'opacity-100 scale-100',
+          getCardPosition()
         )}
       >
         <div className="bg-card border border-border rounded-2xl shadow-2xl">
@@ -207,7 +244,7 @@ export const OnboardingTour = ({ onComplete, onSkip }: OnboardingTourProps) => {
           </div>
 
           {/* Content */}
-          <div className="px-6 py-8">
+          <div className="px-6 py-6">
             <div className="flex items-start gap-4">
               <div className="flex-shrink-0 p-3 rounded-xl bg-primary/10 text-primary">
                 {step.icon}
