@@ -70,28 +70,38 @@ export const useOfflineDebts = () => {
       await db.debts.add(localDebt);
 
       if (navigator.onLine) {
-        const { data, error } = await supabase
-          .from('debts')
-          .insert({
-            name: debt.name,
-            total_value: debt.totalValue,
-            monthly_installment: debt.monthlyInstallment,
-            start_date: debt.startDate,
-            paid_value: debt.paidValue || 0,
-            user_id: userId,
-          })
-          .select()
-          .single();
+        try {
+          const { data, error } = await supabase
+            .from('debts')
+            .insert({
+              name: debt.name,
+              total_value: debt.totalValue,
+              monthly_installment: debt.monthlyInstallment,
+              start_date: debt.startDate,
+              paid_value: debt.paidValue || 0,
+              user_id: userId,
+            })
+            .select()
+            .single();
 
-        if (!error && data) {
-          await db.debts.delete(tempId);
-          await db.debts.add({
-            ...localDebt,
-            id: data.id,
-            createdAt: Number(data.created_at),
-            syncStatus: 'synced',
-            serverUpdatedAt: now,
-          });
+          if (!error && data) {
+            // CRÍTICO: Usar transação atômica para evitar race condition com realtime
+            await db.transaction('rw', db.debts, async () => {
+              const tempItem = await db.debts.get(tempId);
+              if (tempItem) {
+                await db.debts.delete(tempId);
+                await db.debts.put({
+                  ...localDebt,
+                  id: data.id,
+                  createdAt: Number(data.created_at),
+                  syncStatus: 'synced',
+                  serverUpdatedAt: now,
+                });
+              }
+            });
+          }
+        } catch (syncError) {
+          logger.error('Erro ao sincronizar dívida:', syncError);
         }
       }
 

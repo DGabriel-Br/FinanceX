@@ -98,21 +98,31 @@ export const useOfflineInvestmentGoals = () => {
         await db.investmentGoals.add(localGoal);
 
         if (navigator.onLine) {
-          const { data, error } = await supabase
-            .from('investment_goals')
-            .insert({ type, target_value: targetValue, user_id: userId })
-            .select()
-            .single();
+          try {
+            const { data, error } = await supabase
+              .from('investment_goals')
+              .insert({ type, target_value: targetValue, user_id: userId })
+              .select()
+              .single();
 
-          if (!error && data) {
-            await db.investmentGoals.delete(tempId);
-            await db.investmentGoals.add({
-              ...localGoal,
-              id: data.id,
-              createdAt: new Date(data.created_at).getTime(),
-              syncStatus: 'synced',
-              serverUpdatedAt: now,
-            });
+            if (!error && data) {
+              // CRÍTICO: Usar transação atômica para evitar race condition com realtime
+              await db.transaction('rw', db.investmentGoals, async () => {
+                const tempItem = await db.investmentGoals.get(tempId);
+                if (tempItem) {
+                  await db.investmentGoals.delete(tempId);
+                  await db.investmentGoals.put({
+                    ...localGoal,
+                    id: data.id,
+                    createdAt: new Date(data.created_at).getTime(),
+                    syncStatus: 'synced',
+                    serverUpdatedAt: now,
+                  });
+                }
+              });
+            }
+          } catch (syncError) {
+            logger.error('Erro ao sincronizar meta:', syncError);
           }
         }
       }
