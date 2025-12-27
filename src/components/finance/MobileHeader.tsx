@@ -102,12 +102,6 @@ export const MobileHeader = ({
           </div>
         </div>
       </div>
-
-      {/* Curva de transição */}
-      <div className="relative h-4 -mt-0">
-        <div className="absolute inset-0 bg-mobile-header" />
-        <div className="absolute inset-0 bg-background rounded-t-3xl" />
-      </div>
     </div>
   );
 };
