@@ -16,6 +16,16 @@ import { cn } from '@/lib/utils';
 import { format, isToday, isYesterday } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { formatCurrency } from '@/lib/currency';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 interface TransactionListProps {
   transactions: Transaction[];
@@ -225,6 +235,10 @@ const MobileTransactionItem = ({
 
 export const TransactionList = ({ transactions, onUpdate, onDelete, formatValue }: TransactionListProps) => {
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [deleteConfirm, setDeleteConfirm] = useState<{ open: boolean; transaction: Transaction | null }>({
+    open: false,
+    transaction: null,
+  });
   const [editForm, setEditForm] = useState({
     type: 'despesa' as TransactionType,
     category: 'contas_fixas' as TransactionCategory,
@@ -232,6 +246,21 @@ export const TransactionList = ({ transactions, onUpdate, onDelete, formatValue 
     description: '',
     value: '',
   });
+
+  const handleDeleteClick = (transaction: Transaction) => {
+    setDeleteConfirm({ open: true, transaction });
+  };
+
+  const handleDeleteConfirm = () => {
+    if (deleteConfirm.transaction) {
+      onDelete(deleteConfirm.transaction.id);
+    }
+    setDeleteConfirm({ open: false, transaction: null });
+  };
+
+  const handleDeleteCancel = () => {
+    setDeleteConfirm({ open: false, transaction: null });
+  };
 
   // Atualizar categoria quando tipo mudar na edição
   useEffect(() => {
@@ -429,7 +458,7 @@ export const TransactionList = ({ transactions, onUpdate, onDelete, formatValue 
                 <Pencil className="w-4 h-4" />
               </button>
               <button
-                onClick={() => onDelete(transaction.id)}
+                onClick={() => handleDeleteClick(transaction)}
                 className="p-2 rounded-lg text-muted-foreground hover:text-expense hover:bg-expense/10 transition-colors"
                 title="Excluir"
               >
@@ -499,7 +528,7 @@ export const TransactionList = ({ transactions, onUpdate, onDelete, formatValue 
                   key={transaction.id}
                   transaction={transaction}
                   onEdit={() => startEditing(transaction)}
-                  onDelete={() => onDelete(transaction.id)}
+                  onDelete={() => handleDeleteClick(transaction)}
                   formatValue={formatValue}
                   isEditing={editingId === transaction.id}
                   editForm={editForm}
@@ -514,6 +543,31 @@ export const TransactionList = ({ transactions, onUpdate, onDelete, formatValue 
           </div>
         ))}
       </div>
+
+      {/* Diálogo de confirmação de exclusão */}
+      <AlertDialog open={deleteConfirm.open} onOpenChange={(open) => !open && handleDeleteCancel()}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Excluir lançamento?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {deleteConfirm.transaction && (
+                <>
+                  Tem certeza que deseja excluir "{deleteConfirm.transaction.description}" 
+                  no valor de {formatValue ? formatValue(deleteConfirm.transaction.value) : formatCurrency(deleteConfirm.transaction.value)}?
+                  <br /><br />
+                  Esta ação não pode ser desfeita.
+                </>
+              )}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={handleDeleteCancel}>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={handleDeleteConfirm} className="bg-expense hover:bg-expense/90">
+              Excluir
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 };
