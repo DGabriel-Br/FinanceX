@@ -389,7 +389,6 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onSuccess }: NativeAuthS
             slideAnimation === 'slide-in-left' && "animate-slide-in-left",
             slideAnimation === 'slide-in-right' && "animate-slide-in-right"
           )}
-          style={{ animationDelay: '0.05s' }}
         >
           <Button
             onClick={() => handleNavigate('register')}
