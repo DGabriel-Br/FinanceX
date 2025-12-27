@@ -1,11 +1,16 @@
 import { CloudOff, RefreshCw } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useOnlineStatus } from '@/hooks/useOnlineStatus';
+import { useOfflineModalState } from '@/hooks/useOfflineModalState';
 
 export const OfflineStatusBar = () => {
   const { isOnline, isSyncing } = useOnlineStatus();
+  const { modalDismissed } = useOfflineModalState();
 
-  const showBar = !isOnline || isSyncing;
+  // Mostra a barra apenas se:
+  // - Está sincronizando (sempre mostra)
+  // - Está offline E o modal já foi fechado pelo usuário
+  const showBar = isSyncing || (!isOnline && modalDismissed);
 
   return (
     <div 

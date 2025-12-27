@@ -5,6 +5,7 @@ import { useScrollDirection } from '@/hooks/useScrollDirection';
 import { getInitials, getDisplayName } from '@/lib/userUtils';
 import { OfflineStatusBar } from './OfflineStatusBar';
 import { useOnlineStatus } from '@/hooks/useOnlineStatus';
+import { useOfflineModalState } from '@/hooks/useOfflineModalState';
 
 interface MobileHeaderProps {
   userName?: string;
@@ -29,12 +30,13 @@ export const MobileHeader = ({
   const firstName = getDisplayName(userName, userEmail);
   const { scrollDirection, isAtTop } = useScrollDirection({ threshold: 15 });
   const { isOnline, isSyncing } = useOnlineStatus();
+  const { modalDismissed } = useOfflineModalState();
 
   // Header visível quando: no topo, rolando para cima, ou direção ainda não definida
   const isVisible = isAtTop || scrollDirection === 'up' || scrollDirection === null;
 
-  // Mostra barra offline quando offline ou sincronizando
-  const showOfflineBar = !isOnline || isSyncing;
+  // Mostra cor da barra offline quando: sincronizando OU (offline E modal já foi fechado)
+  const showOfflineBarColor = isSyncing || (!isOnline && modalDismissed);
 
   return (
     <div 
@@ -48,7 +50,7 @@ export const MobileHeader = ({
       <div 
         className={cn(
           "safe-area-top transition-colors duration-200",
-          showOfflineBar ? "bg-[#3c4043]" : "bg-mobile-header"
+          showOfflineBarColor ? "bg-[#3c4043]" : "bg-mobile-header"
         )} 
       />
       

@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import { WifiOff, Database } from 'lucide-react';
 import { useOnlineStatus } from '@/hooks/useOnlineStatus';
+import { useOfflineModalState } from '@/hooks/useOfflineModalState';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
 export const OfflineModal = () => {
   const { isOnline } = useOnlineStatus();
+  const { setModalDismissed } = useOfflineModalState();
   const [showModal, setShowModal] = useState(false);
   const [hasShownOnce, setHasShownOnce] = useState(false);
 
@@ -14,20 +16,28 @@ export const OfflineModal = () => {
     if (!isOnline && !hasShownOnce) {
       setShowModal(true);
       setHasShownOnce(true);
+      setModalDismissed(false); // Reset quando mostrar o modal
     }
     
     // Fecha automaticamente quando voltar online
     if (isOnline && showModal) {
       setShowModal(false);
+      setModalDismissed(false); // Reset quando voltar online
     }
-  }, [isOnline, hasShownOnce, showModal]);
+  }, [isOnline, hasShownOnce, showModal, setModalDismissed]);
 
   // Reset quando reconectar para mostrar novamente se ficar offline de novo
   useEffect(() => {
     if (isOnline) {
       setHasShownOnce(false);
+      setModalDismissed(false); // Reset o estado do modal
     }
-  }, [isOnline]);
+  }, [isOnline, setModalDismissed]);
+
+  const handleDismiss = () => {
+    setShowModal(false);
+    setModalDismissed(true); // Marca que o modal foi fechado pelo usuário
+  };
 
   if (!showModal) {
     return null;
@@ -38,7 +48,7 @@ export const OfflineModal = () => {
       {/* Backdrop com blur */}
       <div 
         className="absolute inset-0 bg-background/80 backdrop-blur-md"
-        onClick={() => setShowModal(false)}
+        onClick={handleDismiss}
       />
       
       {/* Card */}
@@ -72,7 +82,7 @@ export const OfflineModal = () => {
           
           {/* Botão */}
           <Button 
-            onClick={() => setShowModal(false)}
+            onClick={handleDismiss}
             className="w-full"
           >
             Entendi
