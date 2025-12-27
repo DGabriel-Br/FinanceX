@@ -194,8 +194,8 @@ const Index = () => {
 
   return (
     <>
-      {/* Modal de aviso offline - apenas no app nativo */}
-      {isNativeApp && <OfflineModal />}
+      {/* Modal de aviso offline - funciona em todas as plataformas */}
+      <OfflineModal />
       
       <div className={`flex ${isNativeApp ? 'flex-col' : ''} min-h-screen w-full relative`}>
         {/* Sidebar - desktop (oculta no app nativo) */}
@@ -231,6 +231,9 @@ const Index = () => {
 
         {/* Conteúdo principal */}
         <main className={`flex-1 flex flex-col overflow-auto ${isNativeApp ? 'pb-24' : 'bg-background'}`}>
+          {/* Barra de status offline - desktop */}
+          {!isNativeApp && <OfflineStatusBar />}
+          
           {isNativeApp ? (
             <PullToRefresh onRefresh={handlePullRefresh} className="flex-1">
               <div 
