@@ -334,7 +334,7 @@ export default function Settings() {
           {/* Card Dados Pessoais */}
           <button
             onClick={() => setActiveSection('profile')}
-            className="group flex flex-col items-start justify-between p-4 bg-card border border-border rounded-xl hover:bg-muted/50 active:scale-[0.97] transition-all h-[100px] animate-fade-in opacity-0"
+            className="group flex flex-col items-start justify-between p-4 bg-muted rounded-2xl hover:bg-muted/80 active:scale-[0.97] transition-all h-[100px] animate-fade-in opacity-0"
             style={{ animationDelay: '0.1s', animationFillMode: 'forwards' }}
           >
             <User className="w-6 h-6 text-primary stroke-[1.5]" />
@@ -346,7 +346,7 @@ export default function Settings() {
           {/* Card Segurança */}
           <button
             onClick={() => setActiveSection('security')}
-            className="group flex flex-col items-start justify-between p-4 bg-card border border-border rounded-xl hover:bg-muted/50 active:scale-[0.97] transition-all h-[100px] animate-fade-in opacity-0"
+            className="group flex flex-col items-start justify-between p-4 bg-muted rounded-2xl hover:bg-muted/80 active:scale-[0.97] transition-all h-[100px] animate-fade-in opacity-0"
             style={{ animationDelay: '0.2s', animationFillMode: 'forwards' }}
           >
             <Shield className="w-6 h-6 text-primary stroke-[1.5]" />
@@ -358,7 +358,7 @@ export default function Settings() {
           {/* Card Preferências */}
           <button
             onClick={() => setActiveSection('preferences')}
-            className="group flex flex-col items-start justify-between p-4 bg-card border border-border rounded-xl hover:bg-muted/50 active:scale-[0.97] transition-all h-[100px] animate-fade-in opacity-0"
+            className="group flex flex-col items-start justify-between p-4 bg-muted rounded-2xl hover:bg-muted/80 active:scale-[0.97] transition-all h-[100px] animate-fade-in opacity-0"
             style={{ animationDelay: '0.3s', animationFillMode: 'forwards' }}
           >
             <Cog className="w-6 h-6 text-primary stroke-[1.5]" />
