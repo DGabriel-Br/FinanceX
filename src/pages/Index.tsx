@@ -10,7 +10,6 @@ import { MobileHeader } from '@/components/finance/MobileHeader';
 import { MobileNav } from '@/components/finance/MobileNav';
 import { FloatingAddButton } from '@/components/finance/FloatingAddButton';
 import { PullToRefresh } from '@/components/finance/PullToRefresh';
-import { OfflineStatusBar } from '@/components/finance/OfflineStatusBar';
 import { OfflineModal } from '@/components/finance/OfflineModal';
 import { syncService } from '@/lib/offline/syncService';
 import { useTransactions } from '@/hooks/useTransactions';
@@ -215,8 +214,6 @@ const Index = () => {
 
         {/* Mobile Header - apenas no app nativo */}
         {isNativeApp && (
-          <>
-            <OfflineStatusBar />
             <MobileHeader
               userName={user.user_metadata?.full_name}
               userEmail={user.email}
@@ -226,7 +223,6 @@ const Index = () => {
               theme={theme}
               onToggleTheme={toggleTheme}
             />
-          </>
         )}
 
         {/* Conteúdo principal */}
