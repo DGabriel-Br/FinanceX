@@ -371,6 +371,9 @@ export default function Settings() {
             <Shield className="w-7 h-7 text-primary stroke-[1.5] group-hover:scale-110 transition-transform" />
             <div className="mt-auto text-left">
               <span className="text-[13px] font-medium text-foreground leading-tight block">
+                &nbsp;
+              </span>
+              <span className="text-[13px] font-medium text-foreground leading-tight block">
                 Segurança
               </span>
             </div>
@@ -384,6 +387,9 @@ export default function Settings() {
           >
             <Settings2 className="w-7 h-7 text-primary stroke-[1.5] group-hover:scale-110 transition-transform" />
             <div className="mt-auto text-left">
+              <span className="text-[13px] font-medium text-foreground leading-tight block">
+                &nbsp;
+              </span>
               <span className="text-[13px] font-medium text-foreground leading-tight block">
                 Preferências
               </span>
