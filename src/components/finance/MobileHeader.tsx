@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { useScrollDirection } from '@/hooks/useScrollDirection';
 import { getInitials, getDisplayName } from '@/lib/userUtils';
+import { OfflineStatusBar } from './OfflineStatusBar';
 
 interface MobileHeaderProps {
   userName?: string;
@@ -38,8 +39,14 @@ export const MobileHeader = ({
         !isAtTop && "shadow-md"
       )}
     >
+      {/* Safe area para status bar do sistema */}
+      <div className="bg-mobile-header safe-area-top" />
+      
+      {/* Barra de status offline - logo abaixo da safe area */}
+      <OfflineStatusBar />
+      
       {/* Header com fundo mobile-header */}
-      <div className="bg-mobile-header safe-area-top">
+      <div className="bg-mobile-header">
         {/* Conteúdo do header */}
         <div className="px-4 py-5">
           <div className="flex items-center justify-between w-full">
