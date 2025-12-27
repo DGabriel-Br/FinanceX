@@ -1,5 +1,4 @@
 import { useMemo } from 'react';
-import { logger } from '@/lib/logger';
 
 /**
  * Hook que detecta se o app está rodando como aplicativo nativo (Capacitor/WebView)
@@ -22,17 +21,6 @@ export function useIsNativeApp(): boolean {
     const isIOSWebView = /(iphone|ipod|ipad).*applewebkit(?!.*safari)/i.test(navigator.userAgent);
     
     // É nativo se Capacitor detectar OU se estiver em WebView
-    const isNative = hasCapacitor || isAndroidWebView || isIOSWebView;
-    
-    logger.info('[useIsNativeApp] Detection:', {
-      hasCapacitor,
-      capacitorPlatform: capacitor?.getPlatform?.(),
-      isAndroidWebView,
-      isIOSWebView,
-      userAgent: userAgent.substring(0, 100),
-      isNative
-    });
-    
-    return isNative;
+    return hasCapacitor || isAndroidWebView || isIOSWebView;
   }, []);
 }

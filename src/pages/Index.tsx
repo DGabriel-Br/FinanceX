@@ -23,7 +23,6 @@ import { useIsNativeApp } from '@/hooks/useIsNativeApp';
 import { useNavigationBar } from '@/hooks/useNavigationBar';
 import { useRealtimeSync } from '@/hooks/useRealtimeSync';
 import { OnboardingTour } from '@/components/onboarding/OnboardingTour';
-import { DebugOverlay } from '@/components/debug/DebugOverlay';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -195,9 +194,6 @@ const Index = () => {
 
   return (
     <>
-      {/* Debug overlay temporário - REMOVER após debug */}
-      <DebugOverlay />
-      
       {/* Modal de aviso offline - apenas no app nativo */}
       {isNativeApp && <OfflineModal />}
       
