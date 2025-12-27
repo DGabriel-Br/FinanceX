@@ -32,25 +32,28 @@ const Toaster = ({ ...props }: ToasterProps) => {
   return (
     <>
       <style>{`
-        /* Animações de entrada - desliza suavemente para cima */
+        /* Animações de entrada - arrasta suavemente para cima */
         [data-sonner-toast][data-mounted="true"] {
-          animation: toast-slide-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+          animation: toast-drag-up 0.5s cubic-bezier(0.32, 0.72, 0, 1) forwards;
         }
         
-        /* Animações de saída - desliza suavemente para baixo */
+        /* Animações de saída - arrasta suavemente para baixo */
         [data-sonner-toast][data-removed="true"] {
-          animation: toast-slide-down 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+          animation: toast-drag-down 0.4s cubic-bezier(0.32, 0.72, 0, 1) forwards;
         }
         
-        /* Animação de entrada - sobe suavemente */
-        @keyframes toast-slide-up {
+        /* Animação de entrada - efeito de arrastar para cima */
+        @keyframes toast-drag-up {
           0% {
             opacity: 0;
-            transform: translateY(100%) scale(0.95);
+            transform: translateY(120px) scale(0.9);
           }
-          60% {
+          50% {
             opacity: 1;
-            transform: translateY(-8%) scale(1.01);
+            transform: translateY(-10px) scale(1.02);
+          }
+          75% {
+            transform: translateY(4px) scale(0.99);
           }
           100% {
             opacity: 1;
@@ -58,19 +61,19 @@ const Toaster = ({ ...props }: ToasterProps) => {
           }
         }
         
-        /* Animação de saída - desce suavemente */
-        @keyframes toast-slide-down {
+        /* Animação de saída - efeito de arrastar para baixo */
+        @keyframes toast-drag-down {
           0% {
             opacity: 1;
             transform: translateY(0) scale(1);
           }
-          40% {
-            opacity: 0.8;
-            transform: translateY(10%) scale(0.98);
+          30% {
+            opacity: 1;
+            transform: translateY(-8px) scale(1.01);
           }
           100% {
             opacity: 0;
-            transform: translateY(100%) scale(0.95);
+            transform: translateY(120px) scale(0.9);
           }
         }
 
@@ -111,12 +114,12 @@ const Toaster = ({ ...props }: ToasterProps) => {
       <Sonner
         theme={theme}
         position="bottom-center"
-        offset="140px"
+        offset="200px"
         className="toaster group"
         expand={false}
         richColors={false}
         closeButton={true}
-        duration={4000}
+        duration={5000}
         gap={8}
         toastOptions={{
           classNames: {
