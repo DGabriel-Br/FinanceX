@@ -502,7 +502,7 @@ export default function Settings() {
 
       {/* Sheet - Segurança */}
       <Sheet open={activeSection === 'security'} onOpenChange={(open) => !open && setActiveSection(null)}>
-        <SheetContent side="bottom" className="h-[85vh] rounded-t-3xl overflow-y-auto">
+        <SheetContent side="bottom" className="h-[85vh] rounded-t-3xl overflow-y-auto" onOpenAutoFocus={(e) => e.preventDefault()}>
           <SheetHeader className="text-left mb-6">
             <SheetTitle>Segurança</SheetTitle>
             <SheetDescription>Altere sua senha de acesso</SheetDescription>
@@ -519,6 +519,7 @@ export default function Settings() {
                   onChange={(e) => setCurrentPassword(e.target.value)}
                   placeholder="Digite sua senha atual"
                   className="pr-10"
+                  autoFocus={false}
                 />
                 <button
                   type="button"
