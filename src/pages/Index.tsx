@@ -16,6 +16,7 @@ import { useAuthContext } from '@/contexts/AuthContext';
 import { useValuesVisibility } from '@/hooks/useValuesVisibility';
 import { useOnboarding } from '@/hooks/useOnboarding';
 import { useIsNativeApp } from '@/hooks/useIsNativeApp';
+import { useNavigationBar } from '@/hooks/useNavigationBar';
 import { OnboardingTour } from '@/components/onboarding/OnboardingTour';
 import {
   AlertDialog,
@@ -52,6 +53,9 @@ const Index = () => {
   const { showValues, toggleValuesVisibility, formatValue } = useValuesVisibility();
   const { showTour, completeTour, skipTour } = useOnboarding(user?.id);
   const isNativeApp = useIsNativeApp();
+  
+  // Configura a cor da barra de navegação do Android
+  useNavigationBar(theme);
 
   // IMPORTANTE: Todos os hooks devem ser chamados antes de qualquer early return
   const {
