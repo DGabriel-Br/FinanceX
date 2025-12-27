@@ -285,7 +285,7 @@ export default function Settings() {
 
       {/* Profile Section */}
       <div className="flex flex-col items-center pt-8 pb-10 px-4">
-        {/* Avatar - estilo Itaú */}
+        {/* Avatar */}
         <div className="relative mb-6">
           <div 
             className="w-24 h-24 rounded-full bg-muted flex items-center justify-center overflow-hidden cursor-pointer transition-transform active:scale-95"
@@ -303,6 +303,19 @@ export default function Settings() {
               </span>
             )}
           </div>
+          
+          {/* Camera icon overlay */}
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            disabled={isUploadingAvatar}
+            className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-md hover:bg-primary/90 active:scale-95 transition-all"
+          >
+            {isUploadingAvatar ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <Camera className="w-4 h-4" />
+            )}
+          </button>
           
           <input
             ref={fileInputRef}
