@@ -61,6 +61,7 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onSuccess }: NativeAuthS
   const [screen, setScreen] = useState<Screen>('welcome');
   const [mounted, setMounted] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [contentVisible, setContentVisible] = useState(false);
   
   // Form states
   const [name, setName] = useState('');
@@ -75,6 +76,8 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onSuccess }: NativeAuthS
 
   useEffect(() => {
     setMounted(true);
+    // Small delay to ensure smooth initial animation
+    const timer = setTimeout(() => setContentVisible(true), 50);
     // Load saved credentials
     const savedEmail = localStorage.getItem('financex_saved_email');
     const savedPassword = localStorage.getItem('financex_saved_password');
@@ -83,13 +86,26 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onSuccess }: NativeAuthS
       setPassword(savedPassword);
       setRememberMe(true);
     }
+    return () => clearTimeout(timer);
   }, []);
+
+  // Reset content visibility when screen changes to welcome
+  useEffect(() => {
+    if (screen === 'welcome') {
+      setContentVisible(false);
+      const timer = setTimeout(() => setContentVisible(true), 50);
+      return () => clearTimeout(timer);
+    }
+  }, [screen]);
 
   const handleNavigate = (newScreen: Screen) => {
     setIsTransitioning(true);
+    setContentVisible(false);
     setTimeout(() => {
       setScreen(newScreen);
       setIsTransitioning(false);
+      // Small delay before showing content for smooth transition
+      setTimeout(() => setContentVisible(true), 50);
     }, 200);
   };
 
@@ -312,7 +328,7 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onSuccess }: NativeAuthS
         <div 
           className={cn(
             "flex-1 flex flex-col items-center justify-center px-8 relative z-10 transition-all duration-500",
-            mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+            contentVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
           )}
         >
           {/* Logo - igual ao da versão web */}
@@ -346,8 +362,8 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onSuccess }: NativeAuthS
         {/* Bottom buttons */}
         <div 
           className={cn(
-            "px-6 pb-10 space-y-3 relative z-10 transition-all duration-700 delay-300",
-            mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+            "px-6 pb-10 space-y-3 relative z-10 transition-all duration-700 delay-150",
+            contentVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
           )}
         >
           <Button
@@ -409,7 +425,7 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onSuccess }: NativeAuthS
         <div 
           className={cn(
             "flex-1 px-6 pt-4 pb-8 safe-area-bottom transition-all duration-300",
-            isTransitioning ? "opacity-0 translate-x-8" : "opacity-100 translate-x-0",
+            contentVisible && !isTransitioning ? "opacity-100 translate-x-0" : "opacity-0 translate-x-8",
             isShaking && "animate-shake"
           )}
         >
@@ -530,7 +546,7 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onSuccess }: NativeAuthS
         <div 
           className={cn(
             "flex-1 px-6 pt-4 pb-8 safe-area-bottom overflow-auto transition-all duration-300",
-            isTransitioning ? "opacity-0 -translate-x-8" : "opacity-100 translate-x-0",
+            contentVisible && !isTransitioning ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-8",
             isShaking && "animate-shake"
           )}
         >
