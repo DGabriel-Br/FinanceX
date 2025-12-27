@@ -158,18 +158,23 @@ class SyncService {
       }
     }
 
-    // Sincronizar deletados
+    // Sincronizar deletados - buscar por isDeleted === true
     const deletedTransactions = await db.transactions
-      .where('isDeleted')
-      .equals(1)
-      .filter(t => t.userId === userId && !isTempId(t.id))
+      .filter(t => t.isDeleted === true && t.userId === userId && !isTempId(t.id))
       .toArray();
+
+    logger.info(`Transações deletadas para sincronizar: ${deletedTransactions.length}`);
 
     for (const transaction of deletedTransactions) {
       try {
-        await supabase.from('transactions').delete().eq('id', transaction.id);
-        await db.transactions.delete(transaction.id);
-        synced++;
+        const { error } = await supabase.from('transactions').delete().eq('id', transaction.id);
+        if (error) {
+          logger.error('Erro ao deletar transação no servidor:', error);
+        } else {
+          await db.transactions.delete(transaction.id);
+          synced++;
+          logger.info(`Transação deletada do servidor: ${transaction.id}`);
+        }
       } catch (error) {
         logger.error('Erro ao deletar transação no servidor:', error);
       }
@@ -249,11 +254,18 @@ class SyncService {
       .filter(d => d.isDeleted === true && d.userId === userId && !isTempId(d.id))
       .toArray();
 
+    logger.info(`Dívidas deletadas para sincronizar: ${deletedDebts.length}`);
+
     for (const debt of deletedDebts) {
       try {
-        await supabase.from('debts').delete().eq('id', debt.id);
-        await db.debts.delete(debt.id);
-        synced++;
+        const { error } = await supabase.from('debts').delete().eq('id', debt.id);
+        if (error) {
+          logger.error('Erro ao deletar dívida no servidor:', error);
+        } else {
+          await db.debts.delete(debt.id);
+          synced++;
+          logger.info(`Dívida deletada do servidor: ${debt.id}`);
+        }
       } catch (error) {
         logger.error('Erro ao deletar dívida no servidor:', error);
       }
@@ -323,11 +335,18 @@ class SyncService {
       .filter(g => g.isDeleted === true && g.userId === userId && !isTempId(g.id))
       .toArray();
 
+    logger.info(`Metas deletadas para sincronizar: ${deletedGoals.length}`);
+
     for (const goal of deletedGoals) {
       try {
-        await supabase.from('investment_goals').delete().eq('id', goal.id);
-        await db.investmentGoals.delete(goal.id);
-        synced++;
+        const { error } = await supabase.from('investment_goals').delete().eq('id', goal.id);
+        if (error) {
+          logger.error('Erro ao deletar meta no servidor:', error);
+        } else {
+          await db.investmentGoals.delete(goal.id);
+          synced++;
+          logger.info(`Meta deletada do servidor: ${goal.id}`);
+        }
       } catch (error) {
         logger.error('Erro ao deletar meta no servidor:', error);
       }
@@ -338,7 +357,7 @@ class SyncService {
     return synced;
   }
 
-  // Baixar dados do servidor
+  // Baixar dados do servidor e remover itens deletados remotamente
   private async pullFromServer(userId: string): Promise<void> {
     // Buscar transações do servidor
     const { data: serverTransactions } = await supabase
@@ -347,6 +366,9 @@ class SyncService {
       .order('created_at', { ascending: false });
 
     if (serverTransactions) {
+      const serverIds = new Set(serverTransactions.map(t => t.id));
+      
+      // Atualizar/adicionar transações do servidor
       for (const t of serverTransactions) {
         const local = await db.transactions.get(t.id);
         if (!local || local.syncStatus === 'synced') {
@@ -366,6 +388,18 @@ class SyncService {
           });
         }
       }
+
+      // Remover transações locais sincronizadas que não existem mais no servidor
+      const localSyncedTransactions = await db.transactions
+        .filter(t => t.userId === userId && t.syncStatus === 'synced' && !isTempId(t.id))
+        .toArray();
+      
+      for (const local of localSyncedTransactions) {
+        if (!serverIds.has(local.id)) {
+          await db.transactions.delete(local.id);
+          logger.info(`Transação removida localmente (deletada no servidor): ${local.id}`);
+        }
+      }
     }
 
     // Buscar dívidas do servidor
@@ -375,6 +409,8 @@ class SyncService {
       .order('created_at', { ascending: false });
 
     if (serverDebts) {
+      const serverIds = new Set(serverDebts.map(d => d.id));
+      
       for (const d of serverDebts) {
         const local = await db.debts.get(d.id);
         if (!local || local.syncStatus === 'synced') {
@@ -394,6 +430,18 @@ class SyncService {
           });
         }
       }
+
+      // Remover dívidas locais que não existem mais no servidor
+      const localSyncedDebts = await db.debts
+        .filter(d => d.userId === userId && d.syncStatus === 'synced' && !isTempId(d.id))
+        .toArray();
+      
+      for (const local of localSyncedDebts) {
+        if (!serverIds.has(local.id)) {
+          await db.debts.delete(local.id);
+          logger.info(`Dívida removida localmente (deletada no servidor): ${local.id}`);
+        }
+      }
     }
 
     // Buscar metas do servidor
@@ -402,6 +450,8 @@ class SyncService {
       .select('*');
 
     if (serverGoals) {
+      const serverIds = new Set(serverGoals.map(g => g.id));
+      
       for (const g of serverGoals) {
         const local = await db.investmentGoals.get(g.id);
         if (!local || local.syncStatus === 'synced') {
@@ -416,6 +466,18 @@ class SyncService {
             serverUpdatedAt: Date.now(),
             version: 1,
           });
+        }
+      }
+
+      // Remover metas locais que não existem mais no servidor
+      const localSyncedGoals = await db.investmentGoals
+        .filter(g => g.userId === userId && g.syncStatus === 'synced' && !isTempId(g.id))
+        .toArray();
+      
+      for (const local of localSyncedGoals) {
+        if (!serverIds.has(local.id)) {
+          await db.investmentGoals.delete(local.id);
+          logger.info(`Meta removida localmente (deletada no servidor): ${local.id}`);
         }
       }
     }
