@@ -59,25 +59,11 @@ export const useOfflineTransactions = () => {
     createdAt: t.createdAt,
   }));
 
-  // Inicialização - sincronizar apenas se online
+  // Inicialização - marcar como carregado (sync é feito pelo Index.tsx)
   useEffect(() => {
     if (authLoading) return;
-    
-    const init = async () => {
-      try {
-        // Se online e temos usuário, sincronizar
-        if (userId && navigator.onLine) {
-          await syncService.syncAll();
-        }
-      } catch (error) {
-        logger.error('Erro ao sincronizar:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    
-    init();
-  }, [userId, authLoading]);
+    setLoading(false);
+  }, [authLoading]);
 
   // Adicionar transação (funciona offline)
   const addTransaction = useCallback(async (transaction: Omit<Transaction, 'id' | 'createdAt'>) => {

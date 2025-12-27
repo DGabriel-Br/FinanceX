@@ -20,15 +20,6 @@ export function useIsNativeApp(): boolean {
       (userAgent.includes('android') && userAgent.includes('version/'));
     const isIOSWebView = /(iphone|ipod|ipad).*applewebkit(?!.*safari)/i.test(navigator.userAgent);
     
-    // Log para debug (remover em produção)
-    console.log('[useIsNativeApp] Detection:', { 
-      hasCapacitor, 
-      isAndroidWebView, 
-      isIOSWebView,
-      capacitorPlatform: capacitor?.getPlatform?.(),
-      userAgent: navigator.userAgent 
-    });
-    
     // É nativo se Capacitor detectar OU se estiver em WebView
     return hasCapacitor || isAndroidWebView || isIOSWebView;
   }, []);

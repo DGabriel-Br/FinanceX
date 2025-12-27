@@ -39,24 +39,11 @@ export const useOfflineDebts = () => {
     createdAt: d.createdAt,
   }));
 
-  // Inicialização - sincronizar apenas se online
+  // Inicialização - marcar como carregado (sync é feito pelo Index.tsx)
   useEffect(() => {
     if (authLoading) return;
-    
-    const init = async () => {
-      try {
-        if (userId && navigator.onLine) {
-          await syncService.syncAll();
-        }
-      } catch (error) {
-        logger.error('Erro ao sincronizar:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    
-    init();
-  }, [userId, authLoading]);
+    setLoading(false);
+  }, [authLoading]);
 
   // Adicionar dívida
   const addDebt = useCallback(async (debt: Omit<Debt, 'id' | 'createdAt'>) => {

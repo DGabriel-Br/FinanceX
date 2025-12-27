@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
+import { logger } from '@/lib/logger';
 
 export interface CustomCategory {
   id: string;
@@ -64,8 +65,8 @@ export function useCustomCategories() {
       setCategories((categoriesResult.data || []) as CustomCategory[]);
       setHiddenDefaults((hiddenResult.data || []) as HiddenDefaultCategory[]);
       setCategoryOrder((orderResult.data || []) as CategoryOrder[]);
-    } catch (error: any) {
-      console.error('Error fetching categories:', error);
+    } catch (error) {
+      logger.error('Error fetching categories:', error);
     } finally {
       setLoading(false);
     }
@@ -116,8 +117,8 @@ export function useCustomCategories() {
       toast.success(`Categoria "${trimmedName}" criada com sucesso.`);
       return true;
     } catch (error: any) {
-      console.error('Error creating category:', error);
-      toast.error(error.message || 'Ocorreu um erro ao criar a categoria.');
+      logger.error('Error creating category:', error);
+      toast.error(error?.message || 'Ocorreu um erro ao criar a categoria.');
       return false;
     }
   };
@@ -161,8 +162,8 @@ export function useCustomCategories() {
       toast.success('Categoria atualizada com sucesso.');
       return true;
     } catch (error: any) {
-      console.error('Error updating category:', error);
-      toast.error(error.message || 'Ocorreu um erro ao atualizar a categoria.');
+      logger.error('Error updating category:', error);
+      toast.error(error?.message || 'Ocorreu um erro ao atualizar a categoria.');
       return false;
     }
   };
@@ -183,8 +184,8 @@ export function useCustomCategories() {
       toast.success('Categoria excluída com sucesso.');
       return true;
     } catch (error: any) {
-      console.error('Error deleting category:', error);
-      toast.error(error.message || 'Ocorreu um erro ao excluir a categoria.');
+      logger.error('Error deleting category:', error);
+      toast.error(error?.message || 'Ocorreu um erro ao excluir a categoria.');
       return false;
     }
   };
@@ -217,8 +218,8 @@ export function useCustomCategories() {
       toast.success('Categoria padrão ocultada.');
       return true;
     } catch (error: any) {
-      console.error('Error hiding default category:', error);
-      toast.error(error.message || 'Ocorreu um erro.');
+      logger.error('Error hiding default category:', error);
+      toast.error(error?.message || 'Ocorreu um erro.');
       return false;
     }
   };
@@ -240,8 +241,8 @@ export function useCustomCategories() {
       toast.success('Categoria padrão restaurada.');
       return true;
     } catch (error: any) {
-      console.error('Error restoring default category:', error);
-      toast.error(error.message || 'Ocorreu um erro.');
+      logger.error('Error restoring default category:', error);
+      toast.error(error?.message || 'Ocorreu um erro.');
       return false;
     }
   };
@@ -300,8 +301,8 @@ export function useCustomCategories() {
 
       return true;
     } catch (error: any) {
-      console.error('Error updating category order:', error);
-      toast.error(error.message || 'Ocorreu um erro ao salvar a ordem.');
+      logger.error('Error updating category order:', error);
+      toast.error(error?.message || 'Ocorreu um erro ao salvar a ordem.');
       return false;
     }
   };
