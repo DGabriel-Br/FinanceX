@@ -344,7 +344,7 @@ export default function Settings() {
           Configurações
         </h3>
         
-        <div className="grid grid-cols-3 gap-4 mb-8">
+        <div className="grid grid-cols-3 gap-6 mb-8">
           {/* Card Dados Pessoais */}
           <button
             onClick={() => setActiveSection('profile')}
