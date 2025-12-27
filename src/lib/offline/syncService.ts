@@ -338,7 +338,7 @@ class SyncService {
     return synced;
   }
 
-  // Baixar dados do servidor e sincronizar com local
+  // Baixar dados do servidor
   private async pullFromServer(userId: string): Promise<void> {
     // Buscar transações do servidor
     const { data: serverTransactions } = await supabase
@@ -347,26 +347,8 @@ class SyncService {
       .order('created_at', { ascending: false });
 
     if (serverTransactions) {
-      // Obter IDs do servidor
-      const serverIds = new Set(serverTransactions.map(t => t.id));
-      
-      // Remover transações locais sincronizadas que não existem mais no servidor
-      const localSyncedTransactions = await db.transactions
-        .where('userId')
-        .equals(userId)
-        .filter(t => t.syncStatus === 'synced' && !isTempId(t.id))
-        .toArray();
-      
-      for (const local of localSyncedTransactions) {
-        if (!serverIds.has(local.id)) {
-          await db.transactions.delete(local.id);
-        }
-      }
-      
-      // Atualizar/adicionar transações do servidor
       for (const t of serverTransactions) {
         const local = await db.transactions.get(t.id);
-        // Só atualiza se não existe local ou se está sincronizado (não tem mudanças pendentes)
         if (!local || local.syncStatus === 'synced') {
           await db.transactions.put({
             id: t.id,
@@ -393,21 +375,6 @@ class SyncService {
       .order('created_at', { ascending: false });
 
     if (serverDebts) {
-      const serverDebtIds = new Set(serverDebts.map(d => d.id));
-      
-      // Remover dívidas locais sincronizadas que não existem mais no servidor
-      const localSyncedDebts = await db.debts
-        .where('userId')
-        .equals(userId)
-        .filter(d => d.syncStatus === 'synced' && !isTempId(d.id))
-        .toArray();
-      
-      for (const local of localSyncedDebts) {
-        if (!serverDebtIds.has(local.id)) {
-          await db.debts.delete(local.id);
-        }
-      }
-      
       for (const d of serverDebts) {
         const local = await db.debts.get(d.id);
         if (!local || local.syncStatus === 'synced') {
@@ -435,21 +402,6 @@ class SyncService {
       .select('*');
 
     if (serverGoals) {
-      const serverGoalIds = new Set(serverGoals.map(g => g.id));
-      
-      // Remover metas locais sincronizadas que não existem mais no servidor
-      const localSyncedGoals = await db.investmentGoals
-        .where('userId')
-        .equals(userId)
-        .filter(g => g.syncStatus === 'synced' && !isTempId(g.id))
-        .toArray();
-      
-      for (const local of localSyncedGoals) {
-        if (!serverGoalIds.has(local.id)) {
-          await db.investmentGoals.delete(local.id);
-        }
-      }
-      
       for (const g of serverGoals) {
         const local = await db.investmentGoals.get(g.id);
         if (!local || local.syncStatus === 'synced') {

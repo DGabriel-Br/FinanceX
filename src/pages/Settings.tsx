@@ -20,8 +20,7 @@ import {
   Globe,
   DollarSign,
   Plus,
-  X,
-  RefreshCw
+  X
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -860,41 +859,6 @@ function SecuritySheetContent({ currentPassword, setCurrentPassword, showCurrent
 }
 
 function PreferencesSheetContent({ theme, toggleTheme, setActiveSection }: any) {
-  const [isSyncing, setIsSyncing] = useState(false);
-
-  const handleForceSync = async () => {
-    setIsSyncing(true);
-    try {
-      // Importar dinamicamente para evitar dependência circular
-      const { db } = await import('@/lib/offline/database');
-      const { syncService } = await import('@/lib/offline/syncService');
-      const { supabase } = await import('@/integrations/supabase/client');
-      
-      const { data: { session } } = await supabase.auth.getSession();
-      const userId = session?.user?.id;
-      
-      if (!userId) {
-        toast.error('Usuário não autenticado');
-        return;
-      }
-
-      // Limpar dados locais sincronizados e re-baixar do servidor
-      await db.transactions.where('userId').equals(userId).filter(t => t.syncStatus === 'synced').delete();
-      await db.debts.where('userId').equals(userId).filter(d => d.syncStatus === 'synced').delete();
-      await db.investmentGoals.where('userId').equals(userId).filter(g => g.syncStatus === 'synced').delete();
-      
-      // Sincronizar novamente
-      await syncService.syncAll();
-      
-      toast.success('Dados sincronizados com sucesso!');
-    } catch (error) {
-      console.error('Erro ao sincronizar:', error);
-      toast.error('Erro ao sincronizar dados');
-    } finally {
-      setIsSyncing(false);
-    }
-  };
-
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between p-4 bg-muted/50 rounded-xl animate-fade-in opacity-0" style={{ animationDelay: '0.1s', animationFillMode: 'forwards' }}>
@@ -957,32 +921,7 @@ function PreferencesSheetContent({ theme, toggleTheme, setActiveSection }: any) 
         </div>
         <ChevronRight className="w-5 h-5 text-muted-foreground" />
       </button>
-      
-      {/* Sincronizar dados */}
-      <button 
-        onClick={handleForceSync} 
-        disabled={isSyncing}
-        className="w-full flex items-center justify-between p-4 bg-primary/10 rounded-xl hover:bg-primary/20 active:scale-[0.98] transition-all animate-fade-in opacity-0" 
-        style={{ animationDelay: '0.35s', animationFillMode: 'forwards' }}
-      >
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-primary/20 flex items-center justify-center">
-            {isSyncing ? (
-              <Loader2 className="w-5 h-5 text-primary animate-spin" />
-            ) : (
-              <RefreshCw className="w-5 h-5 text-primary" />
-            )}
-          </div>
-          <div className="text-left">
-            <p className="text-sm font-medium text-foreground">Sincronizar dados</p>
-            <p className="text-xs text-muted-foreground">
-              {isSyncing ? 'Sincronizando...' : 'Atualizar dados do servidor'}
-            </p>
-          </div>
-        </div>
-      </button>
-      
-      <p className="text-xs text-muted-foreground text-center pt-4 animate-fade-in opacity-0" style={{ animationDelay: '0.4s', animationFillMode: 'forwards' }}>
+      <p className="text-xs text-muted-foreground text-center pt-4 animate-fade-in opacity-0" style={{ animationDelay: '0.35s', animationFillMode: 'forwards' }}>
         Algumas opções estarão disponíveis em breve
       </p>
     </div>
