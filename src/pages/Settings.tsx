@@ -337,7 +337,7 @@ export default function Settings() {
 
       {/* Settings Cards */}
       <div className="flex-1 px-4">
-        <h3 className="text-sm font-semibold text-primary mb-4">
+        <h3 className="text-base font-bold text-foreground mb-4">
           Configurações
         </h3>
         
@@ -345,12 +345,10 @@ export default function Settings() {
           {/* Card Dados Pessoais */}
           <button
             onClick={() => setActiveSection('profile')}
-            className="flex flex-col items-center justify-center p-5 bg-card border border-border/50 rounded-2xl hover:border-primary/30 hover:bg-primary/5 active:scale-[0.98] transition-all text-center min-h-[120px]"
+            className="group flex flex-col justify-between p-4 bg-muted/50 rounded-2xl hover:bg-muted active:scale-[0.97] transition-all text-left min-h-[140px]"
           >
-            <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-3">
-              <User className="w-6 h-6 text-primary" />
-            </div>
-            <span className="text-sm font-medium text-foreground leading-tight">
+            <User className="w-7 h-7 text-primary stroke-[1.5] group-hover:scale-110 transition-transform" />
+            <span className="text-sm font-medium text-foreground leading-tight mt-auto">
               Dados<br/>pessoais
             </span>
           </button>
@@ -358,12 +356,10 @@ export default function Settings() {
           {/* Card Segurança */}
           <button
             onClick={() => setActiveSection('security')}
-            className="flex flex-col items-center justify-center p-5 bg-card border border-border/50 rounded-2xl hover:border-primary/30 hover:bg-primary/5 active:scale-[0.98] transition-all text-center min-h-[120px]"
+            className="group flex flex-col justify-between p-4 bg-muted/50 rounded-2xl hover:bg-muted active:scale-[0.97] transition-all text-left min-h-[140px]"
           >
-            <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-3">
-              <Shield className="w-6 h-6 text-primary" />
-            </div>
-            <span className="text-sm font-medium text-foreground leading-tight">
+            <Shield className="w-7 h-7 text-primary stroke-[1.5] group-hover:scale-110 transition-transform" />
+            <span className="text-sm font-medium text-foreground leading-tight mt-auto">
               Segurança
             </span>
           </button>
@@ -371,12 +367,10 @@ export default function Settings() {
           {/* Card Preferências */}
           <button
             onClick={() => setActiveSection('preferences')}
-            className="flex flex-col items-center justify-center p-5 bg-card border border-border/50 rounded-2xl hover:border-primary/30 hover:bg-primary/5 active:scale-[0.98] transition-all text-center min-h-[120px]"
+            className="group flex flex-col justify-between p-4 bg-muted/50 rounded-2xl hover:bg-muted active:scale-[0.97] transition-all text-left min-h-[140px]"
           >
-            <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-3">
-              <Settings2 className="w-6 h-6 text-primary" />
-            </div>
-            <span className="text-sm font-medium text-foreground leading-tight">
+            <Settings2 className="w-7 h-7 text-primary stroke-[1.5] group-hover:scale-110 transition-transform" />
+            <span className="text-sm font-medium text-foreground leading-tight mt-auto">
               Preferências
             </span>
           </button>
