@@ -37,7 +37,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
         /* Posicionamento do container de toasts para app nativo */
         ${isNativeApp ? `
         [data-sonner-toaster] {
-          bottom: 120px !important;
+          bottom: 90px !important;
         }
         ` : ''}
 
