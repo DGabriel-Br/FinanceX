@@ -97,11 +97,11 @@ const Index = () => {
     refetch: refetchDebts,
   } = useDebts();
 
-  // Tempo mínimo de exibição da splash screen (3 segundos)
+  // Tempo mínimo de exibição da splash screen (5 segundos)
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowSplash(false);
-    }, 3000);
+    }, 5000);
     return () => clearTimeout(timer);
   }, []);
 
@@ -146,31 +146,52 @@ const Index = () => {
 
   if (authLoading || showSplash || isLoggingOut) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-background">
+      <div className="min-h-screen flex flex-col items-center justify-center bg-background overflow-hidden">
         {/* Logo animada */}
-        <div className="relative mb-6">
+        <div className="relative mb-8 animate-fade-in">
+          {/* Glow pulsante de fundo */}
+          <div className="absolute -inset-8 bg-gradient-to-r from-primary/30 via-income/30 to-primary/30 rounded-3xl blur-3xl animate-pulse" />
+          
+          {/* Container do logo */}
           <div className="relative flex items-end">
-            <div className="absolute -inset-4 bg-gradient-to-r from-primary/20 via-income/20 to-primary/20 rounded-2xl blur-2xl animate-pulse" />
-            <FinanceLogo size={48} className="relative" />
+            <div className="animate-[bounce_2s_ease-in-out_infinite]">
+              <FinanceLogo size={56} className="relative drop-shadow-[0_0_20px_rgba(34,211,238,0.6)]" />
+            </div>
             <span 
-              className="text-3xl font-black tracking-wider text-foreground -ml-1 relative"
+              className="text-4xl font-black tracking-wider text-foreground -ml-1 relative animate-[pulse_2s_ease-in-out_infinite]"
               style={{ fontFamily: "'Orbitron', sans-serif" }}
             >
               inanceX
             </span>
           </div>
-          {/* Anel de loading ao redor do logo */}
-          <div className="absolute -inset-4 rounded-3xl border-2 border-primary/30 animate-spin" style={{ animationDuration: '3s' }} />
-          <div className="absolute -inset-5 rounded-3xl border-2 border-t-primary border-r-transparent border-b-transparent border-l-transparent animate-spin" style={{ animationDuration: '1.5s' }} />
+          
+          {/* Anéis de loading animados */}
+          <div className="absolute -inset-6 rounded-3xl border-2 border-primary/40 animate-[spin_4s_linear_infinite]" />
+          <div className="absolute -inset-8 rounded-3xl border-2 border-income/30 animate-[spin_3s_linear_infinite_reverse]" />
+          <div className="absolute -inset-10 rounded-3xl border-t-2 border-r-2 border-primary/50 border-b-transparent border-l-transparent animate-[spin_2s_linear_infinite]" />
         </div>
         
-        <p className="text-sm text-muted-foreground animate-fade-in" style={{ animationDelay: '0.1s' }}>
+        {/* Texto animado */}
+        <p className="text-sm text-muted-foreground animate-pulse mt-2">
           {isLoggingOut ? 'Saindo...' : 'Carregando seu controle financeiro...'}
         </p>
         
-        {/* Barra de progresso */}
-        <div className="w-48 h-1 bg-muted rounded-full mt-6 overflow-hidden">
-          <div className="h-full bg-gradient-to-r from-income to-primary rounded-full animate-[loading_1.5s_ease-in-out_infinite]" />
+        {/* Barra de progresso mais visível */}
+        <div className="w-56 h-1.5 bg-muted rounded-full mt-8 overflow-hidden">
+          <div 
+            className="h-full bg-gradient-to-r from-income via-primary to-income rounded-full"
+            style={{
+              animation: 'loading 1.5s ease-in-out infinite, shimmer 2s linear infinite',
+              backgroundSize: '200% 100%'
+            }}
+          />
+        </div>
+        
+        {/* Pontos de loading */}
+        <div className="flex gap-2 mt-6">
+          <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+          <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+          <div className="w-2 h-2 bg-primary rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
         </div>
       </div>
     );
