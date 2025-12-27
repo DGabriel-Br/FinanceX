@@ -126,16 +126,17 @@ export const FloatingAddButton = ({ onAddTransaction }: FloatingAddButtonProps) 
       <button
         onClick={() => setIsOpen(true)}
         className={cn(
-          "md:hidden fixed right-4 bottom-24 z-50 w-14 h-14 rounded-full",
+          "md:hidden fixed right-4 bottom-24 z-50 h-12 px-4 rounded-full",
           "bg-primary text-primary-foreground shadow-lg",
-          "flex items-center justify-center",
+          "flex items-center justify-center gap-2",
           "transition-all duration-300 ease-out",
           "hover:scale-105 hover:shadow-xl",
           "active:scale-95"
         )}
         aria-label="Adicionar lançamento"
       >
-        <Plus className="w-6 h-6" />
+        <Plus className="w-5 h-5" />
+        <span className="text-sm font-medium">Lançamento</span>
       </button>
 
       {/* Drawer com formulário */}
