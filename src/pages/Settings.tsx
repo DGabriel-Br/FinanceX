@@ -344,38 +344,47 @@ export default function Settings() {
           Configurações
         </h3>
         
-        <div className="grid grid-cols-3 gap-3 mb-8">
+        <div className="grid grid-cols-3 gap-4 mb-8">
           {/* Card Dados Pessoais */}
           <button
             onClick={() => setActiveSection('profile')}
-            className="group flex flex-col justify-between p-4 bg-muted/50 rounded-2xl hover:bg-muted active:scale-[0.97] transition-all text-left h-[130px]"
+            className="group flex flex-col p-4 bg-muted/50 rounded-2xl hover:bg-muted active:scale-[0.97] transition-all text-left aspect-square"
           >
-            <User className="w-7 h-7 text-primary stroke-[1.5] group-hover:scale-110 transition-transform" />
-            <span className="text-sm font-medium text-foreground leading-snug">
-              Dados<br/>pessoais
-            </span>
+            <User className="w-6 h-6 text-primary stroke-[1.5] group-hover:scale-110 transition-transform" />
+            <div className="mt-auto">
+              <span className="text-[13px] font-medium text-foreground leading-tight block">
+                Dados
+              </span>
+              <span className="text-[13px] font-medium text-foreground leading-tight block">
+                pessoais
+              </span>
+            </div>
           </button>
 
           {/* Card Segurança */}
           <button
             onClick={() => setActiveSection('security')}
-            className="group flex flex-col justify-between p-4 bg-muted/50 rounded-2xl hover:bg-muted active:scale-[0.97] transition-all text-left h-[130px]"
+            className="group flex flex-col p-4 bg-muted/50 rounded-2xl hover:bg-muted active:scale-[0.97] transition-all text-left aspect-square"
           >
-            <Shield className="w-7 h-7 text-primary stroke-[1.5] group-hover:scale-110 transition-transform" />
-            <span className="text-sm font-medium text-foreground leading-snug">
-              Segurança
-            </span>
+            <Shield className="w-6 h-6 text-primary stroke-[1.5] group-hover:scale-110 transition-transform" />
+            <div className="mt-auto">
+              <span className="text-[13px] font-medium text-foreground leading-tight block">
+                Segurança
+              </span>
+            </div>
           </button>
 
           {/* Card Preferências */}
           <button
             onClick={() => setActiveSection('preferences')}
-            className="group flex flex-col justify-between p-4 bg-muted/50 rounded-2xl hover:bg-muted active:scale-[0.97] transition-all text-left h-[130px]"
+            className="group flex flex-col p-4 bg-muted/50 rounded-2xl hover:bg-muted active:scale-[0.97] transition-all text-left aspect-square"
           >
-            <Settings2 className="w-7 h-7 text-primary stroke-[1.5] group-hover:scale-110 transition-transform" />
-            <span className="text-sm font-medium text-foreground leading-snug">
-              Preferências
-            </span>
+            <Settings2 className="w-6 h-6 text-primary stroke-[1.5] group-hover:scale-110 transition-transform" />
+            <div className="mt-auto">
+              <span className="text-[13px] font-medium text-foreground leading-tight block">
+                Preferências
+              </span>
+            </div>
           </button>
         </div>
 
