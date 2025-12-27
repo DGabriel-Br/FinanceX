@@ -62,6 +62,7 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onSuccess }: NativeAuthS
   const [mounted, setMounted] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [contentVisible, setContentVisible] = useState(false);
+  const [transitionDirection, setTransitionDirection] = useState<'left' | 'right'>('right');
   
   // Form states
   const [name, setName] = useState('');
@@ -99,6 +100,9 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onSuccess }: NativeAuthS
   }, [screen]);
 
   const handleNavigate = (newScreen: Screen) => {
+    // Determine direction: going to welcome = left, going to login/register = right
+    const direction = newScreen === 'welcome' ? 'left' : 'right';
+    setTransitionDirection(direction);
     setIsTransitioning(true);
     setContentVisible(false);
     setTimeout(() => {
@@ -106,7 +110,7 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onSuccess }: NativeAuthS
       setIsTransitioning(false);
       // Small delay before showing content for smooth transition
       setTimeout(() => setContentVisible(true), 50);
-    }, 200);
+    }, 250);
   };
 
   const triggerShake = () => {
@@ -327,8 +331,12 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onSuccess }: NativeAuthS
         {/* Content */}
         <div 
           className={cn(
-            "flex-1 flex flex-col items-center justify-center px-8 relative z-10 transition-all duration-500",
-            contentVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+            "flex-1 flex flex-col items-center justify-center px-8 relative z-10 transition-all duration-400 ease-out",
+            contentVisible 
+              ? "opacity-100 translate-x-0" 
+              : transitionDirection === 'left' 
+                ? "opacity-0 translate-x-[-30px]" 
+                : "opacity-0 translate-x-[30px]"
           )}
         >
           {/* Logo - igual ao da versão web */}
@@ -362,8 +370,12 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onSuccess }: NativeAuthS
         {/* Bottom buttons */}
         <div 
           className={cn(
-            "px-6 pb-10 space-y-3 relative z-10 transition-all duration-700 delay-150",
-            contentVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
+            "px-6 pb-10 space-y-3 relative z-10 transition-all duration-500 delay-100 ease-out",
+            contentVisible 
+              ? "opacity-100 translate-x-0" 
+              : transitionDirection === 'left' 
+                ? "opacity-0 translate-x-[-30px]" 
+                : "opacity-0 translate-x-[30px]"
           )}
         >
           <Button
@@ -424,8 +436,12 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onSuccess }: NativeAuthS
         {/* Content */}
         <div 
           className={cn(
-            "flex-1 px-6 pt-4 pb-8 safe-area-bottom transition-all duration-300",
-            contentVisible && !isTransitioning ? "opacity-100 translate-x-0" : "opacity-0 translate-x-8",
+            "flex-1 px-6 pt-4 pb-8 safe-area-bottom transition-all duration-400 ease-out",
+            contentVisible && !isTransitioning 
+              ? "opacity-100 translate-x-0" 
+              : transitionDirection === 'right' 
+                ? "opacity-0 translate-x-[30px]" 
+                : "opacity-0 translate-x-[-30px]",
             isShaking && "animate-shake"
           )}
         >
@@ -545,8 +561,12 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onSuccess }: NativeAuthS
         {/* Content */}
         <div 
           className={cn(
-            "flex-1 px-6 pt-4 pb-8 safe-area-bottom overflow-auto transition-all duration-300",
-            contentVisible && !isTransitioning ? "opacity-100 translate-x-0" : "opacity-0 -translate-x-8",
+            "flex-1 px-6 pt-4 pb-8 safe-area-bottom overflow-auto transition-all duration-400 ease-out",
+            contentVisible && !isTransitioning 
+              ? "opacity-100 translate-x-0" 
+              : transitionDirection === 'right' 
+                ? "opacity-0 translate-x-[30px]" 
+                : "opacity-0 translate-x-[-30px]",
             isShaking && "animate-shake"
           )}
         >
