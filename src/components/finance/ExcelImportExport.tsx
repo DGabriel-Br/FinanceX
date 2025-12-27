@@ -622,10 +622,10 @@ export const ExcelImportExport = ({
         variant="outline"
         size="sm"
         onClick={() => setIsImportDialogOpen(true)}
-        className="gap-1.5 h-8 md:h-9 px-3"
+        className="gap-1.5 h-8 md:h-9 px-3 md:bg-transparent bg-primary/10 border-primary/30 hover:bg-primary/20 md:hover:bg-accent"
       >
-        <Upload className="w-4 h-4" />
-        <span className="text-xs md:text-sm">Importar</span>
+        <Upload className="w-4 h-4 text-primary md:text-current" />
+        <span className="text-xs md:text-sm font-medium">Importar</span>
       </Button>
 
       {/* Botão Exportar */}
@@ -633,10 +633,10 @@ export const ExcelImportExport = ({
         variant="outline"
         size="sm"
         onClick={exportToExcel}
-        className="gap-1.5 h-8 md:h-9 px-3"
+        className="gap-1.5 h-8 md:h-9 px-3 md:bg-transparent bg-primary/10 border-primary/30 hover:bg-primary/20 md:hover:bg-accent"
       >
-        <Download className="w-4 h-4" />
-        <span className="text-xs md:text-sm">Exportar</span>
+        <Download className="w-4 h-4 text-primary md:text-current" />
+        <span className="text-xs md:text-sm font-medium">Exportar</span>
       </Button>
 
       {/* Dialog de Importação */}
