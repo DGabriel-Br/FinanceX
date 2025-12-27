@@ -91,33 +91,38 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onSuccess }: NativeAuthS
 
   const handleNavigate = (newScreen: Screen) => {
     const isGoingBack = newScreen === 'welcome';
-    // Set direction for exit animation
+    // Exit: content slides OUT in this direction
+    // Going back = slide right (exit right), Going forward = slide left (exit left)
     setSlideDirection(isGoingBack ? 'right' : 'left');
     setIsVisible(false);
     
     setTimeout(() => {
       setScreen(newScreen);
-      // Set direction for enter animation (opposite of exit)
+      // Enter: new content comes FROM this direction
+      // Going back = come from left, Going forward = come from right
       setSlideDirection(isGoingBack ? 'left' : 'right');
-      // Small delay before showing content
       setTimeout(() => setIsVisible(true), 50);
     }, 300);
   };
   
   // Get animation classes - simpler logic
+  // slideDirection indicates where content should GO when exiting
+  // or where content should COME FROM when entering
   const getAnimationClasses = () => {
     if (isVisible) {
       return "opacity-100 translate-x-0";
     }
-    // Not visible - slide in the current direction
+    // Not visible - position content off-screen in the slide direction
     if (slideDirection === 'left') {
+      // Exit to left OR enter from left
       return "opacity-0 -translate-x-8";
     }
     if (slideDirection === 'right') {
+      // Exit to right OR enter from right  
       return "opacity-0 translate-x-8";
     }
-    // Initial state (no direction yet)
-    return "opacity-0 translate-x-8";
+    // Initial state
+    return "opacity-0";
   };
 
   const triggerShake = () => {
