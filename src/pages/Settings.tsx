@@ -284,11 +284,11 @@ export default function Settings() {
       </header>
 
       {/* Profile Section */}
-      <div className="flex flex-col items-center pt-8 pb-10 px-4">
+      <div className="flex flex-col items-center pt-6 pb-8 px-4">
         {/* Avatar */}
-        <div className="relative mb-6">
+        <div className="relative mb-5">
           <div 
-            className="w-32 h-32 rounded-full bg-muted/80 flex items-center justify-center overflow-hidden ring-4 ring-background shadow-xl cursor-pointer transition-transform active:scale-95"
+            className="w-28 h-28 rounded-full bg-muted/80 flex items-center justify-center overflow-hidden ring-4 ring-background shadow-xl cursor-pointer transition-transform active:scale-95"
             onClick={() => fileInputRef.current?.click()}
           >
             {avatarUrl ? (
@@ -298,7 +298,7 @@ export default function Settings() {
                 className="w-full h-full object-cover"
               />
             ) : (
-              <span className="text-5xl font-bold text-muted-foreground">
+              <span className="text-4xl font-bold text-muted-foreground">
                 {getInitials(displayName, user?.email)}
               </span>
             )}
@@ -308,7 +308,7 @@ export default function Settings() {
           <button
             onClick={() => fileInputRef.current?.click()}
             disabled={isUploadingAvatar}
-            className="absolute -bottom-1 right-1 w-10 h-10 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-lg hover:bg-primary/90 active:scale-95 transition-all"
+            className="absolute -bottom-1 right-0 w-9 h-9 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-lg hover:bg-primary/90 active:scale-95 transition-all"
           >
             {isUploadingAvatar ? (
               <Loader2 className="w-4 h-4 animate-spin" />
@@ -327,35 +327,36 @@ export default function Settings() {
         </div>
 
         {/* Nome */}
-        <h2 className="text-2xl font-bold text-foreground mb-2 text-center">
+        <h2 className="text-2xl font-bold text-foreground mb-1.5 text-center">
           {displayName}
         </h2>
 
         {/* Email */}
-        <p className="text-sm text-muted-foreground">
+        <p className="text-sm text-muted-foreground flex items-center gap-2">
+          <Mail className="w-4 h-4" />
           {user?.email}
         </p>
       </div>
 
       {/* Settings Cards */}
-      <div className="flex-1 px-5">
-        <h3 className="text-xl font-bold text-foreground mb-5 animate-fade-in opacity-0" style={{ animationDelay: '0.05s', animationFillMode: 'forwards' }}>
+      <div className="flex-1 px-6">
+        <h3 className="text-base font-bold text-foreground mb-6 animate-fade-in opacity-0" style={{ animationDelay: '0.05s', animationFillMode: 'forwards' }}>
           Configurações
         </h3>
         
-        <div className="flex justify-center gap-4 mb-8">
+        <div className="grid grid-cols-3 gap-4 mb-8">
           {/* Card Dados Pessoais */}
           <button
             onClick={() => setActiveSection('profile')}
-            className="group flex flex-col items-start p-4 bg-muted/40 rounded-3xl hover:bg-muted/60 active:scale-[0.97] transition-all w-[110px] h-[110px] animate-fade-in opacity-0"
+            className="group flex flex-col items-start p-5 bg-muted/50 rounded-2xl hover:bg-muted active:scale-[0.97] transition-all min-h-[120px] animate-fade-in opacity-0"
             style={{ animationDelay: '0.1s', animationFillMode: 'forwards' }}
           >
-            <User className="w-6 h-6 text-primary stroke-[1.5] group-hover:scale-110 transition-transform" />
+            <User className="w-5 h-5 text-primary stroke-[1.5] group-hover:scale-110 transition-transform" />
             <div className="mt-auto text-left">
-              <span className="text-sm font-medium text-foreground leading-tight block">
+              <span className="text-[13px] font-medium text-foreground leading-tight block">
                 Dados
               </span>
-              <span className="text-sm font-medium text-foreground leading-tight block">
+              <span className="text-[13px] font-medium text-foreground leading-tight block">
                 pessoais
               </span>
             </div>
@@ -364,12 +365,15 @@ export default function Settings() {
           {/* Card Segurança */}
           <button
             onClick={() => setActiveSection('security')}
-            className="group flex flex-col items-start p-4 bg-muted/40 rounded-3xl hover:bg-muted/60 active:scale-[0.97] transition-all w-[110px] h-[110px] animate-fade-in opacity-0"
+            className="group flex flex-col items-start p-5 bg-muted/50 rounded-2xl hover:bg-muted active:scale-[0.97] transition-all min-h-[120px] animate-fade-in opacity-0"
             style={{ animationDelay: '0.2s', animationFillMode: 'forwards' }}
           >
-            <Shield className="w-6 h-6 text-primary stroke-[1.5] group-hover:scale-110 transition-transform" />
+            <Shield className="w-5 h-5 text-primary stroke-[1.5] group-hover:scale-110 transition-transform" />
             <div className="mt-auto text-left">
-              <span className="text-sm font-medium text-foreground leading-tight block">
+              <span className="text-[13px] font-medium text-foreground leading-tight block">
+                &nbsp;
+              </span>
+              <span className="text-[13px] font-medium text-foreground leading-tight block">
                 Segurança
               </span>
             </div>
@@ -378,12 +382,15 @@ export default function Settings() {
           {/* Card Preferências */}
           <button
             onClick={() => setActiveSection('preferences')}
-            className="group flex flex-col items-start p-4 bg-muted/40 rounded-3xl hover:bg-muted/60 active:scale-[0.97] transition-all w-[110px] h-[110px] animate-fade-in opacity-0"
+            className="group flex flex-col items-start p-5 bg-muted/50 rounded-2xl hover:bg-muted active:scale-[0.97] transition-all min-h-[120px] animate-fade-in opacity-0"
             style={{ animationDelay: '0.3s', animationFillMode: 'forwards' }}
           >
-            <Cog className="w-6 h-6 text-primary stroke-[1.5] group-hover:scale-110 transition-transform" />
+            <Cog className="w-5 h-5 text-primary stroke-[1.5] group-hover:scale-110 transition-transform" />
             <div className="mt-auto text-left">
-              <span className="text-sm font-medium text-foreground leading-tight block">
+              <span className="text-[13px] font-medium text-foreground leading-tight block">
+                &nbsp;
+              </span>
+              <span className="text-[13px] font-medium text-foreground leading-tight block">
                 Preferências
               </span>
             </div>
@@ -397,13 +404,15 @@ export default function Settings() {
       </div>
 
       {/* Logout Button */}
-      <div className="px-5 py-8 safe-area-bottom mt-auto animate-fade-in opacity-0" style={{ animationDelay: '0.5s', animationFillMode: 'forwards' }}>
-        <button
+      <div className="px-4 py-6 safe-area-bottom mt-auto animate-fade-in opacity-0" style={{ animationDelay: '0.5s', animationFillMode: 'forwards' }}>
+        <Button
           onClick={handleSignOut}
-          className="w-full text-center text-base font-medium text-pink-500 hover:text-pink-600 active:opacity-70 transition-all py-3"
+          variant="destructive"
+          className="w-full h-14 text-base font-semibold rounded-xl shadow-lg shadow-destructive/20 hover:scale-[1.02] active:scale-[0.98] transition-all"
         >
-          Sair
-        </button>
+          <span>Sair do app</span>
+          <LogOut className="w-5 h-5 ml-auto" />
+        </Button>
       </div>
 
       {/* Sheet - Dados Pessoais */}
