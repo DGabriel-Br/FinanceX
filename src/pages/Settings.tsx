@@ -402,7 +402,7 @@ export default function Settings() {
         </div>
 
         {/* Logout Button */}
-        <div className="px-4 py-6 safe-area-bottom mt-auto animate-fade-in opacity-0" style={{ animationDelay: '0.5s', animationFillMode: 'forwards' }}>
+        <div className="px-4 pb-6 pt-2 safe-area-bottom animate-fade-in opacity-0" style={{ animationDelay: '0.5s', animationFillMode: 'forwards' }}>
           <Button
             onClick={handleSignOut}
             variant="destructive"
