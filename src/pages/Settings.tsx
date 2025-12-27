@@ -254,26 +254,31 @@ export default function Settings() {
   return (
     <div className="min-h-screen bg-background flex flex-col">
       {/* Header com botão voltar */}
-      <header className="sticky top-0 z-50 bg-background safe-area-top border-b border-border">
+      <header className="sticky top-0 z-50 bg-card safe-area-top">
         <div className="px-4 py-3 flex items-center gap-3">
           <Button
             variant="ghost"
             size="icon"
             onClick={() => navigate(-1)}
-            className="text-foreground"
+            className="text-foreground -ml-2"
           >
             <ArrowLeft className="w-5 h-5" />
           </Button>
           <h1 className="text-lg font-semibold text-foreground">Perfil</h1>
         </div>
+        {/* Curva de transição */}
+        <div className="relative h-4">
+          <div className="absolute inset-0 bg-card" />
+          <div className="absolute inset-0 bg-background rounded-t-3xl" />
+        </div>
       </header>
 
       {/* Profile Section */}
-      <div className="flex flex-col items-center pt-8 pb-6 px-4">
+      <div className="flex flex-col items-center pt-6 pb-8 px-4">
         {/* Avatar */}
-        <div className="relative mb-4">
+        <div className="relative mb-5">
           <div 
-            className="w-24 h-24 rounded-full bg-muted flex items-center justify-center overflow-hidden border-4 border-background shadow-lg cursor-pointer"
+            className="w-28 h-28 rounded-full bg-muted/80 flex items-center justify-center overflow-hidden ring-4 ring-background shadow-xl cursor-pointer transition-transform active:scale-95"
             onClick={() => fileInputRef.current?.click()}
           >
             {avatarUrl ? (
@@ -283,7 +288,7 @@ export default function Settings() {
                 className="w-full h-full object-cover"
               />
             ) : (
-              <span className="text-3xl font-bold text-muted-foreground">
+              <span className="text-4xl font-bold text-muted-foreground">
                 {getInitials(displayName, user?.email)}
               </span>
             )}
@@ -293,7 +298,7 @@ export default function Settings() {
           <button
             onClick={() => fileInputRef.current?.click()}
             disabled={isUploadingAvatar}
-            className="absolute -bottom-1 -right-1 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-md hover:bg-primary/90 transition-colors"
+            className="absolute -bottom-1 right-0 w-9 h-9 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-lg hover:bg-primary/90 active:scale-95 transition-all"
           >
             {isUploadingAvatar ? (
               <Loader2 className="w-4 h-4 animate-spin" />
@@ -312,44 +317,44 @@ export default function Settings() {
         </div>
 
         {/* Nome */}
-        <h2 className="text-xl font-semibold text-foreground mb-1">
+        <h2 className="text-2xl font-bold text-foreground mb-1.5 text-center">
           {displayName}
         </h2>
 
         {/* Email */}
-        <p className="text-sm text-muted-foreground flex items-center gap-1.5">
-          <Mail className="w-3.5 h-3.5" />
+        <p className="text-sm text-muted-foreground flex items-center gap-2">
+          <Mail className="w-4 h-4" />
           {user?.email}
         </p>
       </div>
 
       {/* Settings Cards */}
-      <div className="flex-1 px-4 pb-8">
-        <h3 className="text-sm font-medium text-muted-foreground mb-3 px-1">
+      <div className="flex-1 px-4">
+        <h3 className="text-sm font-semibold text-primary mb-4">
           Configurações
         </h3>
         
-        <div className="grid grid-cols-3 gap-3 mb-6">
+        <div className="grid grid-cols-3 gap-3 mb-8">
           {/* Card Dados Pessoais */}
           <button
             onClick={() => setActiveSection('profile')}
-            className="flex flex-col items-start p-4 bg-card border border-border rounded-xl hover:bg-accent/50 transition-colors text-left"
+            className="flex flex-col items-center justify-center p-5 bg-card border border-border/50 rounded-2xl hover:border-primary/30 hover:bg-primary/5 active:scale-[0.98] transition-all text-center min-h-[120px]"
           >
-            <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center mb-3">
-              <User className="w-5 h-5 text-primary" />
+            <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-3">
+              <User className="w-6 h-6 text-primary" />
             </div>
             <span className="text-sm font-medium text-foreground leading-tight">
-              Dados pessoais
+              Dados<br/>pessoais
             </span>
           </button>
 
           {/* Card Segurança */}
           <button
             onClick={() => setActiveSection('security')}
-            className="flex flex-col items-start p-4 bg-card border border-border rounded-xl hover:bg-accent/50 transition-colors text-left"
+            className="flex flex-col items-center justify-center p-5 bg-card border border-border/50 rounded-2xl hover:border-primary/30 hover:bg-primary/5 active:scale-[0.98] transition-all text-center min-h-[120px]"
           >
-            <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center mb-3">
-              <Shield className="w-5 h-5 text-primary" />
+            <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-3">
+              <Shield className="w-6 h-6 text-primary" />
             </div>
             <span className="text-sm font-medium text-foreground leading-tight">
               Segurança
@@ -359,10 +364,10 @@ export default function Settings() {
           {/* Card Preferências */}
           <button
             onClick={() => setActiveSection('preferences')}
-            className="flex flex-col items-start p-4 bg-card border border-border rounded-xl hover:bg-accent/50 transition-colors text-left"
+            className="flex flex-col items-center justify-center p-5 bg-card border border-border/50 rounded-2xl hover:border-primary/30 hover:bg-primary/5 active:scale-[0.98] transition-all text-center min-h-[120px]"
           >
-            <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center mb-3">
-              <Settings2 className="w-5 h-5 text-primary" />
+            <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mb-3">
+              <Settings2 className="w-6 h-6 text-primary" />
             </div>
             <span className="text-sm font-medium text-foreground leading-tight">
               Preferências
@@ -371,17 +376,17 @@ export default function Settings() {
         </div>
 
         {/* Versão do app */}
-        <p className="text-xs text-muted-foreground text-center mb-4">
+        <p className="text-xs text-muted-foreground text-center">
           FinanceX v1.0.0
         </p>
       </div>
 
       {/* Logout Button */}
-      <div className="px-4 pb-8 safe-area-bottom">
+      <div className="px-4 py-6 safe-area-bottom mt-auto">
         <Button
           onClick={handleSignOut}
           variant="destructive"
-          className="w-full h-12 text-base font-medium"
+          className="w-full h-14 text-base font-semibold rounded-xl shadow-lg shadow-destructive/20"
         >
           <span>Sair do app</span>
           <LogOut className="w-5 h-5 ml-auto" />
