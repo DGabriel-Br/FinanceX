@@ -1,10 +1,12 @@
 import { Toaster as Sonner, toast } from "sonner";
 import { useEffect, useState } from "react";
+import { useIsNativeApp } from "@/hooks/useIsNativeApp";
 
 type ToasterProps = React.ComponentProps<typeof Sonner>;
 
 const Toaster = ({ ...props }: ToasterProps) => {
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
+  const isNativeApp = useIsNativeApp();
 
   useEffect(() => {
     // Detecta o tema inicial
@@ -114,7 +116,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
       <Sonner
         theme={theme}
         position="bottom-center"
-        offset="200px"
+        offset={isNativeApp ? "500px" : "200px"}
         className="toaster group"
         expand={false}
         richColors={false}
