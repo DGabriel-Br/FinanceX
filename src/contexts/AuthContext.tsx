@@ -20,9 +20,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   const refreshUser = useCallback(async () => {
-    const { data: { user: updatedUser } } = await supabase.auth.getUser();
-    if (updatedUser) {
-      setUser(updatedUser);
+    try {
+      // Usar getSession que funciona offline (usa cache local)
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        setUser(session.user);
+        setSession(session);
+      }
+    } catch (error) {
+      // Ignorar erros de rede quando offline
+      console.warn('Erro ao atualizar usuário (pode estar offline):', error);
     }
   }, []);
 
@@ -36,10 +43,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
     );
 
-    // THEN check for existing session
+    // THEN check for existing session (funciona offline - usa localStorage)
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
+      setLoading(false);
+    }).catch(() => {
+      // Se falhar (improvável), ainda assim parar loading
       setLoading(false);
     });
 
