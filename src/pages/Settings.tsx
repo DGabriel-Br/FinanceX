@@ -11,18 +11,23 @@ import {
   Shield, 
   Settings2, 
   LogOut,
-  ChevronRight,
-  Mail
+  Mail,
+  Sun,
+  Moon,
+  Tag,
+  ChevronRight
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
 import { toast } from 'sonner';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { PasswordStrengthMeter } from '@/components/ui/PasswordStrengthMeter';
 import { getInitials } from '@/lib/userUtils';
 import { cn } from '@/lib/utils';
+import { useTheme } from '@/hooks/useTheme';
 import {
   Sheet,
   SheetContent,
@@ -31,11 +36,13 @@ import {
   SheetTitle,
 } from '@/components/ui/sheet';
 
-type SettingsSection = 'profile' | 'security' | 'preferences' | null;
+type SettingsSection = 'profile' | 'security' | 'preferences' | 'categories' | null;
+
 
 export default function Settings() {
   const navigate = useNavigate();
   const { user, loading, refreshUser, signOut } = useAuthContext();
+  const { theme, toggleTheme } = useTheme();
   
   // Estado para seção ativa
   const [activeSection, setActiveSection] = useState<SettingsSection>(null);
@@ -589,13 +596,245 @@ export default function Settings() {
             <SheetDescription>Personalize sua experiência</SheetDescription>
           </SheetHeader>
 
-          <div className="space-y-2">
-            <p className="text-sm text-muted-foreground text-center py-8">
-              Em breve você poderá personalizar categorias, notificações e mais.
-            </p>
+          <div className="space-y-6">
+            {/* Theme Toggle */}
+            <div className="flex items-center justify-between p-4 bg-card border border-border/50 rounded-xl">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                  {theme === 'dark' ? (
+                    <Moon className="w-5 h-5 text-primary" />
+                  ) : (
+                    <Sun className="w-5 h-5 text-primary" />
+                  )}
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-foreground">Tema escuro</p>
+                  <p className="text-xs text-muted-foreground">
+                    {theme === 'dark' ? 'Ativado' : 'Desativado'}
+                  </p>
+                </div>
+              </div>
+              <Switch
+                checked={theme === 'dark'}
+                onCheckedChange={toggleTheme}
+              />
+            </div>
+
+            {/* Categories Link */}
+            <button
+              onClick={() => {
+                setActiveSection(null);
+                setTimeout(() => setActiveSection('categories'), 150);
+              }}
+              className="w-full flex items-center justify-between p-4 bg-card border border-border/50 rounded-xl hover:border-primary/30 transition-colors"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <Tag className="w-5 h-5 text-primary" />
+                </div>
+                <div className="text-left">
+                  <p className="text-sm font-medium text-foreground">Gerenciar categorias</p>
+                  <p className="text-xs text-muted-foreground">Organize receitas e despesas</p>
+                </div>
+              </div>
+              <ChevronRight className="w-5 h-5 text-muted-foreground" />
+            </button>
+          </div>
+        </SheetContent>
+      </Sheet>
+
+      {/* Sheet - Categorias */}
+      <Sheet open={activeSection === 'categories'} onOpenChange={(open) => !open && setActiveSection(null)}>
+        <SheetContent side="bottom" className="h-[90vh] rounded-t-3xl overflow-y-auto p-0">
+          <div className="sticky top-0 z-10 bg-background px-6 pt-6 pb-4 border-b border-border">
+            <SheetHeader className="text-left">
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => {
+                    setActiveSection(null);
+                    setTimeout(() => setActiveSection('preferences'), 150);
+                  }}
+                  className="p-1.5 -ml-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                >
+                  <ArrowLeft className="w-5 h-5" />
+                </button>
+                <SheetTitle>Gerenciar Categorias</SheetTitle>
+              </div>
+              <SheetDescription>Organize suas categorias de receitas e despesas</SheetDescription>
+            </SheetHeader>
+          </div>
+          <div className="p-6">
+            <CategoryManagerInline />
           </div>
         </SheetContent>
       </Sheet>
     </div>
   );
 }
+
+// Inline version of CategoryManager for the sheet
+function CategoryManagerInline() {
+  const { 
+    loading, 
+    addCategory, 
+    updateCategory, 
+    deleteCategory, 
+    getCategoriesByType,
+    hideDefaultCategory,
+    getVisibleDefaultCategories,
+    getSortedCategories,
+    updateCategoryOrder,
+  } = useCustomCategories();
+  
+  const [activeTab, setActiveTab] = useState<'receita' | 'despesa'>('receita');
+  const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleAdd = async () => {
+    if (!newCategoryName.trim()) return;
+    
+    setIsSubmitting(true);
+    const success = await addCategory(newCategoryName, activeTab);
+    setIsSubmitting(false);
+    
+    if (success) {
+      setNewCategoryName('');
+      setIsAddDialogOpen(false);
+    }
+  };
+
+  const defaultIncomeCategories = Object.entries(incomeCategoryLabels) as [string, string][];
+  const defaultExpenseCategories = Object.entries(expenseCategoryLabels) as [string, string][];
+  
+  const visibleIncomeDefaults = getVisibleDefaultCategories('receita', defaultIncomeCategories);
+  const visibleExpenseDefaults = getVisibleDefaultCategories('despesa', defaultExpenseCategories);
+  
+  const customIncomeCategories = getCategoriesByType('receita');
+  const customExpenseCategories = getCategoriesByType('despesa');
+
+  const sortedIncomeCategories = getSortedCategories('receita', visibleIncomeDefaults, customIncomeCategories);
+  const sortedExpenseCategories = getSortedCategories('despesa', visibleExpenseDefaults, customExpenseCategories);
+
+  const currentCategories = activeTab === 'receita' ? sortedIncomeCategories : sortedExpenseCategories;
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <Loader2 className="w-6 h-6 animate-spin text-primary" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-4">
+      {/* Tabs */}
+      <div className="flex gap-2 p-1 bg-muted/50 rounded-lg">
+        <button
+          onClick={() => setActiveTab('receita')}
+          className={cn(
+            'flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all',
+            activeTab === 'receita' 
+              ? 'bg-emerald-500 text-white shadow-sm' 
+              : 'text-muted-foreground hover:text-foreground'
+          )}
+        >
+          Receitas
+        </button>
+        <button
+          onClick={() => setActiveTab('despesa')}
+          className={cn(
+            'flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all',
+            activeTab === 'despesa' 
+              ? 'bg-rose-500 text-white shadow-sm' 
+              : 'text-muted-foreground hover:text-foreground'
+          )}
+        >
+          Despesas
+        </button>
+      </div>
+
+      {/* Add button */}
+      <Button
+        onClick={() => {
+          setNewCategoryName('');
+          setIsAddDialogOpen(true);
+        }}
+        className="w-full"
+        variant="outline"
+      >
+        <Plus className="w-4 h-4 mr-2" />
+        Nova Categoria
+      </Button>
+
+      {/* Categories list */}
+      <div className="space-y-2">
+        {currentCategories.map((category) => (
+          <div
+            key={category.id}
+            className="flex items-center justify-between p-3 bg-card border border-border/50 rounded-xl"
+          >
+            <div className="flex items-center gap-2">
+              <span className="text-sm font-medium">{category.name}</span>
+              {category.isDefault && (
+                <span className="text-[10px] px-1.5 py-0.5 bg-primary/10 text-primary rounded">
+                  padrão
+                </span>
+              )}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {currentCategories.length === 0 && (
+        <div className="text-center py-8 text-sm text-muted-foreground">
+          Nenhuma categoria
+        </div>
+      )}
+
+      {/* Add Dialog */}
+      {isAddDialogOpen && (
+        <div className="fixed inset-0 z-[200] flex items-end justify-center bg-background/80 backdrop-blur-sm">
+          <div className="w-full max-w-lg bg-card border border-border rounded-t-3xl p-6 space-y-4 animate-in slide-in-from-bottom">
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-semibold">Nova Categoria</h3>
+              <button
+                onClick={() => setIsAddDialogOpen(false)}
+                className="p-2 rounded-lg hover:bg-muted transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              Adicione uma categoria de {activeTab === 'receita' ? 'receita' : 'despesa'}
+            </p>
+            <Input
+              value={newCategoryName}
+              onChange={(e) => setNewCategoryName(e.target.value)}
+              placeholder="Ex: Freelance, Alimentação..."
+              autoFocus
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && newCategoryName.trim()) {
+                  handleAdd();
+                }
+              }}
+            />
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={() => setIsAddDialogOpen(false)} className="flex-1">
+                Cancelar
+              </Button>
+              <Button onClick={handleAdd} disabled={isSubmitting || !newCategoryName.trim()} className="flex-1">
+                {isSubmitting ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Criar'}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Import needed for CategoryManagerInline
+import { useCustomCategories } from '@/hooks/useCustomCategories';
+import { incomeCategoryLabels, expenseCategoryLabels } from '@/types/transaction';
+import { Plus, X } from 'lucide-react';
