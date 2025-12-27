@@ -350,10 +350,12 @@ export default function Settings() {
             onClick={() => setActiveSection('profile')}
             className="group flex flex-col p-4 bg-muted/50 rounded-2xl hover:bg-muted active:scale-[0.97] transition-all text-left h-[130px]"
           >
-            <User className="w-7 h-7 text-primary stroke-[1.5] group-hover:scale-110 transition-transform" />
-            <span className="text-sm font-medium text-foreground leading-snug mt-auto">
-              Dados<br/>pessoais
-            </span>
+            <User className="w-7 h-7 text-primary stroke-[1.5] group-hover:scale-110 transition-transform mb-auto" />
+            <div className="h-10 flex items-end">
+              <span className="text-sm font-medium text-foreground leading-snug">
+                Dados<br/>pessoais
+              </span>
+            </div>
           </button>
 
           {/* Card Segurança */}
@@ -361,10 +363,12 @@ export default function Settings() {
             onClick={() => setActiveSection('security')}
             className="group flex flex-col p-4 bg-muted/50 rounded-2xl hover:bg-muted active:scale-[0.97] transition-all text-left h-[130px]"
           >
-            <Shield className="w-7 h-7 text-primary stroke-[1.5] group-hover:scale-110 transition-transform" />
-            <span className="text-sm font-medium text-foreground leading-snug mt-auto">
-              Segurança
-            </span>
+            <Shield className="w-7 h-7 text-primary stroke-[1.5] group-hover:scale-110 transition-transform mb-auto" />
+            <div className="h-10 flex items-end">
+              <span className="text-sm font-medium text-foreground leading-snug">
+                Segurança
+              </span>
+            </div>
           </button>
 
           {/* Card Preferências */}
@@ -372,10 +376,12 @@ export default function Settings() {
             onClick={() => setActiveSection('preferences')}
             className="group flex flex-col p-4 bg-muted/50 rounded-2xl hover:bg-muted active:scale-[0.97] transition-all text-left h-[130px]"
           >
-            <Settings2 className="w-7 h-7 text-primary stroke-[1.5] group-hover:scale-110 transition-transform" />
-            <span className="text-sm font-medium text-foreground leading-snug mt-auto">
-              Preferências
-            </span>
+            <Settings2 className="w-7 h-7 text-primary stroke-[1.5] group-hover:scale-110 transition-transform mb-auto" />
+            <div className="h-10 flex items-end">
+              <span className="text-sm font-medium text-foreground leading-snug">
+                Preferências
+              </span>
+            </div>
           </button>
         </div>
 
