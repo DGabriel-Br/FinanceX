@@ -3,6 +3,7 @@ import { WifiOff, Database, RefreshCw } from 'lucide-react';
 import { useOnlineStatus } from '@/hooks/useOnlineStatus';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { logger } from '@/lib/logger';
 
 export const OfflineModal = () => {
   const { isOnline } = useOnlineStatus();
@@ -10,14 +11,18 @@ export const OfflineModal = () => {
   const [hasShownOnce, setHasShownOnce] = useState(false);
 
   useEffect(() => {
+    logger.info('[OfflineModal] State:', { isOnline, hasShownOnce, showModal });
+    
     // Mostra o modal apenas na primeira vez que detectar offline
     if (!isOnline && !hasShownOnce) {
+      logger.info('[OfflineModal] Showing modal - user went offline');
       setShowModal(true);
       setHasShownOnce(true);
     }
     
     // Fecha automaticamente quando voltar online
     if (isOnline && showModal) {
+      logger.info('[OfflineModal] Hiding modal - user is back online');
       setShowModal(false);
     }
   }, [isOnline, hasShownOnce, showModal]);
@@ -29,7 +34,12 @@ export const OfflineModal = () => {
     }
   }, [isOnline]);
 
-  if (!showModal) return null;
+  if (!showModal) {
+    logger.info('[OfflineModal] Not rendering - showModal is false');
+    return null;
+  }
+
+  logger.info('[OfflineModal] Rendering modal');
 
   return (
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
