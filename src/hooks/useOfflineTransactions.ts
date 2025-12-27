@@ -87,34 +87,45 @@ export const useOfflineTransactions = () => {
         version: 1,
       };
 
-      // Salvar localmente
+      // Salvar localmente primeiro
       await db.transactions.add(localTransaction);
 
       // Se online, sincronizar imediatamente
       if (navigator.onLine) {
-        const { data, error } = await supabase
-          .from('transactions')
-          .insert({
-            type: transaction.type,
-            category: transaction.category,
-            date: transaction.date,
-            description: transaction.description,
-            value: transaction.value,
-            user_id: userId,
-          })
-          .select()
-          .single();
+        try {
+          const { data, error } = await supabase
+            .from('transactions')
+            .insert({
+              type: transaction.type,
+              category: transaction.category,
+              date: transaction.date,
+              description: transaction.description,
+              value: transaction.value,
+              user_id: userId,
+            })
+            .select()
+            .single();
 
-        if (!error && data) {
-          // Atualizar com ID real
-          await db.transactions.delete(tempId);
-          await db.transactions.add({
-            ...localTransaction,
-            id: data.id,
-            createdAt: Number(data.created_at),
-            syncStatus: 'synced',
-            serverUpdatedAt: now,
-          });
+          if (!error && data) {
+            // CRÍTICO: Usar transação atômica para evitar race condition com realtime
+            await db.transaction('rw', db.transactions, async () => {
+              // Verificar se o item temp ainda existe (não foi processado por realtime)
+              const tempItem = await db.transactions.get(tempId);
+              if (tempItem) {
+                await db.transactions.delete(tempId);
+                await db.transactions.put({
+                  ...localTransaction,
+                  id: data.id,
+                  createdAt: Number(data.created_at),
+                  syncStatus: 'synced',
+                  serverUpdatedAt: now,
+                });
+              }
+            });
+          }
+        } catch (syncError) {
+          // Falha no sync, mas dados locais estão salvos
+          logger.error('Erro ao sincronizar transação:', syncError);
         }
       }
 

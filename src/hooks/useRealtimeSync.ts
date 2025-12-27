@@ -1,6 +1,6 @@
 import { useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { db } from '@/lib/offline/database';
+import { db, isTempId } from '@/lib/offline/database';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { logger } from '@/lib/logger';
 
@@ -20,13 +20,38 @@ export const useRealtimeSync = () => {
 
         const existing = await db.transactions.get(record.id);
         
+        // CRÍTICO: Não sobrescrever alterações locais pendentes
+        if (existing && existing.syncStatus === 'pending') {
+          logger.info('Skipping realtime update - local pending changes exist for:', record.id);
+          return;
+        }
+        
+        // Verificar se não é um item que estamos criando localmente (evitar duplicação)
+        const tempItems = await db.transactions
+          .filter(t => isTempId(t.id) && t.userId === userId && t.syncStatus === 'pending')
+          .toArray();
+        
+        // Se há itens temporários com mesma descrição, data e valor, pode ser duplicação
+        const isDuplicate = tempItems.some(t => 
+          t.description === record.description && 
+          t.date === record.date && 
+          t.value === Number(record.value) &&
+          t.type === record.type &&
+          t.category === record.category
+        );
+        
+        if (isDuplicate) {
+          logger.info('Skipping realtime insert - possible duplicate from local creation:', record.id);
+          return;
+        }
+        
         await db.transactions.put({
           id: record.id,
           type: record.type,
           category: record.category,
           date: record.date,
           description: record.description,
-          value: record.value,
+          value: Number(record.value),
           createdAt: Number(record.created_at),
           userId: record.user_id,
           syncStatus: 'synced',
@@ -36,7 +61,15 @@ export const useRealtimeSync = () => {
         });
       } else if (payload.eventType === 'DELETE') {
         const record = payload.old;
-        if (record.user_id !== userId) return;
+        if (!record || record.user_id !== userId) return;
+        
+        const existing = await db.transactions.get(record.id);
+        
+        // Não deletar se há alterações pendentes (o usuário pode ter re-editado)
+        if (existing && existing.syncStatus === 'pending' && !existing.isDeleted) {
+          logger.info('Skipping realtime delete - local pending changes exist for:', record.id);
+          return;
+        }
         
         await db.transactions.delete(record.id);
       }
@@ -57,13 +90,34 @@ export const useRealtimeSync = () => {
 
         const existing = await db.debts.get(record.id);
         
+        // CRÍTICO: Não sobrescrever alterações locais pendentes
+        if (existing && existing.syncStatus === 'pending') {
+          logger.info('Skipping realtime update - local pending changes exist for:', record.id);
+          return;
+        }
+        
+        // Verificar duplicação
+        const tempItems = await db.debts
+          .filter(d => isTempId(d.id) && d.userId === userId && d.syncStatus === 'pending')
+          .toArray();
+        
+        const isDuplicate = tempItems.some(d => 
+          d.name === record.name && 
+          d.totalValue === Number(record.total_value)
+        );
+        
+        if (isDuplicate) {
+          logger.info('Skipping realtime insert - possible duplicate from local creation:', record.id);
+          return;
+        }
+        
         await db.debts.put({
           id: record.id,
           name: record.name,
-          totalValue: record.total_value,
-          monthlyInstallment: record.monthly_installment,
+          totalValue: Number(record.total_value),
+          monthlyInstallment: Number(record.monthly_installment),
           startDate: record.start_date,
-          paidValue: record.paid_value,
+          paidValue: Number(record.paid_value),
           createdAt: Number(record.created_at),
           userId: record.user_id,
           syncStatus: 'synced',
@@ -73,7 +127,14 @@ export const useRealtimeSync = () => {
         });
       } else if (payload.eventType === 'DELETE') {
         const record = payload.old;
-        if (record.user_id !== userId) return;
+        if (!record || record.user_id !== userId) return;
+        
+        const existing = await db.debts.get(record.id);
+        
+        if (existing && existing.syncStatus === 'pending' && !existing.isDeleted) {
+          logger.info('Skipping realtime delete - local pending changes exist for:', record.id);
+          return;
+        }
         
         await db.debts.delete(record.id);
       }
@@ -94,10 +155,31 @@ export const useRealtimeSync = () => {
 
         const existing = await db.investmentGoals.get(record.id);
         
+        // CRÍTICO: Não sobrescrever alterações locais pendentes
+        if (existing && existing.syncStatus === 'pending') {
+          logger.info('Skipping realtime update - local pending changes exist for:', record.id);
+          return;
+        }
+        
+        // Verificar duplicação
+        const tempItems = await db.investmentGoals
+          .filter(g => isTempId(g.id) && g.userId === userId && g.syncStatus === 'pending')
+          .toArray();
+        
+        const isDuplicate = tempItems.some(g => 
+          g.type === record.type && 
+          g.targetValue === Number(record.target_value)
+        );
+        
+        if (isDuplicate) {
+          logger.info('Skipping realtime insert - possible duplicate from local creation:', record.id);
+          return;
+        }
+        
         await db.investmentGoals.put({
           id: record.id,
           type: record.type,
-          targetValue: record.target_value,
+          targetValue: Number(record.target_value),
           createdAt: new Date(record.created_at).getTime(),
           userId: record.user_id,
           syncStatus: 'synced',
@@ -107,7 +189,14 @@ export const useRealtimeSync = () => {
         });
       } else if (payload.eventType === 'DELETE') {
         const record = payload.old;
-        if (record.user_id !== userId) return;
+        if (!record || record.user_id !== userId) return;
+        
+        const existing = await db.investmentGoals.get(record.id);
+        
+        if (existing && existing.syncStatus === 'pending' && !existing.isDeleted) {
+          logger.info('Skipping realtime delete - local pending changes exist for:', record.id);
+          return;
+        }
         
         await db.investmentGoals.delete(record.id);
       }

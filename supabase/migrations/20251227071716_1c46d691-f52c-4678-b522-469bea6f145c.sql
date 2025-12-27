@@ -1,0 +1,4 @@
+-- Enable REPLICA IDENTITY FULL for realtime DELETE events
+ALTER TABLE public.transactions REPLICA IDENTITY FULL;
+ALTER TABLE public.debts REPLICA IDENTITY FULL;
+ALTER TABLE public.investment_goals REPLICA IDENTITY FULL;
