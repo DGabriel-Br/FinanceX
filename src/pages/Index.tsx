@@ -97,11 +97,11 @@ const Index = () => {
     refetch: refetchDebts,
   } = useDebts();
 
-  // Tempo mínimo de exibição da splash screen (1.5 segundos)
+  // Tempo mínimo de exibição da splash screen (3 segundos)
   useEffect(() => {
     const timer = setTimeout(() => {
       setShowSplash(false);
-    }, 1500);
+    }, 3000);
     return () => clearTimeout(timer);
   }, []);
 
