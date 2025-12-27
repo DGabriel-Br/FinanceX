@@ -12,6 +12,7 @@ import { FloatingAddButton } from '@/components/finance/FloatingAddButton';
 import { PullToRefresh } from '@/components/finance/PullToRefresh';
 import { OfflineStatusBar } from '@/components/finance/OfflineStatusBar';
 import { OfflineModal } from '@/components/finance/OfflineModal';
+import { syncService } from '@/lib/offline/syncService';
 import { useTransactions } from '@/hooks/useTransactions';
 import { useDebts } from '@/hooks/useDebts';
 import { useTheme } from '@/hooks/useTheme';
@@ -114,11 +115,13 @@ const Index = () => {
     }
   }, [user, authLoading, navigate]);
 
-  // Recarregar dados quando o usuário mudar
+  // Sincronizar e recarregar dados quando o usuário logar
   useEffect(() => {
-    if (user) {
-      refetchTransactions();
-      refetchDebts();
+    if (user && navigator.onLine) {
+      syncService.syncAll().then(() => {
+        refetchTransactions();
+        refetchDebts();
+      });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id]);

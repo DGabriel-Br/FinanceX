@@ -39,24 +39,11 @@ export const useOfflineInvestmentGoals = () => {
     targetValue: g.targetValue,
   }));
 
-  // Inicialização - sincronizar apenas se online
+  // Inicialização - marcar como carregado (sync é feito pelo Index.tsx)
   useEffect(() => {
     if (authLoading) return;
-    
-    const init = async () => {
-      try {
-        if (userId && navigator.onLine) {
-          await syncService.syncAll();
-        }
-      } catch (error) {
-        logger.error('Erro ao sincronizar:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    
-    init();
-  }, [userId, authLoading]);
+    setLoading(false);
+  }, [authLoading]);
 
   // Adicionar ou atualizar meta
   const setGoal = useCallback(async (type: InvestmentType, targetValue: number) => {
