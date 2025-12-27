@@ -1,20 +1,44 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, Eye, EyeOff, Loader2, Mail, Shield, Camera, User, Check } from 'lucide-react';
+import { 
+  ArrowLeft, 
+  Eye, 
+  EyeOff, 
+  Loader2, 
+  Camera, 
+  User, 
+  Check, 
+  Shield, 
+  Settings2, 
+  LogOut,
+  ChevronRight,
+  Mail
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { toast } from 'sonner';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
-import { CategoryManager } from '@/components/finance/CategoryManager';
 import { PasswordStrengthMeter } from '@/components/ui/PasswordStrengthMeter';
 import { getInitials } from '@/lib/userUtils';
+import { cn } from '@/lib/utils';
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+} from '@/components/ui/sheet';
+
+type SettingsSection = 'profile' | 'security' | 'preferences' | null;
 
 export default function Settings() {
   const navigate = useNavigate();
-  const { user, loading, refreshUser } = useAuthContext();
+  const { user, loading, refreshUser, signOut } = useAuthContext();
+  
+  // Estado para seção ativa
+  const [activeSection, setActiveSection] = useState<SettingsSection>(null);
   
   // Estado para avatar
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
@@ -53,13 +77,11 @@ export default function Settings() {
     const file = event.target.files?.[0];
     if (!file || !user) return;
 
-    // Validate file type
     if (!file.type.startsWith('image/')) {
       toast.error('Por favor, selecione uma imagem.');
       return;
     }
 
-    // Validate file size (max 2MB)
     if (file.size > 2 * 1024 * 1024) {
       toast.error('A imagem deve ter no máximo 2MB.');
       return;
@@ -71,7 +93,6 @@ export default function Settings() {
       const timestamp = Date.now();
       const fileName = `${user.id}/avatar-${timestamp}.${fileExt}`;
 
-      // Delete old avatar files first (to avoid accumulation)
       const { data: existingFiles } = await supabase.storage
         .from('avatars')
         .list(user.id);
@@ -81,19 +102,16 @@ export default function Settings() {
         await supabase.storage.from('avatars').remove(filesToDelete);
       }
 
-      // Upload file to storage
       const { error: uploadError } = await supabase.storage
         .from('avatars')
         .upload(fileName, file, { upsert: true });
 
       if (uploadError) throw uploadError;
 
-      // Get public URL
       const { data: { publicUrl } } = supabase.storage
         .from('avatars')
         .getPublicUrl(fileName);
 
-      // Update user metadata with the permanent URL (no cache buster needed since filename is unique)
       const { error: updateError } = await supabase.auth.updateUser({
         data: { avatar_url: publicUrl }
       });
@@ -103,9 +121,9 @@ export default function Settings() {
       setAvatarUrl(publicUrl);
       await refreshUser();
 
-      toast.success('Sua foto de perfil foi atualizada com sucesso.');
+      toast.success('Foto de perfil atualizada.');
     } catch (error: any) {
-      toast.error(error.message || 'Ocorreu um erro ao atualizar o avatar.');
+      toast.error(error.message || 'Erro ao atualizar avatar.');
     } finally {
       setIsUploadingAvatar(false);
     }
@@ -116,7 +134,6 @@ export default function Settings() {
 
     setIsUploadingAvatar(true);
     try {
-      // Remove from user metadata
       const { error: updateError } = await supabase.auth.updateUser({
         data: { avatar_url: null }
       });
@@ -126,15 +143,14 @@ export default function Settings() {
       setAvatarUrl(null);
       await refreshUser();
 
-      toast.success('Sua foto de perfil foi removida.');
+      toast.success('Foto de perfil removida.');
     } catch (error: any) {
-      toast.error(error.message || 'Ocorreu um erro ao remover o avatar.');
+      toast.error(error.message || 'Erro ao remover avatar.');
     } finally {
       setIsUploadingAvatar(false);
     }
   };
 
-  // Password strength calculation
   const calculatePasswordStrength = (password: string) => {
     let strength = 0;
     if (password.length >= 8) strength += 25;
@@ -145,18 +161,6 @@ export default function Settings() {
   };
 
   const passwordStrength = calculatePasswordStrength(newPassword);
-  const getStrengthColor = () => {
-    if (passwordStrength <= 25) return 'bg-destructive';
-    if (passwordStrength <= 50) return 'bg-orange-500';
-    if (passwordStrength <= 75) return 'bg-yellow-500';
-    return 'bg-emerald-500';
-  };
-  const getStrengthLabel = () => {
-    if (passwordStrength <= 25) return 'Fraca';
-    if (passwordStrength <= 50) return 'Razoável';
-    if (passwordStrength <= 75) return 'Boa';
-    return 'Forte';
-  };
 
   const handleUpdateName = async () => {
     if (!name.trim() || name.trim().length < 2) {
@@ -173,10 +177,10 @@ export default function Settings() {
       if (error) throw error;
 
       await refreshUser();
-
-      toast.success('Seu nome foi atualizado com sucesso.');
+      toast.success('Nome atualizado.');
+      setActiveSection(null);
     } catch (error: any) {
-      toast.error(error.message || 'Ocorreu um erro ao atualizar o nome.');
+      toast.error(error.message || 'Erro ao atualizar nome.');
     } finally {
       setIsUpdatingName(false);
     }
@@ -184,7 +188,7 @@ export default function Settings() {
 
   const handleUpdatePassword = async () => {
     if (!currentPassword) {
-      toast.error('Por favor, informe sua senha atual.');
+      toast.error('Informe sua senha atual.');
       return;
     }
 
@@ -194,7 +198,7 @@ export default function Settings() {
     }
 
     if (newPassword !== confirmPassword) {
-      toast.error('A nova senha e a confirmação devem ser iguais.');
+      toast.error('As senhas não coincidem.');
       return;
     }
 
@@ -206,7 +210,7 @@ export default function Settings() {
       });
 
       if (verifyError) {
-        toast.error('A senha atual informada está incorreta.');
+        toast.error('Senha atual incorreta.');
         return;
       }
 
@@ -216,161 +220,245 @@ export default function Settings() {
 
       if (error) throw error;
 
-      toast.success('Sua senha foi atualizada com sucesso.');
-      
+      toast.success('Senha atualizada.');
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
+      setActiveSection(null);
     } catch (error: any) {
-      toast.error(error.message || 'Ocorreu um erro ao atualizar a senha.');
+      toast.error(error.message || 'Erro ao atualizar senha.');
     } finally {
       setIsUpdatingPassword(false);
+    }
+  };
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      navigate('/auth');
+    } catch (error) {
+      toast.error('Erro ao sair da conta.');
     }
   };
 
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
-        <div className="flex flex-col items-center gap-3">
-          <Loader2 className="w-8 h-8 animate-spin text-primary" />
-          <span className="text-sm text-muted-foreground">Carregando...</span>
-        </div>
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
       </div>
     );
   }
 
+  const displayName = name || user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Usuário';
+
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <header className="sticky top-0 z-50 bg-mobile-header safe-area-top">
-        <div className="px-4 py-4 flex items-center gap-3">
+    <div className="min-h-screen bg-background flex flex-col">
+      {/* Header com botão voltar */}
+      <header className="sticky top-0 z-50 bg-background safe-area-top border-b border-border">
+        <div className="px-4 py-3 flex items-center gap-3">
           <Button
             variant="ghost"
             size="icon"
             onClick={() => navigate(-1)}
-            className="text-mobile-header-foreground hover:bg-mobile-header-foreground/10"
+            className="text-foreground"
           >
             <ArrowLeft className="w-5 h-5" />
           </Button>
-          <h1 className="text-lg font-semibold text-mobile-header-foreground">
-            Configurações do Perfil
-          </h1>
-        </div>
-        {/* Curva de transição */}
-        <div className="relative h-4">
-          <div className="absolute inset-0 bg-mobile-header" />
-          <div className="absolute inset-0 bg-background rounded-t-3xl" />
+          <h1 className="text-lg font-semibold text-foreground">Perfil</h1>
         </div>
       </header>
 
-      {/* Content */}
-      <main className="px-4 py-6 space-y-6 max-w-2xl mx-auto pb-24">
-        {/* Card de Avatar */}
-        <Card className="border-border/50">
-          <CardHeader className="pb-4">
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-lg bg-muted flex items-center justify-center">
-                <Camera className="w-4 h-4 text-muted-foreground" />
-              </div>
-              <div>
-                <CardTitle className="text-base font-medium">Foto de Perfil</CardTitle>
-                <CardDescription className="text-sm">
-                  Personalize sua conta com uma foto
-                </CardDescription>
-              </div>
+      {/* Profile Section */}
+      <div className="flex flex-col items-center pt-8 pb-6 px-4">
+        {/* Avatar */}
+        <div className="relative mb-4">
+          <div 
+            className="w-24 h-24 rounded-full bg-muted flex items-center justify-center overflow-hidden border-4 border-background shadow-lg cursor-pointer"
+            onClick={() => fileInputRef.current?.click()}
+          >
+            {avatarUrl ? (
+              <img 
+                src={avatarUrl} 
+                alt="Avatar" 
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              <span className="text-3xl font-bold text-muted-foreground">
+                {getInitials(displayName, user?.email)}
+              </span>
+            )}
+          </div>
+          
+          {/* Camera button overlay */}
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            disabled={isUploadingAvatar}
+            className="absolute -bottom-1 -right-1 w-8 h-8 rounded-full bg-primary text-primary-foreground flex items-center justify-center shadow-md hover:bg-primary/90 transition-colors"
+          >
+            {isUploadingAvatar ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <Camera className="w-4 h-4" />
+            )}
+          </button>
+          
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleAvatarUpload}
+            className="hidden"
+          />
+        </div>
+
+        {/* Nome */}
+        <h2 className="text-xl font-semibold text-foreground mb-1">
+          {displayName}
+        </h2>
+
+        {/* Email */}
+        <p className="text-sm text-muted-foreground flex items-center gap-1.5">
+          <Mail className="w-3.5 h-3.5" />
+          {user?.email}
+        </p>
+      </div>
+
+      {/* Settings Cards */}
+      <div className="flex-1 px-4 pb-8">
+        <h3 className="text-sm font-medium text-muted-foreground mb-3 px-1">
+          Configurações
+        </h3>
+        
+        <div className="grid grid-cols-3 gap-3 mb-6">
+          {/* Card Dados Pessoais */}
+          <button
+            onClick={() => setActiveSection('profile')}
+            className="flex flex-col items-start p-4 bg-card border border-border rounded-xl hover:bg-accent/50 transition-colors text-left"
+          >
+            <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center mb-3">
+              <User className="w-5 h-5 text-primary" />
             </div>
-          </CardHeader>
-          <CardContent className="pt-0">
-            <div className="flex items-center gap-5">
-              {/* Avatar Preview */}
+            <span className="text-sm font-medium text-foreground leading-tight">
+              Dados pessoais
+            </span>
+          </button>
+
+          {/* Card Segurança */}
+          <button
+            onClick={() => setActiveSection('security')}
+            className="flex flex-col items-start p-4 bg-card border border-border rounded-xl hover:bg-accent/50 transition-colors text-left"
+          >
+            <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center mb-3">
+              <Shield className="w-5 h-5 text-primary" />
+            </div>
+            <span className="text-sm font-medium text-foreground leading-tight">
+              Segurança
+            </span>
+          </button>
+
+          {/* Card Preferências */}
+          <button
+            onClick={() => setActiveSection('preferences')}
+            className="flex flex-col items-start p-4 bg-card border border-border rounded-xl hover:bg-accent/50 transition-colors text-left"
+          >
+            <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center mb-3">
+              <Settings2 className="w-5 h-5 text-primary" />
+            </div>
+            <span className="text-sm font-medium text-foreground leading-tight">
+              Preferências
+            </span>
+          </button>
+        </div>
+
+        {/* Versão do app */}
+        <p className="text-xs text-muted-foreground text-center mb-4">
+          FinanceX v1.0.0
+        </p>
+      </div>
+
+      {/* Logout Button */}
+      <div className="px-4 pb-8 safe-area-bottom">
+        <Button
+          onClick={handleSignOut}
+          variant="destructive"
+          className="w-full h-12 text-base font-medium"
+        >
+          <span>Sair do app</span>
+          <LogOut className="w-5 h-5 ml-auto" />
+        </Button>
+      </div>
+
+      {/* Sheet - Dados Pessoais */}
+      <Sheet open={activeSection === 'profile'} onOpenChange={(open) => !open && setActiveSection(null)}>
+        <SheetContent side="bottom" className="h-[85vh] rounded-t-3xl">
+          <SheetHeader className="text-left mb-6">
+            <SheetTitle>Dados pessoais</SheetTitle>
+            <SheetDescription>Atualize suas informações de perfil</SheetDescription>
+          </SheetHeader>
+
+          <div className="space-y-6">
+            {/* Avatar */}
+            <div className="flex items-center gap-4">
               <div className="relative">
-                <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center overflow-hidden border-2 border-border">
+                <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center overflow-hidden border-2 border-border">
                   {avatarUrl ? (
-                    <img 
-                      src={avatarUrl} 
-                      alt="Avatar" 
-                      className="w-full h-full object-cover"
-                    />
+                    <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
                   ) : (
-                    <span className="text-2xl font-bold text-muted-foreground">{getInitials(name, user?.email)}</span>
+                    <span className="text-xl font-bold text-muted-foreground">
+                      {getInitials(displayName, user?.email)}
+                    </span>
                   )}
                 </div>
-                {isUploadingAvatar && (
-                  <div className="absolute inset-0 bg-background/80 rounded-full flex items-center justify-center">
-                    <Loader2 className="w-5 h-5 animate-spin text-foreground" />
-                  </div>
-                )}
               </div>
-
-              {/* Upload Controls */}
-              <div className="flex-1 space-y-2">
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept="image/*"
-                  onChange={handleAvatarUpload}
-                  className="hidden"
-                />
-                <div className="flex flex-wrap gap-2">
+              <div className="flex gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={isUploadingAvatar}
+                >
+                  {avatarUrl ? 'Alterar' : 'Adicionar'}
+                </Button>
+                {avatarUrl && (
                   <Button
-                    variant="outline"
+                    variant="ghost"
                     size="sm"
-                    onClick={() => fileInputRef.current?.click()}
+                    onClick={handleRemoveAvatar}
                     disabled={isUploadingAvatar}
                   >
-                    {avatarUrl ? 'Alterar foto' : 'Escolher foto'}
+                    Remover
                   </Button>
-                  {avatarUrl && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={handleRemoveAvatar}
-                      disabled={isUploadingAvatar}
-                      className="text-muted-foreground hover:text-destructive"
-                    >
-                      Remover
-                    </Button>
-                  )}
-                </div>
-                <p className="text-xs text-muted-foreground">
-                  JPG, PNG ou GIF. Máximo 2MB.
-                </p>
+                )}
               </div>
             </div>
-          </CardContent>
-        </Card>
 
-        {/* Card de Nome */}
-        <Card className="border-border/50">
-          <CardHeader className="pb-4">
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-lg bg-muted flex items-center justify-center">
-                <User className="w-4 h-4 text-muted-foreground" />
-              </div>
-              <div>
-                <CardTitle className="text-base font-medium">Nome de Usuário</CardTitle>
-                <CardDescription className="text-sm">
-                  Como você aparece no aplicativo
-                </CardDescription>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent className="pt-0 space-y-4">
+            {/* Nome */}
             <div className="space-y-2">
-              <Label htmlFor="name" className="text-sm font-medium">Nome completo</Label>
+              <Label htmlFor="name">Nome completo</Label>
               <Input
                 id="name"
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Seu nome"
-                className="h-10"
               />
             </div>
+
+            {/* Email (read-only) */}
+            <div className="space-y-2">
+              <Label>Email</Label>
+              <div className="flex items-center justify-between px-3 py-2.5 bg-muted/50 rounded-lg border border-border/50">
+                <span className="text-sm">{user?.email}</span>
+                <span className="text-xs font-medium text-emerald-600 dark:text-emerald-400">
+                  Verificado
+                </span>
+              </div>
+            </div>
+
             <Button 
               onClick={handleUpdateName} 
               disabled={isUpdatingName}
-              size="sm"
+              className="w-full"
             >
               {isUpdatingName ? (
                 <>
@@ -378,60 +466,24 @@ export default function Settings() {
                   Salvando...
                 </>
               ) : (
-                'Salvar'
+                'Salvar alterações'
               )}
             </Button>
-          </CardContent>
-        </Card>
+          </div>
+        </SheetContent>
+      </Sheet>
 
-        {/* Card de Email */}
-        <Card className="border-border/50">
-          <CardHeader className="pb-4">
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-lg bg-muted flex items-center justify-center">
-                <Mail className="w-4 h-4 text-muted-foreground" />
-              </div>
-              <div>
-                <CardTitle className="text-base font-medium">Endereço de Email</CardTitle>
-                <CardDescription className="text-sm">
-                  Seu email de acesso à conta
-                </CardDescription>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent className="pt-0">
-            <div className="flex items-center justify-between px-3 py-2.5 bg-muted/50 rounded-lg border border-border/50">
-              <div>
-                <p className="text-sm font-medium">{user?.email}</p>
-                <p className="text-xs text-muted-foreground mt-0.5">
-                  Email vinculado à sua conta
-                </p>
-              </div>
-              <span className="text-xs font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-1 rounded border border-emerald-500/20">
-                Verificado
-              </span>
-            </div>
-          </CardContent>
-        </Card>
+      {/* Sheet - Segurança */}
+      <Sheet open={activeSection === 'security'} onOpenChange={(open) => !open && setActiveSection(null)}>
+        <SheetContent side="bottom" className="h-[85vh] rounded-t-3xl overflow-y-auto">
+          <SheetHeader className="text-left mb-6">
+            <SheetTitle>Segurança</SheetTitle>
+            <SheetDescription>Altere sua senha de acesso</SheetDescription>
+          </SheetHeader>
 
-        {/* Card de Senha */}
-        <Card className="border-border/50">
-          <CardHeader className="pb-4">
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-lg bg-muted flex items-center justify-center">
-                <Shield className="w-4 h-4 text-muted-foreground" />
-              </div>
-              <div>
-                <CardTitle className="text-base font-medium">Alterar Senha</CardTitle>
-                <CardDescription className="text-sm">
-                  Mantenha sua conta segura
-                </CardDescription>
-              </div>
-            </div>
-          </CardHeader>
-          <CardContent className="pt-0 space-y-4">
+          <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="currentPassword" className="text-sm font-medium">Senha atual</Label>
+              <Label htmlFor="currentPassword">Senha atual</Label>
               <div className="relative">
                 <Input
                   id="currentPassword"
@@ -439,7 +491,7 @@ export default function Settings() {
                   value={currentPassword}
                   onChange={(e) => setCurrentPassword(e.target.value)}
                   placeholder="Digite sua senha atual"
-                  className="pr-10 h-10"
+                  className="pr-10"
                 />
                 <button
                   type="button"
@@ -452,7 +504,7 @@ export default function Settings() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="newPassword" className="text-sm font-medium">Nova senha</Label>
+              <Label htmlFor="newPassword">Nova senha</Label>
               <div className="relative">
                 <Input
                   id="newPassword"
@@ -460,7 +512,7 @@ export default function Settings() {
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
                   placeholder="Mínimo 8 caracteres"
-                  className="pr-10 h-10"
+                  className="pr-10"
                 />
                 <button
                   type="button"
@@ -470,13 +522,11 @@ export default function Settings() {
                   {showNewPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                 </button>
               </div>
-              
-              {/* Password Strength Indicator */}
               <PasswordStrengthMeter password={newPassword} />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="confirmPassword" className="text-sm font-medium">Confirmar nova senha</Label>
+              <Label htmlFor="confirmPassword">Confirmar nova senha</Label>
               <div className="relative">
                 <Input
                   id="confirmPassword"
@@ -484,11 +534,10 @@ export default function Settings() {
                   value={confirmPassword}
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="Repita a nova senha"
-                  className={`pr-10 h-10 ${
-                    confirmPassword && newPassword !== confirmPassword 
-                      ? 'border-destructive focus-visible:ring-destructive' 
-                      : ''
-                  }`}
+                  className={cn(
+                    'pr-10',
+                    confirmPassword && newPassword !== confirmPassword && 'border-destructive focus-visible:ring-destructive'
+                  )}
                 />
                 <button
                   type="button"
@@ -512,7 +561,7 @@ export default function Settings() {
             <Button 
               onClick={handleUpdatePassword} 
               disabled={isUpdatingPassword || !currentPassword || !newPassword || !confirmPassword || passwordStrength < 100 || newPassword !== confirmPassword}
-              size="sm"
+              className="w-full"
             >
               {isUpdatingPassword ? (
                 <>
@@ -520,15 +569,28 @@ export default function Settings() {
                   Atualizando...
                 </>
               ) : (
-                'Atualizar Senha'
+                'Atualizar senha'
               )}
             </Button>
-          </CardContent>
-        </Card>
+          </div>
+        </SheetContent>
+      </Sheet>
 
-        {/* Category Manager */}
-        <CategoryManager />
-      </main>
+      {/* Sheet - Preferências */}
+      <Sheet open={activeSection === 'preferences'} onOpenChange={(open) => !open && setActiveSection(null)}>
+        <SheetContent side="bottom" className="h-[85vh] rounded-t-3xl overflow-y-auto">
+          <SheetHeader className="text-left mb-6">
+            <SheetTitle>Preferências</SheetTitle>
+            <SheetDescription>Personalize sua experiência</SheetDescription>
+          </SheetHeader>
+
+          <div className="space-y-2">
+            <p className="text-sm text-muted-foreground text-center py-8">
+              Em breve você poderá personalizar categorias, notificações e mais.
+            </p>
+          </div>
+        </SheetContent>
+      </Sheet>
     </div>
   );
 }
