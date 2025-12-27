@@ -98,6 +98,7 @@ export const useOfflineTransactions = () => {
         userId,
         syncStatus: 'pending',
         localUpdatedAt: now,
+        version: 1,
       };
 
       // Salvar localmente

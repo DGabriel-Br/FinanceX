@@ -67,6 +67,7 @@ class SyncService {
         id: 'lastSync',
         lastSyncAt: Date.now(),
         userId: user.id,
+        syncVersion: 1,
       });
 
       result.success = result.errors.length === 0;
@@ -351,6 +352,7 @@ class SyncService {
             syncStatus: 'synced',
             localUpdatedAt: Date.now(),
             serverUpdatedAt: Date.now(),
+            version: 1,
           });
         }
       }
@@ -378,6 +380,7 @@ class SyncService {
             syncStatus: 'synced',
             localUpdatedAt: Date.now(),
             serverUpdatedAt: Date.now(),
+            version: 1,
           });
         }
       }
@@ -401,6 +404,7 @@ class SyncService {
             syncStatus: 'synced',
             localUpdatedAt: Date.now(),
             serverUpdatedAt: Date.now(),
+            version: 1,
           });
         }
       }
