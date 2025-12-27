@@ -15,7 +15,10 @@ import {
   Sun,
   Moon,
   Tag,
-  ChevronRight
+  ChevronRight,
+  Bell,
+  Globe,
+  DollarSign
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -590,9 +593,9 @@ export default function Settings() {
             <SheetDescription>Personalize sua experiência</SheetDescription>
           </SheetHeader>
 
-          <div className="space-y-6">
+          <div className="space-y-3">
             {/* Theme Toggle */}
-            <div className="flex items-center justify-between p-4 bg-card border border-border/50 rounded-xl">
+            <div className="flex items-center justify-between p-4 bg-muted/50 rounded-xl">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
                   {theme === 'dark' ? (
@@ -614,13 +617,64 @@ export default function Settings() {
               />
             </div>
 
+            {/* Notifications Toggle */}
+            <div className="flex items-center justify-between p-4 bg-muted/50 rounded-xl">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <Bell className="w-5 h-5 text-primary" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-foreground">Notificações</p>
+                  <p className="text-xs text-muted-foreground">Lembretes e alertas</p>
+                </div>
+              </div>
+              <Switch
+                checked={false}
+                disabled
+              />
+            </div>
+
+            {/* Language Selector */}
+            <button
+              className="w-full flex items-center justify-between p-4 bg-muted/50 rounded-xl opacity-60 cursor-not-allowed"
+              disabled
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <Globe className="w-5 h-5 text-primary" />
+                </div>
+                <div className="text-left">
+                  <p className="text-sm font-medium text-foreground">Idioma</p>
+                  <p className="text-xs text-muted-foreground">Português (Brasil)</p>
+                </div>
+              </div>
+              <ChevronRight className="w-5 h-5 text-muted-foreground" />
+            </button>
+
+            {/* Currency Selector */}
+            <button
+              className="w-full flex items-center justify-between p-4 bg-muted/50 rounded-xl opacity-60 cursor-not-allowed"
+              disabled
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <DollarSign className="w-5 h-5 text-primary" />
+                </div>
+                <div className="text-left">
+                  <p className="text-sm font-medium text-foreground">Moeda</p>
+                  <p className="text-xs text-muted-foreground">Real (R$)</p>
+                </div>
+              </div>
+              <ChevronRight className="w-5 h-5 text-muted-foreground" />
+            </button>
+
             {/* Categories Link */}
             <button
               onClick={() => {
                 setActiveSection(null);
                 setTimeout(() => setActiveSection('categories'), 150);
               }}
-              className="w-full flex items-center justify-between p-4 bg-card border border-border/50 rounded-xl hover:border-primary/30 transition-colors"
+              className="w-full flex items-center justify-between p-4 bg-muted/50 rounded-xl hover:bg-muted transition-colors"
             >
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center">
@@ -633,6 +687,11 @@ export default function Settings() {
               </div>
               <ChevronRight className="w-5 h-5 text-muted-foreground" />
             </button>
+
+            {/* Coming soon note */}
+            <p className="text-xs text-muted-foreground text-center pt-4">
+              Algumas opções estarão disponíveis em breve
+            </p>
           </div>
         </SheetContent>
       </Sheet>
