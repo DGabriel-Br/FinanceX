@@ -74,13 +74,31 @@ export const Dashboard = ({
   const currentYear = new Date().getFullYear();
   const isCurrentYear = selectedYear === currentYear;
 
+  // Calcula o saldo acumulado até o início do ano selecionado
+  const previousYearBalance = useMemo(() => {
+    let balance = 0;
+    allTransactions.forEach((transaction) => {
+      const [year] = transaction.date.split('-');
+      const transactionYear = parseInt(year);
+      
+      if (transactionYear < selectedYear) {
+        if (transaction.type === 'receita') {
+          balance += transaction.value;
+        } else {
+          balance -= transaction.value;
+        }
+      }
+    });
+    return balance;
+  }, [allTransactions, selectedYear]);
+
   // Agrupa transações por mês para o gráfico
   const chartData = useMemo(() => {
-    // Inicializa dados de todos os meses
-    const monthlyData = MONTHS.map((month, index) => ({
+    // Primeiro, calcula receitas e despesas brutas de cada mês
+    const monthlyRaw = MONTHS.map((month, index) => ({
       name: month,
-      receitas: 0,
-      despesas: 0,
+      receitasBrutas: 0,
+      despesasBrutas: 0,
       month: index,
       isCurrentMonth: isCurrentYear && index === currentMonth,
     }));
@@ -93,15 +111,33 @@ export const Dashboard = ({
 
       if (transactionYear === selectedYear && monthIndex >= 0 && monthIndex < 12) {
         if (transaction.type === 'receita') {
-          monthlyData[monthIndex].receitas += transaction.value;
+          monthlyRaw[monthIndex].receitasBrutas += transaction.value;
         } else {
-          monthlyData[monthIndex].despesas += transaction.value;
+          monthlyRaw[monthIndex].despesasBrutas += transaction.value;
         }
       }
     });
 
-    return monthlyData;
-  }, [allTransactions, selectedYear, isCurrentYear, currentMonth]);
+    // Agora, calcula receitas e despesas com saldo anterior acumulado
+    let saldoAcumulado = previousYearBalance;
+    
+    return monthlyRaw.map((month) => {
+      // Se saldo anterior é positivo, soma nas receitas; se negativo, soma nas despesas
+      const receitas = month.receitasBrutas + (saldoAcumulado > 0 ? saldoAcumulado : 0);
+      const despesas = month.despesasBrutas + (saldoAcumulado < 0 ? Math.abs(saldoAcumulado) : 0);
+      
+      // Calcula o novo saldo acumulado para o próximo mês
+      saldoAcumulado = receitas - despesas;
+      
+      return {
+        name: month.name,
+        receitas,
+        despesas,
+        month: month.month,
+        isCurrentMonth: month.isCurrentMonth,
+      };
+    });
+  }, [allTransactions, selectedYear, isCurrentYear, currentMonth, previousYearBalance]);
 
   return (
     <div className="p-4 md:p-8">
