@@ -266,12 +266,24 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onSuccess }: NativeAuthS
     }));
   }, []);
 
+  // Transition overlay component
+  const TransitionOverlay = () => (
+    <div 
+      className={cn(
+        "absolute inset-0 bg-sidebar/80 pointer-events-none z-50 transition-opacity duration-300",
+        isTransitioning ? "opacity-100" : "opacity-0"
+      )}
+    />
+  );
+
   // Welcome Screen
   if (screen === 'welcome') {
     return (
       <div className="min-h-screen bg-gradient-to-br from-sidebar via-[hsl(220,50%,15%)] to-primary/30 relative overflow-hidden flex flex-col">
         <style>{cssAnimations}</style>
         
+        {/* Transition Overlay */}
+        <TransitionOverlay />
         {/* Floating Particles - igual ao web */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
           {particles.map((particle) => (
@@ -402,6 +414,8 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onSuccess }: NativeAuthS
       <div className="min-h-screen bg-gradient-to-br from-sidebar via-[hsl(220,50%,15%)] to-primary/30 relative overflow-hidden flex flex-col">
         <style>{cssAnimations}</style>
 
+        {/* Transition Overlay */}
+        <TransitionOverlay />
         {/* Floating Particles - igual ao web */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
           {particles.map((particle) => (
@@ -527,6 +541,8 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onSuccess }: NativeAuthS
       <div className="min-h-screen bg-gradient-to-br from-sidebar via-[hsl(220,50%,15%)] to-primary/30 relative overflow-hidden flex flex-col">
         <style>{cssAnimations}</style>
 
+        {/* Transition Overlay */}
+        <TransitionOverlay />
         {/* Floating Particles - igual ao web */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
           {particles.map((particle) => (
