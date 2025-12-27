@@ -187,9 +187,9 @@ export const OnboardingTour = ({ onComplete, onSkip }: OnboardingTourProps) => {
       <div
         ref={cardRef}
         className={cn(
-          'absolute w-full max-w-md mx-4 transition-all duration-300 ease-out',
+          'absolute left-4 right-4 max-w-md mx-auto transition-all duration-300 ease-out',
           isAnimating ? 'opacity-0 translate-y-2' : 'opacity-100 translate-y-0',
-          spotlightPosition ? 'left-1/2 -translate-x-1/2 bottom-8' : 'left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2'
+          spotlightPosition ? 'bottom-8' : 'top-1/2 -translate-y-1/2'
         )}
       >
         <div className="bg-card border border-border rounded-2xl shadow-2xl">
