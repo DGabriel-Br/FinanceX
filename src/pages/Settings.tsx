@@ -348,40 +348,34 @@ export default function Settings() {
           {/* Card Dados Pessoais */}
           <button
             onClick={() => setActiveSection('profile')}
-            className="group flex flex-col p-4 bg-muted/50 rounded-2xl hover:bg-muted active:scale-[0.97] transition-all text-left h-[130px]"
+            className="group flex flex-col justify-between p-4 bg-muted/50 rounded-2xl hover:bg-muted active:scale-[0.97] transition-all text-left h-[130px]"
           >
-            <User className="w-7 h-7 text-primary stroke-[1.5] group-hover:scale-110 transition-transform mb-auto" />
-            <div className="h-10 flex items-end">
-              <span className="text-sm font-medium text-foreground leading-snug">
-                Dados<br/>pessoais
-              </span>
-            </div>
+            <User className="w-7 h-7 text-primary stroke-[1.5] group-hover:scale-110 transition-transform" />
+            <span className="text-sm font-medium text-foreground leading-snug">
+              Dados<br/>pessoais
+            </span>
           </button>
 
           {/* Card Segurança */}
           <button
             onClick={() => setActiveSection('security')}
-            className="group flex flex-col p-4 bg-muted/50 rounded-2xl hover:bg-muted active:scale-[0.97] transition-all text-left h-[130px]"
+            className="group flex flex-col justify-between p-4 bg-muted/50 rounded-2xl hover:bg-muted active:scale-[0.97] transition-all text-left h-[130px]"
           >
-            <Shield className="w-7 h-7 text-primary stroke-[1.5] group-hover:scale-110 transition-transform mb-auto" />
-            <div className="h-10 flex items-end">
-              <span className="text-sm font-medium text-foreground leading-snug">
-                Segurança
-              </span>
-            </div>
+            <Shield className="w-7 h-7 text-primary stroke-[1.5] group-hover:scale-110 transition-transform" />
+            <span className="text-sm font-medium text-foreground leading-snug">
+              Segurança
+            </span>
           </button>
 
           {/* Card Preferências */}
           <button
             onClick={() => setActiveSection('preferences')}
-            className="group flex flex-col p-4 bg-muted/50 rounded-2xl hover:bg-muted active:scale-[0.97] transition-all text-left h-[130px]"
+            className="group flex flex-col justify-between p-4 bg-muted/50 rounded-2xl hover:bg-muted active:scale-[0.97] transition-all text-left h-[130px]"
           >
-            <Settings2 className="w-7 h-7 text-primary stroke-[1.5] group-hover:scale-110 transition-transform mb-auto" />
-            <div className="h-10 flex items-end">
-              <span className="text-sm font-medium text-foreground leading-snug">
-                Preferências
-              </span>
-            </div>
+            <Settings2 className="w-7 h-7 text-primary stroke-[1.5] group-hover:scale-110 transition-transform" />
+            <span className="text-sm font-medium text-foreground leading-snug">
+              Preferências
+            </span>
           </button>
         </div>
 
