@@ -44,6 +44,13 @@ import {
   SheetTitle,
 } from '@/components/ui/sheet';
 import {
+  Drawer,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerDescription,
+} from '@/components/ui/drawer';
+import {
   Accordion,
   AccordionContent,
   AccordionItem,
@@ -413,92 +420,96 @@ export default function Settings() {
           </Button>
         </div>
 
-        {/* Sheets para app nativo */}
-        <Sheet open={activeSection === 'profile'} onOpenChange={(open) => !open && setActiveSection(null)}>
-          <SheetContent side="bottom" className="h-[85vh] rounded-t-3xl">
-            <SheetHeader className="text-left mb-6">
-              <SheetTitle>Dados pessoais</SheetTitle>
-              <SheetDescription>Atualize suas informações de perfil</SheetDescription>
-            </SheetHeader>
-            <ProfileSheetContent
-              avatarUrl={avatarUrl}
-              displayName={displayName}
-              user={user}
-              name={name}
-              setName={setName}
-              fileInputRef={fileInputRef}
-              isUploadingAvatar={isUploadingAvatar}
-              handleRemoveAvatar={handleRemoveAvatar}
-              handleUpdateName={handleUpdateName}
-              isUpdatingName={isUpdatingName}
-            />
-          </SheetContent>
-        </Sheet>
-
-        <Sheet open={activeSection === 'security'} onOpenChange={(open) => !open && setActiveSection(null)}>
-          <SheetContent side="bottom" className="h-[85vh] rounded-t-3xl overflow-y-auto" onOpenAutoFocus={(e) => e.preventDefault()}>
-            <SheetHeader className="text-left mb-6">
-              <SheetTitle>Segurança</SheetTitle>
-              <SheetDescription>Altere sua senha de acesso</SheetDescription>
-            </SheetHeader>
-            <SecuritySheetContent
-              currentPassword={currentPassword}
-              setCurrentPassword={setCurrentPassword}
-              showCurrentPassword={showCurrentPassword}
-              setShowCurrentPassword={setShowCurrentPassword}
-              newPassword={newPassword}
-              setNewPassword={setNewPassword}
-              showNewPassword={showNewPassword}
-              setShowNewPassword={setShowNewPassword}
-              confirmPassword={confirmPassword}
-              setConfirmPassword={setConfirmPassword}
-              showConfirmPassword={showConfirmPassword}
-              setShowConfirmPassword={setShowConfirmPassword}
-              passwordStrength={passwordStrength}
-              handleUpdatePassword={handleUpdatePassword}
-              isUpdatingPassword={isUpdatingPassword}
-            />
-          </SheetContent>
-        </Sheet>
-
-        <Sheet open={activeSection === 'preferences'} onOpenChange={(open) => !open && setActiveSection(null)}>
-          <SheetContent side="bottom" className="h-[85vh] rounded-t-3xl overflow-y-auto">
-            <SheetHeader className="text-left mb-6">
-              <SheetTitle>Preferências</SheetTitle>
-              <SheetDescription>Personalize sua experiência</SheetDescription>
-            </SheetHeader>
-            <PreferencesSheetContent
-              theme={theme}
-              toggleTheme={toggleTheme}
-              setActiveSection={setActiveSection}
-            />
-          </SheetContent>
-        </Sheet>
-
-        <Sheet open={activeSection === 'categories'} onOpenChange={(open) => !open && setActiveSection(null)}>
-          <SheetContent side="bottom" className="h-[90vh] rounded-t-3xl overflow-y-auto p-0">
-            <div className="sticky top-0 z-10 bg-background px-6 pt-6 pb-4 border-b border-border">
-              <SheetHeader className="text-left">
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => {
-                      setActiveSection(null);
-                      setTimeout(() => setActiveSection('preferences'), 150);
-                    }}
-                    className="p-1.5 -ml-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
-                  >
-                    <ArrowLeft className="w-5 h-5" />
-                  </button>
-                  <SheetTitle>Gerenciar Categorias</SheetTitle>
-                </div>
-                <SheetDescription>Organize suas categorias de receitas e despesas</SheetDescription>
-              </SheetHeader>
+        {/* Drawers para app nativo - com suporte a swipe-to-dismiss */}
+        <Drawer open={activeSection === 'profile'} onOpenChange={(open) => !open && setActiveSection(null)}>
+          <DrawerContent className="max-h-[85vh]">
+            <DrawerHeader className="text-left">
+              <DrawerTitle>Dados pessoais</DrawerTitle>
+              <DrawerDescription>Atualize suas informações de perfil</DrawerDescription>
+            </DrawerHeader>
+            <div className="overflow-y-auto px-4 pb-6">
+              <ProfileSheetContent
+                avatarUrl={avatarUrl}
+                displayName={displayName}
+                user={user}
+                name={name}
+                setName={setName}
+                fileInputRef={fileInputRef}
+                isUploadingAvatar={isUploadingAvatar}
+                handleRemoveAvatar={handleRemoveAvatar}
+                handleUpdateName={handleUpdateName}
+                isUpdatingName={isUpdatingName}
+              />
             </div>
-            <div className="p-6">
+          </DrawerContent>
+        </Drawer>
+
+        <Drawer open={activeSection === 'security'} onOpenChange={(open) => !open && setActiveSection(null)}>
+          <DrawerContent className="max-h-[85vh]">
+            <DrawerHeader className="text-left">
+              <DrawerTitle>Segurança</DrawerTitle>
+              <DrawerDescription>Altere sua senha de acesso</DrawerDescription>
+            </DrawerHeader>
+            <div className="overflow-y-auto px-4 pb-6">
+              <SecuritySheetContent
+                currentPassword={currentPassword}
+                setCurrentPassword={setCurrentPassword}
+                showCurrentPassword={showCurrentPassword}
+                setShowCurrentPassword={setShowCurrentPassword}
+                newPassword={newPassword}
+                setNewPassword={setNewPassword}
+                showNewPassword={showNewPassword}
+                setShowNewPassword={setShowNewPassword}
+                confirmPassword={confirmPassword}
+                setConfirmPassword={setConfirmPassword}
+                showConfirmPassword={showConfirmPassword}
+                setShowConfirmPassword={setShowConfirmPassword}
+                passwordStrength={passwordStrength}
+                handleUpdatePassword={handleUpdatePassword}
+                isUpdatingPassword={isUpdatingPassword}
+              />
+            </div>
+          </DrawerContent>
+        </Drawer>
+
+        <Drawer open={activeSection === 'preferences'} onOpenChange={(open) => !open && setActiveSection(null)}>
+          <DrawerContent className="max-h-[85vh]">
+            <DrawerHeader className="text-left">
+              <DrawerTitle>Preferências</DrawerTitle>
+              <DrawerDescription>Personalize sua experiência</DrawerDescription>
+            </DrawerHeader>
+            <div className="overflow-y-auto px-4 pb-6">
+              <PreferencesSheetContent
+                theme={theme}
+                toggleTheme={toggleTheme}
+                setActiveSection={setActiveSection}
+              />
+            </div>
+          </DrawerContent>
+        </Drawer>
+
+        <Drawer open={activeSection === 'categories'} onOpenChange={(open) => !open && setActiveSection(null)}>
+          <DrawerContent className="max-h-[90vh]">
+            <DrawerHeader className="text-left border-b border-border pb-4">
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => {
+                    setActiveSection(null);
+                    setTimeout(() => setActiveSection('preferences'), 150);
+                  }}
+                  className="p-1.5 -ml-1.5 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                >
+                  <ArrowLeft className="w-5 h-5" />
+                </button>
+                <DrawerTitle>Gerenciar Categorias</DrawerTitle>
+              </div>
+              <DrawerDescription>Organize suas categorias de receitas e despesas</DrawerDescription>
+            </DrawerHeader>
+            <div className="overflow-y-auto p-4">
               <CategoryManagerInline />
             </div>
-          </SheetContent>
-        </Sheet>
+          </DrawerContent>
+        </Drawer>
       </div>
     );
   }
