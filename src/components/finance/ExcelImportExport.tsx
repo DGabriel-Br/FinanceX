@@ -18,7 +18,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Filesystem, Directory } from '@capacitor/filesystem';
-import { FileOpener } from '@capawesome-team/capacitor-file-opener';
+import { Share } from '@capacitor/share';
 
 interface ExcelImportExportProps {
   transactions: Transaction[];
@@ -122,31 +122,30 @@ export const ExcelImportExport = ({
     return !!(window as any).Capacitor?.isNativePlatform?.();
   };
 
-  const requestStoragePermission = async (): Promise<boolean> => {
+  const shareFile = async (base64Data: string, fileName: string) => {
     try {
-      const permStatus = await Filesystem.checkPermissions();
-      
-      if (permStatus.publicStorage === 'granted') {
-        return true;
-      }
-      
-      const requestResult = await Filesystem.requestPermissions();
-      return requestResult.publicStorage === 'granted';
-    } catch (error) {
-      console.error('Erro ao solicitar permissão:', error);
-      return false;
-    }
-  };
-
-  const openFile = async (filePath: string) => {
-    try {
-      await FileOpener.openFile({
-        path: filePath,
-        mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+      // Salvar arquivo temporário no cache
+      const tempFile = await Filesystem.writeFile({
+        path: fileName,
+        data: base64Data,
+        directory: Directory.Cache,
       });
-    } catch (error) {
-      console.error('Erro ao abrir arquivo:', error);
-      toast.error('Não foi possível abrir o arquivo. Verifique se há um app compatível instalado.');
+
+      // Compartilhar o arquivo - permite salvar em qualquer local
+      await Share.share({
+        title: fileName,
+        url: tempFile.uri,
+        dialogTitle: 'Salvar arquivo',
+      });
+
+      toast.success('Arquivo exportado com sucesso!');
+    } catch (error: any) {
+      // Se o usuário cancelou, não mostrar erro
+      if (error?.message?.includes('canceled') || error?.message?.includes('cancelled')) {
+        return;
+      }
+      console.error('Erro ao compartilhar arquivo:', error);
+      toast.error('Erro ao exportar arquivo.');
     }
   };
 
@@ -178,57 +177,10 @@ export const ExcelImportExport = ({
 
     const fileName = `lancamentos_${new Date().toISOString().split('T')[0]}.xlsx`;
 
-    // Verificar se está no app nativo
     if (isNativePlatform()) {
-      // Solicitar permissão de armazenamento
-      const hasPermission = await requestStoragePermission();
-      if (!hasPermission) {
-        toast.error('Permissão de armazenamento necessária para exportar arquivos.');
-        return;
-      }
-
-      try {
-        // Gerar o arquivo como base64
-        const wbout = XLSX.write(workbook, { bookType: 'xlsx', type: 'base64' });
-        
-        // Salvar o arquivo na pasta Downloads (ExternalStorage/Download)
-        const result = await Filesystem.writeFile({
-          path: `Download/${fileName}`,
-          data: wbout,
-          directory: Directory.ExternalStorage,
-        });
-
-        const filePath = result.uri;
-
-        toast.success(`Arquivo salvo em Downloads/${fileName}`);
-        
-        // Abrir arquivo automaticamente
-        await openFile(filePath);
-      } catch (error: any) {
-        console.error('Erro ao exportar no app nativo:', error);
-        
-        // Fallback: tentar salvar em Documents se ExternalStorage falhar
-        try {
-          const wbout = XLSX.write(workbook, { bookType: 'xlsx', type: 'base64' });
-          const result = await Filesystem.writeFile({
-            path: fileName,
-            data: wbout,
-            directory: Directory.Documents,
-          });
-
-          const filePath = result.uri;
-
-          toast.success(`Arquivo salvo em Documentos/${fileName}`);
-          
-          // Abrir arquivo automaticamente
-          await openFile(filePath);
-        } catch (fallbackError) {
-          console.error('Erro no fallback:', fallbackError);
-          toast.error('Erro ao exportar arquivo. Verifique as permissões do app.');
-        }
-      }
+      const wbout = XLSX.write(workbook, { bookType: 'xlsx', type: 'base64' });
+      await shareFile(wbout, fileName);
     } else {
-      // Navegador web - usar método padrão
       XLSX.writeFile(workbook, fileName);
       toast.success('Lançamentos exportados com sucesso!');
     }
@@ -266,57 +218,10 @@ export const ExcelImportExport = ({
 
     const fileName = 'modelo_lancamentos.xlsx';
 
-    // Verificar se está no app nativo
     if (isNativePlatform()) {
-      // Solicitar permissão de armazenamento
-      const hasPermission = await requestStoragePermission();
-      if (!hasPermission) {
-        toast.error('Permissão de armazenamento necessária para baixar o modelo.');
-        return;
-      }
-
-      try {
-        // Gerar o arquivo como base64
-        const wbout = XLSX.write(workbook, { bookType: 'xlsx', type: 'base64' });
-        
-        // Salvar o arquivo na pasta Downloads (ExternalStorage/Download)
-        const result = await Filesystem.writeFile({
-          path: `Download/${fileName}`,
-          data: wbout,
-          directory: Directory.ExternalStorage,
-        });
-
-        const filePath = result.uri;
-
-        toast.success(`Modelo salvo em Downloads/${fileName}`);
-        
-        // Abrir arquivo automaticamente
-        await openFile(filePath);
-      } catch (error: any) {
-        console.error('Erro ao baixar modelo no app nativo:', error);
-        
-        // Fallback: tentar salvar em Documents se ExternalStorage falhar
-        try {
-          const wbout = XLSX.write(workbook, { bookType: 'xlsx', type: 'base64' });
-          const result = await Filesystem.writeFile({
-            path: fileName,
-            data: wbout,
-            directory: Directory.Documents,
-          });
-
-          const filePath = result.uri;
-
-          toast.success(`Modelo salvo em Documentos/${fileName}`);
-          
-          // Abrir arquivo automaticamente
-          await openFile(filePath);
-        } catch (fallbackError) {
-          console.error('Erro no fallback:', fallbackError);
-          toast.error('Erro ao baixar modelo. Verifique as permissões do app.');
-        }
-      }
+      const wbout = XLSX.write(workbook, { bookType: 'xlsx', type: 'base64' });
+      await shareFile(wbout, fileName);
     } else {
-      // Navegador web - usar método padrão
       XLSX.writeFile(workbook, fileName);
       toast.success('Modelo baixado com sucesso!');
     }
