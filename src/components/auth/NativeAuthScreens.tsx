@@ -346,7 +346,7 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onSuccess }: NativeAuthS
         {/* Bottom buttons */}
         <div 
           className={cn(
-            "px-6 pb-6 safe-area-bottom space-y-3 relative z-10 transition-all duration-700 delay-300",
+            "px-6 pb-10 space-y-3 relative z-10 transition-all duration-700 delay-300",
             mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
           )}
         >
