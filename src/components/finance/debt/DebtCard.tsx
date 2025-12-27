@@ -9,6 +9,16 @@ import { Button } from '@/components/ui/button';
 import { format, startOfMonth } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { formatCurrencyInput, parseCurrency, formatNumberToCurrency } from '@/lib/currency';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from '@/components/ui/alert-dialog';
 
 // Formata data YYYY-MM para exibição
 const formatMonthYear = (date: string): string => {
@@ -29,6 +39,7 @@ interface DebtCardProps {
 export const DebtCard = forwardRef<HTMLDivElement, DebtCardProps>(
   ({ debt, paidValue, onUpdate, onDelete, displayValue }, ref) => {
     const [isEditing, setIsEditing] = useState(false);
+    const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     const [editName, setEditName] = useState(debt.name);
     const [editTotalValue, setEditTotalValue] = useState(formatNumberToCurrency(debt.totalValue));
     const [editMonthlyInstallment, setEditMonthlyInstallment] = useState(formatNumberToCurrency(debt.monthlyInstallment));
@@ -42,6 +53,15 @@ export const DebtCard = forwardRef<HTMLDivElement, DebtCardProps>(
     const remaining = debt.totalValue - paidValue;
     const progress = calculateProgress(debt.totalValue, paidValue);
     const expectedEndDate = calculateExpectedEndDate(debt.totalValue, debt.monthlyInstallment, debt.startDate, paidValue);
+
+    const handleDeleteClick = () => {
+      setShowDeleteConfirm(true);
+    };
+
+    const handleDeleteConfirm = () => {
+      onDelete();
+      setShowDeleteConfirm(false);
+    };
 
     const handleDateSelect = (date: Date | undefined) => {
       if (date) {
@@ -198,7 +218,7 @@ export const DebtCard = forwardRef<HTMLDivElement, DebtCardProps>(
               <Pencil className="w-4 h-4" />
             </button>
             <button
-              onClick={onDelete}
+              onClick={handleDeleteClick}
               className="p-2 text-muted-foreground hover:text-expense hover:bg-expense/10 rounded-lg transition-colors"
             >
               <Trash2 className="w-4 h-4" />
@@ -256,6 +276,26 @@ export const DebtCard = forwardRef<HTMLDivElement, DebtCardProps>(
         <p className="text-xs text-muted-foreground mt-3 text-center">
           💡 Registre pagamentos na aba Lançamentos com categoria "Dívidas" e inclua "{debt.name}" na descrição.
         </p>
+
+        {/* Diálogo de confirmação de exclusão */}
+        <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Excluir dívida?</AlertDialogTitle>
+              <AlertDialogDescription>
+                Tem certeza que deseja excluir a dívida "{debt.name}" no valor total de {displayValue(debt.totalValue)}?
+                <br /><br />
+                Esta ação não pode ser desfeita. Os lançamentos de pagamentos relacionados não serão excluídos.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancelar</AlertDialogCancel>
+              <AlertDialogAction onClick={handleDeleteConfirm} className="bg-expense hover:bg-expense/90">
+                Excluir
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
     );
   }
