@@ -34,12 +34,17 @@ const Toaster = ({ ...props }: ToasterProps) => {
   return (
     <>
       <style>{`
-        /* Posicionamento do container de toasts para app nativo */
+        /* Posicionamento do container de toasts */
         ${isNativeApp ? `
         [data-sonner-toaster] {
           bottom: 90px !important;
         }
-        ` : ''}
+        ` : `
+        [data-sonner-toaster] {
+          bottom: 24px !important;
+          right: 24px !important;
+        }
+        `}
 
         /* Animações de entrada - arrasta suavemente para cima */
         [data-sonner-toast][data-mounted="true"] {
@@ -123,7 +128,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
       <Sonner
         theme={theme}
         position={isNativeApp ? "bottom-center" : "bottom-right"}
-        offset={isNativeApp ? "500px" : "200px"}
+        offset="16px"
         className="toaster group"
         expand={false}
         richColors={false}
