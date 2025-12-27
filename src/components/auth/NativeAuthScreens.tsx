@@ -62,6 +62,7 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onSuccess }: NativeAuthS
   const [mounted, setMounted] = useState(false);
   const [animationKey, setAnimationKey] = useState(0);
   const [slideAnimation, setSlideAnimation] = useState<'slide-in-right' | 'slide-in-left' | 'none'>('none');
+  const [bgFading, setBgFading] = useState(false);
   
   // Form states
   const [name, setName] = useState('');
@@ -88,6 +89,9 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onSuccess }: NativeAuthS
 
   const handleNavigate = (newScreen: Screen) => {
     const goingBack = newScreen === 'welcome';
+    // Trigger background fade
+    setBgFading(true);
+    setTimeout(() => setBgFading(false), 300);
     // Set the animation for the NEW screen
     // Going back to welcome = new screen slides in from LEFT
     // Going forward to login/register = new screen slides in from RIGHT
@@ -278,7 +282,10 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onSuccess }: NativeAuthS
   // Welcome Screen
   if (screen === 'welcome') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-sidebar via-[hsl(220,50%,15%)] to-primary/30 relative overflow-hidden flex flex-col">
+      <div className={cn(
+        "min-h-screen bg-gradient-to-br from-sidebar via-[hsl(220,50%,15%)] to-primary/30 relative overflow-hidden flex flex-col transition-opacity duration-300",
+        bgFading && "opacity-80"
+      )}>
         <style>{cssAnimations}</style>
         
         {/* Floating Particles - igual ao web */}
@@ -405,7 +412,10 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onSuccess }: NativeAuthS
   // Login Screen
   if (screen === 'login') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-sidebar via-[hsl(220,50%,15%)] to-primary/30 relative overflow-hidden flex flex-col">
+      <div className={cn(
+        "min-h-screen bg-gradient-to-br from-sidebar via-[hsl(220,50%,15%)] to-primary/30 relative overflow-hidden flex flex-col transition-opacity duration-300",
+        bgFading && "opacity-80"
+      )}>
         <style>{cssAnimations}</style>
 
         {/* Floating Particles - igual ao web */}
@@ -528,7 +538,10 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onSuccess }: NativeAuthS
   // Register Screen
   if (screen === 'register') {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-sidebar via-[hsl(220,50%,15%)] to-primary/30 relative overflow-hidden flex flex-col">
+      <div className={cn(
+        "min-h-screen bg-gradient-to-br from-sidebar via-[hsl(220,50%,15%)] to-primary/30 relative overflow-hidden flex flex-col transition-opacity duration-300",
+        bgFading && "opacity-80"
+      )}>
         <style>{cssAnimations}</style>
 
         {/* Floating Particles - igual ao web */}
