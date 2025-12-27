@@ -383,16 +383,16 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onSuccess }: NativeAuthS
 
         {/* Animated Background Elements */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          <div className={cn("absolute top-[10%] left-[5%] w-40 h-40 bg-gradient-to-br from-white/10 to-transparent rounded-full blur-xl", mounted ? "opacity-60" : "opacity-0")} />
-          <div className={cn("absolute top-[15%] right-[10%] w-32 h-32 bg-gradient-to-br from-income/20 to-primary/10 rounded-full blur-2xl", mounted ? "opacity-50" : "opacity-0")} />
-          <div className={cn("absolute bottom-[20%] left-[8%] w-48 h-48 bg-gradient-to-br from-primary/15 to-income/20 rounded-full blur-3xl", mounted ? "opacity-40" : "opacity-0")} />
-          <div className={cn("absolute bottom-[10%] right-[15%] w-36 h-36 bg-gradient-to-br from-income/15 to-primary/20 rounded-full blur-2xl", mounted ? "opacity-50" : "opacity-0")} />
+          <div className={cn("absolute top-[10%] left-[5%] w-40 h-40 bg-gradient-to-br from-white/10 to-transparent rounded-full blur-xl transition-all duration-1000", mounted ? "opacity-60 scale-100" : "opacity-0 scale-50")} />
+          <div className={cn("absolute top-[15%] right-[10%] w-32 h-32 bg-gradient-to-br from-income/20 to-primary/10 rounded-full blur-2xl transition-all duration-1000 delay-200", mounted ? "opacity-50 scale-100" : "opacity-0 scale-50")} />
+          <div className={cn("absolute bottom-[20%] left-[8%] w-48 h-48 bg-gradient-to-br from-primary/15 to-income/20 rounded-full blur-3xl transition-all duration-1000 delay-300", mounted ? "opacity-40 scale-100" : "opacity-0 scale-50")} />
+          <div className={cn("absolute bottom-[10%] right-[15%] w-36 h-36 bg-gradient-to-br from-income/15 to-primary/20 rounded-full blur-2xl transition-all duration-1000 delay-500", mounted ? "opacity-50 scale-100" : "opacity-0 scale-50")} />
           
           {/* Star-like dots */}
           <div className="absolute top-[20%] left-[20%] w-1 h-1 bg-white/40 rounded-full animate-pulse" />
-          <div className="absolute top-[30%] left-[70%] w-1.5 h-1.5 bg-white/30 rounded-full animate-pulse" />
-          <div className="absolute top-[60%] left-[85%] w-1 h-1 bg-white/35 rounded-full animate-pulse" />
-          <div className="absolute top-[70%] left-[10%] w-1 h-1 bg-white/25 rounded-full animate-pulse" />
+          <div className="absolute top-[30%] left-[70%] w-1.5 h-1.5 bg-white/30 rounded-full animate-pulse" style={{ animationDelay: '0.3s' }} />
+          <div className="absolute top-[60%] left-[85%] w-1 h-1 bg-white/35 rounded-full animate-pulse" style={{ animationDelay: '0.5s' }} />
+          <div className="absolute top-[70%] left-[10%] w-1 h-1 bg-white/25 rounded-full animate-pulse" style={{ animationDelay: '0.7s' }} />
         </div>
 
         {/* Header */}
@@ -408,7 +408,7 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onSuccess }: NativeAuthS
         {/* Content */}
         <div 
           className={cn(
-            "flex-1 px-6 pt-4 transition-all duration-300",
+            "flex-1 px-6 pt-4 pb-8 safe-area-bottom transition-all duration-300",
             isTransitioning ? "opacity-0 translate-x-8" : "opacity-100 translate-x-0",
             isShaking && "animate-shake"
           )}
@@ -427,7 +427,7 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onSuccess }: NativeAuthS
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 disabled={isLoading}
-                className="h-14 px-4 text-base bg-[#1a1d2e] border-0 rounded-xl text-white placeholder:text-white/30 focus:ring-2 focus:ring-primary/50"
+                className="h-14 px-4 text-base bg-sidebar-accent/80 border-0 rounded-xl text-white placeholder:text-white/30 focus:ring-2 focus:ring-primary/50"
               />
             </div>
 
@@ -441,7 +441,7 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onSuccess }: NativeAuthS
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   disabled={isLoading}
-                  className="h-14 px-4 pr-12 text-base bg-[#1a1d2e] border-0 rounded-xl text-white placeholder:text-white/30 focus:ring-2 focus:ring-primary/50"
+                  className="h-14 px-4 pr-12 text-base bg-sidebar-accent/80 border-0 rounded-xl text-white placeholder:text-white/30 focus:ring-2 focus:ring-primary/50"
                 />
                 <button
                   type="button"
@@ -504,16 +504,16 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onSuccess }: NativeAuthS
 
         {/* Animated Background Elements */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          <div className={cn("absolute top-[10%] left-[5%] w-40 h-40 bg-gradient-to-br from-white/10 to-transparent rounded-full blur-xl", mounted ? "opacity-60" : "opacity-0")} />
-          <div className={cn("absolute top-[15%] right-[10%] w-32 h-32 bg-gradient-to-br from-income/20 to-primary/10 rounded-full blur-2xl", mounted ? "opacity-50" : "opacity-0")} />
-          <div className={cn("absolute bottom-[20%] left-[8%] w-48 h-48 bg-gradient-to-br from-primary/15 to-income/20 rounded-full blur-3xl", mounted ? "opacity-40" : "opacity-0")} />
-          <div className={cn("absolute bottom-[10%] right-[15%] w-36 h-36 bg-gradient-to-br from-income/15 to-primary/20 rounded-full blur-2xl", mounted ? "opacity-50" : "opacity-0")} />
+          <div className={cn("absolute top-[10%] left-[5%] w-40 h-40 bg-gradient-to-br from-white/10 to-transparent rounded-full blur-xl transition-all duration-1000", mounted ? "opacity-60 scale-100" : "opacity-0 scale-50")} />
+          <div className={cn("absolute top-[15%] right-[10%] w-32 h-32 bg-gradient-to-br from-income/20 to-primary/10 rounded-full blur-2xl transition-all duration-1000 delay-200", mounted ? "opacity-50 scale-100" : "opacity-0 scale-50")} />
+          <div className={cn("absolute bottom-[20%] left-[8%] w-48 h-48 bg-gradient-to-br from-primary/15 to-income/20 rounded-full blur-3xl transition-all duration-1000 delay-300", mounted ? "opacity-40 scale-100" : "opacity-0 scale-50")} />
+          <div className={cn("absolute bottom-[10%] right-[15%] w-36 h-36 bg-gradient-to-br from-income/15 to-primary/20 rounded-full blur-2xl transition-all duration-1000 delay-500", mounted ? "opacity-50 scale-100" : "opacity-0 scale-50")} />
           
           {/* Star-like dots */}
           <div className="absolute top-[20%] left-[20%] w-1 h-1 bg-white/40 rounded-full animate-pulse" />
-          <div className="absolute top-[30%] left-[70%] w-1.5 h-1.5 bg-white/30 rounded-full animate-pulse" />
-          <div className="absolute top-[60%] left-[85%] w-1 h-1 bg-white/35 rounded-full animate-pulse" />
-          <div className="absolute top-[70%] left-[10%] w-1 h-1 bg-white/25 rounded-full animate-pulse" />
+          <div className="absolute top-[30%] left-[70%] w-1.5 h-1.5 bg-white/30 rounded-full animate-pulse" style={{ animationDelay: '0.3s' }} />
+          <div className="absolute top-[60%] left-[85%] w-1 h-1 bg-white/35 rounded-full animate-pulse" style={{ animationDelay: '0.5s' }} />
+          <div className="absolute top-[70%] left-[10%] w-1 h-1 bg-white/25 rounded-full animate-pulse" style={{ animationDelay: '0.7s' }} />
         </div>
 
         {/* Header */}
@@ -529,7 +529,7 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onSuccess }: NativeAuthS
         {/* Content */}
         <div 
           className={cn(
-            "flex-1 px-6 pt-4 pb-8 overflow-auto transition-all duration-300",
+            "flex-1 px-6 pt-4 pb-8 safe-area-bottom overflow-auto transition-all duration-300",
             isTransitioning ? "opacity-0 -translate-x-8" : "opacity-100 translate-x-0",
             isShaking && "animate-shake"
           )}
@@ -551,7 +551,7 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onSuccess }: NativeAuthS
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 disabled={isLoading}
-                className="h-14 px-4 text-base bg-[#1a1d2e] border-0 rounded-xl text-white placeholder:text-white/30 focus:ring-2 focus:ring-primary/50"
+                className="h-14 px-4 text-base bg-sidebar-accent/80 border-0 rounded-xl text-white placeholder:text-white/30 focus:ring-2 focus:ring-primary/50"
               />
             </div>
 
@@ -564,7 +564,7 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onSuccess }: NativeAuthS
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 disabled={isLoading}
-                className="h-14 px-4 text-base bg-[#1a1d2e] border-0 rounded-xl text-white placeholder:text-white/30 focus:ring-2 focus:ring-primary/50"
+                className="h-14 px-4 text-base bg-sidebar-accent/80 border-0 rounded-xl text-white placeholder:text-white/30 focus:ring-2 focus:ring-primary/50"
               />
             </div>
 
@@ -578,7 +578,7 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onSuccess }: NativeAuthS
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   disabled={isLoading}
-                  className="h-14 px-4 pr-12 text-base bg-[#1a1d2e] border-0 rounded-xl text-white placeholder:text-white/30 focus:ring-2 focus:ring-primary/50"
+                  className="h-14 px-4 pr-12 text-base bg-sidebar-accent/80 border-0 rounded-xl text-white placeholder:text-white/30 focus:ring-2 focus:ring-primary/50"
                 />
                 <button
                   type="button"
@@ -602,7 +602,7 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onSuccess }: NativeAuthS
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   disabled={isLoading}
                   className={cn(
-                    "h-14 px-4 pr-12 text-base bg-[#1a1d2e] border-0 rounded-xl text-white placeholder:text-white/30 focus:ring-2 focus:ring-primary/50",
+                    "h-14 px-4 pr-12 text-base bg-sidebar-accent/80 border-0 rounded-xl text-white placeholder:text-white/30 focus:ring-2 focus:ring-primary/50",
                     confirmPassword && password !== confirmPassword && "ring-2 ring-red-500/50"
                   )}
                 />
