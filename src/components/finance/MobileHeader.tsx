@@ -4,6 +4,7 @@ import { cn } from '@/lib/utils';
 import { useScrollDirection } from '@/hooks/useScrollDirection';
 import { getInitials, getDisplayName } from '@/lib/userUtils';
 import { OfflineStatusBar } from './OfflineStatusBar';
+import { useOnlineStatus } from '@/hooks/useOnlineStatus';
 
 interface MobileHeaderProps {
   userName?: string;
@@ -27,9 +28,13 @@ export const MobileHeader = ({
   const initials = getInitials(userName, userEmail);
   const firstName = getDisplayName(userName, userEmail);
   const { scrollDirection, isAtTop } = useScrollDirection({ threshold: 15 });
+  const { isOnline, isSyncing } = useOnlineStatus();
 
   // Header visível quando: no topo, rolando para cima, ou direção ainda não definida
   const isVisible = isAtTop || scrollDirection === 'up' || scrollDirection === null;
+
+  // Mostra barra offline quando offline ou sincronizando
+  const showOfflineBar = !isOnline || isSyncing;
 
   return (
     <div 
@@ -39,8 +44,13 @@ export const MobileHeader = ({
         !isAtTop && "shadow-md"
       )}
     >
-      {/* Safe area para status bar do sistema */}
-      <div className="bg-mobile-header safe-area-top" />
+      {/* Safe area para status bar do sistema - cor muda quando offline */}
+      <div 
+        className={cn(
+          "safe-area-top transition-colors duration-200",
+          showOfflineBar ? "bg-[#3c4043]" : "bg-mobile-header"
+        )} 
+      />
       
       {/* Barra de status offline - logo abaixo da safe area */}
       <OfflineStatusBar />
