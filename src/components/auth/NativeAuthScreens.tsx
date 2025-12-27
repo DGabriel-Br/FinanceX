@@ -59,10 +59,9 @@ interface NativeAuthScreensProps {
 
 export function NativeAuthScreens({ onSignIn, onSignUp, onSuccess }: NativeAuthScreensProps) {
   const [screen, setScreen] = useState<Screen>('welcome');
-  const [nextScreen, setNextScreen] = useState<Screen | null>(null);
   const [mounted, setMounted] = useState(false);
-  const [phase, setPhase] = useState<'idle' | 'exiting' | 'entering'>('idle');
-  const [isGoingBack, setIsGoingBack] = useState(false);
+  const [animationKey, setAnimationKey] = useState(0);
+  const [slideAnimation, setSlideAnimation] = useState<'slide-in-right' | 'slide-in-left' | 'none'>('none');
   
   // Form states
   const [name, setName] = useState('');
@@ -89,45 +88,12 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onSuccess }: NativeAuthS
 
   const handleNavigate = (newScreen: Screen) => {
     const goingBack = newScreen === 'welcome';
-    setIsGoingBack(goingBack);
-    setNextScreen(newScreen);
-    setPhase('exiting');
-    
-    setTimeout(() => {
-      setScreen(newScreen);
-      setPhase('entering');
-      
-      setTimeout(() => {
-        setPhase('idle');
-        setNextScreen(null);
-      }, 300);
-    }, 300);
-  };
-  
-  // Get animation classes based on phase and direction
-  const getAnimationClasses = () => {
-    // Idle = fully visible
-    if (phase === 'idle') {
-      return "opacity-100 translate-x-0";
-    }
-    
-    // Exiting: slide content OUT
-    if (phase === 'exiting') {
-      // Going back = exit to RIGHT, Going forward = exit to LEFT
-      return isGoingBack 
-        ? "opacity-0 translate-x-12" 
-        : "opacity-0 -translate-x-12";
-    }
-    
-    // Entering: new content comes IN from the opposite side
-    if (phase === 'entering') {
-      // Going back = enter from LEFT, Going forward = enter from RIGHT
-      return isGoingBack 
-        ? "opacity-0 -translate-x-12" 
-        : "opacity-0 translate-x-12";
-    }
-    
-    return "opacity-100 translate-x-0";
+    // Set the animation for the NEW screen
+    // Going back to welcome = new screen slides in from LEFT
+    // Going forward to login/register = new screen slides in from RIGHT
+    setSlideAnimation(goingBack ? 'slide-in-left' : 'slide-in-right');
+    setAnimationKey(prev => prev + 1);
+    setScreen(newScreen);
   };
 
   const triggerShake = () => {
@@ -233,7 +199,7 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onSuccess }: NativeAuthS
     }
   };
 
-  // CSS Animations - mesmo estilo da versão web
+  // CSS Animations
   const cssAnimations = `
     @keyframes float-particle {
       0%, 100% {
@@ -256,8 +222,34 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onSuccess }: NativeAuthS
       10%, 30%, 50%, 70%, 90% { transform: translateX(-6px); }
       20%, 40%, 60%, 80% { transform: translateX(6px); }
     }
+    @keyframes slide-in-right {
+      from {
+        opacity: 0;
+        transform: translateX(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+    @keyframes slide-in-left {
+      from {
+        opacity: 0;
+        transform: translateX(-30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
     .animate-shake {
       animation: shake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    }
+    .animate-slide-in-right {
+      animation: slide-in-right 0.3s ease-out forwards;
+    }
+    .animate-slide-in-left {
+      animation: slide-in-left 0.3s ease-out forwards;
     }
   `;
 
@@ -347,9 +339,11 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onSuccess }: NativeAuthS
 
         {/* Content */}
         <div 
+          key={`welcome-content-${animationKey}`}
           className={cn(
-            "flex-1 flex flex-col items-center justify-center px-8 relative z-10 transition-all duration-300 ease-out",
-            getAnimationClasses()
+            "flex-1 flex flex-col items-center justify-center px-8 relative z-10",
+            slideAnimation === 'slide-in-left' && "animate-slide-in-left",
+            slideAnimation === 'slide-in-right' && "animate-slide-in-right"
           )}
         >
           {/* Logo - igual ao da versão web */}
@@ -382,10 +376,13 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onSuccess }: NativeAuthS
 
         {/* Bottom buttons */}
         <div 
+          key={`welcome-buttons-${animationKey}`}
           className={cn(
-            "px-6 pb-10 space-y-3 relative z-10 transition-all duration-300 delay-75 ease-out",
-            getAnimationClasses()
+            "px-6 pb-10 space-y-3 relative z-10",
+            slideAnimation === 'slide-in-left' && "animate-slide-in-left",
+            slideAnimation === 'slide-in-right' && "animate-slide-in-right"
           )}
+          style={{ animationDelay: '0.05s' }}
         >
           <Button
             onClick={() => handleNavigate('register')}
@@ -444,9 +441,11 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onSuccess }: NativeAuthS
 
         {/* Content */}
         <div 
+          key={`login-content-${animationKey}`}
           className={cn(
-            "flex-1 px-6 pt-4 pb-8 safe-area-bottom transition-all duration-300 ease-out",
-            getAnimationClasses(),
+            "flex-1 px-6 pt-4 pb-8 safe-area-bottom",
+            slideAnimation === 'slide-in-left' && "animate-slide-in-left",
+            slideAnimation === 'slide-in-right' && "animate-slide-in-right",
             isShaking && "animate-shake"
           )}
         >
@@ -565,9 +564,11 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onSuccess }: NativeAuthS
 
         {/* Content */}
         <div 
+          key={`register-content-${animationKey}`}
           className={cn(
-            "flex-1 px-6 pt-4 pb-8 safe-area-bottom overflow-auto transition-all duration-300 ease-out",
-            getAnimationClasses(),
+            "flex-1 px-6 pt-4 pb-8 safe-area-bottom overflow-auto",
+            slideAnimation === 'slide-in-left' && "animate-slide-in-left",
+            slideAnimation === 'slide-in-right' && "animate-slide-in-right",
             isShaking && "animate-shake"
           )}
         >
