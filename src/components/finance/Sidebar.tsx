@@ -184,9 +184,7 @@ export const Sidebar = ({
             to="/admin"
             title="Painel Administrativo"
             className={cn(
-              'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors',
-              'bg-gradient-to-r from-primary/20 to-primary/10 text-primary border border-primary/20',
-              'hover:from-primary/30 hover:to-primary/20 hover:border-primary/30',
+              'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
               collapsed && 'justify-center px-0'
             )}
           >
