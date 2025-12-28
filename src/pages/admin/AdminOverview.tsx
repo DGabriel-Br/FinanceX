@@ -1,22 +1,30 @@
 import { AdminLayout } from '@/components/admin/AdminLayout';
 import { MetricCard } from '@/components/admin/MetricCard';
 import { useOverviewMetrics } from '@/hooks/useAdminMetrics';
+import { useAdminPeriod, AdminDateRange } from '@/contexts/AdminPeriodContext';
+import { PeriodFilter } from '@/components/finance/PeriodFilter';
 import { 
   Users, 
   UserCheck, 
-  Calendar, 
   Receipt, 
   DollarSign, 
   Shield,
   Loader2,
   TrendingUp,
-  Activity
+  TrendingDown,
+  Activity,
+  Wallet
 } from 'lucide-react';
 import { formatCurrency } from '@/lib/currency';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 const AdminOverview = () => {
   const { data: metrics, isLoading, error } = useOverviewMetrics();
+  const { dateRange, setDateRange } = useAdminPeriod();
+
+  const handleRangeChange = (range: { start: Date; end: Date } | null) => {
+    setDateRange(range as AdminDateRange | null);
+  };
 
   if (isLoading) {
     return (
@@ -48,57 +56,57 @@ const AdminOverview = () => {
     );
   }
 
+  const balance = (metrics?.totalIncome ?? 0) - (metrics?.totalExpense ?? 0);
+
   return (
     <AdminLayout>
       <div className="space-y-8">
-        {/* Header */}
-        <div className="flex items-start justify-between">
-          <div className="space-y-1">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center">
-                <Activity className="h-5 w-5 text-primary-foreground" />
-              </div>
-              <div>
-                <h1 className="text-3xl font-bold text-foreground tracking-tight">
-                  Visão Geral
-                </h1>
-                <p className="text-muted-foreground">
-                  Métricas executivas do FinanceX
-                </p>
-              </div>
+        {/* Header with Period Filter */}
+        <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center">
+              <Activity className="h-5 w-5 text-primary-foreground" />
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold text-foreground tracking-tight">
+                Visão Geral
+              </h1>
+              <p className="text-muted-foreground">
+                Métricas executivas do FinanceX
+              </p>
             </div>
           </div>
           
-          <div className="flex items-center gap-2 px-4 py-2 rounded-full bg-income/10 text-income text-sm font-medium">
-            <div className="w-2 h-2 rounded-full bg-income animate-pulse" />
-            Sistema Operacional
-          </div>
+          <PeriodFilter
+            customRange={dateRange}
+            onCustomRangeChange={handleRangeChange}
+          />
         </div>
 
         {/* Quick Stats Bar */}
         <Card className="border-primary/20 bg-gradient-to-r from-primary/5 via-transparent to-transparent">
           <CardContent className="py-4">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-wrap items-center justify-between gap-4">
               <div className="flex items-center gap-4">
                 <TrendingUp className="h-5 w-5 text-primary" />
                 <span className="text-sm text-muted-foreground">
-                  Resumo rápido do dia
+                  Resumo do período
                 </span>
               </div>
-              <div className="flex items-center gap-6 text-sm">
+              <div className="flex flex-wrap items-center gap-6 text-sm">
                 <div className="flex items-center gap-2">
                   <span className="text-muted-foreground">Usuários ativos:</span>
-                  <span className="font-semibold text-foreground">{metrics?.activeUsersToday ?? 0}</span>
+                  <span className="font-semibold text-foreground">{metrics?.activeUsersInRange ?? 0}</span>
                 </div>
-                <div className="w-px h-4 bg-border" />
+                <div className="w-px h-4 bg-border hidden sm:block" />
                 <div className="flex items-center gap-2">
                   <span className="text-muted-foreground">Transações:</span>
-                  <span className="font-semibold text-foreground">{metrics?.transactionsToday ?? 0}</span>
+                  <span className="font-semibold text-foreground">{metrics?.transactionsInRange ?? 0}</span>
                 </div>
-                <div className="w-px h-4 bg-border" />
+                <div className="w-px h-4 bg-border hidden sm:block" />
                 <div className="flex items-center gap-2">
                   <span className="text-muted-foreground">Volume:</span>
-                  <span className="font-semibold text-income">{formatCurrency(metrics?.volumeToday ?? 0)}</span>
+                  <span className="font-semibold text-income">{formatCurrency(metrics?.volumeInRange ?? 0)}</span>
                 </div>
               </div>
             </div>
@@ -106,54 +114,66 @@ const AdminOverview = () => {
         </Card>
 
         {/* Metric Cards Grid */}
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           <MetricCard
             title="Total de Usuários"
             value={metrics?.totalUsers ?? 0}
             icon={<Users className="h-5 w-5" />}
-            description="Usuários cadastrados na plataforma"
+            description="Usuários cadastrados"
             variant="primary"
             delay={0}
           />
           <MetricCard
-            title="Ativos Hoje"
-            value={metrics?.activeUsersToday ?? 0}
+            title="Usuários Ativos"
+            value={metrics?.activeUsersInRange ?? 0}
             icon={<UserCheck className="h-5 w-5" />}
-            description="Usuários que fizeram login hoje"
+            description="Fizeram login no período"
             variant="success"
             delay={100}
           />
           <MetricCard
-            title="Ativos (7 dias)"
-            value={metrics?.activeUsersWeek ?? 0}
-            icon={<Calendar className="h-5 w-5" />}
-            description="Usuários ativos na última semana"
+            title="Transações"
+            value={metrics?.transactionsInRange ?? 0}
+            icon={<Receipt className="h-5 w-5" />}
+            description="No período selecionado"
             variant="info"
             delay={200}
           />
           <MetricCard
-            title="Transações Hoje"
-            value={metrics?.transactionsToday ?? 0}
-            icon={<Receipt className="h-5 w-5" />}
-            description="Transações criadas hoje"
-            variant="default"
+            title="Eventos de Auditoria"
+            value={metrics?.auditEventsInRange ?? 0}
+            icon={<Shield className="h-5 w-5" />}
+            description="Registros no período"
+            variant="warning"
             delay={300}
           />
+        </div>
+
+        {/* Financial Summary */}
+        <div className="grid gap-6 md:grid-cols-3">
           <MetricCard
-            title="Volume Hoje"
-            value={formatCurrency(metrics?.volumeToday ?? 0)}
-            icon={<DollarSign className="h-5 w-5" />}
-            description="Total movimentado hoje"
+            title="Total de Receitas"
+            value={formatCurrency(metrics?.totalIncome ?? 0)}
+            icon={<TrendingUp className="h-5 w-5" />}
+            description="Entradas no período"
             variant="success"
             delay={400}
           />
           <MetricCard
-            title="Eventos de Auditoria"
-            value={metrics?.auditEventsToday ?? 0}
-            icon={<Shield className="h-5 w-5" />}
-            description="Registros de auditoria hoje"
-            variant="warning"
+            title="Total de Despesas"
+            value={formatCurrency(metrics?.totalExpense ?? 0)}
+            icon={<TrendingDown className="h-5 w-5" />}
+            description="Saídas no período"
+            variant="default"
             delay={500}
+          />
+          <MetricCard
+            title="Saldo do Período"
+            value={formatCurrency(balance)}
+            icon={<Wallet className="h-5 w-5" />}
+            description="Receitas - Despesas"
+            variant={balance >= 0 ? 'success' : 'default'}
+            delay={600}
           />
         </div>
 
@@ -163,25 +183,33 @@ const AdminOverview = () => {
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
                 <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                  <TrendingUp className="h-4 w-4 text-primary" />
+                  <Activity className="h-4 w-4 text-primary" />
                 </div>
-                Atividade Recente
+                Métricas de Engajamento
               </CardTitle>
               <CardDescription>
-                Resumo das atividades mais recentes do sistema
+                Indicadores de uso da plataforma no período
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {[
-                  { label: 'Novos usuários esta semana', value: metrics?.activeUsersWeek ?? 0 },
-                  { label: 'Taxa de engajamento', value: `${metrics?.totalUsers ? Math.round((metrics?.activeUsersToday / metrics?.totalUsers) * 100) : 0}%` },
-                  { label: 'Eventos de segurança', value: metrics?.auditEventsToday ?? 0 },
+                  { label: 'Usuários com transações', value: metrics?.activeUsersWithTransactions ?? 0 },
+                  { 
+                    label: 'Taxa de engajamento', 
+                    value: `${metrics?.totalUsers ? Math.round((metrics?.activeUsersWithTransactions / metrics?.totalUsers) * 100) : 0}%` 
+                  },
+                  { 
+                    label: 'Média por usuário ativo', 
+                    value: metrics?.activeUsersWithTransactions 
+                      ? Math.round((metrics?.transactionsInRange ?? 0) / metrics?.activeUsersWithTransactions) 
+                      : 0 
+                  },
                 ].map((item, index) => (
                   <div 
                     key={item.label}
                     className="flex items-center justify-between py-3 border-b border-border/50 last:border-0 stagger-item"
-                    style={{ animationDelay: `${600 + index * 100}ms` }}
+                    style={{ animationDelay: `${700 + index * 100}ms` }}
                   >
                     <span className="text-sm text-muted-foreground">{item.label}</span>
                     <span className="font-semibold text-foreground">{item.value}</span>
@@ -200,20 +228,24 @@ const AdminOverview = () => {
                 Desempenho Financeiro
               </CardTitle>
               <CardDescription>
-                Métricas financeiras do dia
+                Métricas financeiras do período
               </CardDescription>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 {[
-                  { label: 'Volume total hoje', value: formatCurrency(metrics?.volumeToday ?? 0), positive: true },
-                  { label: 'Transações processadas', value: metrics?.transactionsToday ?? 0 },
-                  { label: 'Média por transação', value: formatCurrency(metrics?.transactionsToday ? (metrics?.volumeToday ?? 0) / metrics?.transactionsToday : 0) },
+                  { label: 'Volume total', value: formatCurrency(metrics?.volumeInRange ?? 0), positive: true },
+                  { label: 'Valor médio por transação', value: formatCurrency(metrics?.avgTransactionValue ?? 0) },
+                  { 
+                    label: 'Receitas vs Despesas', 
+                    value: `${((metrics?.totalIncome ?? 0) / Math.max((metrics?.totalExpense ?? 1), 1) * 100).toFixed(0)}%`,
+                    positive: (metrics?.totalIncome ?? 0) > (metrics?.totalExpense ?? 0)
+                  },
                 ].map((item, index) => (
                   <div 
                     key={item.label}
                     className="flex items-center justify-between py-3 border-b border-border/50 last:border-0 stagger-item"
-                    style={{ animationDelay: `${700 + index * 100}ms` }}
+                    style={{ animationDelay: `${800 + index * 100}ms` }}
                   >
                     <span className="text-sm text-muted-foreground">{item.label}</span>
                     <span className={`font-semibold ${item.positive ? 'text-income' : 'text-foreground'}`}>
