@@ -286,9 +286,22 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      admin_add_admin_role: {
+        Args: { target_user_id: string }
+        Returns: boolean
+      }
       admin_block_user: { Args: { target_user_id: string }; Returns: boolean }
       admin_get_active_users_today: { Args: never; Returns: number }
       admin_get_active_users_week: { Args: never; Returns: number }
+      admin_get_all_admins: {
+        Args: never
+        Returns: {
+          email: string
+          full_name: string
+          role_created_at: string
+          user_id: string
+        }[]
+      }
       admin_get_audit_events_today: { Args: never; Returns: number }
       admin_get_financial_stats: {
         Args: never
@@ -334,6 +347,10 @@ export type Database = {
         }[]
       }
       admin_get_volume_today: { Args: never; Returns: number }
+      admin_remove_admin_role: {
+        Args: { target_user_id: string }
+        Returns: boolean
+      }
       admin_unblock_user: { Args: { target_user_id: string }; Returns: boolean }
       check_user_blocked: { Args: { user_id: string }; Returns: boolean }
       get_my_profile: {

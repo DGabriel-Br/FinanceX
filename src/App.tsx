@@ -14,6 +14,7 @@ import AdminUsers from "./pages/admin/AdminUsers";
 import AdminActivity from "./pages/admin/AdminActivity";
 import AdminSecurity from "./pages/admin/AdminSecurity";
 import AdminSystem from "./pages/admin/AdminSystem";
+import AdminRoles from "./pages/admin/AdminRoles";
 
 const queryClient = new QueryClient();
 
@@ -42,6 +43,7 @@ const App = () => (
             <Route path="/admin/atividade" element={<AdminActivity />} />
             <Route path="/admin/seguranca" element={<AdminSecurity />} />
             <Route path="/admin/sistema" element={<AdminSystem />} />
+            <Route path="/admin/roles" element={<AdminRoles />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
