@@ -126,15 +126,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       };
     }
 
-    // Check if user is blocked in profiles table
+    // Check if user is blocked using secure function
     if (data.user) {
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('is_blocked')
-        .eq('id', data.user.id)
-        .single();
+      const { data: isBlocked } = await supabase.rpc('check_user_blocked', {
+        user_id: data.user.id
+      });
       
-      if (profile?.is_blocked) {
+      if (isBlocked) {
         // Sign out the blocked user
         await supabase.auth.signOut();
         return { 
