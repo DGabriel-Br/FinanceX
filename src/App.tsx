@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { AdminPeriodProvider } from "@/contexts/AdminPeriodContext";
 import Index from "./pages/Index";
 import Auth from "./pages/Auth";
 import ResetPassword from "./pages/ResetPassword";
@@ -37,13 +38,13 @@ const App = () => (
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/auth" element={<Navigate to="/login" replace />} />
             <Route path="/settings" element={<Settings />} />
-            {/* Admin Routes */}
-            <Route path="/admin" element={<AdminOverview />} />
-            <Route path="/admin/usuarios" element={<AdminUsers />} />
-            <Route path="/admin/atividade" element={<AdminActivity />} />
-            <Route path="/admin/seguranca" element={<AdminSecurity />} />
-            <Route path="/admin/sistema" element={<AdminSystem />} />
-            <Route path="/admin/roles" element={<AdminRoles />} />
+            {/* Admin Routes - wrapped with AdminPeriodProvider */}
+            <Route path="/admin" element={<AdminPeriodProvider><AdminOverview /></AdminPeriodProvider>} />
+            <Route path="/admin/usuarios" element={<AdminPeriodProvider><AdminUsers /></AdminPeriodProvider>} />
+            <Route path="/admin/atividade" element={<AdminPeriodProvider><AdminActivity /></AdminPeriodProvider>} />
+            <Route path="/admin/seguranca" element={<AdminPeriodProvider><AdminSecurity /></AdminPeriodProvider>} />
+            <Route path="/admin/sistema" element={<AdminPeriodProvider><AdminSystem /></AdminPeriodProvider>} />
+            <Route path="/admin/roles" element={<AdminPeriodProvider><AdminRoles /></AdminPeriodProvider>} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
