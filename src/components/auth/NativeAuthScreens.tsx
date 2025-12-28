@@ -100,10 +100,8 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onResetPassword, onSucce
   };
 
   useEffect(() => {
-    // Trigger initial fade-in animation
-    requestAnimationFrame(() => {
-      setInitialFadeIn(true);
-    });
+    // Trigger initial fade-in animation imediatamente
+    setInitialFadeIn(true);
     setMounted(true);
     // Load saved identifier (NEVER store passwords!)
     const savedIdentifier = localStorage.getItem('financex_saved_identifier');
@@ -437,18 +435,17 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onResetPassword, onSucce
     }
   `;
 
-  // Generate random particles - mais sutis para fundo escuro
+  // Generate random particles - otimizado: menos partículas para performance
   const particles = useMemo(() => {
     const colors = [
       'bg-primary/20',
       'bg-white/10',
       'bg-white/8',
       'bg-primary/15',
-      'bg-white/6',
-      'bg-primary/12',
     ];
     
-    return Array.from({ length: 20 }, (_, i) => ({
+    // Reduzido de 20 para 12 partículas para melhor performance no app nativo
+    return Array.from({ length: 12 }, (_, i) => ({
       id: i,
       delay: Math.random() * 5,
       duration: 10 + Math.random() * 15,
