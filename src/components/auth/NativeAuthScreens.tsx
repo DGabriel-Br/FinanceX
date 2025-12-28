@@ -72,7 +72,7 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onResetPassword, onSucce
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
-  const [loginMethod, setLoginMethod] = useState<'email' | 'phone'>('email');
+  const [loginIdentifier, setLoginIdentifier] = useState(''); // Single field for email or phone
   const [registerMethod, setRegisterMethod] = useState<'email' | 'phone'>('email');
   const [registerStep, setRegisterStep] = useState<'method' | 'details'>('method');
   const [password, setPassword] = useState('');
@@ -84,22 +84,32 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onResetPassword, onSucce
   const [isShaking, setIsShaking] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
 
+  // Helper to detect if input is a phone number
+  const isPhoneNumber = (value: string) => {
+    const digitsOnly = value.replace(/\D/g, '');
+    // It's a phone if it starts with digits and has 10-11 digits (Brazilian format)
+    return digitsOnly.length >= 10 && digitsOnly.length <= 11 && /^\d+$/.test(digitsOnly);
+  };
+
+  // Helper to detect if the raw input looks like a phone (for formatting)
+  const looksLikePhone = (value: string) => {
+    const digitsOnly = value.replace(/\D/g, '');
+    // If it starts with a digit and has mostly digits, treat as phone
+    return /^\d/.test(value.trim()) && digitsOnly.length >= 2;
+  };
+
   useEffect(() => {
     setMounted(true);
-    // Load saved email or phone (NEVER store passwords!)
-    const savedEmail = localStorage.getItem('financex_saved_email');
-    const savedPhone = localStorage.getItem('financex_saved_phone');
-    if (savedEmail) {
-      setEmail(savedEmail);
-      setLoginMethod('email');
-      setRememberMe(true);
-    } else if (savedPhone) {
-      setPhone(savedPhone);
-      setLoginMethod('phone');
+    // Load saved identifier (NEVER store passwords!)
+    const savedIdentifier = localStorage.getItem('financex_saved_identifier');
+    if (savedIdentifier) {
+      setLoginIdentifier(savedIdentifier);
       setRememberMe(true);
     }
-    // Security: Remove any legacy stored passwords
+    // Security: Remove any legacy stored passwords and old keys
     localStorage.removeItem('financex_saved_password');
+    localStorage.removeItem('financex_saved_email');
+    localStorage.removeItem('financex_saved_phone');
   }, []);
 
   const handleNavigate = (newScreen: Screen) => {
@@ -166,18 +176,24 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onResetPassword, onSucce
   };
 
   const validateLogin = () => {
-    if (loginMethod === 'email') {
+    const trimmedIdentifier = loginIdentifier.trim();
+    
+    if (!trimmedIdentifier) {
+      toast.error('Por favor, insira seu e-mail ou telefone');
+      triggerShake();
+      return false;
+    }
+
+    // Check if it's a phone number
+    const digitsOnly = trimmedIdentifier.replace(/\D/g, '');
+    const isPhone = digitsOnly.length >= 10 && digitsOnly.length <= 11;
+    
+    if (!isPhone) {
+      // Validate as email
       try {
-        emailSchema.parse(email);
+        emailSchema.parse(trimmedIdentifier);
       } catch {
-        toast.error('Por favor, insira um email válido');
-        triggerShake();
-        return false;
-      }
-    } else {
-      const phoneDigits = phone.replace(/\D/g, '');
-      if (phoneDigits.length < 10 || phoneDigits.length > 11) {
-        toast.error('Por favor, insira um telefone válido');
+        toast.error('Por favor, insira um e-mail ou telefone válido');
         triggerShake();
         return false;
       }
@@ -238,10 +254,16 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onResetPassword, onSucce
     if (!validateLogin()) return;
 
     setIsLoading(true);
+    
+    // Detect if identifier is phone or email
+    const trimmedIdentifier = loginIdentifier.trim();
+    const digitsOnly = trimmedIdentifier.replace(/\D/g, '');
+    const isPhone = digitsOnly.length >= 10 && digitsOnly.length <= 11;
+    
     // For phone login, use the generated email format
-    const loginEmail = loginMethod === 'phone' 
-      ? `${phone.replace(/\D/g, '')}@phone.financex.app` 
-      : email;
+    const loginEmail = isPhone 
+      ? `${digitsOnly}@phone.financex.app` 
+      : trimmedIdentifier;
     const result = await onSignIn(loginEmail, password);
     setIsLoading(false);
 
@@ -263,23 +285,16 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onResetPassword, onSucce
           toast.error(result.error.message);
         }
       } else if (result.error.message.includes('Invalid login credentials')) {
-        toast.error(loginMethod === 'phone' ? 'Telefone ou senha incorretos' : 'Email ou senha incorretos');
+        toast.error('E-mail/telefone ou senha incorretos');
       } else {
         toast.error('Erro ao fazer login: ' + result.error.message);
       }
     } else {
-      // Save only email/phone if remember me is checked (NEVER save passwords!)
+      // Save identifier if remember me is checked (NEVER save passwords!)
       if (rememberMe) {
-        if (loginMethod === 'email') {
-          localStorage.setItem('financex_saved_email', email);
-          localStorage.removeItem('financex_saved_phone');
-        } else {
-          localStorage.setItem('financex_saved_phone', phone);
-          localStorage.removeItem('financex_saved_email');
-        }
+        localStorage.setItem('financex_saved_identifier', loginIdentifier);
       } else {
-        localStorage.removeItem('financex_saved_email');
-        localStorage.removeItem('financex_saved_phone');
+        localStorage.removeItem('financex_saved_identifier');
       }
       toast.success('Login realizado com sucesso!');
       onSuccess();
@@ -615,60 +630,27 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onResetPassword, onSucce
             Bem-vindo(a) de volta!
           </h1>
 
-          {/* Toggle E-mail / Telefone */}
-          <div className="flex bg-sidebar-accent/60 rounded-xl p-1 mb-6">
-            <button
-              type="button"
-              onClick={() => setLoginMethod('email')}
-              className={cn(
-                "flex-1 py-3 px-4 rounded-lg text-sm font-medium transition-all duration-200",
-                loginMethod === 'email' 
-                  ? "bg-sidebar-accent text-white" 
-                  : "text-white/50 hover:text-white/70"
-              )}
-            >
-              E-mail
-            </button>
-            <button
-              type="button"
-              onClick={() => setLoginMethod('phone')}
-              className={cn(
-                "flex-1 py-3 px-4 rounded-lg text-sm font-medium transition-all duration-200",
-                loginMethod === 'phone' 
-                  ? "bg-sidebar-accent text-white" 
-                  : "text-white/50 hover:text-white/70"
-              )}
-            >
-              Telefone
-            </button>
-          </div>
-
           <form onSubmit={handleLogin} className="space-y-5">
-            {/* Email or Phone based on method */}
+            {/* Single field for Email or Phone */}
             <div className="space-y-2">
-              <label className="text-sm text-white/60">
-                {loginMethod === 'email' ? 'E-mail' : 'Telefone'}
-              </label>
-              {loginMethod === 'email' ? (
-                <Input
-                  type="email"
-                  placeholder="seu@email.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  disabled={isLoading}
-                  className="h-14 px-4 text-base bg-sidebar-accent/80 border-0 rounded-xl text-white placeholder:text-white/30 focus:ring-2 focus:ring-primary/50"
-                />
-              ) : (
-                <Input
-                  type="tel"
-                  placeholder="(00) 00000-0000"
-                  value={phone}
-                  onChange={(e) => setPhone(formatPhone(e.target.value))}
-                  maxLength={16}
-                  disabled={isLoading}
-                  className="h-14 px-4 text-base bg-sidebar-accent/80 border-0 rounded-xl text-white placeholder:text-white/30 focus:ring-2 focus:ring-primary/50"
-                />
-              )}
+              <label className="text-sm text-white/60">E-mail ou número de telefone</label>
+              <Input
+                type="text"
+                placeholder="seu@email.com ou (00) 00000-0000"
+                value={loginIdentifier}
+                onChange={(e) => {
+                  const value = e.target.value;
+                  // Auto-format if it looks like a phone number
+                  if (looksLikePhone(value)) {
+                    setLoginIdentifier(formatPhone(value));
+                  } else {
+                    setLoginIdentifier(value);
+                  }
+                }}
+                maxLength={50}
+                disabled={isLoading}
+                className="h-14 px-4 text-base bg-sidebar-accent/80 border-0 rounded-xl text-white placeholder:text-white/30 focus:ring-2 focus:ring-primary/50"
+              />
             </div>
 
             {/* Password */}
