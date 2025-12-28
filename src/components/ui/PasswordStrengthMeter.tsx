@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo } from 'react';
 import { cn } from '@/lib/utils';
 import { Check, X, Info } from 'lucide-react';
 import {
@@ -19,8 +19,6 @@ interface PasswordCriteria {
 }
 
 export const PasswordStrengthMeter = ({ password, className }: PasswordStrengthMeterProps) => {
-  const [showHint, setShowHint] = useState(false);
-  
   const criteria: PasswordCriteria[] = useMemo(() => [
     { label: 'Mínimo 8 caracteres', met: password.length >= 8 },
     { label: 'Letra maiúscula', met: /[A-Z]/.test(password) },
@@ -44,6 +42,7 @@ export const PasswordStrengthMeter = ({ password, className }: PasswordStrengthM
   }, [criteria]);
 
   const specialCharCriterion = criteria.find(c => c.hint);
+  const showSpecialCharHint = specialCharCriterion && !specialCharCriterion.met;
 
   if (!password) return null;
 
@@ -55,7 +54,7 @@ export const PasswordStrengthMeter = ({ password, className }: PasswordStrengthM
           <span className="text-muted-foreground">Força da senha</span>
           {strength.label && (
             <span className={cn(
-              "font-medium transition-colors",
+              "font-medium transition-colors duration-300",
               strength.level === 1 && "text-red-500",
               strength.level === 2 && "text-orange-500",
               strength.level === 3 && "text-yellow-500",
@@ -85,15 +84,20 @@ export const PasswordStrengthMeter = ({ password, className }: PasswordStrengthM
           <div
             key={index}
             className={cn(
-              "flex items-center gap-1.5 text-xs transition-colors duration-200",
+              "flex items-center gap-1.5 text-xs transition-all duration-300",
               criterion.met ? "text-income" : "text-muted-foreground"
             )}
           >
-            {criterion.met ? (
-              <Check className="w-3 h-3 flex-shrink-0" />
-            ) : (
-              <X className="w-3 h-3 flex-shrink-0" />
-            )}
+            <div className={cn(
+              "transition-transform duration-300",
+              criterion.met && "scale-110"
+            )}>
+              {criterion.met ? (
+                <Check className="w-3 h-3 flex-shrink-0" />
+              ) : (
+                <X className="w-3 h-3 flex-shrink-0" />
+              )}
+            </div>
             <span>{criterion.label}</span>
             {criterion.hint && !criterion.met && (
               <Tooltip>
@@ -101,7 +105,6 @@ export const PasswordStrengthMeter = ({ password, className }: PasswordStrengthM
                   <button
                     type="button"
                     className="p-0.5 hover:text-foreground transition-colors"
-                    onClick={() => setShowHint(!showHint)}
                   >
                     <Info className="w-3 h-3" />
                   </button>
@@ -118,20 +121,30 @@ export const PasswordStrengthMeter = ({ password, className }: PasswordStrengthM
         ))}
       </div>
 
-      {/* Inline hint for special characters (mobile-friendly) */}
-      {specialCharCriterion && !specialCharCriterion.met && (
+      {/* Inline hint for special characters with smooth animation */}
+      <div
+        className={cn(
+          "overflow-hidden transition-all duration-300 ease-out",
+          showSpecialCharHint 
+            ? "max-h-20 opacity-100 translate-y-0" 
+            : "max-h-0 opacity-0 -translate-y-2"
+        )}
+      >
         <div className="flex flex-wrap items-center gap-1.5 pt-1">
           <span className="text-[10px] text-muted-foreground">Exemplos:</span>
-          {['@', '#', '$', '%', '&', '*', '!', '?', '_'].map((char) => (
+          {['@', '#', '$', '%', '&', '*', '!', '?', '_'].map((char, index) => (
             <span
               key={char}
-              className="inline-flex items-center justify-center w-5 h-5 text-xs font-mono font-medium bg-primary/10 text-primary rounded border border-primary/20 hover:bg-primary/20 transition-colors cursor-default"
+              className="inline-flex items-center justify-center w-5 h-5 text-xs font-mono font-medium bg-primary/10 text-primary rounded border border-primary/20 hover:bg-primary/20 hover:scale-110 transition-all duration-200 cursor-default"
+              style={{ 
+                animationDelay: `${index * 50}ms`,
+              }}
             >
               {char}
             </span>
           ))}
         </div>
-      )}
+      </div>
     </div>
   );
 };
