@@ -74,7 +74,7 @@ export default function Auth() {
   const [displayedIsForgotPassword, setDisplayedIsForgotPassword] = useState(isForgotPasswordRoute);
   const [isShaking, setIsShaking] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
-  const { user, loading, signIn, signUp, resetPassword } = useAuthContext();
+  const { user, loading, isAdmin, adminLoading, signIn, signUp, resetPassword, checkIsAdmin } = useAuthContext();
   const navigate = useNavigate();
 
   // Load saved email on mount (NEVER store passwords!)
@@ -146,10 +146,11 @@ export default function Auth() {
   };
 
   useEffect(() => {
-    if (!loading && user) {
-      navigate('/');
+    if (!loading && !adminLoading && user) {
+      // Redirect admins to admin panel, regular users to dashboard
+      navigate(isAdmin ? '/admin' : '/');
     }
-  }, [user, loading, navigate]);
+  }, [user, loading, isAdmin, adminLoading, navigate]);
 
   const triggerShake = () => {
     setIsShaking(true);
@@ -264,7 +265,10 @@ export default function Auth() {
           localStorage.removeItem('financex_saved_email');
         }
         toast.success('Login realizado com sucesso!');
-        navigate('/');
+        
+        // Check if user is admin and redirect accordingly
+        const adminStatus = await checkIsAdmin();
+        navigate(adminStatus ? '/admin' : '/');
       }
     }
   };
