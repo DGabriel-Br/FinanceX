@@ -274,6 +274,18 @@ export default function Auth() {
     }
   };
 
+  // App nativo usa o novo componente de autenticação - renderiza imediatamente sem loading
+  if (isNativeApp) {
+    return (
+      <NativeAuthScreens
+        onSignIn={signIn}
+        onSignUp={signUp}
+        onResetPassword={resetPassword}
+        onSuccess={() => navigate('/')}
+      />
+    );
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-sidebar">
@@ -291,18 +303,6 @@ export default function Auth() {
           <Loader2 className="w-6 h-6 animate-spin text-primary" />
         </div>
       </div>
-    );
-  }
-
-  // App nativo usa o novo componente de autenticação
-  if (isNativeApp) {
-    return (
-      <NativeAuthScreens
-        onSignIn={signIn}
-        onSignUp={signUp}
-        onResetPassword={resetPassword}
-        onSuccess={() => navigate('/')}
-      />
     );
   }
 
