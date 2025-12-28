@@ -61,9 +61,6 @@ export const AdminSidebar = () => {
         </div>
       </div>
 
-      {/* Separator */}
-      <div className="mx-4 my-2 h-px bg-sidebar-border" />
-
       {/* Navigation */}
       <nav className="flex-1 p-4 space-y-1.5">
         <p className="text-xs font-semibold text-sidebar-foreground/40 uppercase tracking-wider px-3 mb-3">
