@@ -17,8 +17,6 @@ import {
   Tag,
   ChevronRight,
   Bell,
-  Globe,
-  DollarSign,
   Plus,
   X,
   Trash2,
@@ -1053,31 +1051,7 @@ function PreferencesSheetContent({ theme, toggleTheme, setActiveSection }: any) 
         </div>
         <Switch checked={false} disabled />
       </div>
-      <button className="w-full flex items-center justify-between p-4 bg-muted/50 rounded-xl opacity-60 cursor-not-allowed animate-fade-in" style={{ animationDelay: '0.2s', animationFillMode: 'forwards' }} disabled>
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-            <Globe className="w-5 h-5 text-primary" />
-          </div>
-          <div className="text-left">
-            <p className="text-sm font-medium text-foreground">Idioma</p>
-            <p className="text-xs text-muted-foreground">Português (Brasil)</p>
-          </div>
-        </div>
-        <ChevronRight className="w-5 h-5 text-muted-foreground" />
-      </button>
-      <button className="w-full flex items-center justify-between p-4 bg-muted/50 rounded-xl opacity-60 cursor-not-allowed animate-fade-in" style={{ animationDelay: '0.25s', animationFillMode: 'forwards' }} disabled>
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
-            <DollarSign className="w-5 h-5 text-primary" />
-          </div>
-          <div className="text-left">
-            <p className="text-sm font-medium text-foreground">Moeda</p>
-            <p className="text-xs text-muted-foreground">Real (R$)</p>
-          </div>
-        </div>
-        <ChevronRight className="w-5 h-5 text-muted-foreground" />
-      </button>
-      <button onClick={() => { setActiveSection(null); setTimeout(() => setActiveSection('categories'), 150); }} className="w-full flex items-center justify-between p-4 bg-muted/50 rounded-xl hover:bg-muted active:scale-[0.98] transition-all animate-fade-in opacity-0" style={{ animationDelay: '0.3s', animationFillMode: 'forwards' }}>
+      <button onClick={() => { setActiveSection(null); setTimeout(() => setActiveSection('categories'), 150); }} className="w-full flex items-center justify-between p-4 bg-muted/50 rounded-xl hover:bg-muted active:scale-[0.98] transition-all animate-fade-in opacity-0" style={{ animationDelay: '0.2s', animationFillMode: 'forwards' }}>
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
             <Tag className="w-5 h-5 text-primary" />
