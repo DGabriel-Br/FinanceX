@@ -159,20 +159,10 @@ export const OnboardingTour = ({ onComplete, onSkip }: OnboardingTourProps) => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [goToNextStep, goToPrevStep, onSkip]);
 
-  // Calculate card position - ensure it doesn't overlap with spotlight
+  // Card sempre centralizado - igual ao tour do dashboard
   const getCardPosition = () => {
-    if (!spotlightPosition) {
-      return 'top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2';
-    }
-    
-    // If spotlight is at bottom (navbar), show card at top
-    const isSpotlightAtBottom = spotlightPosition.top > window.innerHeight / 2;
-    
-    if (isSpotlightAtBottom) {
-      return 'top-20 left-4 right-4 mx-auto';
-    }
-    
-    return 'bottom-24 left-4 right-4 mx-auto';
+    // Sempre centralizado na tela para consistência visual
+    return 'top-1/2 left-4 right-4 -translate-y-1/2 mx-auto';
   };
 
   if (!isReady) return null;
