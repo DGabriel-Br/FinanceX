@@ -71,6 +71,9 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onResetPassword, onSucce
   // Form states
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
+  const [registerMethod, setRegisterMethod] = useState<'email' | 'phone'>('email');
+  const [registerStep, setRegisterStep] = useState<'method' | 'details'>('method');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -101,6 +104,53 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onResetPassword, onSucce
     setAnimationKey(prev => prev + 1);
     setScreen(newScreen);
     setEmailSent(false);
+    // Reset register step when navigating to register
+    if (newScreen === 'register') {
+      setRegisterStep('method');
+    }
+  };
+
+  const handleRegisterBack = () => {
+    if (registerStep === 'details') {
+      setSlideAnimation('slide-in-left');
+      setAnimationKey(prev => prev + 1);
+      setRegisterStep('method');
+    } else {
+      handleNavigate('welcome');
+    }
+  };
+
+  const handleRegisterNext = () => {
+    // Validate email or phone based on method
+    if (registerMethod === 'email') {
+      try {
+        emailSchema.parse(email);
+      } catch {
+        toast.error('Por favor, insira um email válido');
+        triggerShake();
+        return;
+      }
+    } else {
+      // Basic phone validation
+      const phoneDigits = phone.replace(/\D/g, '');
+      if (phoneDigits.length < 10 || phoneDigits.length > 11) {
+        toast.error('Por favor, insira um telefone válido');
+        triggerShake();
+        return;
+      }
+    }
+    
+    setSlideAnimation('slide-in-right');
+    setAnimationKey(prev => prev + 1);
+    setRegisterStep('details');
+  };
+
+  const formatPhone = (value: string) => {
+    const digits = value.replace(/\D/g, '');
+    if (digits.length <= 2) return digits;
+    if (digits.length <= 7) return `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+    if (digits.length <= 11) return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+    return `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7, 11)}`;
   };
 
   const triggerShake = () => {
@@ -133,12 +183,22 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onResetPassword, onSucce
       return false;
     }
 
-    try {
-      emailSchema.parse(email);
-    } catch {
-      toast.error('Por favor, insira um email válido');
-      triggerShake();
-      return false;
+    // Email/phone already validated in first step, but double-check
+    if (registerMethod === 'email') {
+      try {
+        emailSchema.parse(email);
+      } catch {
+        toast.error('Por favor, insira um email válido');
+        triggerShake();
+        return false;
+      }
+    } else {
+      const phoneDigits = phone.replace(/\D/g, '');
+      if (phoneDigits.length < 10 || phoneDigits.length > 11) {
+        toast.error('Por favor, insira um telefone válido');
+        triggerShake();
+        return false;
+      }
     }
 
     const passwordResult = passwordSchema.safeParse(password);
@@ -204,13 +264,19 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onResetPassword, onSucce
     if (!validateRegister()) return;
 
     setIsLoading(true);
-    const { error } = await onSignUp(email, password, name.trim());
+    // For phone registration, create a fake email using the phone number
+    const registrationEmail = registerMethod === 'phone' 
+      ? `${phone.replace(/\D/g, '')}@phone.financex.app` 
+      : email;
+    const { error } = await onSignUp(registrationEmail, password, name.trim());
     setIsLoading(false);
 
     if (error) {
       triggerShake();
       if (error.message.includes('User already registered')) {
-        toast.error('Este email já está cadastrado. Tente fazer login.');
+        toast.error(registerMethod === 'phone' 
+          ? 'Este telefone já está cadastrado. Tente fazer login.'
+          : 'Este email já está cadastrado. Tente fazer login.');
       } else {
         toast.error('Erro ao criar conta: ' + error.message);
       }
@@ -728,7 +794,7 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onResetPassword, onSucce
         {/* Header */}
         <div className="pt-4 px-4 safe-area-top">
           <button
-            onClick={() => handleNavigate('welcome')}
+            onClick={handleRegisterBack}
             className="p-2 -ml-2 text-white/70 hover:text-white transition-colors"
           >
             <ArrowLeft className="w-6 h-6" />
@@ -737,7 +803,7 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onResetPassword, onSucce
 
         {/* Content */}
         <div 
-          key={`register-content-${animationKey}`}
+          key={`register-content-${animationKey}-${registerStep}`}
           className={cn(
             "flex-1 px-6 pt-4 pb-8 safe-area-bottom overflow-auto",
             slideAnimation === 'slide-in-left' && "animate-slide-in-left",
@@ -745,115 +811,176 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onResetPassword, onSucce
             isShaking && "animate-shake"
           )}
         >
-          <h1 className="text-2xl font-bold text-white mb-2">
-            Crie sua conta
-          </h1>
-          <p className="text-white/50 text-sm mb-6">
-            Preencha os dados abaixo para começar
-          </p>
+          {registerStep === 'method' ? (
+            // Step 1: Choose method and enter email/phone
+            <>
+              <h1 className="text-2xl font-bold text-white mb-6">
+                Insira seu telefone ou e-mail
+              </h1>
 
-          <form onSubmit={handleRegister} className="space-y-4">
-            {/* Name */}
-            <div className="space-y-2">
-              <label className="text-sm text-white/60">Nome completo</label>
-              <Input
-                type="text"
-                placeholder="Seu nome"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                disabled={isLoading}
-                className="h-14 px-4 text-base bg-sidebar-accent/80 border-0 rounded-xl text-white placeholder:text-white/30 focus:ring-2 focus:ring-primary/50"
-              />
-            </div>
-
-            {/* Email */}
-            <div className="space-y-2">
-              <label className="text-sm text-white/60">E-mail</label>
-              <Input
-                type="email"
-                placeholder="seu@email.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                disabled={isLoading}
-                className="h-14 px-4 text-base bg-sidebar-accent/80 border-0 rounded-xl text-white placeholder:text-white/30 focus:ring-2 focus:ring-primary/50"
-              />
-            </div>
-
-            {/* Password */}
-            <div className="space-y-2">
-              <label className="text-sm text-white/60">Senha</label>
-              <div className="relative">
-                <Input
-                  type={showPassword ? 'text' : 'password'}
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  disabled={isLoading}
-                  className="h-14 px-4 pr-12 text-base bg-sidebar-accent/80 border-0 rounded-xl text-white placeholder:text-white/30 focus:ring-2 focus:ring-primary/50"
-                />
+              {/* Toggle E-mail / Telefone */}
+              <div className="flex bg-sidebar-accent/60 rounded-xl p-1 mb-6">
                 <button
                   type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/70 transition-colors"
-                >
-                  {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                </button>
-              </div>
-              <PasswordStrengthMeter password={password} className="mt-2" />
-            </div>
-
-            {/* Confirm Password */}
-            <div className="space-y-2">
-              <label className="text-sm text-white/60">Confirmar senha</label>
-              <div className="relative">
-                <Input
-                  type={showConfirmPassword ? 'text' : 'password'}
-                  placeholder="••••••••"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  disabled={isLoading}
+                  onClick={() => setRegisterMethod('email')}
                   className={cn(
-                    "h-14 px-4 pr-12 text-base bg-sidebar-accent/80 border-0 rounded-xl text-white placeholder:text-white/30 focus:ring-2 focus:ring-primary/50",
-                    confirmPassword && password !== confirmPassword && "ring-2 ring-red-500/50"
+                    "flex-1 py-3 px-4 rounded-lg text-sm font-medium transition-all duration-200",
+                    registerMethod === 'email' 
+                      ? "bg-sidebar-accent text-white" 
+                      : "text-white/50 hover:text-white/70"
                   )}
-                />
+                >
+                  E-mail
+                </button>
                 <button
                   type="button"
-                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/70 transition-colors"
+                  onClick={() => setRegisterMethod('phone')}
+                  className={cn(
+                    "flex-1 py-3 px-4 rounded-lg text-sm font-medium transition-all duration-200",
+                    registerMethod === 'phone' 
+                      ? "bg-sidebar-accent text-white" 
+                      : "text-white/50 hover:text-white/70"
+                  )}
                 >
-                  {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                  Telefone
                 </button>
               </div>
-              {confirmPassword && password !== confirmPassword && (
-                <p className="text-xs text-red-400">As senhas não coincidem</p>
-              )}
-              {confirmPassword && password === confirmPassword && confirmPassword.length > 0 && (
-                <p className="text-xs text-green-400">Senhas coincidem ✓</p>
-              )}
-            </div>
 
-            {/* Register button */}
-            <Button
-              type="submit"
-              disabled={isLoading}
-              className="w-full h-14 text-base font-semibold rounded-full bg-primary/90 hover:bg-primary text-primary-foreground mt-4"
-            >
-              {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Criar conta'}
-            </Button>
+              {/* Email or Phone input based on method */}
+              <div className="space-y-2 mb-6">
+                <label className="text-sm text-white/60">
+                  {registerMethod === 'email' ? 'E-mail' : 'Telefone'}
+                </label>
+                {registerMethod === 'email' ? (
+                  <Input
+                    type="email"
+                    placeholder="E-mail"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="h-14 px-4 text-base bg-sidebar-accent/80 border-0 rounded-xl text-white placeholder:text-white/30 focus:ring-2 focus:ring-primary/50"
+                  />
+                ) : (
+                  <Input
+                    type="tel"
+                    placeholder="(00) 00000-0000"
+                    value={phone}
+                    onChange={(e) => setPhone(formatPhone(e.target.value))}
+                    maxLength={16}
+                    className="h-14 px-4 text-base bg-sidebar-accent/80 border-0 rounded-xl text-white placeholder:text-white/30 focus:ring-2 focus:ring-primary/50"
+                  />
+                )}
+              </div>
 
-            {/* Already have account */}
-            <p className="text-center text-white/50 text-sm pt-2">
-              Já tem uma conta?{' '}
-              <button
+              {/* Next button */}
+              <Button
                 type="button"
-                onClick={() => handleNavigate('login')}
-                className="text-primary font-medium"
+                onClick={handleRegisterNext}
+                className="w-full h-14 text-base font-semibold rounded-full bg-primary/90 hover:bg-primary text-primary-foreground"
               >
-                Entrar
-              </button>
-            </p>
-          </form>
+                Próximo
+              </Button>
+
+              {/* Already have account */}
+              <p className="text-center text-white/50 text-sm pt-6">
+                Já tem uma conta?{' '}
+                <button
+                  type="button"
+                  onClick={() => handleNavigate('login')}
+                  className="text-primary font-medium"
+                >
+                  Entrar
+                </button>
+              </p>
+            </>
+          ) : (
+            // Step 2: Name and password
+            <>
+              <h1 className="text-2xl font-bold text-white mb-2">
+                Complete seu cadastro
+              </h1>
+              <p className="text-white/50 text-sm mb-6">
+                {registerMethod === 'email' ? email : phone}
+              </p>
+
+              <form onSubmit={handleRegister} className="space-y-4">
+                {/* Name */}
+                <div className="space-y-2">
+                  <label className="text-sm text-white/60">Nome completo</label>
+                  <Input
+                    type="text"
+                    placeholder="Seu nome"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    disabled={isLoading}
+                    className="h-14 px-4 text-base bg-sidebar-accent/80 border-0 rounded-xl text-white placeholder:text-white/30 focus:ring-2 focus:ring-primary/50"
+                  />
+                </div>
+
+                {/* Password */}
+                <div className="space-y-2">
+                  <label className="text-sm text-white/60">Senha</label>
+                  <div className="relative">
+                    <Input
+                      type={showPassword ? 'text' : 'password'}
+                      placeholder="••••••••"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      disabled={isLoading}
+                      className="h-14 px-4 pr-12 text-base bg-sidebar-accent/80 border-0 rounded-xl text-white placeholder:text-white/30 focus:ring-2 focus:ring-primary/50"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/70 transition-colors"
+                    >
+                      {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                    </button>
+                  </div>
+                  <PasswordStrengthMeter password={password} className="mt-2" />
+                </div>
+
+                {/* Confirm Password */}
+                <div className="space-y-2">
+                  <label className="text-sm text-white/60">Confirmar senha</label>
+                  <div className="relative">
+                    <Input
+                      type={showConfirmPassword ? 'text' : 'password'}
+                      placeholder="••••••••"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      disabled={isLoading}
+                      className={cn(
+                        "h-14 px-4 pr-12 text-base bg-sidebar-accent/80 border-0 rounded-xl text-white placeholder:text-white/30 focus:ring-2 focus:ring-primary/50",
+                        confirmPassword && password !== confirmPassword && "ring-2 ring-red-500/50"
+                      )}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/70 transition-colors"
+                    >
+                      {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                    </button>
+                  </div>
+                  {confirmPassword && password !== confirmPassword && (
+                    <p className="text-xs text-red-400">As senhas não coincidem</p>
+                  )}
+                  {confirmPassword && password === confirmPassword && confirmPassword.length > 0 && (
+                    <p className="text-xs text-green-400">Senhas coincidem ✓</p>
+                  )}
+                </div>
+
+                {/* Register button */}
+                <Button
+                  type="submit"
+                  disabled={isLoading}
+                  className="w-full h-14 text-base font-semibold rounded-full bg-primary/90 hover:bg-primary text-primary-foreground mt-4"
+                >
+                  {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Criar conta'}
+                </Button>
+              </form>
+            </>
+          )}
         </div>
         </div>
     );
