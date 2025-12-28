@@ -6,11 +6,14 @@ import {
   Shield, 
   Server,
   ChevronLeft,
-  Crown
+  Crown,
+  Wifi,
+  WifiOff
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { FinanceLogo } from '@/components/ui/FinanceLogo';
+import { useAdminPresence } from '@/hooks/useAdminPresence';
 
 const navItems = [
   { path: '/admin', icon: LayoutDashboard, label: 'Visão Geral', description: 'Métricas executivas' },
@@ -24,6 +27,7 @@ const navItems = [
 export const AdminSidebar = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { isOnline, onlineAdmins } = useAdminPresence();
 
   const isActive = (path: string) => {
     if (path === '/admin') {
@@ -116,6 +120,40 @@ export const AdminSidebar = () => {
 
       {/* Footer */}
       <div className="p-4 border-t border-sidebar-border space-y-3">
+        {/* User Status */}
+        <div className="px-3 py-2.5 rounded-lg bg-sidebar-accent/30">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              {isOnline ? (
+                <div className="relative">
+                  <Wifi className="h-4 w-4 text-income" />
+                  <div className="absolute -top-0.5 -right-0.5 w-2 h-2 bg-income rounded-full animate-pulse" />
+                </div>
+              ) : (
+                <WifiOff className="h-4 w-4 text-destructive" />
+              )}
+              <div>
+                <p className="text-xs text-sidebar-foreground/50">Seu Status</p>
+                <p className={cn(
+                  "text-sm font-medium",
+                  isOnline ? "text-income" : "text-destructive"
+                )}>
+                  {isOnline ? 'Online' : 'Offline'}
+                </p>
+              </div>
+            </div>
+            {onlineAdmins > 0 && (
+              <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-primary/10 border border-primary/20">
+                <div className="w-1.5 h-1.5 bg-primary rounded-full animate-pulse" />
+                <span className="text-xs text-primary font-medium">
+                  {onlineAdmins} admin{onlineAdmins > 1 ? 's' : ''}
+                </span>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* System Status */}
         <div className="px-3 py-2 rounded-lg bg-sidebar-accent/30">
           <p className="text-xs text-sidebar-foreground/50">Status do Sistema</p>
           <div className="flex items-center gap-2 mt-1">
