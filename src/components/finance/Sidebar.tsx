@@ -71,6 +71,9 @@ export const Sidebar = ({
         </div>
       </div>
 
+      {/* Separator - Web only */}
+      <div className="mx-4 mb-4 h-px bg-sidebar-border" />
+
       {/* Menu */}
       <nav className="flex-1 px-3 overflow-hidden">
         <ul className="space-y-1">
