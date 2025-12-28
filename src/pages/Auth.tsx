@@ -56,6 +56,7 @@ FloatingParticle.displayName = "FloatingParticle";
 export default function Auth() {
   const location = useLocation();
   const isRegisterRoute = location.pathname === '/cadastro';
+  const isForgotPasswordRoute = location.pathname === '/esqueci-senha';
   const isNativeApp = useIsNativeApp();
   
   const [name, setName] = useState('');
@@ -70,8 +71,10 @@ export default function Auth() {
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [slideDirection, setSlideDirection] = useState<'left' | 'right'>('right');
   const [displayedIsRegister, setDisplayedIsRegister] = useState(isRegisterRoute);
+  const [displayedIsForgotPassword, setDisplayedIsForgotPassword] = useState(isForgotPasswordRoute);
   const [isShaking, setIsShaking] = useState(false);
-  const { user, loading, signIn, signUp } = useAuthContext();
+  const [emailSent, setEmailSent] = useState(false);
+  const { user, loading, signIn, signUp, resetPassword } = useAuthContext();
   const navigate = useNavigate();
 
   // Load saved credentials on mount
@@ -113,24 +116,32 @@ export default function Auth() {
 
   // Handle route transitions with animation (web only)
   useEffect(() => {
-    if (isRegisterRoute !== displayedIsRegister) {
+    const currentView = isForgotPasswordRoute ? 'forgot' : isRegisterRoute ? 'register' : 'login';
+    const displayedView = displayedIsForgotPassword ? 'forgot' : displayedIsRegister ? 'register' : 'login';
+    
+    if (currentView !== displayedView) {
       // Determine slide direction
-      setSlideDirection(isRegisterRoute ? 'right' : 'left');
+      const order = ['login', 'register', 'forgot'];
+      setSlideDirection(order.indexOf(currentView) > order.indexOf(displayedView) ? 'right' : 'left');
       setIsTransitioning(true);
       
       // After exit animation, update content and play enter animation
       const timer = setTimeout(() => {
         setDisplayedIsRegister(isRegisterRoute);
+        setDisplayedIsForgotPassword(isForgotPasswordRoute);
         setIsTransitioning(false);
+        setEmailSent(false);
       }, 300);
       
       return () => clearTimeout(timer);
     }
-  }, [isRegisterRoute, displayedIsRegister]);
+  }, [isRegisterRoute, isForgotPasswordRoute, displayedIsRegister, displayedIsForgotPassword]);
 
   const handleNavigateToPage = (path: string) => {
     const goingToRegister = path === '/cadastro';
-    setSlideDirection(goingToRegister ? 'right' : 'left');
+    const goingToForgot = path === '/esqueci-senha';
+    setSlideDirection(goingToRegister || goingToForgot ? 'right' : 'left');
+    setEmailSent(false);
     navigate(path);
   };
 
@@ -174,6 +185,30 @@ export default function Auth() {
     }
 
     return true;
+  };
+
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    try {
+      emailSchema.parse(email);
+    } catch {
+      toast.error('Por favor, insira um email válido');
+      triggerShake();
+      return;
+    }
+    
+    setIsLoading(true);
+    const { error } = await resetPassword(email);
+    setIsLoading(false);
+    
+    if (error) {
+      triggerShake();
+      toast.error('Erro ao enviar email: ' + error.message);
+    } else {
+      setEmailSent(true);
+      toast.success('Email de recuperação enviado! Verifique sua caixa de entrada.');
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -250,6 +285,7 @@ export default function Auth() {
       <NativeAuthScreens
         onSignIn={signIn}
         onSignUp={signUp}
+        onResetPassword={resetPassword}
         onSuccess={() => navigate('/')}
       />
     );
@@ -413,183 +449,257 @@ export default function Auth() {
             {/* Card Header */}
             <div className="text-center mb-8">
               <h1 className="text-2xl font-bold text-white mb-2">
-                {displayedIsRegister ? 'Crie sua conta' : 'Bem-vindo(a) de volta!'}
+                {displayedIsForgotPassword 
+                  ? 'Recuperar senha' 
+                  : displayedIsRegister 
+                    ? 'Crie sua conta' 
+                    : 'Bem-vindo(a) de volta!'}
               </h1>
               <p className="text-white/60 text-sm">
-                {displayedIsRegister 
-                  ? 'Preencha os dados para começar a usar o FinanceX.'
-                  : 'Entre com seu e-mail e senha para começar.'}
+                {displayedIsForgotPassword 
+                  ? 'Digite seu e-mail para receber o link de recuperação.'
+                  : displayedIsRegister 
+                    ? 'Preencha os dados para começar a usar o FinanceX.'
+                    : 'Entre com seu e-mail e senha para começar.'}
               </p>
             </div>
 
-            {/* Form */}
-            <form onSubmit={handleSubmit} className="space-y-5">
-              {/* Name field - only for register */}
-              {displayedIsRegister && (
+            {/* Forgot Password Form */}
+            {displayedIsForgotPassword ? (
+              <form onSubmit={handleForgotPassword} className="space-y-5">
+                {emailSent ? (
+                  <div className="text-center py-8">
+                    <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-income/20 flex items-center justify-center">
+                      <svg className="w-8 h-8 text-income" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                      </svg>
+                    </div>
+                    <h3 className="text-lg font-semibold text-white mb-2">Email enviado!</h3>
+                    <p className="text-white/60 text-sm mb-6">
+                      Verifique sua caixa de entrada e clique no link para redefinir sua senha.
+                    </p>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => handleNavigateToPage('/login')}
+                      className="w-full h-11 text-sm font-semibold rounded-md border-white/20 bg-transparent hover:bg-white/5 text-white"
+                    >
+                      Voltar para o login
+                    </Button>
+                  </div>
+                ) : (
+                  <>
+                    {/* Email field */}
+                    <div className="space-y-2">
+                      <label className="text-xs font-medium text-white/70 uppercase tracking-wide">
+                        E-mail {!email.trim() && <span className="text-red-400">*</span>}
+                      </label>
+                      <Input
+                        type="email"
+                        placeholder=""
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                        disabled={isLoading}
+                        className="h-11 px-3 text-sm bg-sidebar-accent/80 border-0 rounded-md text-white placeholder:text-white/30 focus:ring-1 focus:ring-primary/50"
+                      />
+                    </div>
+
+                    {/* Submit Button */}
+                    <Button 
+                      type="submit" 
+                      className="w-full h-11 text-sm font-semibold rounded-md bg-primary hover:bg-primary/90 text-primary-foreground transition-all duration-300" 
+                      disabled={isLoading || isTransitioning}
+                    >
+                      {isLoading ? (
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                      ) : (
+                        'Enviar link de recuperação'
+                      )}
+                    </Button>
+
+                    {/* Back to login */}
+                    <button
+                      type="button"
+                      onClick={() => handleNavigateToPage('/login')}
+                      className="w-full flex items-center justify-center gap-2 text-white/50 hover:text-white/70 text-sm py-2 transition-colors"
+                    >
+                      <ArrowLeft className="w-4 h-4" />
+                      Voltar para o login
+                    </button>
+                  </>
+                )}
+              </form>
+            ) : (
+              /* Login/Register Form */
+              <form onSubmit={handleSubmit} className="space-y-5">
+                {/* Name field - only for register */}
+                {displayedIsRegister && (
+                  <div className="space-y-2">
+                    <label className="text-xs font-medium text-white/70 uppercase tracking-wide">
+                      Nome completo {!name.trim() && <span className="text-red-400">*</span>}
+                    </label>
+                    <Input
+                      type="text"
+                      placeholder=""
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      required
+                      disabled={isLoading}
+                      className="h-11 px-3 text-sm bg-sidebar-accent/80 border-0 rounded-md text-white placeholder:text-white/30 focus:ring-1 focus:ring-primary/50"
+                    />
+                  </div>
+                )}
+
+                {/* Email field */}
                 <div className="space-y-2">
                   <label className="text-xs font-medium text-white/70 uppercase tracking-wide">
-                    Nome completo {!name.trim() && <span className="text-red-400">*</span>}
+                    E-mail {!email.trim() && <span className="text-red-400">*</span>}
                   </label>
                   <Input
-                    type="text"
+                    type="email"
                     placeholder=""
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
                     required
                     disabled={isLoading}
                     className="h-11 px-3 text-sm bg-sidebar-accent/80 border-0 rounded-md text-white placeholder:text-white/30 focus:ring-1 focus:ring-primary/50"
                   />
                 </div>
-              )}
-
-              {/* Email field */}
-              <div className="space-y-2">
-                <label className="text-xs font-medium text-white/70 uppercase tracking-wide">
-                  E-mail {!email.trim() && <span className="text-red-400">*</span>}
-                </label>
-                <Input
-                  type="email"
-                  placeholder=""
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  disabled={isLoading}
-                  className="h-11 px-3 text-sm bg-sidebar-accent/80 border-0 rounded-md text-white placeholder:text-white/30 focus:ring-1 focus:ring-primary/50"
-                />
-              </div>
-              
-              {/* Password field */}
-              <div className="space-y-2">
-                <label className="text-xs font-medium text-white/70 uppercase tracking-wide">
-                  Senha {!password && <span className="text-red-400">*</span>}
-                </label>
-                <div className="relative">
-                  <Input
-                    type={showPassword ? 'text' : 'password'}
-                    placeholder=""
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                    disabled={isLoading}
-                    className="h-11 px-3 pr-12 text-sm bg-sidebar-accent/80 border-0 rounded-md text-white placeholder:text-white/30 focus:ring-1 focus:ring-primary/50"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-white/50 hover:text-white/80 transition-colors"
-                  >
-                    {showPassword ? (
-                      <EyeOff className="w-4 h-4" />
-                    ) : (
-                      <Eye className="w-4 h-4" />
-                    )}
-                  </button>
-                </div>
-                {displayedIsRegister && (
-                  <PasswordStrengthMeter password={password} className="mt-3" />
-                )}
-              </div>
-
-              {/* Confirm Password field - only for register */}
-              {displayedIsRegister && (
+                
+                {/* Password field */}
                 <div className="space-y-2">
                   <label className="text-xs font-medium text-white/70 uppercase tracking-wide">
-                    Confirmar senha {!confirmPassword && <span className="text-red-400">*</span>}
+                    Senha {!password && <span className="text-red-400">*</span>}
                   </label>
                   <div className="relative">
                     <Input
-                      type={showConfirmPassword ? 'text' : 'password'}
+                      type={showPassword ? 'text' : 'password'}
                       placeholder=""
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
                       required
                       disabled={isLoading}
-                      className={cn(
-                        "h-11 px-3 pr-12 text-sm bg-sidebar-accent/80 border-0 rounded-md text-white placeholder:text-white/30 focus:ring-1 focus:ring-primary/50",
-                        confirmPassword && password !== confirmPassword && "ring-1 ring-red-500/50"
-                      )}
+                      className="h-11 px-3 pr-12 text-sm bg-sidebar-accent/80 border-0 rounded-md text-white placeholder:text-white/30 focus:ring-1 focus:ring-primary/50"
                     />
                     <button
                       type="button"
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      onClick={() => setShowPassword(!showPassword)}
                       className="absolute right-3 top-1/2 -translate-y-1/2 text-white/50 hover:text-white/80 transition-colors"
                     >
-                      {showConfirmPassword ? (
+                      {showPassword ? (
                         <EyeOff className="w-4 h-4" />
                       ) : (
                         <Eye className="w-4 h-4" />
                       )}
                     </button>
                   </div>
-                  {confirmPassword && password !== confirmPassword && (
-                    <p className="text-xs text-red-400">As senhas não coincidem</p>
-                  )}
-                  {confirmPassword && password === confirmPassword && confirmPassword.length > 0 && (
-                    <p className="text-xs text-income">Senhas coincidem ✓</p>
+                  {displayedIsRegister && (
+                    <PasswordStrengthMeter password={password} className="mt-3" />
                   )}
                 </div>
-              )}
 
-              {/* Remember me and Forgot password - only for login */}
-              {!displayedIsRegister && (
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Checkbox
-                      id="remember-me"
-                      checked={rememberMe}
-                      onCheckedChange={(checked) => {
-                        setRememberMe(checked === true);
-                        if (!checked) {
-                          localStorage.removeItem('financex_saved_email');
-                          localStorage.removeItem('financex_saved_password');
-                        }
-                      }}
-                      className="border-white/30 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
-                    />
-                    <label 
-                      htmlFor="remember-me" 
-                      className="text-white/70 text-xs cursor-pointer select-none"
-                    >
-                      Lembrar-me
+                {/* Confirm Password field - only for register */}
+                {displayedIsRegister && (
+                  <div className="space-y-2">
+                    <label className="text-xs font-medium text-white/70 uppercase tracking-wide">
+                      Confirmar senha {!confirmPassword && <span className="text-red-400">*</span>}
                     </label>
+                    <div className="relative">
+                      <Input
+                        type={showConfirmPassword ? 'text' : 'password'}
+                        placeholder=""
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        required
+                        disabled={isLoading}
+                        className={cn(
+                          "h-11 px-3 pr-12 text-sm bg-sidebar-accent/80 border-0 rounded-md text-white placeholder:text-white/30 focus:ring-1 focus:ring-primary/50",
+                          confirmPassword && password !== confirmPassword && "ring-1 ring-red-500/50"
+                        )}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-white/50 hover:text-white/80 transition-colors"
+                      >
+                        {showConfirmPassword ? (
+                          <EyeOff className="w-4 h-4" />
+                        ) : (
+                          <Eye className="w-4 h-4" />
+                        )}
+                      </button>
+                    </div>
+                    {confirmPassword && password !== confirmPassword && (
+                      <p className="text-xs text-red-400">As senhas não coincidem</p>
+                    )}
+                    {confirmPassword && password === confirmPassword && confirmPassword.length > 0 && (
+                      <p className="text-xs text-income">Senhas coincidem ✓</p>
+                    )}
                   </div>
-                  <div>
-                    <button
-                      type="button"
-                      onClick={() => toast.info('Função de recuperação de senha será implementada em breve.')}
-                      className="text-primary hover:underline text-xs font-medium transition-colors"
-                    >
-                      Esqueceu a senha?
-                    </button>
-                  </div>
-                </div>
-              )}
-
-              {/* Submit Button */}
-              <Button 
-                type="submit" 
-                className="w-full h-11 text-sm font-semibold rounded-md bg-primary hover:bg-primary/90 text-primary-foreground transition-all duration-300" 
-                disabled={isLoading || isTransitioning}
-              >
-                {isLoading ? (
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                ) : (
-                  displayedIsRegister ? 'Criar conta' : 'Entrar'
                 )}
-              </Button>
 
-              {/* Bottom link */}
-              <p className="text-white/50 text-xs text-center pt-2">
-                {displayedIsRegister ? 'Já tem uma conta? ' : 'Não tem uma conta? '}
-                <button
-                  type="button"
-                  onClick={() => handleNavigateToPage(displayedIsRegister ? '/login' : '/cadastro')}
-                  className="text-primary hover:underline font-medium transition-colors"
+                {/* Remember me and Forgot password - only for login */}
+                {!displayedIsRegister && (
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Checkbox
+                        id="remember-me"
+                        checked={rememberMe}
+                        onCheckedChange={(checked) => {
+                          setRememberMe(checked === true);
+                          if (!checked) {
+                            localStorage.removeItem('financex_saved_email');
+                            localStorage.removeItem('financex_saved_password');
+                          }
+                        }}
+                        className="border-white/30 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
+                      />
+                      <label 
+                        htmlFor="remember-me" 
+                        className="text-white/70 text-xs cursor-pointer select-none"
+                      >
+                        Lembrar-me
+                      </label>
+                    </div>
+                    <div>
+                      <button
+                        type="button"
+                        onClick={() => handleNavigateToPage('/esqueci-senha')}
+                        className="text-primary hover:underline text-xs font-medium transition-colors"
+                      >
+                        Esqueceu a senha?
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Submit Button */}
+                <Button 
+                  type="submit" 
+                  className="w-full h-11 text-sm font-semibold rounded-md bg-primary hover:bg-primary/90 text-primary-foreground transition-all duration-300" 
+                  disabled={isLoading || isTransitioning}
                 >
-                  {displayedIsRegister ? 'Entrar' : 'Cadastre-se agora.'}
-                </button>
-              </p>
-            </form>
+                  {isLoading ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    displayedIsRegister ? 'Criar conta' : 'Entrar'
+                  )}
+                </Button>
+
+                {/* Bottom link */}
+                <p className="text-white/50 text-xs text-center pt-2">
+                  {displayedIsRegister ? 'Já tem uma conta? ' : 'Não tem uma conta? '}
+                  <button
+                    type="button"
+                    onClick={() => handleNavigateToPage(displayedIsRegister ? '/login' : '/cadastro')}
+                    className="text-primary hover:underline font-medium transition-colors"
+                  >
+                    {displayedIsRegister ? 'Entrar' : 'Cadastre-se agora.'}
+                  </button>
+                </p>
+              </form>
+            )}
           </div>
         </div>
       </div>
