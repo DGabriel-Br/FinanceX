@@ -17,6 +17,7 @@ export interface SidebarProps {
   userAvatar?: string | null;
   onSignOut?: () => void;
   isAdmin?: boolean;
+  highlightedTab?: Tab | null; // Tab a ser destacada durante o tour
 }
 
 const menuItems = [
@@ -36,7 +37,8 @@ export const Sidebar = ({
   userEmail,
   userAvatar,
   onSignOut,
-  isAdmin
+  isAdmin,
+  highlightedTab
 }: SidebarProps) => {
   return (
     <aside className={cn(
@@ -79,8 +81,9 @@ export const Sidebar = ({
       {/* Menu */}
       <nav className="flex-1 px-3 overflow-hidden">
         <ul className="space-y-1">
-          {menuItems.map(item => {
-            const isActive = activeTab === item.id;
+        {menuItems.map(item => {
+            // Se há um highlightedTab (durante o tour), usa ele; senão, usa activeTab
+            const isActive = highlightedTab ? highlightedTab === item.id : activeTab === item.id;
             const Icon = item.icon;
             
             return (

@@ -212,6 +212,7 @@ const Index = () => {
             userAvatar={user.user_metadata?.avatar_url}
             onSignOut={handleSignOutRequest}
             isAdmin={isAdmin}
+            highlightedTab={showTour ? tourHighlightedTab : null}
           />
         )}
 
