@@ -52,8 +52,8 @@ export const AdminSidebar = () => {
   return (
     <aside className="w-72 bg-sidebar border-r border-sidebar-border min-h-screen flex flex-col">
       {/* Header with Logo */}
-      <div className="p-6 border-b border-sidebar-border">
-        <div className="flex flex-col gap-3">
+      <div className="h-32 flex items-center justify-center border-b border-sidebar-border">
+        <div className="flex flex-col gap-3 items-center">
           {/* Logo igual à sidebar do usuário */}
           <div className="relative flex items-end flex-shrink-0 group justify-center">
             {/* Glow effect background */}
@@ -70,11 +70,9 @@ export const AdminSidebar = () => {
           </div>
           
           {/* Admin badge */}
-          <div className="flex items-center justify-center">
-            <span className="px-3 py-1 rounded-full bg-primary/20 text-primary text-xs font-semibold tracking-wide border border-primary/30">
-              Painel Admin
-            </span>
-          </div>
+          <span className="px-3 py-1 rounded-full bg-primary/20 text-primary text-xs font-semibold tracking-wide border border-primary/30">
+            Painel Admin
+          </span>
         </div>
       </div>
 
