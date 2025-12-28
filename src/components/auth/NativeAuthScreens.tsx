@@ -453,7 +453,7 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onResetPassword, onSucce
   if (screen === 'login') {
     return (
       <div className={cn(
-        "min-h-screen bg-[hsl(225,8%,10%)] relative overflow-hidden flex flex-col transition-opacity duration-300",
+        "min-h-screen bg-[radial-gradient(ellipse_at_top,hsl(225,12%,14%)_0%,hsl(225,8%,10%)_50%,hsl(225,6%,8%)_100%)] relative overflow-hidden flex flex-col transition-opacity duration-300",
         bgFading && "opacity-80"
       )}>
           <style>{cssAnimations}</style>
@@ -579,7 +579,7 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onResetPassword, onSucce
   if (screen === 'forgot-password') {
     return (
       <div className={cn(
-        "min-h-screen bg-[hsl(225,8%,10%)] relative overflow-hidden flex flex-col transition-opacity duration-300",
+        "min-h-screen bg-[radial-gradient(ellipse_at_top,hsl(225,12%,14%)_0%,hsl(225,8%,10%)_50%,hsl(225,6%,8%)_100%)] relative overflow-hidden flex flex-col transition-opacity duration-300",
         bgFading && "opacity-80"
       )}>
         <style>{cssAnimations}</style>
@@ -680,7 +680,7 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onResetPassword, onSucce
   if (screen === 'register') {
     return (
       <div className={cn(
-        "min-h-screen bg-[hsl(225,8%,10%)] relative overflow-hidden flex flex-col transition-opacity duration-300",
+        "min-h-screen bg-[radial-gradient(ellipse_at_top,hsl(225,12%,14%)_0%,hsl(225,8%,10%)_50%,hsl(225,6%,8%)_100%)] relative overflow-hidden flex flex-col transition-opacity duration-300",
         bgFading && "opacity-80"
       )}>
           <style>{cssAnimations}</style>
