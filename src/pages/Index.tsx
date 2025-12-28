@@ -16,6 +16,7 @@ import { useTransactions } from '@/hooks/useTransactions';
 import { useDebts } from '@/hooks/useDebts';
 import { useTheme } from '@/hooks/useTheme';
 import { useAuthContext } from '@/contexts/AuthContext';
+import { useAdminRole } from '@/hooks/useAdminRole';
 import { useValuesVisibility } from '@/hooks/useValuesVisibility';
 import { useOnboarding } from '@/hooks/useOnboarding';
 import { useIsNativeApp } from '@/hooks/useIsNativeApp';
@@ -70,6 +71,7 @@ const Index = () => {
   }, [activeTab, prevTab]);
   const { theme, toggleTheme } = useTheme();
   const { user, loading: authLoading, signOut, refreshUser } = useAuthContext();
+  const { isAdmin } = useAdminRole();
   const { showValues, toggleValuesVisibility, formatValue } = useValuesVisibility();
   const { showTour, completeTour, skipTour } = useOnboarding(user?.id);
   const isNativeApp = useIsNativeApp();
@@ -209,6 +211,7 @@ const Index = () => {
             userEmail={user.email}
             userAvatar={user.user_metadata?.avatar_url}
             onSignOut={handleSignOutRequest}
+            isAdmin={isAdmin}
           />
         )}
 
