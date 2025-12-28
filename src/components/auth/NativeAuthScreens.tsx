@@ -636,7 +636,6 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onResetPassword, onSucce
               <label className="text-sm text-white/60">E-mail ou número de telefone</label>
               <Input
                 type="text"
-                placeholder="seu@email.com ou (00) 00000-0000"
                 value={loginIdentifier}
                 onChange={(e) => {
                   const value = e.target.value;
@@ -659,7 +658,6 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onResetPassword, onSucce
               <div className="relative">
                 <Input
                   type={showPassword ? 'text' : 'password'}
-                  placeholder="••••••••"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   disabled={isLoading}
