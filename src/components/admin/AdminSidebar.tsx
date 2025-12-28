@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { NavLink, useNavigate, useLocation } from 'react-router-dom';
 import { 
   LayoutDashboard, 
@@ -26,6 +26,8 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
+const ADMIN_SIDEBAR_COLLAPSED_KEY = 'admin-sidebar-collapsed';
+
 const navItems = [
   { path: '/admin', icon: LayoutDashboard, label: 'Visão Geral', description: 'Métricas executivas' },
   { path: '/admin/usuarios', icon: Users, label: 'Usuários', description: 'Gerenciar usuários' },
@@ -39,7 +41,15 @@ export const AdminSidebar = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { isOnline, onlineAdmins } = useAdminPresence();
-  const [collapsed, setCollapsed] = useState(false);
+  
+  const [collapsed, setCollapsed] = useState(() => {
+    const saved = localStorage.getItem(ADMIN_SIDEBAR_COLLAPSED_KEY);
+    return saved === 'true';
+  });
+
+  useEffect(() => {
+    localStorage.setItem(ADMIN_SIDEBAR_COLLAPSED_KEY, String(collapsed));
+  }, [collapsed]);
 
   const isActive = (path: string) => {
     if (path === '/admin') {
