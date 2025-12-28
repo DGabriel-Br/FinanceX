@@ -62,6 +62,7 @@ interface NativeAuthScreensProps {
 export function NativeAuthScreens({ onSignIn, onSignUp, onResetPassword, onSuccess }: NativeAuthScreensProps) {
   const [screen, setScreen] = useState<Screen>('welcome');
   const [mounted, setMounted] = useState(false);
+  const [initialFadeIn, setInitialFadeIn] = useState(false);
   const [animationKey, setAnimationKey] = useState(0);
   const [slideAnimation, setSlideAnimation] = useState<'slide-in-right' | 'slide-in-left' | 'none'>('none');
   const [bgFading, setBgFading] = useState(false);
@@ -99,6 +100,10 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onResetPassword, onSucce
   };
 
   useEffect(() => {
+    // Trigger initial fade-in animation
+    requestAnimationFrame(() => {
+      setInitialFadeIn(true);
+    });
     setMounted(true);
     // Load saved identifier (NEVER store passwords!)
     const savedIdentifier = localStorage.getItem('financex_saved_identifier');
@@ -407,6 +412,14 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onResetPassword, onSucce
         transform: scale(1);
       }
     }
+    @keyframes initial-fade-in {
+      from {
+        opacity: 0;
+      }
+      to {
+        opacity: 1;
+      }
+    }
     .animate-shake {
       animation: shake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
     }
@@ -418,6 +431,9 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onResetPassword, onSucce
     }
     .animate-fade-scale-in {
       animation: fade-scale-in 0.3s ease-out forwards;
+    }
+    .animate-initial-fade-in {
+      animation: initial-fade-in 0.4s ease-out forwards;
     }
   `;
 
@@ -448,6 +464,8 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onResetPassword, onSucce
     return (
       <div className={cn(
         "min-h-screen bg-gradient-to-br from-sidebar via-[hsl(220,50%,15%)] to-primary/30 relative overflow-hidden flex flex-col transition-opacity duration-300",
+        !initialFadeIn && "opacity-0",
+        initialFadeIn && "animate-initial-fade-in",
         bgFading && "opacity-80"
       )}>
           <style>{cssAnimations}</style>
