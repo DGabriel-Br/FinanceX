@@ -194,6 +194,39 @@ export type Database = {
         }
         Relationships: []
       }
+      profiles: {
+        Row: {
+          blocked_at: string | null
+          blocked_by: string | null
+          created_at: string
+          email: string | null
+          full_name: string | null
+          id: string
+          is_blocked: boolean
+          last_sign_in_at: string | null
+        }
+        Insert: {
+          blocked_at?: string | null
+          blocked_by?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id: string
+          is_blocked?: boolean
+          last_sign_in_at?: string | null
+        }
+        Update: {
+          blocked_at?: string | null
+          blocked_by?: string | null
+          created_at?: string
+          email?: string | null
+          full_name?: string | null
+          id?: string
+          is_blocked?: boolean
+          last_sign_in_at?: string | null
+        }
+        Relationships: []
+      }
       transactions: {
         Row: {
           category: string
@@ -227,15 +260,92 @@ export type Database = {
         }
         Relationships: []
       }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      admin_block_user: { Args: { target_user_id: string }; Returns: boolean }
+      admin_get_active_users_today: { Args: never; Returns: number }
+      admin_get_active_users_week: { Args: never; Returns: number }
+      admin_get_audit_events_today: { Args: never; Returns: number }
+      admin_get_financial_stats: {
+        Args: never
+        Returns: {
+          active_users_with_transactions: number
+          avg_transactions_per_user: number
+          total_transactions: number
+          total_users: number
+        }[]
+      }
+      admin_get_recent_audit_events: {
+        Args: { limit_count?: number }
+        Returns: {
+          action: string
+          changed_fields: string[]
+          created_at: string
+          id: string
+          record_id: string
+          table_name: string
+          user_id: string
+        }[]
+      }
+      admin_get_total_users: { Args: never; Returns: number }
+      admin_get_transactions_by_day: {
+        Args: never
+        Returns: {
+          count: number
+          date: string
+          volume: number
+        }[]
+      }
+      admin_get_transactions_today: { Args: never; Returns: number }
+      admin_get_users_list: {
+        Args: never
+        Returns: {
+          created_at: string
+          email: string
+          full_name: string
+          is_blocked: boolean
+          last_sign_in_at: string
+          transaction_count: number
+          user_id: string
+        }[]
+      }
+      admin_get_volume_today: { Args: never; Returns: number }
+      admin_unblock_user: { Args: { target_user_id: string }; Returns: boolean }
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
+      is_admin: { Args: never; Returns: boolean }
     }
     Enums: {
-      [_ in never]: never
+      app_role: "admin" | "user"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -362,6 +472,8 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      app_role: ["admin", "user"],
+    },
   },
 } as const
