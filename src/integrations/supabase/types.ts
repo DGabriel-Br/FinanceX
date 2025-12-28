@@ -351,6 +351,13 @@ export type Database = {
         Args: { target_user_id: string }
         Returns: boolean
       }
+      admin_sync_missing_profiles: {
+        Args: never
+        Returns: {
+          synced_count: number
+          synced_emails: string[]
+        }[]
+      }
       admin_unblock_user: { Args: { target_user_id: string }; Returns: boolean }
       check_user_blocked: { Args: { user_id: string }; Returns: boolean }
       get_my_profile: {
