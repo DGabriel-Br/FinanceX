@@ -113,10 +113,8 @@ export default function Auth() {
   }, []);
 
   useEffect(() => {
-    // Trigger initial fade-in animation
-    requestAnimationFrame(() => {
-      setInitialFadeIn(true);
-    });
+    // Trigger initial fade-in animation imediatamente
+    setInitialFadeIn(true);
     setMounted(true);
   }, []);
 
