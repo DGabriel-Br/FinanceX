@@ -5,8 +5,8 @@ import {
   TrendingUp, 
   Shield, 
   Server,
-  LogOut,
-  ChevronLeft
+  ChevronLeft,
+  Crown
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -14,6 +14,7 @@ import { Button } from '@/components/ui/button';
 const navItems = [
   { path: '/admin', icon: LayoutDashboard, label: 'Visão Geral' },
   { path: '/admin/usuarios', icon: Users, label: 'Usuários' },
+  { path: '/admin/roles', icon: Crown, label: 'Roles' },
   { path: '/admin/atividade', icon: TrendingUp, label: 'Atividade' },
   { path: '/admin/seguranca', icon: Shield, label: 'Segurança' },
   { path: '/admin/sistema', icon: Server, label: 'Sistema' },
