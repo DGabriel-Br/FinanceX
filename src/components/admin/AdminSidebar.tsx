@@ -6,11 +6,11 @@ import {
   Shield, 
   Server,
   ChevronLeft,
-  Crown,
-  Sparkles
+  Crown
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
+import { FinanceLogo } from '@/components/ui/FinanceLogo';
 
 const navItems = [
   { path: '/admin', icon: LayoutDashboard, label: 'Visão Geral', description: 'Métricas executivas' },
@@ -34,25 +34,35 @@ export const AdminSidebar = () => {
 
   return (
     <aside className="w-72 bg-sidebar border-r border-sidebar-border min-h-screen flex flex-col">
-      {/* Header */}
+      {/* Header with Logo */}
       <div className="p-6 border-b border-sidebar-border">
-        <div className="flex items-center gap-3">
-          <div className="relative">
-            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-primary/60 flex items-center justify-center animate-pulse-glow">
-              <Sparkles className="h-5 w-5 text-primary-foreground" />
-            </div>
-            <div className="absolute -top-1 -right-1 w-3 h-3 bg-income rounded-full border-2 border-sidebar" />
+        <div className="flex flex-col gap-3">
+          {/* Logo igual à sidebar do usuário */}
+          <div className="relative flex items-end flex-shrink-0 group justify-center">
+            {/* Glow effect background */}
+            <div className="absolute -inset-2 bg-gradient-to-r from-primary/20 via-income/20 to-primary/20 rounded-xl blur-lg opacity-60 group-hover:opacity-100 transition-opacity duration-300" />
+            <div className="absolute -inset-1 bg-gradient-to-r from-income/10 via-primary/15 to-income/10 rounded-lg blur-md animate-pulse" />
+            
+            <FinanceLogo size={32} className="relative drop-shadow-[0_0_12px_rgba(34,211,238,0.5)]" />
+            <span 
+              className="text-2xl font-black tracking-wider text-white -ml-0.5 relative drop-shadow-[0_0_8px_rgba(255,255,255,0.3)]"
+              style={{ fontFamily: "'Orbitron', sans-serif" }}
+            >
+              inanceX
+            </span>
           </div>
-          <div>
-            <h1 className="text-lg font-bold text-sidebar-foreground bg-gradient-to-r from-sidebar-foreground to-sidebar-foreground/70 bg-clip-text">
-              FinanceX Admin
-            </h1>
-            <p className="text-xs text-sidebar-foreground/50">
-              Painel de Controle
-            </p>
+          
+          {/* Admin badge */}
+          <div className="flex items-center justify-center">
+            <span className="px-3 py-1 rounded-full bg-primary/20 text-primary text-xs font-semibold tracking-wide border border-primary/30">
+              Painel Admin
+            </span>
           </div>
         </div>
       </div>
+
+      {/* Separator */}
+      <div className="mx-4 my-2 h-px bg-sidebar-border" />
 
       {/* Navigation */}
       <nav className="flex-1 p-4 space-y-1.5">
