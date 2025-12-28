@@ -3,15 +3,23 @@ import { supabase } from '@/integrations/supabase/client';
 import { useAdminPeriod } from '@/contexts/AdminPeriodContext';
 
 export interface OverviewMetrics {
+  // Saúde do Produto
   totalUsers: number;
+  newUsersInRange: number;
   activeUsersInRange: number;
+  activeUsersPercentage: number;
+  
+  // Uso do Core Financeiro
   transactionsInRange: number;
-  volumeInRange: number;
+  avgTransactionsPerActiveUser: number;
   totalIncome: number;
   totalExpense: number;
+  balance: number;
+  
+  // Risco e Segurança
+  blockedUsersTotal: number;
+  usersBlockedInRange: number;
   auditEventsInRange: number;
-  activeUsersWithTransactions: number;
-  avgTransactionValue: number;
 }
 
 export interface UserListItem {
@@ -46,78 +54,111 @@ export const useOverviewMetrics = () => {
   return useQuery({
     queryKey: ['admin', 'overview', startDateStr, endDateStr],
     queryFn: async (): Promise<OverviewMetrics> => {
-      // If no range selected (maximum), use all-time queries
       const useRange = !!dateRange;
       
       const [
         totalUsersResult,
+        newUsersResult,
         activeUsersResult,
         transactionsResult,
-        volumeResult,
-        auditEventsResult,
         financialStatsResult,
+        blockedUsersResult,
+        usersBlockedInRangeResult,
+        auditEventsResult,
       ] = await Promise.all([
+        // Total de usuários
         supabase.rpc('admin_get_total_users'),
+        
+        // Novos usuários no período
+        useRange && startTimestamp && endTimestamp
+          ? supabase.rpc('admin_get_new_users_in_range', {
+              start_date: startTimestamp.toISOString(),
+              end_date: endTimestamp.toISOString(),
+            })
+          : supabase.rpc('admin_get_total_users'),
+        
+        // Usuários ativos no período
         useRange && startTimestamp && endTimestamp
           ? supabase.rpc('admin_get_active_users_in_range', {
               start_date: startTimestamp.toISOString(),
               end_date: endTimestamp.toISOString(),
             })
-          : supabase.rpc('admin_get_total_users'), // All active users
+          : supabase.rpc('admin_get_total_users'),
+        
+        // Transações no período
         useRange && startDateStr && endDateStr
           ? supabase.rpc('admin_get_transactions_in_range', {
               start_date: startDateStr,
               end_date: endDateStr,
             })
           : supabase.from('transactions').select('*', { count: 'exact', head: true }),
-        useRange && startDateStr && endDateStr
-          ? supabase.rpc('admin_get_volume_in_range', {
-              start_date: startDateStr,
-              end_date: endDateStr,
-            })
-          : supabase.from('transactions').select('value').then(res => ({
-              data: res.data?.reduce((sum, t) => sum + Number(t.value), 0) || 0,
-              error: res.error
-            })),
-        useRange && startTimestamp && endTimestamp
-          ? supabase.rpc('admin_get_audit_events_in_range', {
-              start_date: startTimestamp.toISOString(),
-              end_date: endTimestamp.toISOString(),
-            })
-          : supabase.from('audit_log').select('*', { count: 'exact', head: true }),
+        
+        // Stats financeiros no período
         useRange && startDateStr && endDateStr
           ? supabase.rpc('admin_get_financial_stats_in_range', {
               start_date: startDateStr,
               end_date: endDateStr,
             })
           : supabase.rpc('admin_get_financial_stats'),
+        
+        // Total de usuários bloqueados
+        supabase.rpc('admin_get_blocked_users_count'),
+        
+        // Usuários bloqueados no período
+        useRange && startTimestamp && endTimestamp
+          ? supabase.rpc('admin_get_users_blocked_in_range', {
+              start_date: startTimestamp.toISOString(),
+              end_date: endTimestamp.toISOString(),
+            })
+          : supabase.rpc('admin_get_blocked_users_count'),
+        
+        // Eventos de auditoria no período
+        useRange && startTimestamp && endTimestamp
+          ? supabase.rpc('admin_get_audit_events_in_range', {
+              start_date: startTimestamp.toISOString(),
+              end_date: endTimestamp.toISOString(),
+            })
+          : supabase.from('audit_log').select('*', { count: 'exact', head: true }),
       ]);
 
       const financialStats = Array.isArray(financialStatsResult.data) 
         ? financialStatsResult.data[0] 
         : financialStatsResult.data;
 
-      // Handle both old and new function return types
       const totalIncome = (financialStats as any)?.total_income ?? 0;
       const totalExpense = (financialStats as any)?.total_expense ?? 0;
-      const avgTransactionValue = (financialStats as any)?.avg_transaction_value ?? 0;
+      const activeUsersWithTransactions = (financialStats as any)?.active_users_with_transactions ?? 0;
+
+      const totalUsers = totalUsersResult.data ?? 0;
+      const activeUsersInRange = activeUsersResult.data ?? 0;
+      const transactionsInRange = typeof transactionsResult.data === 'number' 
+        ? transactionsResult.data 
+        : (transactionsResult as any).count ?? 0;
 
       return {
-        totalUsers: totalUsersResult.data ?? 0,
-        activeUsersInRange: activeUsersResult.data ?? 0,
-        transactionsInRange: typeof transactionsResult.data === 'number' 
-          ? transactionsResult.data 
-          : (transactionsResult as any).count ?? 0,
-        volumeInRange: typeof volumeResult.data === 'number' 
-          ? volumeResult.data 
-          : volumeResult.data ?? 0,
+        // Saúde do Produto
+        totalUsers,
+        newUsersInRange: newUsersResult.data ?? 0,
+        activeUsersInRange,
+        activeUsersPercentage: totalUsers > 0 
+          ? Math.round((activeUsersInRange / totalUsers) * 100) 
+          : 0,
+        
+        // Uso do Core Financeiro
+        transactionsInRange,
+        avgTransactionsPerActiveUser: activeUsersWithTransactions > 0 
+          ? Math.round(transactionsInRange / activeUsersWithTransactions) 
+          : 0,
         totalIncome,
         totalExpense,
+        balance: totalIncome - totalExpense,
+        
+        // Risco e Segurança
+        blockedUsersTotal: blockedUsersResult.data ?? 0,
+        usersBlockedInRange: usersBlockedInRangeResult.data ?? 0,
         auditEventsInRange: typeof auditEventsResult.data === 'number'
           ? auditEventsResult.data
           : (auditEventsResult as any).count ?? 0,
-        activeUsersWithTransactions: financialStats?.active_users_with_transactions ?? 0,
-        avgTransactionValue,
       };
     },
     refetchInterval: 60000,

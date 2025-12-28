@@ -311,6 +311,7 @@ export type Database = {
         Returns: number
       }
       admin_get_audit_events_today: { Args: never; Returns: number }
+      admin_get_blocked_users_count: { Args: never; Returns: number }
       admin_get_financial_stats: {
         Args: never
         Returns: {
@@ -329,6 +330,10 @@ export type Database = {
           total_income: number
           total_transactions: number
         }[]
+      }
+      admin_get_new_users_in_range: {
+        Args: { end_date: string; start_date: string }
+        Returns: number
       }
       admin_get_recent_audit_events: {
         Args: { limit_count?: number }
@@ -364,6 +369,10 @@ export type Database = {
         Returns: number
       }
       admin_get_transactions_today: { Args: never; Returns: number }
+      admin_get_users_blocked_in_range: {
+        Args: { end_date: string; start_date: string }
+        Returns: number
+      }
       admin_get_users_list: {
         Args: never
         Returns: {

@@ -3,7 +3,7 @@ import { MetricCard } from '@/components/admin/MetricCard';
 import { useOverviewMetrics, useTransactionsByDay } from '@/hooks/useAdminMetrics';
 import { useAdminPeriod, AdminDateRange } from '@/contexts/AdminPeriodContext';
 import { PeriodFilter } from '@/components/finance/PeriodFilter';
-import { Loader2, TrendingUp, Users, Percent, BarChart3, Activity } from 'lucide-react';
+import { Loader2, TrendingUp, Receipt, BarChart3, Activity } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { 
   BarChart, 
@@ -42,14 +42,6 @@ const AdminActivity = () => {
     );
   }
 
-  const percentWithTransactions = metrics?.totalUsers 
-    ? Math.round((metrics.activeUsersWithTransactions / metrics.totalUsers) * 100)
-    : 0;
-
-  const avgPerUser = metrics?.activeUsersWithTransactions 
-    ? (metrics.transactionsInRange / metrics.activeUsersWithTransactions).toFixed(1)
-    : '0';
-
   const chartData = transactionsByDay
     ?.slice(0, 14)
     .reverse()
@@ -87,32 +79,32 @@ const AdminActivity = () => {
           <MetricCard
             title="Total de Transações"
             value={metrics?.transactionsInRange ?? 0}
-            icon={<TrendingUp className="h-5 w-5" />}
+            icon={<Receipt className="h-5 w-5" />}
             description="No período selecionado"
             variant="primary"
             delay={0}
           />
           <MetricCard
-            title="Usuários com Transações"
-            value={metrics?.activeUsersWithTransactions ?? 0}
-            icon={<Users className="h-5 w-5" />}
-            description="Que lançaram no período"
+            title="Média por Usuário"
+            value={metrics?.avgTransactionsPerActiveUser ?? 0}
+            icon={<TrendingUp className="h-5 w-5" />}
+            description="Transações por usuário ativo"
             variant="success"
             delay={100}
           />
           <MetricCard
-            title="% com Transações"
-            value={`${percentWithTransactions}%`}
-            icon={<Percent className="h-5 w-5" />}
-            description="Do total de usuários"
+            title="Usuários Ativos"
+            value={metrics?.activeUsersInRange ?? 0}
+            icon={<Activity className="h-5 w-5" />}
+            description="Com login no período"
             variant="info"
             delay={200}
           />
           <MetricCard
-            title="Média por Usuário"
-            value={avgPerUser}
+            title="% Ativos"
+            value={`${metrics?.activeUsersPercentage ?? 0}%`}
             icon={<BarChart3 className="h-5 w-5" />}
-            description="Transações por usuário ativo"
+            description="Do total de usuários"
             variant="warning"
             delay={300}
           />
