@@ -146,7 +146,7 @@ export const SyncIndicator = ({ compact = false }: { compact?: boolean }) => {
           <Button
             variant="ghost"
             size="sm"
-            onClick={isOnline && !isSyncing ? triggerSync : undefined}
+            onClick={isOnline && !isSyncing ? () => triggerSync() : undefined}
             disabled={!isOnline || isSyncing}
             className={cn(
               "flex items-center gap-2 h-8 px-3 rounded-full border transition-all",

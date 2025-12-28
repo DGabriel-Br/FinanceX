@@ -66,10 +66,12 @@ export const useOnlineStatus = () => {
     isOnlineRef.current = isOnline;
   }, [isOnline]);
 
-  const triggerSync = useCallback(async () => {
+  const triggerSync = useCallback(async (silent = false) => {
     const reallyOnline = await checkRealConnectivity();
     if (!reallyOnline) {
-      toast.error('Sem conexão com a internet');
+      if (!silent) {
+        toast.error('Sem conexão com a internet');
+      }
       return;
     }
 
@@ -78,10 +80,10 @@ export const useOnlineStatus = () => {
     if (result.success) {
       setLastSyncAt(new Date());
       const total = result.syncedTransactions + result.syncedDebts + result.syncedGoals;
-      if (total > 0) {
+      if (total > 0 && !silent) {
         toast.success(`${total} alterações sincronizadas!`);
       }
-    } else if (result.errors.length > 0) {
+    } else if (result.errors.length > 0 && !silent) {
       toast.error(`Alguns itens não foram sincronizados`);
     }
 
@@ -125,10 +127,15 @@ export const useOnlineStatus = () => {
     await new Promise(resolve => setTimeout(resolve, 500));
     
     // Usa retry para lidar com a reconexão gradual
-    await checkConnectivity(false, true);
+    const isConnected = await checkConnectivity(false, true);
+    
+    // Se estiver online, sincroniza silenciosamente
+    if (isConnected) {
+      triggerSync(true); // Sincronização silenciosa
+    }
     
     isResumingRef.current = false;
-  }, [checkConnectivity]);
+  }, [checkConnectivity, triggerSync]);
 
   useEffect(() => {
     checkConnectivity(false);
