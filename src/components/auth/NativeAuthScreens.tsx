@@ -49,15 +49,16 @@ const FloatingParticle = forwardRef<HTMLDivElement, FloatingParticleProps>(
 
 FloatingParticle.displayName = "FloatingParticle";
 
-type Screen = 'welcome' | 'login' | 'register';
+type Screen = 'welcome' | 'login' | 'register' | 'forgot-password';
 
 interface NativeAuthScreensProps {
   onSignIn: (email: string, password: string) => Promise<{ error: Error | null }>;
   onSignUp: (email: string, password: string, name: string) => Promise<{ error: Error | null }>;
+  onResetPassword: (email: string) => Promise<{ error: any }>;
   onSuccess: () => void;
 }
 
-export function NativeAuthScreens({ onSignIn, onSignUp, onSuccess }: NativeAuthScreensProps) {
+export function NativeAuthScreens({ onSignIn, onSignUp, onResetPassword, onSuccess }: NativeAuthScreensProps) {
   const [screen, setScreen] = useState<Screen>('welcome');
   const [mounted, setMounted] = useState(false);
   const [animationKey, setAnimationKey] = useState(0);
@@ -74,6 +75,7 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onSuccess }: NativeAuthS
   const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isShaking, setIsShaking] = useState(false);
+  const [emailSent, setEmailSent] = useState(false);
 
   useEffect(() => {
     setMounted(true);
@@ -88,16 +90,14 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onSuccess }: NativeAuthS
   }, []);
 
   const handleNavigate = (newScreen: Screen) => {
-    const goingBack = newScreen === 'welcome';
+    const goingBack = newScreen === 'welcome' || (screen === 'forgot-password' && newScreen === 'login');
     // Trigger background fade
     setBgFading(true);
     setTimeout(() => setBgFading(false), 300);
-    // Set the animation for the NEW screen
-    // Going back to welcome = new screen slides in from LEFT
-    // Going forward to login/register = new screen slides in from RIGHT
     setSlideAnimation(goingBack ? 'slide-in-left' : 'slide-in-right');
     setAnimationKey(prev => prev + 1);
     setScreen(newScreen);
+    setEmailSent(false);
   };
 
   const triggerShake = () => {
@@ -200,6 +200,30 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onSuccess }: NativeAuthS
     } else {
       toast.success('Conta criada com sucesso!');
       onSuccess();
+    }
+  };
+
+  const handleForgotPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    try {
+      emailSchema.parse(email);
+    } catch {
+      toast.error('Por favor, insira um email válido');
+      triggerShake();
+      return;
+    }
+    
+    setIsLoading(true);
+    const { error } = await onResetPassword(email);
+    setIsLoading(false);
+    
+    if (error) {
+      triggerShake();
+      toast.error('Erro ao enviar email: ' + error.message);
+    } else {
+      setEmailSent(true);
+      toast.success('Email de recuperação enviado!');
     }
   };
 
@@ -523,7 +547,7 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onSuccess }: NativeAuthS
             {/* Forgot password */}
             <button
               type="button"
-              onClick={() => toast.info('Função de recuperação de senha será implementada em breve.')}
+              onClick={() => handleNavigate('forgot-password')}
               className="w-full text-center text-primary text-sm font-medium py-2"
             >
               Esqueceu a senha?
@@ -531,6 +555,107 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onSuccess }: NativeAuthS
           </form>
         </div>
         </div>
+    );
+  }
+
+  // Forgot Password Screen
+  if (screen === 'forgot-password') {
+    return (
+      <div className={cn(
+        "min-h-screen bg-gradient-to-br from-sidebar via-[hsl(220,50%,15%)] to-primary/30 relative overflow-hidden flex flex-col transition-opacity duration-300",
+        bgFading && "opacity-80"
+      )}>
+        <style>{cssAnimations}</style>
+
+        {/* Floating Particles */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          {particles.map((particle) => (
+            <FloatingParticle key={particle.id} {...particle} />
+          ))}
+        </div>
+
+        {/* Animated Background Elements */}
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          <div className={cn("absolute top-[10%] left-[5%] w-40 h-40 bg-gradient-to-br from-white/10 to-transparent rounded-full blur-xl transition-all duration-1000", mounted ? "opacity-60 scale-100" : "opacity-0 scale-50")} />
+          <div className={cn("absolute top-[15%] right-[10%] w-32 h-32 bg-gradient-to-br from-income/20 to-primary/10 rounded-full blur-2xl transition-all duration-1000 delay-200", mounted ? "opacity-50 scale-100" : "opacity-0 scale-50")} />
+          <div className={cn("absolute bottom-[20%] left-[8%] w-48 h-48 bg-gradient-to-br from-primary/15 to-income/20 rounded-full blur-3xl transition-all duration-1000 delay-300", mounted ? "opacity-40 scale-100" : "opacity-0 scale-50")} />
+        </div>
+
+        {/* Header */}
+        <div className="pt-4 px-4 safe-area-top">
+          <button
+            onClick={() => handleNavigate('login')}
+            className="p-2 -ml-2 text-white/70 hover:text-white transition-colors"
+          >
+            <ArrowLeft className="w-6 h-6" />
+          </button>
+        </div>
+
+        {/* Content */}
+        <div 
+          key={`forgot-content-${animationKey}`}
+          className={cn(
+            "flex-1 px-6 pt-4 pb-8 safe-area-bottom",
+            slideAnimation === 'slide-in-left' && "animate-slide-in-left",
+            slideAnimation === 'slide-in-right' && "animate-slide-in-right",
+            isShaking && "animate-shake"
+          )}
+        >
+          {emailSent ? (
+            <div className="flex-1 flex flex-col items-center justify-center text-center pt-16">
+              <div className="w-20 h-20 mb-6 rounded-full bg-income/20 flex items-center justify-center">
+                <svg className="w-10 h-10 text-income" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <h2 className="text-xl font-bold text-white mb-2">Email enviado!</h2>
+              <p className="text-white/60 text-sm mb-8 max-w-xs">
+                Verifique sua caixa de entrada e clique no link para redefinir sua senha.
+              </p>
+              <Button
+                onClick={() => handleNavigate('login')}
+                variant="outline"
+                className="w-full h-14 text-base font-semibold rounded-full border-2 border-white/30 bg-white/5 hover:bg-white/10 text-white"
+              >
+                Voltar para o login
+              </Button>
+            </div>
+          ) : (
+            <>
+              <h1 className="text-2xl font-bold text-white mb-2">
+                Recuperar senha
+              </h1>
+              <p className="text-white/50 text-sm mb-8">
+                Digite seu e-mail para receber o link de recuperação
+              </p>
+
+              <form onSubmit={handleForgotPassword} className="space-y-5">
+                {/* Email */}
+                <div className="space-y-2">
+                  <label className="text-sm text-white/60">E-mail</label>
+                  <Input
+                    type="email"
+                    placeholder="seu@email.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    disabled={isLoading}
+                    className="h-14 px-4 text-base bg-sidebar-accent/80 border-0 rounded-xl text-white placeholder:text-white/30 focus:ring-2 focus:ring-primary/50"
+                  />
+                </div>
+
+                {/* Submit button */}
+                <Button
+                  type="submit"
+                  disabled={isLoading}
+                  className="w-full h-14 text-base font-semibold rounded-full bg-primary/90 hover:bg-primary text-primary-foreground mt-6"
+                >
+                  {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Enviar link'}
+                </Button>
+              </form>
+            </>
+          )}
+        </div>
+      </div>
     );
   }
 
