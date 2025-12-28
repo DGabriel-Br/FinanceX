@@ -102,7 +102,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       };
     }
 
-    const { error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
@@ -124,6 +124,29 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         remainingSeconds: attemptData.lockedUntil ? Math.ceil((attemptData.lockedUntil - Date.now()) / 1000) : 0,
         attemptsRemaining: Math.max(0, attemptsRemaining)
       };
+    }
+
+    // Check if user is blocked in profiles table
+    if (data.user) {
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('is_blocked')
+        .eq('id', data.user.id)
+        .single();
+      
+      if (profile?.is_blocked) {
+        // Sign out the blocked user
+        await supabase.auth.signOut();
+        return { 
+          error: { message: 'Sua conta foi bloqueada. Entre em contato com o suporte.' }
+        };
+      }
+
+      // Update last_sign_in_at
+      await supabase
+        .from('profiles')
+        .update({ last_sign_in_at: new Date().toISOString() })
+        .eq('id', data.user.id);
     }
     
     // Success - reset attempt counter

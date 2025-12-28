@@ -9,6 +9,11 @@ import Auth from "./pages/Auth";
 import ResetPassword from "./pages/ResetPassword";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
+import AdminOverview from "./pages/admin/AdminOverview";
+import AdminUsers from "./pages/admin/AdminUsers";
+import AdminActivity from "./pages/admin/AdminActivity";
+import AdminSecurity from "./pages/admin/AdminSecurity";
+import AdminSystem from "./pages/admin/AdminSystem";
 
 const queryClient = new QueryClient();
 
@@ -31,6 +36,12 @@ const App = () => (
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/auth" element={<Navigate to="/login" replace />} />
             <Route path="/settings" element={<Settings />} />
+            {/* Admin Routes */}
+            <Route path="/admin" element={<AdminOverview />} />
+            <Route path="/admin/usuarios" element={<AdminUsers />} />
+            <Route path="/admin/atividade" element={<AdminActivity />} />
+            <Route path="/admin/seguranca" element={<AdminSecurity />} />
+            <Route path="/admin/sistema" element={<AdminSystem />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
