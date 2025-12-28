@@ -883,9 +883,12 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onResetPassword, onSucce
           {registerStep === 'method' ? (
             // Step 1: Choose method and enter email/phone
             <>
-              <h1 className="text-2xl font-bold text-white mb-6">
-                Insira seu telefone ou e-mail
+              <h1 className="text-xl font-bold text-white mb-1 leading-tight">
+                Como deseja se cadastrar?
               </h1>
+              <p className="text-white/50 text-sm mb-6">
+                Escolha entre telefone ou e-mail
+              </p>
 
               {/* Toggle E-mail / Telefone */}
               <div className="flex bg-sidebar-accent/60 rounded-xl p-1 mb-6">
