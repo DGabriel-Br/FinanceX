@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { format } from 'date-fns';
-import { Shield, ShieldOff, UserPlus, Loader2, Crown, Search, AlertTriangle, RefreshCw } from 'lucide-react';
+import { Shield, ShieldOff, UserPlus, Loader2, Crown, Search, AlertTriangle, RefreshCw, Users, Sparkles } from 'lucide-react';
 import { AdminLayout } from '@/components/admin';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -82,8 +82,12 @@ const AdminRoles = () => {
   if (loadingAdmins) {
     return (
       <AdminLayout>
-        <div className="flex items-center justify-center h-64">
-          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        <div className="flex flex-col items-center justify-center h-64 gap-4">
+          <div className="relative">
+            <Loader2 className="h-10 w-10 animate-spin text-primary" />
+            <div className="absolute inset-0 blur-xl bg-primary/20 animate-pulse" />
+          </div>
+          <p className="text-sm text-muted-foreground animate-pulse">Carregando roles...</p>
         </div>
       </AdminLayout>
     );
@@ -92,8 +96,14 @@ const AdminRoles = () => {
   if (adminsError) {
     return (
       <AdminLayout>
-        <div className="flex items-center justify-center h-64 text-destructive">
-          Erro ao carregar dados de administradores
+        <div className="flex flex-col items-center justify-center h-64 gap-4">
+          <div className="w-16 h-16 rounded-full bg-destructive/10 flex items-center justify-center">
+            <Shield className="h-8 w-8 text-destructive" />
+          </div>
+          <div className="text-center">
+            <p className="text-destructive font-medium">Erro ao carregar dados</p>
+            <p className="text-sm text-muted-foreground mt-1">Tente novamente mais tarde</p>
+          </div>
         </div>
       </AdminLayout>
     );
@@ -101,31 +111,89 @@ const AdminRoles = () => {
 
   return (
     <AdminLayout>
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-2xl font-bold text-foreground">Gerenciamento de Roles</h1>
-            <p className="text-muted-foreground">Gerencie os administradores do sistema</p>
+      <div className="space-y-8">
+        {/* Header */}
+        <div className="flex items-start justify-between">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-yellow-500 to-yellow-600 flex items-center justify-center">
+              <Crown className="h-5 w-5 text-white" />
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold text-foreground tracking-tight">
+                Gerenciamento de Roles
+              </h1>
+              <p className="text-muted-foreground">
+                Gerencie os administradores do sistema
+              </p>
+            </div>
           </div>
           <Button
             variant="outline"
             onClick={handleSyncProfiles}
             disabled={isSyncing}
+            className="gap-2 hover:bg-primary/10 hover:text-primary hover:border-primary/30"
           >
             {isSyncing ? (
-              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+              <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
-              <RefreshCw className="h-4 w-4 mr-2" />
+              <RefreshCw className="h-4 w-4" />
             )}
             Sincronizar Perfis
           </Button>
         </div>
 
+        {/* Stats */}
+        <div className="grid gap-4 md:grid-cols-3">
+          <Card className="admin-card-gradient border-yellow-500/20">
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-muted-foreground">Administradores</p>
+                  <p className="text-3xl font-bold text-foreground">{admins?.length || 0}</p>
+                </div>
+                <div className="w-12 h-12 rounded-xl bg-yellow-500/10 flex items-center justify-center">
+                  <Crown className="h-6 w-6 text-yellow-500" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card className="admin-card-gradient border-primary/20">
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-muted-foreground">Usuários Comuns</p>
+                  <p className="text-3xl font-bold text-primary">{nonAdminUsers.length}</p>
+                </div>
+                <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center">
+                  <Users className="h-6 w-6 text-primary" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card className="admin-card-gradient border-income/20">
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-muted-foreground">Total de Usuários</p>
+                  <p className="text-3xl font-bold text-income">{allUsers?.length || 0}</p>
+                </div>
+                <div className="w-12 h-12 rounded-xl bg-income/10 flex items-center justify-center">
+                  <Sparkles className="h-6 w-6 text-income" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+
         {/* Current Admins */}
-        <Card>
+        <Card className="admin-card-gradient">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Crown className="h-5 w-5 text-yellow-500" />
+            <CardTitle className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg bg-yellow-500/10 flex items-center justify-center">
+                <Crown className="h-4 w-4 text-yellow-500" />
+              </div>
               Administradores Atuais
             </CardTitle>
             <CardDescription>
@@ -134,137 +202,180 @@ const AdminRoles = () => {
           </CardHeader>
           <CardContent>
             {admins && admins.length > 0 ? (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Email</TableHead>
-                    <TableHead>Nome</TableHead>
-                    <TableHead>Admin desde</TableHead>
-                    <TableHead className="text-right">Ações</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {admins.map((admin) => (
-                    <TableRow key={admin.user_id}>
-                      <TableCell className="font-medium">
-                        <div className="flex items-center gap-2">
-                          {admin.email}
-                          {admin.user_id === user?.id && (
-                            <Badge variant="outline" className="text-xs">Você</Badge>
-                          )}
-                        </div>
-                      </TableCell>
-                      <TableCell>{admin.full_name || '-'}</TableCell>
-                      <TableCell>{formatDate(admin.role_created_at)}</TableCell>
-                      <TableCell className="text-right">
-                        {admin.user_id !== user?.id ? (
-                          <Button
-                            variant="destructive"
-                            size="sm"
-                            onClick={() => {
-                              setSelectedUser({ id: admin.user_id, email: admin.email || '' });
-                              setActionType('remove');
-                            }}
-                          >
-                            <ShieldOff className="h-4 w-4 mr-1" />
-                            Remover
-                          </Button>
-                        ) : (
-                          <span className="text-xs text-muted-foreground">
-                            Não pode remover a si mesmo
-                          </span>
-                        )}
-                      </TableCell>
+              <div className="rounded-lg border overflow-hidden">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-muted/50">
+                      <TableHead>Email</TableHead>
+                      <TableHead>Nome</TableHead>
+                      <TableHead>Admin desde</TableHead>
+                      <TableHead className="text-right">Ações</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {admins.map((admin, index) => (
+                      <TableRow 
+                        key={admin.user_id}
+                        className="stagger-item hover:bg-muted/30 transition-colors"
+                        style={{ animationDelay: `${index * 50}ms` }}
+                      >
+                        <TableCell className="font-medium">
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-yellow-500 to-yellow-600 flex items-center justify-center text-white font-semibold text-sm">
+                              {(admin.email?.[0] || '?').toUpperCase()}
+                            </div>
+                            <div className="flex items-center gap-2">
+                              {admin.email}
+                              {admin.user_id === user?.id && (
+                                <Badge variant="outline" className="text-xs bg-primary/10 border-primary/30 text-primary">
+                                  Você
+                                </Badge>
+                              )}
+                            </div>
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-muted-foreground">{admin.full_name || '-'}</TableCell>
+                        <TableCell className="text-muted-foreground">{formatDate(admin.role_created_at)}</TableCell>
+                        <TableCell className="text-right">
+                          {admin.user_id !== user?.id ? (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="gap-1.5 hover:bg-destructive/10 hover:text-destructive hover:border-destructive/30"
+                              onClick={() => {
+                                setSelectedUser({ id: admin.user_id, email: admin.email || '' });
+                                setActionType('remove');
+                              }}
+                            >
+                              <ShieldOff className="h-4 w-4" />
+                              Remover
+                            </Button>
+                          ) : (
+                            <span className="text-xs text-muted-foreground italic">
+                              Não pode remover a si mesmo
+                            </span>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
             ) : (
-              <div className="text-center py-8 text-muted-foreground">
-                <AlertTriangle className="h-12 w-12 mx-auto mb-4 text-yellow-500" />
-                <p>Nenhum administrador encontrado</p>
+              <div className="flex flex-col items-center justify-center py-12 gap-4">
+                <div className="w-16 h-16 rounded-full bg-yellow-500/10 flex items-center justify-center">
+                  <AlertTriangle className="h-8 w-8 text-yellow-500" />
+                </div>
+                <p className="text-muted-foreground">Nenhum administrador encontrado</p>
               </div>
             )}
           </CardContent>
         </Card>
 
         {/* Add New Admin */}
-        <Card>
+        <Card className="admin-card-gradient">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <UserPlus className="h-5 w-5 text-primary" />
-              Promover Usuário a Administrador
-            </CardTitle>
-            <CardDescription>
-              Selecione um usuário para conceder privilégios de administrador
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="mb-4">
-              <div className="relative">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                  <UserPlus className="h-4 w-4 text-primary" />
+                </div>
+                <div>
+                  <CardTitle>Promover Usuário a Administrador</CardTitle>
+                  <CardDescription>
+                    Selecione um usuário para conceder privilégios de administrador
+                  </CardDescription>
+                </div>
+              </div>
+              <div className="relative w-72">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="Buscar usuário por email ou nome..."
+                  placeholder="Buscar por email ou nome..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   className="pl-9"
                 />
               </div>
             </div>
-
+          </CardHeader>
+          <CardContent>
             {loadingUsers ? (
-              <div className="flex items-center justify-center py-8">
-                <Loader2 className="h-6 w-6 animate-spin text-primary" />
+              <div className="flex items-center justify-center py-12">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
               </div>
             ) : filteredNonAdmins.length > 0 ? (
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Email</TableHead>
-                    <TableHead>Nome</TableHead>
-                    <TableHead>Transações</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead className="text-right">Ações</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {filteredNonAdmins.slice(0, 10).map((userItem) => (
-                    <TableRow key={userItem.user_id}>
-                      <TableCell className="font-medium">{userItem.email}</TableCell>
-                      <TableCell>{userItem.full_name || '-'}</TableCell>
-                      <TableCell>{userItem.transaction_count}</TableCell>
-                      <TableCell>
-                        {userItem.is_blocked ? (
-                          <Badge variant="destructive">Bloqueado</Badge>
-                        ) : (
-                          <Badge variant="secondary">Ativo</Badge>
-                        )}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <Button
-                          variant="default"
-                          size="sm"
-                          disabled={userItem.is_blocked}
-                          onClick={() => {
-                            setSelectedUser({ id: userItem.user_id, email: userItem.email || '' });
-                            setActionType('add');
-                          }}
-                        >
-                          <Shield className="h-4 w-4 mr-1" />
-                          Promover
-                        </Button>
-                      </TableCell>
+              <div className="rounded-lg border overflow-hidden">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-muted/50">
+                      <TableHead>Email</TableHead>
+                      <TableHead>Nome</TableHead>
+                      <TableHead>Transações</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead className="text-right">Ações</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredNonAdmins.slice(0, 10).map((userItem, index) => (
+                      <TableRow 
+                        key={userItem.user_id}
+                        className="stagger-item hover:bg-muted/30 transition-colors"
+                        style={{ animationDelay: `${index * 50}ms` }}
+                      >
+                        <TableCell className="font-medium">
+                          <div className="flex items-center gap-3">
+                            <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold text-sm">
+                              {(userItem.email?.[0] || '?').toUpperCase()}
+                            </div>
+                            {userItem.email}
+                          </div>
+                        </TableCell>
+                        <TableCell className="text-muted-foreground">{userItem.full_name || '-'}</TableCell>
+                        <TableCell>
+                          <Badge variant="outline" className="font-mono">
+                            {userItem.transaction_count}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          {userItem.is_blocked ? (
+                            <Badge variant="destructive" className="gap-1">
+                              Bloqueado
+                            </Badge>
+                          ) : (
+                            <Badge className="bg-income/10 text-income hover:bg-income/20 gap-1">
+                              <div className="w-1.5 h-1.5 rounded-full bg-income" />
+                              Ativo
+                            </Badge>
+                          )}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <Button
+                            variant="default"
+                            size="sm"
+                            disabled={userItem.is_blocked}
+                            className="gap-1.5"
+                            onClick={() => {
+                              setSelectedUser({ id: userItem.user_id, email: userItem.email || '' });
+                              setActionType('add');
+                            }}
+                          >
+                            <Shield className="h-4 w-4" />
+                            Promover
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
             ) : (
-              <div className="text-center py-8 text-muted-foreground">
-                {searchQuery ? (
-                  <p>Nenhum usuário encontrado para "{searchQuery}"</p>
-                ) : (
-                  <p>Todos os usuários já são administradores</p>
-                )}
+              <div className="flex flex-col items-center justify-center py-12 gap-3">
+                <div className="w-12 h-12 rounded-full bg-muted flex items-center justify-center">
+                  <Users className="h-6 w-6 text-muted-foreground" />
+                </div>
+                <p className="text-muted-foreground">
+                  {searchQuery ? `Nenhum usuário encontrado para "${searchQuery}"` : 'Todos os usuários já são administradores'}
+                </p>
               </div>
             )}
 
@@ -282,22 +393,27 @@ const AdminRoles = () => {
         setSelectedUser(null);
         setActionType(null);
       }}>
-        <AlertDialogContent>
+        <AlertDialogContent className="animate-scale-in">
           <AlertDialogHeader>
-            <AlertDialogTitle>
+            <AlertDialogTitle className="flex items-center gap-2">
+              {actionType === 'add' ? (
+                <Shield className="h-5 w-5 text-primary" />
+              ) : (
+                <ShieldOff className="h-5 w-5 text-destructive" />
+              )}
               {actionType === 'add' ? 'Promover a Administrador' : 'Remover Privilégios de Admin'}
             </AlertDialogTitle>
             <AlertDialogDescription>
               {actionType === 'add' ? (
                 <>
                   Você está prestes a conceder privilégios de administrador para{' '}
-                  <strong>{selectedUser?.email}</strong>. Administradores têm acesso completo 
+                  <strong className="text-foreground">{selectedUser?.email}</strong>. Administradores têm acesso completo 
                   ao painel de controle e podem gerenciar outros usuários.
                 </>
               ) : (
                 <>
                   Você está prestes a remover os privilégios de administrador de{' '}
-                  <strong>{selectedUser?.email}</strong>. Esta ação pode ser revertida posteriormente.
+                  <strong className="text-foreground">{selectedUser?.email}</strong>. Esta ação pode ser revertida posteriormente.
                 </>
               )}
             </AlertDialogDescription>
