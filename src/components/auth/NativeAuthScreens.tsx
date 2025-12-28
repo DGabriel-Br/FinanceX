@@ -114,9 +114,11 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onResetPassword, onSucce
 
   const handleNavigate = (newScreen: Screen) => {
     const goingBack = newScreen === 'welcome' || (screen === 'forgot-password' && newScreen === 'login');
-    // Trigger background fade
+    // Simplified fade without delay
     setBgFading(true);
-    setTimeout(() => setBgFading(false), 300);
+    requestAnimationFrame(() => {
+      setTimeout(() => setBgFading(false), 200);
+    });
     setSlideAnimation(goingBack ? 'slide-in-left' : 'slide-in-right');
     setAnimationKey(prev => prev + 1);
     setScreen(newScreen);
@@ -378,50 +380,44 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onResetPassword, onSucce
     @keyframes slide-in-right {
       from {
         opacity: 0;
-        transform: translateX(40px) scale(0.98);
-        filter: blur(4px);
+        transform: translateX(30px);
       }
       to {
         opacity: 1;
-        transform: translateX(0) scale(1);
-        filter: blur(0);
+        transform: translateX(0);
       }
     }
     @keyframes slide-in-left {
       from {
         opacity: 0;
-        transform: translateX(-40px) scale(0.98);
-        filter: blur(4px);
+        transform: translateX(-30px);
       }
       to {
         opacity: 1;
-        transform: translateX(0) scale(1);
-        filter: blur(0);
+        transform: translateX(0);
       }
     }
     @keyframes fade-scale-in {
       from {
         opacity: 0;
-        transform: scale(0.95);
-        filter: blur(8px);
+        transform: scale(0.97);
       }
       to {
         opacity: 1;
         transform: scale(1);
-        filter: blur(0);
       }
     }
     .animate-shake {
       animation: shake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
     }
     .animate-slide-in-right {
-      animation: slide-in-right 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      animation: slide-in-right 0.25s ease-out forwards;
     }
     .animate-slide-in-left {
-      animation: slide-in-left 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      animation: slide-in-left 0.25s ease-out forwards;
     }
     .animate-fade-scale-in {
-      animation: fade-scale-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      animation: fade-scale-in 0.3s ease-out forwards;
     }
   `;
 
