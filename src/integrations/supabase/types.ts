@@ -291,6 +291,10 @@ export type Database = {
         Returns: boolean
       }
       admin_block_user: { Args: { target_user_id: string }; Returns: boolean }
+      admin_get_active_users_in_range: {
+        Args: { end_date: string; start_date: string }
+        Returns: number
+      }
       admin_get_active_users_today: { Args: never; Returns: number }
       admin_get_active_users_week: { Args: never; Returns: number }
       admin_get_all_admins: {
@@ -302,6 +306,10 @@ export type Database = {
           user_id: string
         }[]
       }
+      admin_get_audit_events_in_range: {
+        Args: { end_date: string; start_date: string }
+        Returns: number
+      }
       admin_get_audit_events_today: { Args: never; Returns: number }
       admin_get_financial_stats: {
         Args: never
@@ -310,6 +318,16 @@ export type Database = {
           avg_transactions_per_user: number
           total_transactions: number
           total_users: number
+        }[]
+      }
+      admin_get_financial_stats_in_range: {
+        Args: { end_date: string; start_date: string }
+        Returns: {
+          active_users_with_transactions: number
+          avg_transaction_value: number
+          total_expense: number
+          total_income: number
+          total_transactions: number
         }[]
       }
       admin_get_recent_audit_events: {
@@ -333,6 +351,18 @@ export type Database = {
           volume: number
         }[]
       }
+      admin_get_transactions_by_day_in_range: {
+        Args: { end_date: string; start_date: string }
+        Returns: {
+          count: number
+          date: string
+          volume: number
+        }[]
+      }
+      admin_get_transactions_in_range: {
+        Args: { end_date: string; start_date: string }
+        Returns: number
+      }
       admin_get_transactions_today: { Args: never; Returns: number }
       admin_get_users_list: {
         Args: never
@@ -345,6 +375,10 @@ export type Database = {
           transaction_count: number
           user_id: string
         }[]
+      }
+      admin_get_volume_in_range: {
+        Args: { end_date: string; start_date: string }
+        Returns: number
       }
       admin_get_volume_today: { Args: never; Returns: number }
       admin_remove_admin_role: {

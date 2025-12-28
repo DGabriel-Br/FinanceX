@@ -1,13 +1,17 @@
 import { useQuery } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
+import { useAdminPeriod } from '@/contexts/AdminPeriodContext';
 
 export interface OverviewMetrics {
   totalUsers: number;
-  activeUsersToday: number;
-  activeUsersWeek: number;
-  transactionsToday: number;
-  volumeToday: number;
-  auditEventsToday: number;
+  activeUsersInRange: number;
+  transactionsInRange: number;
+  volumeInRange: number;
+  totalIncome: number;
+  totalExpense: number;
+  auditEventsInRange: number;
+  activeUsersWithTransactions: number;
+  avgTransactionValue: number;
 }
 
 export interface UserListItem {
@@ -18,13 +22,6 @@ export interface UserListItem {
   last_sign_in_at: string | null;
   is_blocked: boolean;
   transaction_count: number;
-}
-
-export interface FinancialStats {
-  total_transactions: number;
-  active_users_with_transactions: number;
-  total_users: number;
-  avg_transactions_per_user: number;
 }
 
 export interface TransactionByDay {
@@ -44,35 +41,86 @@ export interface AuditEvent {
 }
 
 export const useOverviewMetrics = () => {
+  const { startDateStr, endDateStr, startTimestamp, endTimestamp, dateRange } = useAdminPeriod();
+
   return useQuery({
-    queryKey: ['admin', 'overview'],
+    queryKey: ['admin', 'overview', startDateStr, endDateStr],
     queryFn: async (): Promise<OverviewMetrics> => {
+      // If no range selected (maximum), use all-time queries
+      const useRange = !!dateRange;
+      
       const [
         totalUsersResult,
-        activeUsersTodayResult,
-        activeUsersWeekResult,
-        transactionsTodayResult,
-        volumeTodayResult,
-        auditEventsTodayResult,
+        activeUsersResult,
+        transactionsResult,
+        volumeResult,
+        auditEventsResult,
+        financialStatsResult,
       ] = await Promise.all([
         supabase.rpc('admin_get_total_users'),
-        supabase.rpc('admin_get_active_users_today'),
-        supabase.rpc('admin_get_active_users_week'),
-        supabase.rpc('admin_get_transactions_today'),
-        supabase.rpc('admin_get_volume_today'),
-        supabase.rpc('admin_get_audit_events_today'),
+        useRange && startTimestamp && endTimestamp
+          ? supabase.rpc('admin_get_active_users_in_range', {
+              start_date: startTimestamp.toISOString(),
+              end_date: endTimestamp.toISOString(),
+            })
+          : supabase.rpc('admin_get_total_users'), // All active users
+        useRange && startDateStr && endDateStr
+          ? supabase.rpc('admin_get_transactions_in_range', {
+              start_date: startDateStr,
+              end_date: endDateStr,
+            })
+          : supabase.from('transactions').select('*', { count: 'exact', head: true }),
+        useRange && startDateStr && endDateStr
+          ? supabase.rpc('admin_get_volume_in_range', {
+              start_date: startDateStr,
+              end_date: endDateStr,
+            })
+          : supabase.from('transactions').select('value').then(res => ({
+              data: res.data?.reduce((sum, t) => sum + Number(t.value), 0) || 0,
+              error: res.error
+            })),
+        useRange && startTimestamp && endTimestamp
+          ? supabase.rpc('admin_get_audit_events_in_range', {
+              start_date: startTimestamp.toISOString(),
+              end_date: endTimestamp.toISOString(),
+            })
+          : supabase.from('audit_log').select('*', { count: 'exact', head: true }),
+        useRange && startDateStr && endDateStr
+          ? supabase.rpc('admin_get_financial_stats_in_range', {
+              start_date: startDateStr,
+              end_date: endDateStr,
+            })
+          : supabase.rpc('admin_get_financial_stats'),
       ]);
+
+      const financialStats = Array.isArray(financialStatsResult.data) 
+        ? financialStatsResult.data[0] 
+        : financialStatsResult.data;
+
+      // Handle both old and new function return types
+      const totalIncome = (financialStats as any)?.total_income ?? 0;
+      const totalExpense = (financialStats as any)?.total_expense ?? 0;
+      const avgTransactionValue = (financialStats as any)?.avg_transaction_value ?? 0;
 
       return {
         totalUsers: totalUsersResult.data ?? 0,
-        activeUsersToday: activeUsersTodayResult.data ?? 0,
-        activeUsersWeek: activeUsersWeekResult.data ?? 0,
-        transactionsToday: transactionsTodayResult.data ?? 0,
-        volumeToday: volumeTodayResult.data ?? 0,
-        auditEventsToday: auditEventsTodayResult.data ?? 0,
+        activeUsersInRange: activeUsersResult.data ?? 0,
+        transactionsInRange: typeof transactionsResult.data === 'number' 
+          ? transactionsResult.data 
+          : (transactionsResult as any).count ?? 0,
+        volumeInRange: typeof volumeResult.data === 'number' 
+          ? volumeResult.data 
+          : volumeResult.data ?? 0,
+        totalIncome,
+        totalExpense,
+        auditEventsInRange: typeof auditEventsResult.data === 'number'
+          ? auditEventsResult.data
+          : (auditEventsResult as any).count ?? 0,
+        activeUsersWithTransactions: financialStats?.active_users_with_transactions ?? 0,
+        avgTransactionValue,
       };
     },
-    refetchInterval: 60000, // Refresh every minute
+    refetchInterval: 60000,
   });
 };
 
@@ -87,30 +135,24 @@ export const useUsersList = () => {
   });
 };
 
-export const useFinancialStats = () => {
-  return useQuery({
-    queryKey: ['admin', 'financial-stats'],
-    queryFn: async (): Promise<FinancialStats> => {
-      const { data, error } = await supabase.rpc('admin_get_financial_stats');
-      if (error) throw error;
-      const result = (data as FinancialStats[])?.[0];
-      return result ?? {
-        total_transactions: 0,
-        active_users_with_transactions: 0,
-        total_users: 0,
-        avg_transactions_per_user: 0,
-      };
-    },
-  });
-};
-
 export const useTransactionsByDay = () => {
+  const { startDateStr, endDateStr, dateRange } = useAdminPeriod();
+
   return useQuery({
-    queryKey: ['admin', 'transactions-by-day'],
+    queryKey: ['admin', 'transactions-by-day', startDateStr, endDateStr],
     queryFn: async (): Promise<TransactionByDay[]> => {
-      const { data, error } = await supabase.rpc('admin_get_transactions_by_day');
-      if (error) throw error;
-      return (data as TransactionByDay[]) ?? [];
+      if (dateRange && startDateStr && endDateStr) {
+        const { data, error } = await supabase.rpc('admin_get_transactions_by_day_in_range', {
+          start_date: startDateStr,
+          end_date: endDateStr,
+        });
+        if (error) throw error;
+        return (data as TransactionByDay[]) ?? [];
+      } else {
+        const { data, error } = await supabase.rpc('admin_get_transactions_by_day');
+        if (error) throw error;
+        return (data as TransactionByDay[]) ?? [];
+      }
     },
   });
 };
