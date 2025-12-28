@@ -335,6 +335,17 @@ export type Database = {
       }
       admin_get_volume_today: { Args: never; Returns: number }
       admin_unblock_user: { Args: { target_user_id: string }; Returns: boolean }
+      check_user_blocked: { Args: { user_id: string }; Returns: boolean }
+      get_my_profile: {
+        Args: never
+        Returns: {
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+          is_blocked: boolean
+        }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
