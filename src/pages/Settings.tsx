@@ -459,64 +459,8 @@ export default function Settings() {
           </Button>
         </div>
 
-        {/* Delete Account Button */}
-        <div className="px-4 pb-6 safe-area-bottom animate-fade-in opacity-0" style={{ animationDelay: '0.6s', animationFillMode: 'forwards' }}>
-          <AlertDialog>
-            <AlertDialogTrigger asChild>
-              <Button
-                variant="outline"
-                className="w-full h-14 text-base font-semibold rounded-xl border-destructive/50 text-destructive hover:bg-destructive/10 hover:text-destructive"
-              >
-                <Trash2 className="w-5 h-5 mr-2" />
-                Deletar conta
-              </Button>
-            </AlertDialogTrigger>
-            <AlertDialogContent>
-              <AlertDialogHeader>
-                <AlertDialogTitle className="flex items-center gap-2 text-destructive">
-                  <AlertTriangle className="w-5 h-5" />
-                  Deletar conta permanentemente
-                </AlertDialogTitle>
-                <AlertDialogDescription className="space-y-3">
-                  <p>
-                    Esta ação é <strong>irreversível</strong>. Todos os seus dados serão permanentemente deletados.
-                  </p>
-                  <div className="pt-2">
-                    <Label htmlFor="delete-confirm-native" className="text-foreground">
-                      Digite <strong>DELETAR</strong> para confirmar:
-                    </Label>
-                    <Input
-                      id="delete-confirm-native"
-                      value={deleteConfirmText}
-                      onChange={(e) => setDeleteConfirmText(e.target.value.toUpperCase())}
-                      placeholder="DELETAR"
-                      className="mt-2"
-                    />
-                  </div>
-                </AlertDialogDescription>
-              </AlertDialogHeader>
-              <AlertDialogFooter>
-                <AlertDialogCancel onClick={() => setDeleteConfirmText('')}>
-                  Cancelar
-                </AlertDialogCancel>
-                <AlertDialogAction
-                  onClick={handleDeleteAccount}
-                  disabled={deleteConfirmText !== 'DELETAR' || isDeletingAccount}
-                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-                >
-                  {isDeletingAccount ? (
-                    <>
-                      <Loader2 className="w-4 h-4 animate-spin mr-2" />
-                      Deletando...
-                    </>
-                  ) : (
-                    'Deletar conta'
-                  )}
-                </AlertDialogAction>
-              </AlertDialogFooter>
-            </AlertDialogContent>
-          </AlertDialog>
-        </div>
+        {/* Safe area bottom padding */}
+        <div className="pb-4 safe-area-bottom" />
 
         {/* Drawers para app nativo - com suporte a swipe-to-dismiss */}
         <Drawer open={activeSection === 'profile'} onOpenChange={(open) => !open && setActiveSection(null)}>
@@ -537,6 +481,10 @@ export default function Settings() {
                 handleRemoveAvatar={handleRemoveAvatar}
                 handleUpdateName={handleUpdateName}
                 isUpdatingName={isUpdatingName}
+                deleteConfirmText={deleteConfirmText}
+                setDeleteConfirmText={setDeleteConfirmText}
+                handleDeleteAccount={handleDeleteAccount}
+                isDeletingAccount={isDeletingAccount}
               />
             </div>
           </DrawerContent>
@@ -933,7 +881,7 @@ export default function Settings() {
 }
 
 // Componentes auxiliares para os sheets do app nativo
-function ProfileSheetContent({ avatarUrl, displayName, user, name, setName, fileInputRef, isUploadingAvatar, handleRemoveAvatar, handleUpdateName, isUpdatingName }: any) {
+function ProfileSheetContent({ avatarUrl, displayName, user, name, setName, fileInputRef, isUploadingAvatar, handleRemoveAvatar, handleUpdateName, isUpdatingName, deleteConfirmText, setDeleteConfirmText, handleDeleteAccount, isDeletingAccount }: any) {
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-4">
@@ -973,6 +921,65 @@ function ProfileSheetContent({ avatarUrl, displayName, user, name, setName, file
       <Button onClick={handleUpdateName} disabled={isUpdatingName} className="w-full">
         {isUpdatingName ? <><Loader2 className="w-4 h-4 animate-spin mr-2" />Salvando...</> : 'Salvar alterações'}
       </Button>
+
+      {/* Deletar Conta */}
+      <div className="pt-6 border-t border-border">
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <Button
+              variant="outline"
+              className="w-full border-destructive/50 text-destructive hover:bg-destructive/10 hover:text-destructive"
+            >
+              <Trash2 className="w-4 h-4 mr-2" />
+              Deletar conta
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle className="flex items-center gap-2 text-destructive">
+                <AlertTriangle className="w-5 h-5" />
+                Deletar conta permanentemente
+              </AlertDialogTitle>
+              <AlertDialogDescription className="space-y-3">
+                <p>
+                  Esta ação é <strong>irreversível</strong>. Todos os seus dados serão permanentemente deletados.
+                </p>
+                <div className="pt-2">
+                  <Label htmlFor="delete-confirm-profile" className="text-foreground">
+                    Digite <strong>DELETAR</strong> para confirmar:
+                  </Label>
+                  <Input
+                    id="delete-confirm-profile"
+                    value={deleteConfirmText}
+                    onChange={(e) => setDeleteConfirmText(e.target.value.toUpperCase())}
+                    placeholder="DELETAR"
+                    className="mt-2"
+                  />
+                </div>
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel onClick={() => setDeleteConfirmText('')}>
+                Cancelar
+              </AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleDeleteAccount}
+                disabled={deleteConfirmText !== 'DELETAR' || isDeletingAccount}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                {isDeletingAccount ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                    Deletando...
+                  </>
+                ) : (
+                  'Deletar conta'
+                )}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+      </div>
     </div>
   );
 }
