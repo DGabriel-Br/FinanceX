@@ -52,3 +52,24 @@ export const useManageAdminRole = () => {
 
   return { addAdminRole, removeAdminRole };
 };
+
+interface SyncResult {
+  synced_count: number;
+  synced_emails: string[];
+}
+
+export const useSyncMissingProfiles = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: async () => {
+      const { data, error } = await supabase.rpc('admin_sync_missing_profiles');
+      if (error) throw error;
+      return data as SyncResult[];
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users-list'] });
+      queryClient.invalidateQueries({ queryKey: ['admin-users'] });
+    },
+  });
+};

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { format } from 'date-fns';
-import { Shield, ShieldOff, UserPlus, Loader2, Crown, Search, AlertTriangle } from 'lucide-react';
+import { Shield, ShieldOff, UserPlus, Loader2, Crown, Search, AlertTriangle, RefreshCw } from 'lucide-react';
 import { AdminLayout } from '@/components/admin';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
@@ -9,20 +9,22 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '@/components/ui/alert-dialog';
 import { toast } from 'sonner';
-import { useAdminsList, useManageAdminRole } from '@/hooks/useAdminRoles';
+import { useAdminsList, useManageAdminRole, useSyncMissingProfiles } from '@/hooks/useAdminRoles';
 import { useUsersList } from '@/hooks/useAdminMetrics';
 import { useAuthContext } from '@/contexts/AuthContext';
 
 const AdminRoles = () => {
   const { user } = useAuthContext();
-  const { data: admins, isLoading: loadingAdmins, error: adminsError } = useAdminsList();
-  const { data: allUsers, isLoading: loadingUsers } = useUsersList();
+  const { data: admins, isLoading: loadingAdmins, error: adminsError, refetch: refetchAdmins } = useAdminsList();
+  const { data: allUsers, isLoading: loadingUsers, refetch: refetchUsers } = useUsersList();
   const { addAdminRole, removeAdminRole } = useManageAdminRole();
+  const syncProfiles = useSyncMissingProfiles();
   
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedUser, setSelectedUser] = useState<{ id: string; email: string } | null>(null);
   const [actionType, setActionType] = useState<'add' | 'remove' | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
 
   const adminUserIds = new Set(admins?.map(a => a.user_id) || []);
   
@@ -54,6 +56,25 @@ const AdminRoles = () => {
     }
   };
 
+  const handleSyncProfiles = async () => {
+    setIsSyncing(true);
+    try {
+      const result = await syncProfiles.mutateAsync();
+      const syncData = result[0];
+      if (syncData && syncData.synced_count > 0) {
+        toast.success(`${syncData.synced_count} perfil(is) sincronizado(s): ${syncData.synced_emails.join(', ')}`);
+        refetchAdmins();
+        refetchUsers();
+      } else {
+        toast.info('Todos os perfis já estão sincronizados');
+      }
+    } catch (error: any) {
+      toast.error(error.message || 'Erro ao sincronizar perfis');
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
   const formatDate = (dateString: string) => {
     return format(new Date(dateString), 'dd/MM/yyyy HH:mm');
   };
@@ -81,9 +102,23 @@ const AdminRoles = () => {
   return (
     <AdminLayout>
       <div className="space-y-6">
-        <div>
-          <h1 className="text-2xl font-bold text-foreground">Gerenciamento de Roles</h1>
-          <p className="text-muted-foreground">Gerencie os administradores do sistema</p>
+        <div className="flex items-center justify-between">
+          <div>
+            <h1 className="text-2xl font-bold text-foreground">Gerenciamento de Roles</h1>
+            <p className="text-muted-foreground">Gerencie os administradores do sistema</p>
+          </div>
+          <Button
+            variant="outline"
+            onClick={handleSyncProfiles}
+            disabled={isSyncing}
+          >
+            {isSyncing ? (
+              <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+            ) : (
+              <RefreshCw className="h-4 w-4 mr-2" />
+            )}
+            Sincronizar Perfis
+          </Button>
         </div>
 
         {/* Current Admins */}
