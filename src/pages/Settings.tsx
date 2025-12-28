@@ -20,7 +20,9 @@ import {
   Globe,
   DollarSign,
   Plus,
-  X
+  X,
+  Trash2,
+  AlertTriangle
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -56,6 +58,17 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 
 type SettingsSection = 'profile' | 'security' | 'preferences' | 'categories' | null;
 
@@ -86,6 +99,10 @@ export default function Settings() {
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
+  
+  // Estado para deletar conta
+  const [isDeletingAccount, setIsDeletingAccount] = useState(false);
+  const [deleteConfirmText, setDeleteConfirmText] = useState('');
 
   useEffect(() => {
     if (user?.user_metadata?.full_name) {
@@ -270,6 +287,28 @@ export default function Settings() {
     }
   };
 
+  const handleDeleteAccount = async () => {
+    if (deleteConfirmText !== 'DELETAR') {
+      toast.error('Digite DELETAR para confirmar.');
+      return;
+    }
+
+    setIsDeletingAccount(true);
+    try {
+      const { error } = await supabase.rpc('delete_user_account');
+      
+      if (error) throw error;
+      
+      toast.success('Conta deletada com sucesso.');
+      navigate('/auth');
+    } catch (error: any) {
+      toast.error(error.message || 'Erro ao deletar conta.');
+    } finally {
+      setIsDeletingAccount(false);
+      setDeleteConfirmText('');
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
@@ -409,7 +448,7 @@ export default function Settings() {
         </div>
 
         {/* Logout Button */}
-        <div className="px-4 pb-6 pt-2 safe-area-bottom animate-fade-in opacity-0" style={{ animationDelay: '0.5s', animationFillMode: 'forwards' }}>
+        <div className="px-4 pb-2 pt-2 animate-fade-in opacity-0" style={{ animationDelay: '0.5s', animationFillMode: 'forwards' }}>
           <Button
             onClick={handleSignOut}
             variant="destructive"
@@ -418,6 +457,65 @@ export default function Settings() {
             <span>Sair do app</span>
             <LogOut className="w-5 h-5 ml-auto" />
           </Button>
+        </div>
+
+        {/* Delete Account Button */}
+        <div className="px-4 pb-6 safe-area-bottom animate-fade-in opacity-0" style={{ animationDelay: '0.6s', animationFillMode: 'forwards' }}>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button
+                variant="outline"
+                className="w-full h-14 text-base font-semibold rounded-xl border-destructive/50 text-destructive hover:bg-destructive/10 hover:text-destructive"
+              >
+                <Trash2 className="w-5 h-5 mr-2" />
+                Deletar conta
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle className="flex items-center gap-2 text-destructive">
+                  <AlertTriangle className="w-5 h-5" />
+                  Deletar conta permanentemente
+                </AlertDialogTitle>
+                <AlertDialogDescription className="space-y-3">
+                  <p>
+                    Esta ação é <strong>irreversível</strong>. Todos os seus dados serão permanentemente deletados.
+                  </p>
+                  <div className="pt-2">
+                    <Label htmlFor="delete-confirm-native" className="text-foreground">
+                      Digite <strong>DELETAR</strong> para confirmar:
+                    </Label>
+                    <Input
+                      id="delete-confirm-native"
+                      value={deleteConfirmText}
+                      onChange={(e) => setDeleteConfirmText(e.target.value.toUpperCase())}
+                      placeholder="DELETAR"
+                      className="mt-2"
+                    />
+                  </div>
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel onClick={() => setDeleteConfirmText('')}>
+                  Cancelar
+                </AlertDialogCancel>
+                <AlertDialogAction
+                  onClick={handleDeleteAccount}
+                  disabled={deleteConfirmText !== 'DELETAR' || isDeletingAccount}
+                  className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                >
+                  {isDeletingAccount ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                      Deletando...
+                    </>
+                  ) : (
+                    'Deletar conta'
+                  )}
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
 
         {/* Drawers para app nativo - com suporte a swipe-to-dismiss */}
@@ -752,6 +850,69 @@ export default function Settings() {
           <LogOut className="w-5 h-5 mr-2" />
           Sair da conta
         </Button>
+
+        {/* Delete Account */}
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <Button
+              variant="outline"
+              className="w-full h-12 text-base font-medium rounded-xl border-destructive/50 text-destructive hover:bg-destructive/10 hover:text-destructive"
+            >
+              <Trash2 className="w-5 h-5 mr-2" />
+              Deletar conta
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle className="flex items-center gap-2 text-destructive">
+                <AlertTriangle className="w-5 h-5" />
+                Deletar conta permanentemente
+              </AlertDialogTitle>
+              <AlertDialogDescription className="space-y-3">
+                <p>
+                  Esta ação é <strong>irreversível</strong>. Todos os seus dados serão permanentemente deletados, incluindo:
+                </p>
+                <ul className="list-disc list-inside text-sm space-y-1">
+                  <li>Todas as transações</li>
+                  <li>Dívidas e metas de investimento</li>
+                  <li>Categorias personalizadas</li>
+                  <li>Configurações e preferências</li>
+                </ul>
+                <div className="pt-2">
+                  <Label htmlFor="delete-confirm" className="text-foreground">
+                    Digite <strong>DELETAR</strong> para confirmar:
+                  </Label>
+                  <Input
+                    id="delete-confirm"
+                    value={deleteConfirmText}
+                    onChange={(e) => setDeleteConfirmText(e.target.value.toUpperCase())}
+                    placeholder="DELETAR"
+                    className="mt-2"
+                  />
+                </div>
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel onClick={() => setDeleteConfirmText('')}>
+                Cancelar
+              </AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleDeleteAccount}
+                disabled={deleteConfirmText !== 'DELETAR' || isDeletingAccount}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                {isDeletingAccount ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin mr-2" />
+                    Deletando...
+                  </>
+                ) : (
+                  'Deletar conta'
+                )}
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
 
         {/* Version */}
         <p className="text-xs text-muted-foreground text-center">FinanceX v1.0.0</p>

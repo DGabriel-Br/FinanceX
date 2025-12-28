@@ -403,6 +403,7 @@ export type Database = {
       }
       admin_unblock_user: { Args: { target_user_id: string }; Returns: boolean }
       check_user_blocked: { Args: { user_id: string }; Returns: boolean }
+      delete_user_account: { Args: never; Returns: boolean }
       get_my_profile: {
         Args: never
         Returns: {
