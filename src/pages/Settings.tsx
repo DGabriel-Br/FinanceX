@@ -882,29 +882,6 @@ export default function Settings() {
 function ProfileSheetContent({ avatarUrl, displayName, user, name, setName, fileInputRef, isUploadingAvatar, handleRemoveAvatar, handleUpdateName, isUpdatingName, deleteConfirmText, setDeleteConfirmText, handleDeleteAccount, isDeletingAccount }: any) {
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-4">
-        <div className="relative">
-          <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center overflow-hidden border-2 border-border">
-            {avatarUrl ? (
-              <img src={avatarUrl} alt="Avatar" className="w-full h-full object-cover" />
-            ) : (
-              <span className="text-xl font-bold text-muted-foreground">
-                {getInitials(displayName, user?.email)}
-              </span>
-            )}
-          </div>
-        </div>
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={() => fileInputRef.current?.click()} disabled={isUploadingAvatar}>
-            {avatarUrl ? 'Alterar' : 'Adicionar'}
-          </Button>
-          {avatarUrl && (
-            <Button variant="ghost" size="sm" onClick={handleRemoveAvatar} disabled={isUploadingAvatar}>
-              Remover
-            </Button>
-          )}
-        </div>
-      </div>
       <div className="space-y-2">
         <Label htmlFor="name">Nome completo</Label>
         <Input id="name" type="text" value={name} onChange={(e) => setName(e.target.value)} placeholder="Seu nome" />
