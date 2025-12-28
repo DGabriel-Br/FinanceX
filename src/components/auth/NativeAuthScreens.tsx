@@ -8,7 +8,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { z } from 'zod';
 import { cn } from '@/lib/utils';
 import { FinanceLogo } from '@/components/ui/FinanceLogo';
-
+import { useNavigationBar } from '@/hooks/useNavigationBar';
 const emailSchema = z.string().email('Email inválido');
 const passwordSchema = z.string()
   .min(8, 'A senha deve ter pelo menos 8 caracteres')
@@ -65,6 +65,8 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onResetPassword, onSucce
   const [slideAnimation, setSlideAnimation] = useState<'slide-in-right' | 'slide-in-left' | 'none'>('none');
   const [bgFading, setBgFading] = useState(false);
   
+  // Configura a cor da barra de navegação do Android (usa tema dark pois as telas de auth usam fundo escuro)
+  useNavigationBar('dark');
   // Form states
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
