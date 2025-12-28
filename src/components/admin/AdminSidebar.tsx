@@ -66,7 +66,7 @@ export const AdminSidebar = () => {
   return (
     <TooltipProvider delayDuration={0}>
       <aside className={cn(
-        "bg-sidebar border-r border-sidebar-border min-h-screen flex flex-col transition-[width] duration-300 ease-in-out relative",
+        "bg-sidebar border-r border-sidebar-border h-screen flex flex-col transition-[width] duration-300 ease-in-out relative sticky top-0",
         collapsed ? "w-[72px]" : "w-72"
       )}>
         {/* Collapse Button */}
