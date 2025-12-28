@@ -69,6 +69,7 @@ export default function Auth() {
   const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [initialFadeIn, setInitialFadeIn] = useState(false);
   const [isTransitioning, setIsTransitioning] = useState(false);
   const [slideDirection, setSlideDirection] = useState<'left' | 'right'>('right');
   const [displayedIsRegister, setDisplayedIsRegister] = useState(isRegisterRoute);
@@ -112,6 +113,10 @@ export default function Auth() {
   }, []);
 
   useEffect(() => {
+    // Trigger initial fade-in animation
+    requestAnimationFrame(() => {
+      setInitialFadeIn(true);
+    });
     setMounted(true);
   }, []);
 
@@ -294,7 +299,11 @@ export default function Auth() {
   return (
     <>
       {/* Auth Form */}
-      <div className="flex min-h-screen bg-gradient-to-br from-sidebar via-[hsl(220,50%,15%)] to-primary/30 relative overflow-hidden">
+      <div className={cn(
+        "flex min-h-screen bg-gradient-to-br from-sidebar via-[hsl(220,50%,15%)] to-primary/30 relative overflow-hidden",
+        !initialFadeIn && "opacity-0",
+        initialFadeIn && "animate-initial-fade-in"
+      )}>
         {/* Floating Particles */}
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
           {particles.map((particle) => (
@@ -302,7 +311,7 @@ export default function Auth() {
           ))}
         </div>
 
-        {/* CSS Animation for particles and shake */}
+        {/* CSS Animation for particles, shake, and initial fade-in */}
         <style>{`
           @keyframes float-particle {
             0%, 100% {
@@ -325,8 +334,19 @@ export default function Auth() {
             10%, 30%, 50%, 70%, 90% { transform: translateX(-8px); }
             20%, 40%, 60%, 80% { transform: translateX(8px); }
           }
+          @keyframes initial-fade-in {
+            from {
+              opacity: 0;
+            }
+            to {
+              opacity: 1;
+            }
+          }
           .animate-shake {
             animation: shake 0.5s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+          }
+          .animate-initial-fade-in {
+            animation: initial-fade-in 0.4s ease-out forwards;
           }
         `}</style>
 
