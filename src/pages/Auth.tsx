@@ -286,24 +286,9 @@ export default function Auth() {
     );
   }
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-sidebar">
-        <div className="flex flex-col items-center gap-4">
-          <div className="relative flex items-end">
-            <div className="absolute -inset-4 bg-gradient-to-r from-primary/20 via-income/20 to-primary/20 rounded-2xl blur-2xl animate-pulse" />
-            <FinanceLogo size={40} className="relative" />
-            <span 
-              className="text-2xl font-black tracking-wider text-white -ml-1 relative"
-              style={{ fontFamily: "'Orbitron', sans-serif" }}
-            >
-              inanceX
-            </span>
-          </div>
-          <Loader2 className="w-6 h-6 animate-spin text-primary" />
-        </div>
-      </div>
-    );
+  // Se o usuário já está logado, não mostra nada enquanto redireciona
+  if (user) {
+    return null;
   }
 
   return (
