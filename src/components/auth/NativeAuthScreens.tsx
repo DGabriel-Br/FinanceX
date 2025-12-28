@@ -464,10 +464,14 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onResetPassword, onSucce
     return (
       <div className={cn(
         "min-h-screen bg-gradient-to-br from-sidebar via-[hsl(220,50%,15%)] to-primary/30 relative overflow-hidden flex flex-col transition-opacity duration-300",
-        !initialFadeIn && "opacity-0",
-        initialFadeIn && "animate-initial-fade-in",
         bgFading && "opacity-80"
       )}>
+        {/* Wrapper para fade-in do conteúdo, mantendo background sempre visível */}
+        <div className={cn(
+          "absolute inset-0 flex flex-col",
+          !initialFadeIn && "opacity-0",
+          initialFadeIn && "animate-initial-fade-in"
+        )}>
           <style>{cssAnimations}</style>
         
         {/* Floating Particles - igual ao web */}
@@ -587,6 +591,7 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onResetPassword, onSucce
           </Button>
         </div>
         </div>
+      </div>
     );
   }
 
