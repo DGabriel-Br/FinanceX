@@ -71,12 +71,23 @@ interface SpotlightPosition {
   height: number;
 }
 
+// Mapeamento do step id para a tab correspondente no menu
+const stepToTab: Record<string, 'dashboard' | 'lancamentos' | 'investimentos' | 'dividas' | null> = {
+  'welcome': null,
+  'dashboard': 'dashboard',
+  'transactions': 'lancamentos',
+  'investments': 'investimentos',
+  'debts': 'dividas',
+  'complete': null,
+};
+
 interface OnboardingTourProps {
   onComplete: () => void;
   onSkip: () => void;
+  onStepChange?: (highlightedTab: 'dashboard' | 'lancamentos' | 'investimentos' | 'dividas' | null) => void;
 }
 
-export const OnboardingTour = ({ onComplete, onSkip }: OnboardingTourProps) => {
+export const OnboardingTour = ({ onComplete, onSkip, onStepChange }: OnboardingTourProps) => {
   const [currentStep, setCurrentStep] = useState(0);
   const [isAnimating, setIsAnimating] = useState(false);
   const [spotlightPosition, setSpotlightPosition] = useState<SpotlightPosition | null>(null);
@@ -91,6 +102,14 @@ export const OnboardingTour = ({ onComplete, onSkip }: OnboardingTourProps) => {
     const timer = setTimeout(() => setIsReady(true), 300);
     return () => clearTimeout(timer);
   }, []);
+
+  // Notifica o Index sobre qual tab deve ser destacada no menu
+  useEffect(() => {
+    if (onStepChange) {
+      const highlightedTab = stepToTab[step.id] || null;
+      onStepChange(highlightedTab);
+    }
+  }, [currentStep, step.id, onStepChange]);
 
   // Update spotlight position when step changes
   useEffect(() => {

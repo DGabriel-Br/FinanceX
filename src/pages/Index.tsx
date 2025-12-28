@@ -59,7 +59,7 @@ const Index = () => {
   const [showSplash, setShowSplash] = useState(true);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
-
+  const [tourHighlightedTab, setTourHighlightedTab] = useState<'dashboard' | 'lancamentos' | 'investimentos' | 'dividas' | null>(null);
   // Detecta direção da navegação entre abas
   useEffect(() => {
     if (activeTab !== prevTab) {
@@ -365,6 +365,7 @@ const Index = () => {
               onToggleTheme={toggleTheme}
               userEmail={user.email}
               onSignOut={handleSignOutRequest}
+              highlightedTab={showTour ? tourHighlightedTab : null}
             />
           </>
         )}
@@ -374,7 +375,8 @@ const Index = () => {
       {showTour && (
         <OnboardingTour 
           onComplete={completeTour} 
-          onSkip={skipTour} 
+          onSkip={skipTour}
+          onStepChange={setTourHighlightedTab}
         />
       )}
 
