@@ -120,9 +120,16 @@ export const PasswordStrengthMeter = ({ password, className }: PasswordStrengthM
 
       {/* Inline hint for special characters (mobile-friendly) */}
       {specialCharCriterion && !specialCharCriterion.met && (
-        <div className="text-[10px] text-muted-foreground bg-muted/50 rounded-md px-2 py-1.5">
-          <span className="font-medium">Exemplos: </span>
-          <span className="font-mono">@ # $ % & * ! ? _</span>
+        <div className="flex flex-wrap items-center gap-1.5 pt-1">
+          <span className="text-[10px] text-muted-foreground">Exemplos:</span>
+          {['@', '#', '$', '%', '&', '*', '!', '?', '_'].map((char) => (
+            <span
+              key={char}
+              className="inline-flex items-center justify-center w-5 h-5 text-xs font-mono font-medium bg-primary/10 text-primary rounded border border-primary/20 hover:bg-primary/20 transition-colors cursor-default"
+            >
+              {char}
+            </span>
+          ))}
         </div>
       )}
     </div>
