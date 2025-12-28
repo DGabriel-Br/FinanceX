@@ -298,22 +298,22 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onResetPassword, onSucce
     }
   `;
 
-  // Generate random particles - igual ao web
+  // Generate random particles - mais sutis para fundo escuro
   const particles = useMemo(() => {
     const colors = [
-      'bg-primary/40',
-      'bg-income/30',
-      'bg-white/20',
-      'bg-primary/25',
-      'bg-income/20',
-      'bg-white/15',
+      'bg-primary/20',
+      'bg-white/10',
+      'bg-white/8',
+      'bg-primary/15',
+      'bg-white/6',
+      'bg-primary/12',
     ];
     
-    return Array.from({ length: 25 }, (_, i) => ({
+    return Array.from({ length: 20 }, (_, i) => ({
       id: i,
       delay: Math.random() * 5,
-      duration: 8 + Math.random() * 12,
-      size: 2 + Math.random() * 6,
+      duration: 10 + Math.random() * 15,
+      size: 1.5 + Math.random() * 4,
       startX: Math.random() * 100,
       startY: Math.random() * 100,
       color: colors[Math.floor(Math.random() * colors.length)],
