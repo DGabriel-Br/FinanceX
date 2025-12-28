@@ -77,15 +77,15 @@ export default function Auth() {
   const { user, loading, signIn, signUp, resetPassword } = useAuthContext();
   const navigate = useNavigate();
 
-  // Load saved credentials on mount
+  // Load saved email on mount (NEVER store passwords!)
   useEffect(() => {
     const savedEmail = localStorage.getItem('financex_saved_email');
-    const savedPassword = localStorage.getItem('financex_saved_password');
-    if (savedEmail && savedPassword) {
+    if (savedEmail) {
       setEmail(savedEmail);
-      setPassword(savedPassword);
       setRememberMe(true);
     }
+    // Security: Remove any legacy stored passwords
+    localStorage.removeItem('financex_saved_password');
   }, []);
 
   // Generate random particles
@@ -234,24 +234,34 @@ export default function Auth() {
         navigate('/');
       }
     } else {
-      const { error } = await signIn(email, password);
+      const result = await signIn(email, password);
       setIsLoading(false);
 
-      if (error) {
+      if (result.error) {
         triggerShake();
-        if (error.message.includes('Invalid login credentials')) {
+        
+        // Show specific feedback based on login result
+        if (result.blocked) {
+          toast.error(`Conta bloqueada temporariamente. Aguarde ${result.remainingSeconds} segundos.`, {
+            duration: 5000,
+          });
+        } else if (result.attemptsRemaining !== undefined && result.attemptsRemaining <= 3) {
+          if (result.error.message.includes('Invalid login credentials')) {
+            toast.error(`Email ou senha incorretos. ${result.attemptsRemaining} tentativa(s) restante(s).`);
+          } else {
+            toast.error(result.error.message);
+          }
+        } else if (result.error.message.includes('Invalid login credentials')) {
           toast.error('Email ou senha incorretos');
         } else {
-          toast.error('Erro ao fazer login: ' + error.message);
+          toast.error('Erro ao fazer login: ' + result.error.message);
         }
       } else {
-        // Save credentials if remember me is checked
+        // Save only email if remember me is checked (NEVER save passwords!)
         if (rememberMe) {
           localStorage.setItem('financex_saved_email', email);
-          localStorage.setItem('financex_saved_password', password);
         } else {
           localStorage.removeItem('financex_saved_email');
-          localStorage.removeItem('financex_saved_password');
         }
         toast.success('Login realizado com sucesso!');
         navigate('/');
@@ -650,7 +660,6 @@ export default function Auth() {
                           setRememberMe(checked === true);
                           if (!checked) {
                             localStorage.removeItem('financex_saved_email');
-                            localStorage.removeItem('financex_saved_password');
                           }
                         }}
                         className="border-white/30 data-[state=checked]:bg-primary data-[state=checked]:border-primary"

@@ -79,14 +79,14 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onResetPassword, onSucce
 
   useEffect(() => {
     setMounted(true);
-    // Load saved credentials
+    // Load saved email only (NEVER store passwords!)
     const savedEmail = localStorage.getItem('financex_saved_email');
-    const savedPassword = localStorage.getItem('financex_saved_password');
-    if (savedEmail && savedPassword) {
+    if (savedEmail) {
       setEmail(savedEmail);
-      setPassword(savedPassword);
       setRememberMe(true);
     }
+    // Security: Remove any legacy stored passwords
+    localStorage.removeItem('financex_saved_password');
   }, []);
 
   const handleNavigate = (newScreen: Screen) => {
@@ -159,23 +159,37 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onResetPassword, onSucce
     if (!validateLogin()) return;
 
     setIsLoading(true);
-    const { error } = await onSignIn(email, password);
+    const result = await onSignIn(email, password);
     setIsLoading(false);
 
-    if (error) {
+    if (result.error) {
       triggerShake();
-      if (error.message.includes('Invalid login credentials')) {
+      
+      // Type assertion for the extended result
+      const loginResult = result as { error: Error; blocked?: boolean; remainingSeconds?: number; attemptsRemaining?: number };
+      
+      // Show specific feedback based on login result
+      if (loginResult.blocked) {
+        toast.error(`Conta bloqueada. Aguarde ${loginResult.remainingSeconds}s.`, {
+          duration: 5000,
+        });
+      } else if (loginResult.attemptsRemaining !== undefined && loginResult.attemptsRemaining <= 3) {
+        if (result.error.message.includes('Invalid login credentials')) {
+          toast.error(`Credenciais incorretas. ${loginResult.attemptsRemaining} tentativa(s) restante(s).`);
+        } else {
+          toast.error(result.error.message);
+        }
+      } else if (result.error.message.includes('Invalid login credentials')) {
         toast.error('Email ou senha incorretos');
       } else {
-        toast.error('Erro ao fazer login: ' + error.message);
+        toast.error('Erro ao fazer login: ' + result.error.message);
       }
     } else {
+      // Save only email if remember me is checked (NEVER save passwords!)
       if (rememberMe) {
         localStorage.setItem('financex_saved_email', email);
-        localStorage.setItem('financex_saved_password', password);
       } else {
         localStorage.removeItem('financex_saved_email');
-        localStorage.removeItem('financex_saved_password');
       }
       toast.success('Login realizado com sucesso!');
       onSuccess();

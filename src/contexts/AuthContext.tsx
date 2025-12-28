@@ -1,20 +1,37 @@
 import React, { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
+import { 
+  resetLoginAttempts, 
+  recordFailedAttempt, 
+  isLoginBlocked, 
+  getProgressiveDelay,
+  clearAllSecureItems 
+} from '@/lib/secureStorage';
+
+interface LoginResult {
+  error: any;
+  blocked?: boolean;
+  remainingSeconds?: number;
+  attemptsRemaining?: number;
+}
 
 interface AuthContextType {
   user: User | null;
   session: Session | null;
   loading: boolean;
   signUp: (email: string, password: string, name?: string) => Promise<{ error: any }>;
-  signIn: (email: string, password: string) => Promise<{ error: any }>;
+  signIn: (email: string, password: string) => Promise<LoginResult>;
   signOut: () => Promise<{ error: any }>;
   resetPassword: (email: string) => Promise<{ error: any }>;
   updatePassword: (newPassword: string) => Promise<{ error: any }>;
   refreshUser: () => Promise<void>;
+  checkLoginBlocked: () => Promise<{ blocked: boolean; remainingSeconds: number }>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+const MAX_LOGIN_ATTEMPTS = 5;
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
@@ -74,15 +91,49 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return { error };
   };
 
-  const signIn = async (email: string, password: string) => {
+  const signIn = async (email: string, password: string): Promise<LoginResult> => {
+    // Check if login is blocked due to too many attempts
+    const blockStatus = await isLoginBlocked();
+    if (blockStatus.blocked) {
+      return { 
+        error: { message: `Muitas tentativas. Aguarde ${blockStatus.remainingSeconds} segundos.` },
+        blocked: true,
+        remainingSeconds: blockStatus.remainingSeconds
+      };
+    }
+
     const { error } = await supabase.auth.signInWithPassword({
       email,
       password,
     });
-    return { error };
+    
+    if (error) {
+      // Record failed attempt and apply progressive delay
+      const attemptData = await recordFailedAttempt();
+      const delay = getProgressiveDelay(attemptData.count);
+      
+      if (delay > 0) {
+        await new Promise(resolve => setTimeout(resolve, delay));
+      }
+      
+      const attemptsRemaining = MAX_LOGIN_ATTEMPTS - attemptData.count;
+      
+      return { 
+        error, 
+        blocked: attemptData.lockedUntil !== null,
+        remainingSeconds: attemptData.lockedUntil ? Math.ceil((attemptData.lockedUntil - Date.now()) / 1000) : 0,
+        attemptsRemaining: Math.max(0, attemptsRemaining)
+      };
+    }
+    
+    // Success - reset attempt counter
+    await resetLoginAttempts();
+    return { error: null };
   };
 
   const signOut = async () => {
+    // Clear secure storage on logout
+    await clearAllSecureItems();
     const { error } = await supabase.auth.signOut();
     return { error };
   };
@@ -103,6 +154,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return { error };
   };
 
+  const checkLoginBlocked = async () => {
+    return await isLoginBlocked();
+  };
+
   return (
     <AuthContext.Provider value={{
       user,
@@ -114,6 +169,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       resetPassword,
       updatePassword,
       refreshUser,
+      checkLoginBlocked,
     }}>
       {children}
     </AuthContext.Provider>
