@@ -18,15 +18,17 @@ export const PasswordStrengthMeter = ({ password, className }: PasswordStrengthM
     { label: 'Letra maiúscula', met: /[A-Z]/.test(password) },
     { label: 'Letra minúscula', met: /[a-z]/.test(password) },
     { label: 'Número', met: /[0-9]/.test(password) },
+    { label: 'Caractere especial', met: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password) },
   ], [password]);
 
   const strength = useMemo(() => {
     const metCount = criteria.filter(c => c.met).length;
     if (metCount === 0) return { level: 0, label: '', color: '' };
-    if (metCount === 1) return { level: 1, label: 'Fraca', color: 'bg-red-500' };
-    if (metCount === 2) return { level: 2, label: 'Razoável', color: 'bg-orange-500' };
-    if (metCount === 3) return { level: 3, label: 'Boa', color: 'bg-yellow-500' };
-    return { level: 4, label: 'Forte', color: 'bg-income' };
+    if (metCount === 1) return { level: 1, label: 'Muito fraca', color: 'bg-red-500' };
+    if (metCount === 2) return { level: 2, label: 'Fraca', color: 'bg-orange-500' };
+    if (metCount === 3) return { level: 3, label: 'Razoável', color: 'bg-yellow-500' };
+    if (metCount === 4) return { level: 4, label: 'Boa', color: 'bg-lime-500' };
+    return { level: 5, label: 'Forte', color: 'bg-income' };
   }, [criteria]);
 
   if (!password) return null;
@@ -50,7 +52,7 @@ export const PasswordStrengthMeter = ({ password, className }: PasswordStrengthM
           )}
         </div>
         <div className="flex gap-1">
-          {[1, 2, 3, 4].map((level) => (
+          {[1, 2, 3, 4, 5].map((level) => (
             <div
               key={level}
               className={cn(
