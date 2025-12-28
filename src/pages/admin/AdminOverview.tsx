@@ -5,15 +5,17 @@ import { useAdminPeriod, AdminDateRange } from '@/contexts/AdminPeriodContext';
 import { PeriodFilter } from '@/components/finance/PeriodFilter';
 import { 
   Users, 
+  UserPlus,
   UserCheck, 
+  Percent,
   Receipt, 
-  DollarSign, 
-  Shield,
-  Loader2,
   TrendingUp,
   TrendingDown,
-  Activity,
-  Wallet
+  Wallet,
+  Shield,
+  AlertTriangle,
+  Loader2,
+  Activity
 } from 'lucide-react';
 import { formatCurrency } from '@/lib/currency';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -56,7 +58,8 @@ const AdminOverview = () => {
     );
   }
 
-  const balance = (metrics?.totalIncome ?? 0) - (metrics?.totalExpense ?? 0);
+  // Alerta de risco: se há bloqueios no período
+  const hasSecurityAlert = (metrics?.usersBlockedInRange ?? 0) > 0;
 
   return (
     <AdminLayout>
@@ -83,180 +86,197 @@ const AdminOverview = () => {
           />
         </div>
 
-        {/* Quick Stats Bar */}
-        <Card className="border-primary/20 bg-gradient-to-r from-primary/5 via-transparent to-transparent">
-          <CardContent className="py-4">
-            <div className="flex flex-wrap items-center justify-between gap-4">
-              <div className="flex items-center gap-4">
-                <TrendingUp className="h-5 w-5 text-primary" />
-                <span className="text-sm text-muted-foreground">
-                  Resumo do período
-                </span>
+        {/* Alerta de Segurança */}
+        {hasSecurityAlert && (
+          <Card className="border-destructive/50 bg-destructive/5">
+            <CardContent className="py-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-destructive/10 flex items-center justify-center">
+                  <AlertTriangle className="h-5 w-5 text-destructive" />
+                </div>
+                <div>
+                  <p className="font-medium text-destructive">Atenção: Bloqueios no período</p>
+                  <p className="text-sm text-muted-foreground">
+                    {metrics?.usersBlockedInRange} usuário(s) bloqueado(s) neste período. Verifique a seção de segurança.
+                  </p>
+                </div>
               </div>
-              <div className="flex flex-wrap items-center gap-6 text-sm">
-                <div className="flex items-center gap-2">
-                  <span className="text-muted-foreground">Usuários ativos:</span>
-                  <span className="font-semibold text-foreground">{metrics?.activeUsersInRange ?? 0}</span>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* SEÇÃO A: Saúde do Produto */}
+        <div className="space-y-4">
+          <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
+            <Users className="h-5 w-5 text-primary" />
+            Saúde do Produto
+          </h2>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <MetricCard
+              title="Total de Usuários"
+              value={metrics?.totalUsers ?? 0}
+              icon={<Users className="h-5 w-5" />}
+              description="Cadastrados na plataforma"
+              variant="primary"
+              delay={0}
+            />
+            <MetricCard
+              title="Novos no Período"
+              value={metrics?.newUsersInRange ?? 0}
+              icon={<UserPlus className="h-5 w-5" />}
+              description="Cadastros recentes"
+              variant="success"
+              delay={100}
+            />
+            <MetricCard
+              title="Usuários Ativos"
+              value={metrics?.activeUsersInRange ?? 0}
+              icon={<UserCheck className="h-5 w-5" />}
+              description="Fizeram login no período"
+              variant="info"
+              delay={200}
+            />
+            <MetricCard
+              title="% Ativos vs Total"
+              value={`${metrics?.activeUsersPercentage ?? 0}%`}
+              icon={<Percent className="h-5 w-5" />}
+              description="Taxa de retenção"
+              variant={metrics?.activeUsersPercentage && metrics.activeUsersPercentage >= 50 ? 'success' : 'warning'}
+              delay={300}
+            />
+          </div>
+        </div>
+
+        {/* SEÇÃO B: Uso do Core Financeiro */}
+        <div className="space-y-4">
+          <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
+            <Receipt className="h-5 w-5 text-income" />
+            Uso do Core Financeiro
+          </h2>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+            <MetricCard
+              title="Transações"
+              value={metrics?.transactionsInRange ?? 0}
+              icon={<Receipt className="h-5 w-5" />}
+              description="Criadas no período"
+              variant="primary"
+              delay={400}
+            />
+            <MetricCard
+              title="Média/Usuário"
+              value={metrics?.avgTransactionsPerActiveUser ?? 0}
+              icon={<TrendingUp className="h-5 w-5" />}
+              description="Por usuário ativo"
+              variant="info"
+              delay={500}
+            />
+            <MetricCard
+              title="Receitas"
+              value={formatCurrency(metrics?.totalIncome ?? 0)}
+              icon={<TrendingUp className="h-5 w-5" />}
+              description="Soma global no período"
+              variant="success"
+              delay={600}
+            />
+            <MetricCard
+              title="Despesas"
+              value={formatCurrency(metrics?.totalExpense ?? 0)}
+              icon={<TrendingDown className="h-5 w-5" />}
+              description="Soma global no período"
+              variant="default"
+              delay={700}
+            />
+            <MetricCard
+              title="Resultado"
+              value={formatCurrency(metrics?.balance ?? 0)}
+              icon={<Wallet className="h-5 w-5" />}
+              description="Receitas - Despesas"
+              variant={(metrics?.balance ?? 0) >= 0 ? 'success' : 'default'}
+              delay={800}
+            />
+          </div>
+        </div>
+
+        {/* SEÇÃO C: Risco e Segurança */}
+        <div className="space-y-4">
+          <h2 className="text-lg font-semibold text-foreground flex items-center gap-2">
+            <Shield className="h-5 w-5 text-destructive" />
+            Risco e Segurança
+          </h2>
+          <div className="grid gap-4 md:grid-cols-3">
+            <MetricCard
+              title="Usuários Bloqueados"
+              value={metrics?.blockedUsersTotal ?? 0}
+              icon={<Shield className="h-5 w-5" />}
+              description="Total atual"
+              variant={(metrics?.blockedUsersTotal ?? 0) > 0 ? 'warning' : 'success'}
+              delay={900}
+            />
+            <MetricCard
+              title="Bloqueios no Período"
+              value={metrics?.usersBlockedInRange ?? 0}
+              icon={<AlertTriangle className="h-5 w-5" />}
+              description="Novos bloqueios"
+              variant={(metrics?.usersBlockedInRange ?? 0) > 0 ? 'warning' : 'success'}
+              delay={1000}
+            />
+            <MetricCard
+              title="Eventos de Auditoria"
+              value={metrics?.auditEventsInRange ?? 0}
+              icon={<Activity className="h-5 w-5" />}
+              description="Registrados no período"
+              variant="info"
+              delay={1100}
+            />
+          </div>
+        </div>
+
+        {/* Resumo Executivo */}
+        <Card className="admin-card-gradient">
+          <CardHeader>
+            <CardTitle className="text-lg flex items-center gap-2">
+              <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                <Activity className="h-4 w-4 text-primary" />
+              </div>
+              Resumo Executivo
+            </CardTitle>
+            <CardDescription>
+              Resposta rápida às perguntas-chave
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="space-y-3">
+                <div className="flex items-center justify-between py-2 border-b border-border/50">
+                  <span className="text-sm text-muted-foreground">O produto está vivo?</span>
+                  <span className={`font-semibold ${(metrics?.transactionsInRange ?? 0) > 0 ? 'text-income' : 'text-destructive'}`}>
+                    {(metrics?.transactionsInRange ?? 0) > 0 ? '✓ Sim' : '✗ Sem atividade'}
+                  </span>
                 </div>
-                <div className="w-px h-4 bg-border hidden sm:block" />
-                <div className="flex items-center gap-2">
-                  <span className="text-muted-foreground">Transações:</span>
-                  <span className="font-semibold text-foreground">{metrics?.transactionsInRange ?? 0}</span>
+                <div className="flex items-center justify-between py-2 border-b border-border/50">
+                  <span className="text-sm text-muted-foreground">Está crescendo?</span>
+                  <span className={`font-semibold ${(metrics?.newUsersInRange ?? 0) > 0 ? 'text-income' : 'text-muted-foreground'}`}>
+                    {(metrics?.newUsersInRange ?? 0) > 0 ? `+${metrics?.newUsersInRange} novos usuários` : 'Sem novos cadastros'}
+                  </span>
                 </div>
-                <div className="w-px h-4 bg-border hidden sm:block" />
-                <div className="flex items-center gap-2">
-                  <span className="text-muted-foreground">Volume:</span>
-                  <span className="font-semibold text-income">{formatCurrency(metrics?.volumeInRange ?? 0)}</span>
+              </div>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between py-2 border-b border-border/50">
+                  <span className="text-sm text-muted-foreground">Risco imediato?</span>
+                  <span className={`font-semibold ${(metrics?.usersBlockedInRange ?? 0) > 0 ? 'text-destructive' : 'text-income'}`}>
+                    {(metrics?.usersBlockedInRange ?? 0) > 0 ? `⚠ ${metrics?.usersBlockedInRange} bloqueios` : '✓ Nenhum'}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between py-2 border-b border-border/50">
+                  <span className="text-sm text-muted-foreground">Engajamento</span>
+                  <span className={`font-semibold ${(metrics?.activeUsersPercentage ?? 0) >= 30 ? 'text-income' : 'text-warning'}`}>
+                    {metrics?.activeUsersPercentage ?? 0}% dos usuários ativos
+                  </span>
                 </div>
               </div>
             </div>
           </CardContent>
         </Card>
-
-        {/* Metric Cards Grid */}
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-          <MetricCard
-            title="Total de Usuários"
-            value={metrics?.totalUsers ?? 0}
-            icon={<Users className="h-5 w-5" />}
-            description="Usuários cadastrados"
-            variant="primary"
-            delay={0}
-          />
-          <MetricCard
-            title="Usuários Ativos"
-            value={metrics?.activeUsersInRange ?? 0}
-            icon={<UserCheck className="h-5 w-5" />}
-            description="Fizeram login no período"
-            variant="success"
-            delay={100}
-          />
-          <MetricCard
-            title="Transações"
-            value={metrics?.transactionsInRange ?? 0}
-            icon={<Receipt className="h-5 w-5" />}
-            description="No período selecionado"
-            variant="info"
-            delay={200}
-          />
-          <MetricCard
-            title="Eventos de Auditoria"
-            value={metrics?.auditEventsInRange ?? 0}
-            icon={<Shield className="h-5 w-5" />}
-            description="Registros no período"
-            variant="warning"
-            delay={300}
-          />
-        </div>
-
-        {/* Financial Summary */}
-        <div className="grid gap-6 md:grid-cols-3">
-          <MetricCard
-            title="Total de Receitas"
-            value={formatCurrency(metrics?.totalIncome ?? 0)}
-            icon={<TrendingUp className="h-5 w-5" />}
-            description="Entradas no período"
-            variant="success"
-            delay={400}
-          />
-          <MetricCard
-            title="Total de Despesas"
-            value={formatCurrency(metrics?.totalExpense ?? 0)}
-            icon={<TrendingDown className="h-5 w-5" />}
-            description="Saídas no período"
-            variant="default"
-            delay={500}
-          />
-          <MetricCard
-            title="Saldo do Período"
-            value={formatCurrency(balance)}
-            icon={<Wallet className="h-5 w-5" />}
-            description="Receitas - Despesas"
-            variant={balance >= 0 ? 'success' : 'default'}
-            delay={600}
-          />
-        </div>
-
-        {/* Activity Summary */}
-        <div className="grid gap-6 lg:grid-cols-2">
-          <Card className="admin-card-gradient">
-            <CardHeader>
-              <CardTitle className="text-lg flex items-center gap-2">
-                <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                  <Activity className="h-4 w-4 text-primary" />
-                </div>
-                Métricas de Engajamento
-              </CardTitle>
-              <CardDescription>
-                Indicadores de uso da plataforma no período
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {[
-                  { label: 'Usuários com transações', value: metrics?.activeUsersWithTransactions ?? 0 },
-                  { 
-                    label: 'Taxa de engajamento', 
-                    value: `${metrics?.totalUsers ? Math.round((metrics?.activeUsersWithTransactions / metrics?.totalUsers) * 100) : 0}%` 
-                  },
-                  { 
-                    label: 'Média por usuário ativo', 
-                    value: metrics?.activeUsersWithTransactions 
-                      ? Math.round((metrics?.transactionsInRange ?? 0) / metrics?.activeUsersWithTransactions) 
-                      : 0 
-                  },
-                ].map((item, index) => (
-                  <div 
-                    key={item.label}
-                    className="flex items-center justify-between py-3 border-b border-border/50 last:border-0 stagger-item"
-                    style={{ animationDelay: `${700 + index * 100}ms` }}
-                  >
-                    <span className="text-sm text-muted-foreground">{item.label}</span>
-                    <span className="font-semibold text-foreground">{item.value}</span>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="admin-card-gradient">
-            <CardHeader>
-              <CardTitle className="text-lg flex items-center gap-2">
-                <div className="w-8 h-8 rounded-lg bg-income/10 flex items-center justify-center">
-                  <DollarSign className="h-4 w-4 text-income" />
-                </div>
-                Desempenho Financeiro
-              </CardTitle>
-              <CardDescription>
-                Métricas financeiras do período
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {[
-                  { label: 'Volume total', value: formatCurrency(metrics?.volumeInRange ?? 0), positive: true },
-                  { label: 'Valor médio por transação', value: formatCurrency(metrics?.avgTransactionValue ?? 0) },
-                  { 
-                    label: 'Receitas vs Despesas', 
-                    value: `${((metrics?.totalIncome ?? 0) / Math.max((metrics?.totalExpense ?? 1), 1) * 100).toFixed(0)}%`,
-                    positive: (metrics?.totalIncome ?? 0) > (metrics?.totalExpense ?? 0)
-                  },
-                ].map((item, index) => (
-                  <div 
-                    key={item.label}
-                    className="flex items-center justify-between py-3 border-b border-border/50 last:border-0 stagger-item"
-                    style={{ animationDelay: `${800 + index * 100}ms` }}
-                  >
-                    <span className="text-sm text-muted-foreground">{item.label}</span>
-                    <span className={`font-semibold ${item.positive ? 'text-income' : 'text-foreground'}`}>
-                      {item.value}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
       </div>
     </AdminLayout>
   );
