@@ -2,9 +2,15 @@ import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuthContext } from '@/contexts/AuthContext';
 
+export interface OnlineAdmin {
+  user_id: string;
+  email: string;
+  online_at: string;
+}
+
 interface PresenceState {
   isOnline: boolean;
-  onlineAdmins: number;
+  onlineAdmins: OnlineAdmin[];
   lastSeen: string | null;
 }
 
@@ -12,7 +18,7 @@ export const useAdminPresence = () => {
   const { user } = useAuthContext();
   const [presenceState, setPresenceState] = useState<PresenceState>({
     isOnline: navigator.onLine,
-    onlineAdmins: 0,
+    onlineAdmins: [],
     lastSeen: null,
   });
 
@@ -30,10 +36,22 @@ export const useAdminPresence = () => {
     channel
       .on('presence', { event: 'sync' }, () => {
         const state = channel.presenceState();
-        const onlineCount = Object.keys(state).length;
+        const admins: OnlineAdmin[] = [];
+        
+        Object.entries(state).forEach(([key, presences]) => {
+          if (presences && presences.length > 0) {
+            const presence = presences[0] as any;
+            admins.push({
+              user_id: presence.user_id || key,
+              email: presence.email || 'Admin',
+              online_at: presence.online_at || new Date().toISOString(),
+            });
+          }
+        });
+        
         setPresenceState((prev) => ({
           ...prev,
-          onlineAdmins: onlineCount,
+          onlineAdmins: admins,
         }));
       })
       .on('presence', { event: 'join' }, ({ key, newPresences }) => {

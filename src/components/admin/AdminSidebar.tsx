@@ -8,12 +8,20 @@ import {
   ChevronLeft,
   Crown,
   Wifi,
-  WifiOff
+  WifiOff,
+  User
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { FinanceLogo } from '@/components/ui/FinanceLogo';
 import { useAdminPresence } from '@/hooks/useAdminPresence';
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from '@/components/ui/hover-card';
+import { formatDistanceToNow } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
 
 const navItems = [
   { path: '/admin', icon: LayoutDashboard, label: 'Visão Geral', description: 'Métricas executivas' },
@@ -34,6 +42,11 @@ export const AdminSidebar = () => {
       return location.pathname === '/admin';
     }
     return location.pathname.startsWith(path);
+  };
+
+  const getEmailName = (email: string) => {
+    const name = email.split('@')[0];
+    return name.charAt(0).toUpperCase() + name.slice(1);
   };
 
   return (
@@ -142,13 +155,55 @@ export const AdminSidebar = () => {
                 </p>
               </div>
             </div>
-            {onlineAdmins > 0 && (
-              <div className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-primary/10 border border-primary/20">
-                <div className="w-1.5 h-1.5 bg-primary rounded-full animate-pulse" />
-                <span className="text-xs text-primary font-medium">
-                  {onlineAdmins} admin{onlineAdmins > 1 ? 's' : ''}
-                </span>
-              </div>
+            {onlineAdmins.length > 0 && (
+              <HoverCard openDelay={200} closeDelay={100}>
+                <HoverCardTrigger asChild>
+                  <button className="flex items-center gap-1.5 px-2 py-1 rounded-full bg-primary/10 border border-primary/20 hover:bg-primary/20 transition-colors cursor-pointer">
+                    <div className="w-1.5 h-1.5 bg-primary rounded-full animate-pulse" />
+                    <span className="text-xs text-primary font-medium">
+                      {onlineAdmins.length} admin{onlineAdmins.length > 1 ? 's' : ''}
+                    </span>
+                  </button>
+                </HoverCardTrigger>
+                <HoverCardContent 
+                  side="top" 
+                  align="end" 
+                  className="w-64 p-0 bg-popover border border-border shadow-xl"
+                >
+                  <div className="p-3 border-b border-border">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 bg-income rounded-full animate-pulse" />
+                      <h4 className="text-sm font-semibold text-foreground">
+                        Admins Online ({onlineAdmins.length})
+                      </h4>
+                    </div>
+                  </div>
+                  <div className="p-2 max-h-48 overflow-y-auto">
+                    {onlineAdmins.map((admin) => (
+                      <div 
+                        key={admin.user_id}
+                        className="flex items-center gap-3 p-2 rounded-lg hover:bg-muted/50 transition-colors"
+                      >
+                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center ring-2 ring-income/30">
+                          <User className="h-4 w-4 text-primary" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-foreground truncate">
+                            {getEmailName(admin.email)}
+                          </p>
+                          <p className="text-xs text-muted-foreground truncate">
+                            {admin.email}
+                          </p>
+                          <p className="text-[10px] text-muted-foreground/70">
+                            Online há {formatDistanceToNow(new Date(admin.online_at), { locale: ptBR })}
+                          </p>
+                        </div>
+                        <div className="w-2 h-2 bg-income rounded-full flex-shrink-0" />
+                      </div>
+                    ))}
+                  </div>
+                </HoverCardContent>
+              </HoverCard>
             )}
           </div>
         </div>
