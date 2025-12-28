@@ -324,7 +324,7 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onResetPassword, onSucce
   if (screen === 'welcome') {
     return (
       <div className={cn(
-        "min-h-screen bg-[hsl(240,10%,10%)] relative overflow-hidden flex flex-col transition-opacity duration-300",
+        "min-h-screen bg-gradient-to-br from-sidebar via-[hsl(220,50%,15%)] to-primary/30 relative overflow-hidden flex flex-col transition-opacity duration-300",
         bgFading && "opacity-80"
       )}>
           <style>{cssAnimations}</style>
@@ -453,7 +453,7 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onResetPassword, onSucce
   if (screen === 'login') {
     return (
       <div className={cn(
-        "min-h-screen bg-[hsl(240,10%,10%)] relative overflow-hidden flex flex-col transition-opacity duration-300",
+        "min-h-screen bg-gradient-to-br from-sidebar via-[hsl(220,50%,15%)] to-primary/30 relative overflow-hidden flex flex-col transition-opacity duration-300",
         bgFading && "opacity-80"
       )}>
           <style>{cssAnimations}</style>
@@ -579,7 +579,7 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onResetPassword, onSucce
   if (screen === 'forgot-password') {
     return (
       <div className={cn(
-        "min-h-screen bg-[hsl(240,10%,10%)] relative overflow-hidden flex flex-col transition-opacity duration-300",
+        "min-h-screen bg-gradient-to-br from-sidebar via-[hsl(220,50%,15%)] to-primary/30 relative overflow-hidden flex flex-col transition-opacity duration-300",
         bgFading && "opacity-80"
       )}>
         <style>{cssAnimations}</style>
@@ -680,7 +680,7 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onResetPassword, onSucce
   if (screen === 'register') {
     return (
       <div className={cn(
-        "min-h-screen bg-[hsl(240,10%,10%)] relative overflow-hidden flex flex-col transition-opacity duration-300",
+        "min-h-screen bg-gradient-to-br from-sidebar via-[hsl(220,50%,15%)] to-primary/30 relative overflow-hidden flex flex-col transition-opacity duration-300",
         bgFading && "opacity-80"
       )}>
           <style>{cssAnimations}</style>
