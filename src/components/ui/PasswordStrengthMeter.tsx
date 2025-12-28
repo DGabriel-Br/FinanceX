@@ -1,6 +1,11 @@
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { cn } from '@/lib/utils';
-import { Check, X } from 'lucide-react';
+import { Check, X, Info } from 'lucide-react';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 
 interface PasswordStrengthMeterProps {
   password: string;
@@ -10,15 +15,22 @@ interface PasswordStrengthMeterProps {
 interface PasswordCriteria {
   label: string;
   met: boolean;
+  hint?: string;
 }
 
 export const PasswordStrengthMeter = ({ password, className }: PasswordStrengthMeterProps) => {
+  const [showHint, setShowHint] = useState(false);
+  
   const criteria: PasswordCriteria[] = useMemo(() => [
     { label: 'Mínimo 8 caracteres', met: password.length >= 8 },
     { label: 'Letra maiúscula', met: /[A-Z]/.test(password) },
     { label: 'Letra minúscula', met: /[a-z]/.test(password) },
     { label: 'Número', met: /[0-9]/.test(password) },
-    { label: 'Caractere especial', met: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password) },
+    { 
+      label: 'Caractere especial', 
+      met: /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password),
+      hint: '! @ # $ % & * ( ) _ + - = { } [ ] ; : " \' | , . < > / ?'
+    },
   ], [password]);
 
   const strength = useMemo(() => {
@@ -30,6 +42,8 @@ export const PasswordStrengthMeter = ({ password, className }: PasswordStrengthM
     if (metCount === 4) return { level: 4, label: 'Boa', color: 'bg-lime-500' };
     return { level: 5, label: 'Forte', color: 'bg-income' };
   }, [criteria]);
+
+  const specialCharCriterion = criteria.find(c => c.hint);
 
   if (!password) return null;
 
@@ -45,7 +59,8 @@ export const PasswordStrengthMeter = ({ password, className }: PasswordStrengthM
               strength.level === 1 && "text-red-500",
               strength.level === 2 && "text-orange-500",
               strength.level === 3 && "text-yellow-500",
-              strength.level === 4 && "text-income"
+              strength.level === 4 && "text-lime-500",
+              strength.level === 5 && "text-income"
             )}>
               {strength.label}
             </span>
@@ -75,14 +90,41 @@ export const PasswordStrengthMeter = ({ password, className }: PasswordStrengthM
             )}
           >
             {criterion.met ? (
-              <Check className="w-3 h-3" />
+              <Check className="w-3 h-3 flex-shrink-0" />
             ) : (
-              <X className="w-3 h-3" />
+              <X className="w-3 h-3 flex-shrink-0" />
             )}
             <span>{criterion.label}</span>
+            {criterion.hint && !criterion.met && (
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button
+                    type="button"
+                    className="p-0.5 hover:text-foreground transition-colors"
+                    onClick={() => setShowHint(!showHint)}
+                  >
+                    <Info className="w-3 h-3" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent side="top" className="max-w-[200px]">
+                  <p className="text-xs font-medium mb-1">Caracteres aceitos:</p>
+                  <p className="text-xs text-muted-foreground font-mono tracking-wider">
+                    {criterion.hint}
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            )}
           </div>
         ))}
       </div>
+
+      {/* Inline hint for special characters (mobile-friendly) */}
+      {specialCharCriterion && !specialCharCriterion.met && (
+        <div className="text-[10px] text-muted-foreground bg-muted/50 rounded-md px-2 py-1.5">
+          <span className="font-medium">Exemplos: </span>
+          <span className="font-mono">@ # $ % & * ! ? _</span>
+        </div>
+      )}
     </div>
   );
 };
