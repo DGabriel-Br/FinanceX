@@ -203,32 +203,28 @@ const LandingPage = () => {
                   {/* Glow effect behind phone */}
                   <div className="absolute inset-0 bg-gradient-to-br from-income/40 to-primary-foreground/30 rounded-[2rem] blur-3xl scale-110" />
                   
-                  {/* Landscape Phone frame with 3D perspective */}
+                  {/* Portrait Phone frame with 3D perspective */}
                   <div 
-                    className="relative w-[480px] xl:w-[520px] 2xl:w-[560px] transform-gpu transition-transform duration-700 hover:scale-105"
+                    className="relative w-[280px] xl:w-[300px] 2xl:w-[320px] transform-gpu transition-transform duration-700 hover:scale-105"
                     style={{ 
                       transform: 'rotateX(5deg) rotateY(-8deg)',
                       transformStyle: 'preserve-3d'
                     }}
                   >
-                    {/* Phone bezel - landscape orientation */}
-                    <div className="relative bg-foreground rounded-[1.5rem] p-1.5 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5),0_0_0_1px_rgba(255,255,255,0.1)]">
-                      {/* Screen */}
-                      <div className="relative bg-background rounded-[1.2rem] overflow-hidden">
+                    {/* Phone bezel - portrait orientation */}
+                    <div className="relative bg-foreground rounded-[2rem] p-1.5 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5),0_0_0_1px_rgba(255,255,255,0.1)]">
+                      {/* Screen with fixed aspect ratio */}
+                      <div className="relative bg-background rounded-[1.7rem] overflow-hidden aspect-[9/19.5]">
                         {/* App screenshot */}
                         <img 
                           src={mobileDashboardPreview} 
                           alt="Dashboard do FinanceX" 
-                          className="w-full h-auto"
+                          className="w-full h-full object-cover object-top"
                         />
                       </div>
                       
-                      {/* Side button detail (power button) */}
-                      <div className="absolute -right-1 top-[30%] w-1 h-8 bg-foreground rounded-r-full" />
-                      
-                      {/* Volume buttons */}
-                      <div className="absolute -right-1 top-[50%] w-1 h-6 bg-foreground rounded-r-full" />
-                      <div className="absolute -right-1 top-[62%] w-1 h-6 bg-foreground rounded-r-full" />
+                      {/* Home indicator */}
+                      <div className="absolute bottom-1.5 left-1/2 -translate-x-1/2 w-24 h-1 bg-background/50 rounded-full" />
                     </div>
                   </div>
                   
