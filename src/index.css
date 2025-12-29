@@ -271,19 +271,19 @@
 /* iPhone 3D Mockup Animations */
 @keyframes iphone-float {
   0%, 100% {
-    transform: perspective(1500px) rotateY(25deg) rotateX(5deg) rotateZ(-2deg) translateY(0);
+    transform: translateY(0);
   }
   50% {
-    transform: perspective(1500px) rotateY(25deg) rotateX(5deg) rotateZ(-2deg) translateY(-15px);
+    transform: translateY(-15px);
   }
 }
 
 @keyframes iphone-glow {
   0%, 100% {
-    filter: drop-shadow(0 40px 60px rgba(0, 0, 0, 0.4)) drop-shadow(0 20px 30px rgba(0, 0, 0, 0.3));
+    filter: drop-shadow(0 40px 60px rgba(0, 0, 0, 0.3)) drop-shadow(0 20px 30px rgba(0, 0, 0, 0.2));
   }
   50% {
-    filter: drop-shadow(0 50px 80px rgba(0, 0, 0, 0.35)) drop-shadow(0 25px 40px rgba(0, 0, 0, 0.25));
+    filter: drop-shadow(0 50px 80px rgba(0, 0, 0, 0.25)) drop-shadow(0 25px 40px rgba(0, 0, 0, 0.15));
   }
 }
 
@@ -312,25 +312,6 @@
 
 .iphone-3d {
   animation: iphone-float 5s ease-in-out infinite, iphone-glow 5s ease-in-out infinite;
-  transform-style: preserve-3d;
-  border-radius: 56px;
-}
-
-.iphone-3d::before {
-  content: '';
-  position: absolute;
-  inset: -4px;
-  background: linear-gradient(
-    145deg, 
-    rgba(255, 255, 255, 0.4) 0%, 
-    rgba(255, 255, 255, 0.1) 20%,
-    transparent 50%, 
-    rgba(0, 0, 0, 0.2) 80%,
-    rgba(0, 0, 0, 0.4) 100%
-  );
-  border-radius: 60px;
-  pointer-events: none;
-  z-index: 10;
 }
 
 .iphone-screen-shine {
