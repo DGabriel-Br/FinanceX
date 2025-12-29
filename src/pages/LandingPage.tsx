@@ -72,13 +72,13 @@ const LandingPage = () => {
             {/* Mobile Layout - Stacked and centered */}
             <div className="flex flex-col items-center text-center lg:hidden">
               {/* Phone mockup - Mobile (smaller and centered, portrait mode) */}
-              <div className="reveal-scale relative mb-6 mt-2">
-                <div className="relative">
+              <div className="reveal-scale relative mb-8 mt-4 px-12 sm:px-16">
+                <div className="relative flex justify-center">
                   {/* Glow effect behind phone */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-income/40 to-primary-foreground/30 rounded-[2.5rem] blur-2xl scale-95" />
+                  <div className="absolute inset-0 bg-gradient-to-br from-income/40 to-primary-foreground/30 rounded-[2.5rem] blur-2xl scale-110" />
                   
                   {/* Phone frame - portrait mode, compact with fixed aspect ratio */}
-                  <div className="relative w-[160px] xs:w-[180px] sm:w-[200px]">
+                  <div className="relative w-[150px] xs:w-[170px] sm:w-[190px]">
                     {/* Phone bezel */}
                     <div className="relative bg-foreground rounded-[1.5rem] p-[3px] shadow-[0_20px_40px_-12px_rgba(0,0,0,0.4)]">
                       {/* Screen with fixed aspect ratio for phone */}
@@ -94,35 +94,35 @@ const LandingPage = () => {
                       {/* Home indicator */}
                       <div className="absolute bottom-[3px] left-1/2 -translate-x-1/2 w-14 h-[3px] bg-background/50 rounded-full" />
                     </div>
-                  </div>
-                  
-                  {/* Floating card - Saldo (top left) - Mobile */}
-                  <div 
-                    className="absolute -top-2 -left-6 xs:-left-10 sm:-left-14 bg-card rounded-xl p-2.5 shadow-[0_10px_25px_-8px_rgba(0,0,0,0.3)] border border-border/30 backdrop-blur-sm animate-float z-10"
-                  >
-                    <div className="flex items-center gap-2">
-                      <div className="w-7 h-7 rounded-full bg-gradient-to-br from-income/30 to-income/10 flex items-center justify-center">
-                        <TrendingUp className="w-3.5 h-3.5 text-income" />
-                      </div>
-                      <div>
-                        <p className="text-[10px] text-muted-foreground font-medium">Saldo</p>
-                        <p className="text-xs font-bold text-income">+ R$ 2.450</p>
+                    
+                    {/* Floating card - Saldo (top left) - Mobile */}
+                    <div 
+                      className="absolute -top-4 -left-14 xs:-left-16 sm:-left-20 bg-card rounded-xl py-2 px-3 shadow-[0_10px_25px_-8px_rgba(0,0,0,0.3)] border border-border/30 backdrop-blur-sm animate-float z-10"
+                    >
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-income/30 to-income/10 flex items-center justify-center shadow-sm">
+                          <TrendingUp className="w-4 h-4 text-income" />
+                        </div>
+                        <div>
+                          <p className="text-[10px] text-muted-foreground font-medium leading-tight">Saldo</p>
+                          <p className="text-sm font-bold text-income leading-tight">+ R$ 2.450</p>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                  
-                  {/* Floating card - Economia (bottom right) - Mobile */}
-                  <div 
-                    className="absolute -bottom-2 -right-6 xs:-right-10 sm:-right-14 bg-card rounded-xl p-2.5 shadow-[0_10px_25px_-8px_rgba(0,0,0,0.3)] border border-border/30 backdrop-blur-sm animate-float z-10"
-                    style={{ animationDelay: '1.5s' }}
-                  >
-                    <div className="flex items-center gap-2">
-                      <div className="w-7 h-7 rounded-full bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center">
-                        <PieChart className="w-3.5 h-3.5 text-primary" />
-                      </div>
-                      <div>
-                        <p className="text-[10px] text-muted-foreground font-medium">Economia</p>
-                        <p className="text-xs font-bold text-foreground">32% do mês</p>
+                    
+                    {/* Floating card - Economia (bottom right) - Mobile */}
+                    <div 
+                      className="absolute -bottom-4 -right-14 xs:-right-16 sm:-right-20 bg-card rounded-xl py-2 px-3 shadow-[0_10px_25px_-8px_rgba(0,0,0,0.3)] border border-border/30 backdrop-blur-sm animate-float z-10"
+                      style={{ animationDelay: '1.5s' }}
+                    >
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center shadow-sm">
+                          <PieChart className="w-4 h-4 text-primary" />
+                        </div>
+                        <div>
+                          <p className="text-[10px] text-muted-foreground font-medium leading-tight">Economia</p>
+                          <p className="text-sm font-bold text-foreground leading-tight">32% do mês</p>
+                        </div>
                       </div>
                     </div>
                   </div>
