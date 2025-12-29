@@ -8,6 +8,7 @@ import { PublicHeader } from '@/components/landing/PublicHeader';
 import { FinanceLogo } from '@/components/ui/FinanceLogo';
 import { useEffect, useRef } from 'react';
 import dashboardPreview from '@/assets/dashboard-preview.png';
+import mobileDashboardPreview from '@/assets/mobile-dashboard-preview.jpg';
 import transactionsPreview from '@/assets/transactions-preview.png';
 import debtsPreview from '@/assets/debts-preview.png';
 import investmentsPreview from '@/assets/investments-preview.png';
@@ -221,7 +222,7 @@ const LandingPage = () => {
                       <div className="relative bg-background rounded-[1.2rem] overflow-hidden">
                         {/* App screenshot */}
                         <img 
-                          src={dashboardPreview} 
+                          src={mobileDashboardPreview} 
                           alt="Dashboard do FinanceX" 
                           className="w-full h-auto"
                         />
