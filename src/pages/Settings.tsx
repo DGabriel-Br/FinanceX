@@ -889,10 +889,7 @@ function ProfileSheetContent({ avatarUrl, displayName, user, name, setName, file
       <div className="space-y-2">
         <Label>Email</Label>
         <div className="flex items-center justify-between px-3 py-2.5 bg-muted/50 rounded-lg border border-border/50">
-          <div className="flex items-center gap-2">
-            <Mail className="w-4 h-4 text-muted-foreground" />
-            <span className="text-sm">{user?.email}</span>
-          </div>
+          <span className="text-sm">{user?.email}</span>
           <span className="text-xs font-medium text-emerald-600 dark:text-emerald-400">Verificado</span>
         </div>
       </div>
