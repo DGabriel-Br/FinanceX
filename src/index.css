@@ -313,6 +313,7 @@
 .iphone-3d {
   animation: iphone-float 5s ease-in-out infinite, iphone-glow 5s ease-in-out infinite;
   transform-style: preserve-3d;
+  border-radius: 56px;
 }
 
 .iphone-3d::before {
@@ -327,7 +328,7 @@
     rgba(0, 0, 0, 0.2) 80%,
     rgba(0, 0, 0, 0.4) 100%
   );
-  border-radius: inherit;
+  border-radius: 60px;
   pointer-events: none;
   z-index: 10;
 }
