@@ -207,9 +207,8 @@ export default function Auth() {
     const { error } = await resetPassword(email);
     setIsLoading(false);
     
-    // Always show success message for security (don't reveal if email exists)
+    // Always show success state for security (don't reveal if email exists)
     setEmailSent(true);
-    toast.success('Se o e-mail existir em nossa base, enviaremos um link de recuperação.');
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -488,9 +487,9 @@ export default function Auth() {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                       </svg>
                     </div>
-                    <h3 className="text-lg font-semibold text-white mb-2">Email enviado!</h3>
+                    <h3 className="text-lg font-semibold text-white mb-2">Solicitação enviada!</h3>
                     <p className="text-white/60 text-sm mb-6">
-                      Verifique sua caixa de entrada e clique no link para redefinir sua senha.
+                      Se o e-mail informado existir em nossa base, você receberá um link para redefinir sua senha.
                     </p>
                     <Button
                       type="button"
