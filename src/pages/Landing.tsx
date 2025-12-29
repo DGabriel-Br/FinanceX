@@ -73,9 +73,9 @@ const Landing = () => {
       {/* Header */}
       <header className="fixed top-0 left-0 right-0 z-40 bg-background/60 backdrop-blur-xl border-b border-border/50">
         <div className="container mx-auto px-6 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <FinanceLogo size={28} />
-            <span className="font-semibold text-foreground tracking-tight">FinanceX</span>
+          <div className="relative flex items-end">
+            <FinanceLogo size={28} className="drop-shadow-[0_0_12px_rgba(34,211,238,0.5)]" />
+            <span className="text-lg font-bold tracking-tight text-foreground -ml-0.5">FinanceX</span>
           </div>
           <nav className="hidden md:flex items-center gap-8">
             <a href="#como-funciona" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
@@ -417,9 +417,9 @@ const Landing = () => {
       <footer className="py-12 px-6 border-t border-border">
         <div className="container mx-auto max-w-6xl">
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
-            <div className="flex items-center gap-3">
-              <FinanceLogo size={24} />
-              <span className="font-semibold text-foreground tracking-tight">FinanceX</span>
+            <div className="relative flex items-end">
+              <FinanceLogo size={24} className="drop-shadow-[0_0_12px_rgba(34,211,238,0.5)]" />
+              <span className="text-base font-bold tracking-tight text-foreground -ml-0.5">FinanceX</span>
             </div>
             <nav className="flex items-center gap-6 text-sm text-muted-foreground">
               <a href="#" className="hover:text-foreground transition-colors">Termos</a>
