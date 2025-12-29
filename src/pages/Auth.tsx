@@ -471,7 +471,7 @@ export default function Auth() {
               </h1>
               <p className="text-white/60 text-sm">
                 {displayedIsForgotPassword 
-                  ? 'Digite seu e-mail para receber o link de recuperação.'
+                  ? 'Se o e-mail existir em nossa base, enviaremos um link de recuperação.'
                   : displayedIsRegister 
                     ? 'Preencha os dados para começar a usar o FinanceX.'
                     : 'Entre com seu e-mail e senha para começar.'}
