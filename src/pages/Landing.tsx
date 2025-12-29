@@ -152,13 +152,13 @@ const Landing = () => {
               <div className="relative" style={{ perspective: '2000px' }}>
                 {/* Floating notification - positioned outside iPhone */}
                 <div 
-                  className="notification-float absolute -left-8 md:-left-20 top-20 bg-card/98 backdrop-blur-xl border border-border/40 rounded-2xl p-3 pr-5 shadow-2xl z-40"
+                  className="notification-float absolute -left-12 md:-left-28 top-24 bg-card backdrop-blur-xl rounded-2xl p-3 pr-5 z-40"
                   style={{
-                    boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.35), 0 12px 24px -8px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(255, 255, 255, 0.05)',
+                    boxShadow: '0 20px 40px -10px rgba(0, 0, 0, 0.2), 0 8px 16px -6px rgba(0, 0, 0, 0.1)',
                   }}
                 >
                   <div className="flex items-center gap-3">
-                    <div className="w-11 h-11 rounded-full bg-income/15 flex items-center justify-center ring-2 ring-income/20">
+                    <div className="w-10 h-10 rounded-full bg-income/10 flex items-center justify-center">
                       <Check className="h-5 w-5 text-income" />
                     </div>
                     <div>
@@ -175,40 +175,41 @@ const Landing = () => {
                 >
                   {/* iPhone frame - Premium titanium finish */}
                   <div 
-                    className="relative rounded-[3.5rem] overflow-hidden"
+                    className="relative overflow-hidden"
                     style={{
-                      background: 'linear-gradient(160deg, #f5f5f7 0%, #d1d1d6 15%, #a1a1a6 40%, #8e8e93 60%, #636366 85%, #48484a 100%)',
-                      padding: '4px',
+                      background: 'linear-gradient(160deg, #e8e8ed 0%, #d1d1d6 20%, #a1a1a6 50%, #8e8e93 70%, #636366 90%, #48484a 100%)',
+                      padding: '5px',
+                      borderRadius: '56px',
                     }}
                   >
                     {/* Side buttons - Volume */}
                     <div 
-                      className="absolute -left-[5px] top-28 w-[5px] h-8 rounded-l-sm"
-                      style={{ background: 'linear-gradient(90deg, #48484a, #8e8e93, #636366)' }}
+                      className="absolute -left-[5px] top-28 w-[5px] h-8"
+                      style={{ background: 'linear-gradient(90deg, #48484a, #8e8e93, #636366)', borderRadius: '3px 0 0 3px' }}
                     />
                     <div 
-                      className="absolute -left-[5px] top-40 w-[5px] h-16 rounded-l-sm"
-                      style={{ background: 'linear-gradient(90deg, #48484a, #8e8e93, #636366)' }}
+                      className="absolute -left-[5px] top-40 w-[5px] h-16"
+                      style={{ background: 'linear-gradient(90deg, #48484a, #8e8e93, #636366)', borderRadius: '3px 0 0 3px' }}
                     />
                     <div 
-                      className="absolute -left-[5px] top-[240px] w-[5px] h-16 rounded-l-sm"
-                      style={{ background: 'linear-gradient(90deg, #48484a, #8e8e93, #636366)' }}
+                      className="absolute -left-[5px] top-[240px] w-[5px] h-16"
+                      style={{ background: 'linear-gradient(90deg, #48484a, #8e8e93, #636366)', borderRadius: '3px 0 0 3px' }}
                     />
                     {/* Side button - Power */}
                     <div 
-                      className="absolute -right-[5px] top-40 w-[5px] h-24 rounded-r-sm"
-                      style={{ background: 'linear-gradient(270deg, #48484a, #8e8e93, #636366)' }}
+                      className="absolute -right-[5px] top-40 w-[5px] h-24"
+                      style={{ background: 'linear-gradient(270deg, #48484a, #8e8e93, #636366)', borderRadius: '0 3px 3px 0' }}
                     />
                     
                     {/* Inner bezel */}
                     <div 
-                      className="rounded-[3.2rem] overflow-hidden"
-                      style={{ background: '#000', padding: '3px' }}
+                      className="overflow-hidden"
+                      style={{ background: '#000', padding: '3px', borderRadius: '52px' }}
                     >
                       {/* Screen */}
-                      <div className="bg-background rounded-[3rem] overflow-hidden relative" style={{ width: '280px' }}>
+                      <div className="bg-background overflow-hidden relative" style={{ width: '280px', borderRadius: '49px' }}>
                         {/* Screen shine effect */}
-                        <div className="iphone-screen-shine rounded-[3rem]" />
+                        <div className="iphone-screen-shine" style={{ borderRadius: '49px' }} />
                         
                         {/* Dynamic Island */}
                         <div 
