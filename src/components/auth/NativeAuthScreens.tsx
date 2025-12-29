@@ -789,7 +789,7 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onResetPassword, onSucce
                 Recuperar senha
               </h1>
               <p className="text-white/50 text-sm mb-8">
-                Digite seu e-mail para receber o link de recuperação
+                Se o e-mail existir em nossa base, enviaremos um link de recuperação.
               </p>
 
               <form onSubmit={handleForgotPassword} className="space-y-5">
