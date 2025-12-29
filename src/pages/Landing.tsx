@@ -75,7 +75,7 @@ const Landing = () => {
         <div className="container mx-auto px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
             <FinanceLogo size={28} />
-            <span className="font-semibold text-foreground tracking-tight">Finance+</span>
+            <span className="font-semibold text-foreground tracking-tight">FinanceX</span>
           </div>
           <nav className="hidden md:flex items-center gap-8">
             <a href="#como-funciona" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
@@ -127,7 +127,7 @@ const Landing = () => {
               </h1>
               
               <p className="text-lg text-muted-foreground leading-relaxed mb-8 max-w-lg">
-                O Finance+ mostra exatamente como você gasta, ajuda a economizar 
+                O FinanceX mostra exatamente como você gasta, ajuda a economizar 
                 e transforma suas metas em realidade. Simples assim.
               </p>
 
@@ -419,7 +419,7 @@ const Landing = () => {
           <div className="flex flex-col md:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-3">
               <FinanceLogo size={24} />
-              <span className="font-semibold text-foreground tracking-tight">Finance+</span>
+              <span className="font-semibold text-foreground tracking-tight">FinanceX</span>
             </div>
             <nav className="flex items-center gap-6 text-sm text-muted-foreground">
               <a href="#" className="hover:text-foreground transition-colors">Termos</a>
@@ -427,7 +427,7 @@ const Landing = () => {
               <a href="#" className="hover:text-foreground transition-colors">Contato</a>
             </nav>
             <p className="text-sm text-muted-foreground">
-              © 2024 Finance+
+              © 2024 FinanceX
             </p>
           </div>
         </div>
