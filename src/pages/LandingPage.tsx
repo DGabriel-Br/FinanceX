@@ -47,32 +47,118 @@ const LandingPage = () => {
 
       <main>
         {/* HERO - Seção com visual impactante estilo mockup */}
-        <section className="relative overflow-hidden min-h-[90vh] flex items-center bg-gradient-to-br from-primary via-primary/90 to-primary/80">
-          {/* Floating geometric shapes */}
+        <section className="relative overflow-hidden min-h-[100svh] flex items-center bg-gradient-to-br from-primary via-primary/90 to-primary/80">
+          {/* Floating geometric shapes - hidden on mobile for cleaner look */}
           <div className="absolute inset-0 overflow-hidden">
-            {/* Large background card */}
-            <div className="absolute top-[10%] right-[5%] w-[300px] h-[400px] md:w-[400px] md:h-[500px] bg-primary-foreground/10 rounded-3xl rotate-12 transform-gpu" />
-            <div className="absolute top-[15%] right-[10%] w-[280px] h-[380px] md:w-[350px] md:h-[450px] bg-primary-foreground/5 rounded-3xl rotate-6 transform-gpu" />
+            {/* Large background card - desktop only */}
+            <div className="hidden md:block absolute top-[10%] right-[5%] w-[400px] h-[500px] bg-primary-foreground/10 rounded-3xl rotate-12 transform-gpu" />
+            <div className="hidden md:block absolute top-[15%] right-[10%] w-[350px] h-[450px] bg-primary-foreground/5 rounded-3xl rotate-6 transform-gpu" />
             
-            {/* Small floating cards */}
-            <div className="absolute top-[20%] left-[5%] w-20 h-20 md:w-32 md:h-32 bg-primary-foreground/10 rounded-2xl -rotate-12 animate-float" />
-            <div className="absolute bottom-[25%] left-[10%] w-16 h-16 md:w-24 md:h-24 bg-income/20 rounded-xl rotate-12 animate-float" style={{ animationDelay: '1s' }} />
-            <div className="absolute top-[60%] right-[5%] w-12 h-12 md:w-20 md:h-20 bg-primary-foreground/15 rounded-lg -rotate-6 animate-float" style={{ animationDelay: '2s' }} />
+            {/* Small floating cards - desktop only */}
+            <div className="hidden lg:block absolute top-[20%] left-[5%] w-32 h-32 bg-primary-foreground/10 rounded-2xl -rotate-12 animate-float" />
+            <div className="hidden lg:block absolute bottom-[25%] left-[10%] w-24 h-24 bg-income/20 rounded-xl rotate-12 animate-float" style={{ animationDelay: '1s' }} />
+            <div className="hidden lg:block absolute top-[60%] right-[5%] w-20 h-20 bg-primary-foreground/15 rounded-lg -rotate-6 animate-float" style={{ animationDelay: '2s' }} />
+            
+            {/* Mobile subtle decorations */}
+            <div className="md:hidden absolute top-[10%] right-[5%] w-16 h-16 bg-primary-foreground/10 rounded-xl rotate-12" />
+            <div className="md:hidden absolute bottom-[15%] left-[5%] w-12 h-12 bg-income/15 rounded-lg -rotate-6" />
             
             {/* Gradient overlay for depth */}
             <div className="absolute inset-0 bg-gradient-to-t from-primary/50 via-transparent to-transparent" />
           </div>
           
-          <div className="container relative py-16 md:py-24">
-            <div className="grid lg:grid-cols-2 gap-12 lg:gap-8 items-center">
-              {/* Left content */}
-              <div className="space-y-8 text-center lg:text-left order-2 lg:order-1">
+          <div className="container relative py-8 md:py-24">
+            {/* Mobile Layout - Stacked and centered */}
+            <div className="flex flex-col items-center text-center lg:hidden">
+              {/* Phone mockup - Mobile (smaller and centered) */}
+              <div className="reveal-scale relative mb-8 mt-4">
+                <div className="relative">
+                  {/* Glow effect behind phone */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-income/30 to-primary-foreground/20 rounded-[2rem] blur-2xl scale-90" />
+                  
+                  {/* Phone frame - smaller on mobile */}
+                  <div className="relative w-[200px] xs:w-[220px] sm:w-[260px]">
+                    {/* Phone bezel */}
+                    <div className="relative bg-foreground rounded-[2rem] p-1.5 shadow-2xl">
+                      {/* Screen */}
+                      <div className="relative bg-background rounded-[1.5rem] overflow-hidden">
+                        {/* Status bar mockup */}
+                        <div className="absolute top-0 left-0 right-0 h-6 bg-sidebar flex items-center justify-center z-10">
+                          <div className="w-16 h-4 bg-foreground rounded-full" />
+                        </div>
+                        
+                        {/* App screenshot */}
+                        <img 
+                          src={dashboardPreview} 
+                          alt="Dashboard do FinanceX" 
+                          className="w-full h-auto"
+                        />
+                      </div>
+                      
+                      {/* Home indicator */}
+                      <div className="absolute bottom-1.5 left-1/2 -translate-x-1/2 w-20 h-1 bg-background/50 rounded-full" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Content - Mobile */}
+              <div className="space-y-5 px-2">
+                <div className="reveal inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary-foreground/10 border border-primary-foreground/20 text-primary-foreground text-xs font-medium backdrop-blur-sm">
+                  <Sparkles className="w-3 h-3" />
+                  Controle financeiro simplificado
+                </div>
+                
+                <h1 className="reveal text-3xl xs:text-4xl sm:text-5xl font-bold tracking-tight leading-[1.1] text-primary-foreground" style={{ animationDelay: '0.1s' }}>
+                  Chega de{' '}
+                  <span className="relative inline-block">
+                    planilha
+                    <svg className="absolute -bottom-1 left-0 w-full h-3" viewBox="0 0 200 12" preserveAspectRatio="none">
+                      <path d="M0,8 Q50,0 100,8 T200,8" fill="none" stroke="hsl(var(--income))" strokeWidth="4" strokeLinecap="round"/>
+                    </svg>
+                  </span>
+                  .
+                </h1>
+                
+                <p className="reveal text-base sm:text-lg text-primary-foreground/80 max-w-sm mx-auto leading-relaxed" style={{ animationDelay: '0.2s' }}>
+                  No FinanceX você lança e pronto. O app organiza e mostra seu mês na hora.
+                </p>
+                
+                <div className="reveal flex flex-col gap-3 pt-2" style={{ animationDelay: '0.3s' }}>
+                  <Button size="lg" variant="secondary" className="text-base px-6 h-12 shadow-xl bg-primary-foreground text-primary hover:bg-primary-foreground/90 shine-effect group w-full" asChild>
+                    <Link to="/cadastro">
+                      Criar conta grátis
+                      <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                    </Link>
+                  </Button>
+                  <Button size="lg" variant="ghost" className="text-base px-6 h-12 text-primary-foreground border border-primary-foreground/30 hover:bg-primary-foreground/10 hover:text-primary-foreground w-full" onClick={() => scrollToSection('#como-funciona')}>
+                    Ver como funciona
+                  </Button>
+                </div>
+                
+                <div className="reveal flex items-center gap-4 justify-center text-xs text-primary-foreground/70 pt-2" style={{ animationDelay: '0.4s' }}>
+                  <span className="flex items-center gap-1.5">
+                    <Check className="w-3.5 h-3.5 text-income" />
+                    Sem cartão
+                  </span>
+                  <span className="flex items-center gap-1.5">
+                    <Check className="w-3.5 h-3.5 text-income" />
+                    Setup em 30s
+                  </span>
+                </div>
+              </div>
+            </div>
+            
+            {/* Desktop Layout - Side by side */}
+            <div className="hidden lg:grid lg:grid-cols-2 gap-8 items-center">
+              {/* Left content - Desktop */}
+              <div className="space-y-8 text-left">
                 <div className="reveal inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-foreground/10 border border-primary-foreground/20 text-primary-foreground text-sm font-medium backdrop-blur-sm">
                   <Sparkles className="w-4 h-4" />
                   Controle financeiro simplificado
                 </div>
                 
-                <h1 className="reveal text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.1] text-primary-foreground" style={{ animationDelay: '0.1s' }}>
+                <h1 className="reveal text-5xl xl:text-6xl 2xl:text-7xl font-bold tracking-tight leading-[1.1] text-primary-foreground" style={{ animationDelay: '0.1s' }}>
                   Chega de{' '}
                   <span className="relative inline-block">
                     planilha
@@ -83,11 +169,11 @@ const LandingPage = () => {
                   .
                 </h1>
                 
-                <p className="reveal text-lg md:text-xl text-primary-foreground/80 max-w-lg mx-auto lg:mx-0 leading-relaxed" style={{ animationDelay: '0.2s' }}>
+                <p className="reveal text-xl text-primary-foreground/80 max-w-lg leading-relaxed" style={{ animationDelay: '0.2s' }}>
                   No FinanceX você lança e pronto. O app organiza e mostra seu mês na hora.
                 </p>
                 
-                <div className="reveal flex flex-col sm:flex-row gap-4 justify-center lg:justify-start" style={{ animationDelay: '0.3s' }}>
+                <div className="reveal flex flex-row gap-4" style={{ animationDelay: '0.3s' }}>
                   <Button size="lg" variant="secondary" className="text-base px-8 h-14 shadow-xl bg-primary-foreground text-primary hover:bg-primary-foreground/90 shine-effect group" asChild>
                     <Link to="/cadastro">
                       Criar conta grátis
@@ -99,7 +185,7 @@ const LandingPage = () => {
                   </Button>
                 </div>
                 
-                <div className="reveal flex items-center gap-6 justify-center lg:justify-start text-sm text-primary-foreground/70" style={{ animationDelay: '0.4s' }}>
+                <div className="reveal flex items-center gap-6 text-sm text-primary-foreground/70" style={{ animationDelay: '0.4s' }}>
                   <span className="flex items-center gap-2">
                     <Check className="w-4 h-4 text-income" />
                     Sem cartão
@@ -111,14 +197,14 @@ const LandingPage = () => {
                 </div>
               </div>
               
-              {/* Right content - Phone mockup */}
-              <div className="reveal-right relative flex justify-center lg:justify-end order-1 lg:order-2">
+              {/* Right content - Phone mockup Desktop */}
+              <div className="reveal-right relative flex justify-end">
                 <div className="relative">
                   {/* Glow effect behind phone */}
                   <div className="absolute inset-0 bg-gradient-to-br from-income/30 to-primary-foreground/20 rounded-[3rem] blur-3xl scale-90" />
                   
                   {/* Phone frame */}
-                  <div className="relative w-[280px] sm:w-[320px] md:w-[340px]">
+                  <div className="relative w-[340px] xl:w-[380px]">
                     {/* Phone bezel */}
                     <div className="relative bg-foreground rounded-[2.5rem] p-2 shadow-2xl transform rotate-3 hover:rotate-0 transition-transform duration-500">
                       {/* Screen */}
@@ -141,8 +227,8 @@ const LandingPage = () => {
                     </div>
                   </div>
                   
-                  {/* Floating feature cards around phone */}
-                  <div className="absolute -top-4 -left-16 md:-left-24 bg-card rounded-xl p-3 shadow-xl border border-border/50 animate-float hidden sm:block">
+                  {/* Floating feature cards around phone - desktop only */}
+                  <div className="absolute -top-4 -left-24 bg-card rounded-xl p-3 shadow-xl border border-border/50 animate-float">
                     <div className="flex items-center gap-2">
                       <div className="w-8 h-8 rounded-full bg-income/20 flex items-center justify-center">
                         <TrendingUp className="w-4 h-4 text-income" />
@@ -154,7 +240,7 @@ const LandingPage = () => {
                     </div>
                   </div>
                   
-                  <div className="absolute -bottom-8 -right-8 md:-right-16 bg-card rounded-xl p-3 shadow-xl border border-border/50 animate-float hidden sm:block" style={{ animationDelay: '1.5s' }}>
+                  <div className="absolute -bottom-8 -right-16 bg-card rounded-xl p-3 shadow-xl border border-border/50 animate-float" style={{ animationDelay: '1.5s' }}>
                     <div className="flex items-center gap-2">
                       <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
                         <PieChart className="w-4 h-4 text-primary" />
@@ -170,10 +256,10 @@ const LandingPage = () => {
             </div>
           </div>
           
-          {/* Scroll indicator */}
-          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
-            <div className="w-6 h-10 rounded-full border-2 border-primary-foreground/30 flex items-start justify-center p-2">
-              <div className="w-1 h-2 bg-primary-foreground/50 rounded-full animate-pulse" />
+          {/* Scroll indicator - hidden on very small screens */}
+          <div className="hidden sm:block absolute bottom-6 md:bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
+            <div className="w-5 h-8 md:w-6 md:h-10 rounded-full border-2 border-primary-foreground/30 flex items-start justify-center p-1.5 md:p-2">
+              <div className="w-1 h-1.5 md:h-2 bg-primary-foreground/50 rounded-full animate-pulse" />
             </div>
           </div>
         </section>
