@@ -5,7 +5,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, Navigate, Outlet } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { AdminPeriodProvider } from "@/contexts/AdminPeriodContext";
-import Index from "./pages/Index";
+import FinanceLayout from "./pages/finance/FinanceLayout";
+import { DashboardPage, TransactionsPage, InvestmentsPage, DebtsPage } from "./pages/finance";
 import Auth from "./pages/Auth";
 import ResetPassword from "./pages/ResetPassword";
 import Settings from "./pages/Settings";
@@ -34,17 +35,23 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/dashboard" element={<Navigate to="/" replace />} />
-            <Route path="/lancamentos" element={<Index />} />
-            <Route path="/investimentos" element={<Index />} />
-            <Route path="/dividas" element={<Index />} />
+            {/* Finance routes - using shared layout */}
+            <Route element={<FinanceLayout />}>
+              <Route path="/" element={<DashboardPage />} />
+              <Route path="/dashboard" element={<Navigate to="/" replace />} />
+              <Route path="/lancamentos" element={<TransactionsPage />} />
+              <Route path="/investimentos" element={<InvestmentsPage />} />
+              <Route path="/dividas" element={<DebtsPage />} />
+            </Route>
+            
+            {/* Auth routes */}
             <Route path="/login" element={<Auth />} />
             <Route path="/cadastro" element={<Auth />} />
             <Route path="/esqueci-senha" element={<Auth />} />
             <Route path="/reset-password" element={<ResetPassword />} />
             <Route path="/auth" element={<Navigate to="/login" replace />} />
             <Route path="/settings" element={<Settings />} />
+            
             {/* Admin Routes - wrapped with AdminPeriodProvider via layout */}
             <Route element={<AdminPeriodLayout />}>
               <Route path="/admin" element={<AdminOverview />} />
@@ -54,6 +61,7 @@ const App = () => (
               <Route path="/admin/sistema" element={<AdminSystem />} />
               <Route path="/admin/roles" element={<AdminRoles />} />
             </Route>
+            
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
