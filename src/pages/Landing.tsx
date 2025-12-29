@@ -145,15 +145,6 @@ const Landing = () => {
                 </Button>
               </div>
 
-              {/* Stats */}
-              <div className="flex items-center gap-8">
-                {stats.map((stat, i) => (
-                  <div key={stat.label} className="flex flex-col">
-                    <span className="text-2xl font-bold text-foreground">{stat.value}</span>
-                    <span className="text-xs text-muted-foreground">{stat.label}</span>
-                  </div>
-                ))}
-              </div>
             </div>
 
             {/* Right - iPhone 3D mockup */}
