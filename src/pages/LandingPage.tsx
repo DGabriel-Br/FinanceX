@@ -95,6 +95,37 @@ const LandingPage = () => {
                       <div className="absolute bottom-[3px] left-1/2 -translate-x-1/2 w-14 h-[3px] bg-background/50 rounded-full" />
                     </div>
                   </div>
+                  
+                  {/* Floating card - Saldo (top left) - Mobile */}
+                  <div 
+                    className="absolute -top-2 -left-6 xs:-left-10 sm:-left-14 bg-card rounded-xl p-2.5 shadow-[0_10px_25px_-8px_rgba(0,0,0,0.3)] border border-border/30 backdrop-blur-sm animate-float z-10"
+                  >
+                    <div className="flex items-center gap-2">
+                      <div className="w-7 h-7 rounded-full bg-gradient-to-br from-income/30 to-income/10 flex items-center justify-center">
+                        <TrendingUp className="w-3.5 h-3.5 text-income" />
+                      </div>
+                      <div>
+                        <p className="text-[10px] text-muted-foreground font-medium">Saldo</p>
+                        <p className="text-xs font-bold text-income">+ R$ 2.450</p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  {/* Floating card - Economia (bottom right) - Mobile */}
+                  <div 
+                    className="absolute -bottom-2 -right-6 xs:-right-10 sm:-right-14 bg-card rounded-xl p-2.5 shadow-[0_10px_25px_-8px_rgba(0,0,0,0.3)] border border-border/30 backdrop-blur-sm animate-float z-10"
+                    style={{ animationDelay: '1.5s' }}
+                  >
+                    <div className="flex items-center gap-2">
+                      <div className="w-7 h-7 rounded-full bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center">
+                        <PieChart className="w-3.5 h-3.5 text-primary" />
+                      </div>
+                      <div>
+                        <p className="text-[10px] text-muted-foreground font-medium">Economia</p>
+                        <p className="text-xs font-bold text-foreground">32% do mês</p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
               
