@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
+import { ScrollReveal } from '@/components/ui/ScrollReveal';
 import { 
   ArrowRight, 
   Check, 
@@ -251,12 +252,14 @@ const Landing = () => {
       {/* How it works */}
       <section id="como-funciona" className="py-24 px-6 bg-muted/30">
         <div className="container mx-auto max-w-5xl">
-          <div className="text-center mb-16">
-            <p className="text-sm font-medium text-primary mb-3">Como funciona</p>
-            <h2 className="text-3xl sm:text-4xl font-bold text-foreground tracking-tight">
-              Três passos para o controle financeiro
-            </h2>
-          </div>
+          <ScrollReveal>
+            <div className="text-center mb-16">
+              <p className="text-sm font-medium text-primary mb-3">Como funciona</p>
+              <h2 className="text-3xl sm:text-4xl font-bold text-foreground tracking-tight">
+                Três passos para o controle financeiro
+              </h2>
+            </div>
+          </ScrollReveal>
 
           <div className="grid md:grid-cols-3 gap-8">
             {[
@@ -264,18 +267,20 @@ const Landing = () => {
               { step: '02', title: 'Visualize', desc: 'Gráficos mostram para onde seu dinheiro está indo. Sem surpresas.' },
               { step: '03', title: 'Economize', desc: 'Defina metas, acompanhe o progresso e veja seu patrimônio crescer.' }
             ].map((item, i) => (
-              <div key={item.step} className="relative">
-                <span className="text-6xl font-bold text-foreground/5 absolute -top-4 -left-2">
-                  {item.step}
-                </span>
-                <div className="relative pt-8">
-                  <h3 className="text-xl font-semibold text-foreground mb-2">{item.title}</h3>
-                  <p className="text-muted-foreground leading-relaxed">{item.desc}</p>
+              <ScrollReveal key={item.step} delay={i * 150}>
+                <div className="relative">
+                  <span className="text-6xl font-bold text-foreground/5 absolute -top-4 -left-2">
+                    {item.step}
+                  </span>
+                  <div className="relative pt-8">
+                    <h3 className="text-xl font-semibold text-foreground mb-2">{item.title}</h3>
+                    <p className="text-muted-foreground leading-relaxed">{item.desc}</p>
+                  </div>
+                  {i < 2 && (
+                    <ChevronRight className="hidden md:block absolute top-1/2 -right-4 h-6 w-6 text-border" />
+                  )}
                 </div>
-                {i < 2 && (
-                  <ChevronRight className="hidden md:block absolute top-1/2 -right-4 h-6 w-6 text-border" />
-                )}
-              </div>
+              </ScrollReveal>
             ))}
           </div>
         </div>
@@ -284,31 +289,34 @@ const Landing = () => {
       {/* Features Section */}
       <section id="recursos" className="py-24 px-6">
         <div className="container mx-auto max-w-6xl">
-          <div className="text-center mb-16">
-            <p className="text-sm font-medium text-primary mb-3">Recursos</p>
-            <h2 className="text-3xl sm:text-4xl font-bold text-foreground tracking-tight mb-4">
-              Tudo que você precisa.
-              <br />
-              <span className="text-muted-foreground font-normal">Nada que você não precisa.</span>
-            </h2>
-          </div>
+          <ScrollReveal>
+            <div className="text-center mb-16">
+              <p className="text-sm font-medium text-primary mb-3">Recursos</p>
+              <h2 className="text-3xl sm:text-4xl font-bold text-foreground tracking-tight mb-4">
+                Tudo que você precisa.
+                <br />
+                <span className="text-muted-foreground font-normal">Nada que você não precisa.</span>
+              </h2>
+            </div>
+          </ScrollReveal>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {features.map((feature) => (
-              <div 
-                key={feature.title}
-                className="group relative bg-card border border-border rounded-2xl p-6 hover:border-border/80 transition-all duration-300 hover:shadow-lg"
-              >
-                <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${feature.accent} flex items-center justify-center mb-4 shadow-lg`}>
-                  <feature.icon className="h-5 w-5 text-white" />
+            {features.map((feature, index) => (
+              <ScrollReveal key={feature.title} delay={index * 100}>
+                <div 
+                  className="group relative bg-card border border-border rounded-2xl p-6 hover:border-border/80 transition-all duration-300 hover:shadow-lg h-full"
+                >
+                  <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${feature.accent} flex items-center justify-center mb-4 shadow-lg`}>
+                    <feature.icon className="h-5 w-5 text-white" />
+                  </div>
+                  <h3 className="text-lg font-semibold text-foreground mb-2">
+                    {feature.title}
+                  </h3>
+                  <p className="text-sm text-muted-foreground leading-relaxed">
+                    {feature.description}
+                  </p>
                 </div>
-                <h3 className="text-lg font-semibold text-foreground mb-2">
-                  {feature.title}
-                </h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">
-                  {feature.description}
-                </p>
-              </div>
+              </ScrollReveal>
             ))}
           </div>
         </div>
@@ -317,105 +325,113 @@ const Landing = () => {
       {/* Pricing Section */}
       <section id="planos" className="py-24 px-6 bg-muted/30">
         <div className="container mx-auto max-w-4xl">
-          <div className="text-center mb-16">
-            <p className="text-sm font-medium text-primary mb-3">Planos</p>
-            <h2 className="text-3xl sm:text-4xl font-bold text-foreground tracking-tight mb-4">
-              Comece grátis, evolua quando quiser
-            </h2>
-            <p className="text-muted-foreground">
-              Sem surpresas. Sem taxas escondidas. Cancele quando quiser.
-            </p>
-          </div>
+          <ScrollReveal>
+            <div className="text-center mb-16">
+              <p className="text-sm font-medium text-primary mb-3">Planos</p>
+              <h2 className="text-3xl sm:text-4xl font-bold text-foreground tracking-tight mb-4">
+                Comece grátis, evolua quando quiser
+              </h2>
+              <p className="text-muted-foreground">
+                Sem surpresas. Sem taxas escondidas. Cancele quando quiser.
+              </p>
+            </div>
+          </ScrollReveal>
 
           <div className="grid md:grid-cols-2 gap-6">
             {/* Free Plan */}
-            <div className="bg-card border border-border rounded-2xl p-8 flex flex-col h-full">
-              <div className="mb-6">
-                <h3 className="text-xl font-semibold text-foreground mb-1">Gratuito</h3>
-                <p className="text-sm text-muted-foreground">Para experimentar sem compromisso</p>
+            <ScrollReveal delay={0}>
+              <div className="bg-card border border-border rounded-2xl p-8 flex flex-col h-full">
+                <div className="mb-6">
+                  <h3 className="text-xl font-semibold text-foreground mb-1">Gratuito</h3>
+                  <p className="text-sm text-muted-foreground">Para experimentar sem compromisso</p>
+                </div>
+                <div className="mb-6">
+                  <span className="text-4xl font-bold text-foreground">R$ 0</span>
+                  <span className="text-muted-foreground">/mês</span>
+                </div>
+                <ul className="space-y-3 flex-1 mb-8">
+                  {['50 transações/mês', 'Categorias padrão', 'Dashboard básico', '1 meta de investimento'].map((item) => (
+                    <li key={item} className="flex items-center gap-3 text-sm">
+                      <Check className="h-4 w-4 text-muted-foreground" />
+                      <span className="text-foreground">{item}</span>
+                    </li>
+                  ))}
+                </ul>
+                <Button variant="outline" size="lg" className="w-full rounded-xl" asChild>
+                  <Link to="/cadastro">Começar grátis</Link>
+                </Button>
               </div>
-              <div className="mb-6">
-                <span className="text-4xl font-bold text-foreground">R$ 0</span>
-                <span className="text-muted-foreground">/mês</span>
-              </div>
-              <ul className="space-y-3 flex-1 mb-8">
-                {['50 transações/mês', 'Categorias padrão', 'Dashboard básico', '1 meta de investimento'].map((item) => (
-                  <li key={item} className="flex items-center gap-3 text-sm">
-                    <Check className="h-4 w-4 text-muted-foreground" />
-                    <span className="text-foreground">{item}</span>
-                  </li>
-                ))}
-              </ul>
-              <Button variant="outline" size="lg" className="w-full rounded-xl" asChild>
-                <Link to="/cadastro">Começar grátis</Link>
-              </Button>
-            </div>
+            </ScrollReveal>
 
             {/* Pro Plan */}
-            <div className="relative bg-foreground text-background rounded-2xl p-8 flex flex-col h-full">
-              <div className="absolute top-4 right-4 bg-primary text-primary-foreground text-xs font-medium px-2.5 py-1 rounded-full">
-                Popular
+            <ScrollReveal delay={150}>
+              <div className="relative bg-foreground text-background rounded-2xl p-8 flex flex-col h-full">
+                <div className="absolute top-4 right-4 bg-primary text-primary-foreground text-xs font-medium px-2.5 py-1 rounded-full">
+                  Popular
+                </div>
+                <div className="mb-6">
+                  <h3 className="text-xl font-semibold mb-1">Pro</h3>
+                  <p className="text-sm opacity-70">Para quem leva finanças a sério</p>
+                </div>
+                <div className="mb-6">
+                  <span className="text-4xl font-bold">R$ 29</span>
+                  <span className="opacity-70">/mês</span>
+                </div>
+                <ul className="space-y-3 flex-1 mb-8">
+                  {[
+                    'Transações ilimitadas',
+                    'Categorias personalizadas', 
+                    'Gráficos avançados',
+                    'Metas ilimitadas',
+                    'Controle de dívidas',
+                    'Exportação Excel/PDF',
+                    'App mobile completo',
+                    'Suporte prioritário'
+                  ].map((item) => (
+                    <li key={item} className="flex items-center gap-3 text-sm">
+                      <Check className="h-4 w-4 text-primary" />
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+                <Button size="lg" className="w-full rounded-xl bg-primary hover:bg-primary/90" asChild>
+                  <Link to="/cadastro">Assinar Pro</Link>
+                </Button>
               </div>
-              <div className="mb-6">
-                <h3 className="text-xl font-semibold mb-1">Pro</h3>
-                <p className="text-sm opacity-70">Para quem leva finanças a sério</p>
-              </div>
-              <div className="mb-6">
-                <span className="text-4xl font-bold">R$ 29</span>
-                <span className="opacity-70">/mês</span>
-              </div>
-              <ul className="space-y-3 flex-1 mb-8">
-                {[
-                  'Transações ilimitadas',
-                  'Categorias personalizadas', 
-                  'Gráficos avançados',
-                  'Metas ilimitadas',
-                  'Controle de dívidas',
-                  'Exportação Excel/PDF',
-                  'App mobile completo',
-                  'Suporte prioritário'
-                ].map((item) => (
-                  <li key={item} className="flex items-center gap-3 text-sm">
-                    <Check className="h-4 w-4 text-primary" />
-                    <span>{item}</span>
-                  </li>
-                ))}
-              </ul>
-              <Button size="lg" className="w-full rounded-xl bg-primary hover:bg-primary/90" asChild>
-                <Link to="/cadastro">Assinar Pro</Link>
-              </Button>
-            </div>
+            </ScrollReveal>
           </div>
         </div>
       </section>
 
       {/* CTA Section */}
       <section className="py-24 px-6">
-        <div className="container mx-auto max-w-3xl text-center">
-          <h2 className="text-3xl sm:text-4xl font-bold text-foreground tracking-tight mb-4">
-            Sua jornada financeira
-            <br />
-            <span 
-              className="italic font-normal"
-              style={{ fontFamily: "'Instrument Serif', serif" }}
-            >
-              começa agora.
-            </span>
-          </h2>
-          <p className="text-lg text-muted-foreground mb-8 max-w-xl mx-auto">
-            Milhares de pessoas já transformaram sua relação com o dinheiro. 
-            Você pode ser a próxima.
-          </p>
-          <Button size="lg" className="rounded-full gap-2 shadow-lg shadow-primary/25 px-8" asChild>
-            <Link to="/cadastro">
-              Criar conta grátis
-              <ArrowRight className="h-4 w-4" />
-            </Link>
-          </Button>
-          <p className="text-xs text-muted-foreground mt-4">
-            Sem cartão de crédito • Configuração em 2 minutos
-          </p>
-        </div>
+        <ScrollReveal>
+          <div className="container mx-auto max-w-3xl text-center">
+            <h2 className="text-3xl sm:text-4xl font-bold text-foreground tracking-tight mb-4">
+              Sua jornada financeira
+              <br />
+              <span 
+                className="italic font-normal"
+                style={{ fontFamily: "'Instrument Serif', serif" }}
+              >
+                começa agora.
+              </span>
+            </h2>
+            <p className="text-lg text-muted-foreground mb-8 max-w-xl mx-auto">
+              Milhares de pessoas já transformaram sua relação com o dinheiro. 
+              Você pode ser a próxima.
+            </p>
+            <Button size="lg" className="rounded-full gap-2 shadow-lg shadow-primary/25 px-8" asChild>
+              <Link to="/cadastro">
+                Criar conta grátis
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </Button>
+            <p className="text-xs text-muted-foreground mt-4">
+              Sem cartão de crédito • Configuração em 2 minutos
+            </p>
+          </div>
+        </ScrollReveal>
       </section>
 
       {/* Footer */}
