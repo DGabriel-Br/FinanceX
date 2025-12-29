@@ -84,6 +84,7 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onResetPassword, onSucce
   const [isLoading, setIsLoading] = useState(false);
   const [isShaking, setIsShaking] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
+  const [resendCountdown, setResendCountdown] = useState(0);
 
   // Helper to detect if input is a phone number
   const isPhoneNumber = (value: string) => {
@@ -114,6 +115,14 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onResetPassword, onSucce
     localStorage.removeItem('financex_saved_email');
     localStorage.removeItem('financex_saved_phone');
   }, []);
+
+  // Countdown timer for resend functionality
+  useEffect(() => {
+    if (resendCountdown > 0) {
+      const timer = setTimeout(() => setResendCountdown(resendCountdown - 1), 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [resendCountdown]);
 
   const handleNavigate = (newScreen: Screen) => {
     const goingBack = newScreen === 'welcome' || (screen === 'forgot-password' && newScreen === 'login');
@@ -333,8 +342,8 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onResetPassword, onSucce
     }
   };
 
-  const handleForgotPassword = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleForgotPassword = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     
     try {
       emailSchema.parse(email);
@@ -350,6 +359,17 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onResetPassword, onSucce
     
     // Always show success state for security (don't reveal if email exists)
     setEmailSent(true);
+    setResendCountdown(120); // 2 minutes countdown
+  };
+
+  const handleResendRecovery = async () => {
+    if (resendCountdown > 0) return;
+    
+    setIsLoading(true);
+    await onResetPassword(email);
+    setIsLoading(false);
+    setResendCountdown(120); // Reset countdown
+    toast.success('Link de recuperação reenviado!');
   };
 
   // CSS Animations
@@ -774,6 +794,23 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onResetPassword, onSucce
               <p className="text-white/60 text-sm mb-8 max-w-xs">
                 Se o e-mail informado existir em nossa base, você receberá um link para redefinir sua senha.
               </p>
+              
+              {/* Resend button with countdown */}
+              <Button
+                onClick={handleResendRecovery}
+                disabled={resendCountdown > 0 || isLoading}
+                variant="ghost"
+                className="w-full h-14 text-base font-medium rounded-full text-white/70 hover:text-white hover:bg-white/5 mb-3"
+              >
+                {isLoading ? (
+                  <Loader2 className="w-5 h-5 animate-spin" />
+                ) : resendCountdown > 0 ? (
+                  `Reenviar link em ${Math.floor(resendCountdown / 60)}:${(resendCountdown % 60).toString().padStart(2, '0')}`
+                ) : (
+                  'Reenviar link de recuperação'
+                )}
+              </Button>
+
               <Button
                 onClick={() => handleNavigate('login')}
                 variant="outline"
