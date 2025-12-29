@@ -348,13 +348,9 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onResetPassword, onSucce
     const { error } = await onResetPassword(email);
     setIsLoading(false);
     
-    if (error) {
-      triggerShake();
-      toast.error('Erro ao enviar email: ' + error.message);
-    } else {
-      setEmailSent(true);
-      toast.success('Email de recuperação enviado!');
-    }
+    // Always show success message for security (don't reveal if email exists)
+    setEmailSent(true);
+    toast.success('Se o e-mail existir em nossa base, enviaremos um link de recuperação.');
   };
 
   // CSS Animations
