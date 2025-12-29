@@ -174,7 +174,7 @@ const Landing = () => {
                   <img 
                     src={iphoneMockup} 
                     alt="FinanceX App no iPhone" 
-                    className="w-[280px] sm:w-[320px] md:w-[380px] lg:w-[450px] xl:w-[500px] h-auto"
+                    className="w-[320px] sm:w-[400px] md:w-[480px] lg:w-[550px] xl:w-[620px] h-auto"
                   />
                 </div>
 
