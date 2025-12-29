@@ -173,32 +173,50 @@ const Landing = () => {
                   className="iphone-3d relative"
                   style={{ transformStyle: 'preserve-3d' }}
                 >
+                  {/* 3D Side depth - Right edge */}
+                  <div 
+                    className="absolute top-0 -right-3 w-3 h-full"
+                    style={{
+                      background: 'linear-gradient(90deg, #636366 0%, #3a3a3c 50%, #2c2c2e 100%)',
+                      borderRadius: '0 8px 8px 0',
+                      transform: 'rotateY(-90deg) translateZ(0px)',
+                      transformOrigin: 'left center',
+                    }}
+                  />
+                  
                   {/* iPhone frame - Premium titanium finish */}
                   <div 
                     className="relative overflow-hidden"
                     style={{
-                      background: 'linear-gradient(160deg, #e8e8ed 0%, #d1d1d6 20%, #a1a1a6 50%, #8e8e93 70%, #636366 90%, #48484a 100%)',
+                      background: 'linear-gradient(120deg, #f5f5f7 0%, #e8e8ed 10%, #d1d1d6 30%, #a1a1a6 60%, #8e8e93 80%, #636366 100%)',
                       padding: '5px',
                       borderRadius: '56px',
+                      boxShadow: '8px 0 20px -5px rgba(0, 0, 0, 0.3)',
                     }}
                   >
-                    {/* Side buttons - Volume */}
+                    {/* Right side 3D edge visible */}
                     <div 
-                      className="absolute -left-[5px] top-28 w-[5px] h-8"
-                      style={{ background: 'linear-gradient(90deg, #48484a, #8e8e93, #636366)', borderRadius: '3px 0 0 3px' }}
+                      className="absolute top-0 -right-[8px] w-[8px] h-full pointer-events-none"
+                      style={{
+                        background: 'linear-gradient(90deg, #636366 0%, #48484a 40%, #3a3a3c 70%, #2c2c2e 100%)',
+                        borderRadius: '0 12px 12px 0',
+                      }}
+                    />
+                    
+                    {/* Side buttons - Volume (left side, less visible due to rotation) */}
+                    <div 
+                      className="absolute -left-[4px] top-28 w-[4px] h-8 opacity-60"
+                      style={{ background: 'linear-gradient(90deg, #48484a, #636366)', borderRadius: '3px 0 0 3px' }}
                     />
                     <div 
-                      className="absolute -left-[5px] top-40 w-[5px] h-16"
-                      style={{ background: 'linear-gradient(90deg, #48484a, #8e8e93, #636366)', borderRadius: '3px 0 0 3px' }}
+                      className="absolute -left-[4px] top-40 w-[4px] h-14 opacity-60"
+                      style={{ background: 'linear-gradient(90deg, #48484a, #636366)', borderRadius: '3px 0 0 3px' }}
                     />
+                    
+                    {/* Side button - Power (right side, more prominent) */}
                     <div 
-                      className="absolute -left-[5px] top-[240px] w-[5px] h-16"
-                      style={{ background: 'linear-gradient(90deg, #48484a, #8e8e93, #636366)', borderRadius: '3px 0 0 3px' }}
-                    />
-                    {/* Side button - Power */}
-                    <div 
-                      className="absolute -right-[5px] top-40 w-[5px] h-24"
-                      style={{ background: 'linear-gradient(270deg, #48484a, #8e8e93, #636366)', borderRadius: '0 3px 3px 0' }}
+                      className="absolute -right-[6px] top-40 w-[6px] h-24"
+                      style={{ background: 'linear-gradient(270deg, #2c2c2e, #48484a, #636366)', borderRadius: '0 4px 4px 0' }}
                     />
                     
                     {/* Inner bezel */}

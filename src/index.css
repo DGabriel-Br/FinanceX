@@ -271,10 +271,10 @@
 /* iPhone 3D Mockup Animations */
 @keyframes iphone-float {
   0%, 100% {
-    transform: perspective(1500px) rotateY(-12deg) rotateX(8deg) rotateZ(2deg) translateY(0);
+    transform: perspective(1500px) rotateY(25deg) rotateX(5deg) rotateZ(-2deg) translateY(0);
   }
   50% {
-    transform: perspective(1500px) rotateY(-12deg) rotateX(8deg) rotateZ(2deg) translateY(-20px);
+    transform: perspective(1500px) rotateY(25deg) rotateX(5deg) rotateZ(-2deg) translateY(-15px);
   }
 }
 
