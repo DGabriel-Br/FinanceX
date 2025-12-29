@@ -258,9 +258,9 @@ const Landing = () => {
             {plans.map((plan) => (
               <Card 
                 key={plan.name}
-                className={`relative overflow-hidden transition-all duration-300 ${
+                className={`relative overflow-hidden transition-all duration-300 h-full ${
                   plan.highlighted 
-                    ? 'border-primary shadow-xl scale-105' 
+                    ? 'border-primary shadow-xl' 
                     : 'border-border hover:border-primary/50'
                 }`}
               >
