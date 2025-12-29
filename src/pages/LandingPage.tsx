@@ -9,6 +9,7 @@ import { PublicHeader } from '@/components/landing/PublicHeader';
 import dashboardPreview from '@/assets/dashboard-preview.png';
 import transactionsPreview from '@/assets/transactions-preview.png';
 import debtsPreview from '@/assets/debts-preview.png';
+import investmentsPreview from '@/assets/investments-preview.png';
 
 const LandingPage = () => {
   const scrollToSection = (id: string) => {
@@ -116,13 +117,13 @@ const LandingPage = () => {
               </div>
             </Card>
 
-            <div className="grid sm:grid-cols-3 gap-4">
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <Card className="text-center overflow-hidden">
-                <div className="aspect-square bg-muted">
+                <div className="aspect-[4/3] bg-muted">
                   <img 
                     src={transactionsPreview} 
                     alt="Tela de lançamentos" 
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-cover object-top"
                   />
                 </div>
                 <CardContent className="py-4">
@@ -130,11 +131,11 @@ const LandingPage = () => {
                 </CardContent>
               </Card>
               <Card className="text-center overflow-hidden">
-                <div className="aspect-square bg-muted">
+                <div className="aspect-[4/3] bg-muted">
                   <img 
                     src={dashboardPreview} 
                     alt="Tela do dashboard" 
-                    className="w-full h-full object-cover object-left-top"
+                    className="w-full h-full object-cover object-top"
                   />
                 </div>
                 <CardContent className="py-4">
@@ -142,15 +143,27 @@ const LandingPage = () => {
                 </CardContent>
               </Card>
               <Card className="text-center overflow-hidden">
-                <div className="aspect-square bg-muted">
+                <div className="aspect-[4/3] bg-muted">
                   <img 
                     src={debtsPreview} 
-                    alt="Tela de dívidas e investimentos" 
-                    className="w-full h-full object-cover"
+                    alt="Tela de dívidas" 
+                    className="w-full h-full object-cover object-top"
                   />
                 </div>
                 <CardContent className="py-4">
-                  <p className="font-medium">Dívidas e Investimentos</p>
+                  <p className="font-medium">Dívidas</p>
+                </CardContent>
+              </Card>
+              <Card className="text-center overflow-hidden">
+                <div className="aspect-[4/3] bg-muted">
+                  <img 
+                    src={investmentsPreview} 
+                    alt="Tela de investimentos" 
+                    className="w-full h-full object-cover object-top"
+                  />
+                </div>
+                <CardContent className="py-4">
+                  <p className="font-medium">Investimentos</p>
                 </CardContent>
               </Card>
             </div>
