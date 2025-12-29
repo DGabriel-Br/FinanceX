@@ -6,7 +6,6 @@ import { BrowserRouter, Routes, Route, Navigate, Outlet } from "react-router-dom
 import { AuthProvider } from "@/contexts/AuthContext";
 import { AdminPeriodProvider } from "@/contexts/AdminPeriodContext";
 import Index from "./pages/Index";
-import LandingPage from "./pages/LandingPage";
 import Auth from "./pages/Auth";
 import ResetPassword from "./pages/ResetPassword";
 import Settings from "./pages/Settings";
@@ -35,7 +34,7 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<LandingPage />} />
+            <Route path="/" element={<Navigate to="/dashboard" replace />} />
             <Route path="/dashboard" element={<Index />} />
             <Route path="/lancamentos" element={<Index />} />
             <Route path="/investimentos" element={<Index />} />
