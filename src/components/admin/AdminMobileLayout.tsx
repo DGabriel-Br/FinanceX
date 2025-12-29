@@ -1,26 +1,19 @@
 import { ReactNode } from 'react';
-import { AdminSidebar } from './AdminSidebar';
+import { AdminMobileHeader } from './AdminMobileHeader';
+import { AdminMobileNav } from './AdminMobileNav';
 import { AdminGuard } from './AdminGuard';
-import { AdminMobileLayout } from './AdminMobileLayout';
-import { useIsNativeApp } from '@/hooks/useIsNativeApp';
 
-interface AdminLayoutProps {
+interface AdminMobileLayoutProps {
   children: ReactNode;
 }
 
-export const AdminLayout = ({ children }: AdminLayoutProps) => {
-  const isNativeApp = useIsNativeApp();
-
-  // Use mobile layout for native app
-  if (isNativeApp) {
-    return <AdminMobileLayout>{children}</AdminMobileLayout>;
-  }
-
+export const AdminMobileLayout = ({ children }: AdminMobileLayoutProps) => {
   return (
     <AdminGuard>
-      <div className="flex min-h-screen bg-background">
-        <AdminSidebar />
-        <main className="flex-1 overflow-auto">
+      <div className="min-h-screen bg-background flex flex-col">
+        <AdminMobileHeader />
+        
+        <main className="flex-1 overflow-auto px-4 pb-24">
           {/* Subtle background pattern */}
           <div className="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
             <div className="absolute -top-40 -right-40 w-80 h-80 bg-primary/5 rounded-full blur-3xl" />
@@ -28,10 +21,12 @@ export const AdminLayout = ({ children }: AdminLayoutProps) => {
             <div className="absolute -bottom-40 right-1/3 w-80 h-80 bg-income/5 rounded-full blur-3xl" />
           </div>
           
-          <div className="p-8 animate-fade-in">
+          <div className="animate-fade-in">
             {children}
           </div>
         </main>
+        
+        <AdminMobileNav />
       </div>
     </AdminGuard>
   );
