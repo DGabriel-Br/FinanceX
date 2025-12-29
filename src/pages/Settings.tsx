@@ -390,9 +390,10 @@ export default function Settings() {
           </h2>
 
           {/* Email */}
-          <p className="text-sm text-muted-foreground">
-            {user?.email}
-          </p>
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <Mail className="w-4 h-4" />
+            <span>{user?.email}</span>
+          </div>
         </div>
 
         {/* Settings Cards */}
