@@ -1,11 +1,12 @@
 import { Link } from 'react-router-dom';
-import { Check, X, Zap, LayoutDashboard, TrendingUp, Shield, PieChart, ArrowRight, Sparkles } from 'lucide-react';
+import { Check, X, Zap, LayoutDashboard, TrendingUp, Shield, PieChart, ArrowRight, Sparkles, Star, Users, Lock, Rocket } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { PublicHeader } from '@/components/landing/PublicHeader';
 import { FinanceLogo } from '@/components/ui/FinanceLogo';
+import { useEffect, useRef } from 'react';
 import dashboardPreview from '@/assets/dashboard-preview.png';
 import transactionsPreview from '@/assets/transactions-preview.png';
 import debtsPreview from '@/assets/debts-preview.png';
@@ -19,80 +20,124 @@ const LandingPage = () => {
     }
   };
 
+  // Intersection Observer for reveal animations
+  useEffect(() => {
+    const observerCallback: IntersectionObserverCallback = (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+        }
+      });
+    };
+
+    const observer = new IntersectionObserver(observerCallback, {
+      threshold: 0.1,
+      rootMargin: '0px 0px -50px 0px',
+    });
+
+    const revealElements = document.querySelectorAll('.reveal, .reveal-left, .reveal-right, .reveal-scale');
+    revealElements.forEach((el) => observer.observe(el));
+
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
       <PublicHeader />
 
       <main>
         {/* HERO - Seção com gradiente e visual impactante */}
-        <section className="relative overflow-hidden">
-          {/* Background gradient */}
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-income/5" />
-          <div className="absolute top-20 -right-40 w-96 h-96 bg-primary/10 rounded-full blur-3xl" />
-          <div className="absolute -bottom-20 -left-40 w-96 h-96 bg-income/10 rounded-full blur-3xl" />
+        <section className="relative overflow-hidden min-h-[90vh] flex items-center">
+          {/* Animated background blobs */}
+          <div className="absolute inset-0 overflow-hidden">
+            <div className="absolute top-1/4 -right-20 w-[500px] h-[500px] bg-primary/20 rounded-full blur-[100px] animate-blob" />
+            <div className="absolute -bottom-20 -left-20 w-[400px] h-[400px] bg-income/15 rounded-full blur-[100px] animate-blob" style={{ animationDelay: '2s' }} />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[120px] animate-pulse-soft" />
+          </div>
+          
+          {/* Grid pattern overlay */}
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,hsl(var(--border)/0.3)_1px,transparent_1px),linear-gradient(to_bottom,hsl(var(--border)/0.3)_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,#000_70%,transparent_110%)]" />
           
           <div className="container relative py-20 md:py-32">
-            <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+            <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
               <div className="space-y-8 text-center lg:text-left">
-                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium">
+                <div className="reveal inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium backdrop-blur-sm">
                   <Sparkles className="w-4 h-4" />
                   Controle financeiro simplificado
                 </div>
                 
-                <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.1]">
+                <h1 className="reveal text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold tracking-tight leading-[1.1]" style={{ animationDelay: '0.1s' }}>
                   Chega de{' '}
-                  <span className="text-primary relative">
+                  <span className="gradient-text relative inline-block">
                     planilha
-                    <svg className="absolute -bottom-2 left-0 w-full h-3 text-primary/30" viewBox="0 0 200 12" preserveAspectRatio="none">
-                      <path d="M0,8 Q50,0 100,8 T200,8" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round"/>
+                    <svg className="absolute -bottom-2 left-0 w-full h-4 text-primary/40" viewBox="0 0 200 12" preserveAspectRatio="none">
+                      <path d="M0,8 Q50,0 100,8 T200,8" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round"/>
                     </svg>
                   </span>
                   .
                 </h1>
                 
-                <p className="text-lg md:text-xl text-muted-foreground max-w-lg mx-auto lg:mx-0">
+                <p className="reveal text-lg md:text-xl text-muted-foreground max-w-lg mx-auto lg:mx-0 leading-relaxed" style={{ animationDelay: '0.2s' }}>
                   No FinanceX você lança e pronto. O app organiza e mostra seu mês na hora.
                 </p>
                 
-                <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                  <Button size="lg" className="text-base px-8 h-12 shadow-lg shadow-primary/25" asChild>
+                <div className="reveal flex flex-col sm:flex-row gap-4 justify-center lg:justify-start" style={{ animationDelay: '0.3s' }}>
+                  <Button size="lg" className="text-base px-8 h-14 shadow-xl shadow-primary/30 shine-effect group" asChild>
                     <Link to="/cadastro">
                       Criar conta grátis
-                      <ArrowRight className="w-4 h-4 ml-2" />
+                      <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
                     </Link>
                   </Button>
-                  <Button size="lg" variant="outline" className="text-base px-8 h-12" onClick={() => scrollToSection('#como-funciona')}>
+                  <Button size="lg" variant="outline" className="text-base px-8 h-14 backdrop-blur-sm bg-background/50" onClick={() => scrollToSection('#como-funciona')}>
                     Ver como funciona
                   </Button>
                 </div>
                 
-                <p className="text-sm text-muted-foreground flex items-center gap-2 justify-center lg:justify-start">
-                  <Check className="w-4 h-4 text-income" />
-                  Sem cartão no Free
-                </p>
+                <div className="reveal flex items-center gap-6 justify-center lg:justify-start text-sm text-muted-foreground" style={{ animationDelay: '0.4s' }}>
+                  <span className="flex items-center gap-2">
+                    <Check className="w-4 h-4 text-income" />
+                    Sem cartão
+                  </span>
+                  <span className="flex items-center gap-2">
+                    <Check className="w-4 h-4 text-income" />
+                    Setup em 30s
+                  </span>
+                </div>
               </div>
               
               {/* Hero Image com efeito de profundidade */}
-              <div className="relative">
-                <div className="absolute inset-4 bg-gradient-to-br from-primary/20 to-income/20 rounded-2xl blur-2xl" />
-                <Card className="relative overflow-hidden shadow-2xl border-0 bg-card/80 backdrop-blur">
-                  <img 
-                    src={dashboardPreview} 
-                    alt="Dashboard do FinanceX mostrando resumo financeiro mensal" 
-                    className="w-full h-auto"
-                  />
-                </Card>
+              <div className="reveal-right relative">
+                <div className="absolute inset-4 bg-gradient-to-br from-primary/30 to-income/20 rounded-3xl blur-3xl animate-pulse-soft" />
+                <div className="relative group">
+                  <div className="absolute -inset-1 bg-gradient-to-br from-primary to-income rounded-2xl blur opacity-30 group-hover:opacity-50 transition-opacity duration-500" />
+                  <Card className="relative overflow-hidden shadow-2xl border-0 bg-card/90 backdrop-blur rounded-2xl">
+                    <img 
+                      src={dashboardPreview} 
+                      alt="Dashboard do FinanceX mostrando resumo financeiro mensal" 
+                      className="w-full h-auto transform group-hover:scale-[1.02] transition-transform duration-700"
+                    />
+                  </Card>
+                </div>
               </div>
+            </div>
+          </div>
+          
+          {/* Scroll indicator */}
+          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
+            <div className="w-6 h-10 rounded-full border-2 border-muted-foreground/30 flex items-start justify-center p-2">
+              <div className="w-1 h-2 bg-muted-foreground/50 rounded-full animate-pulse" />
             </div>
           </div>
         </section>
 
         {/* RECONHECIMENTO - Seção com visual mais dramático */}
-        <section className="bg-muted/50 py-20 md:py-28">
-          <div className="container">
-            <div className="max-w-3xl mx-auto text-center space-y-10">
-              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold">
-                Você sabe <span className="text-primary">como é</span>.
+        <section className="relative bg-muted/50 py-24 md:py-32 overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-b from-background via-transparent to-background" />
+          
+          <div className="container relative">
+            <div className="max-w-3xl mx-auto text-center space-y-12">
+              <h2 className="reveal text-3xl md:text-4xl lg:text-5xl font-bold">
+                Você sabe <span className="gradient-text">como é</span>.
               </h2>
               
               <div className="grid sm:grid-cols-2 gap-4 text-left max-w-2xl mx-auto">
@@ -105,18 +150,19 @@ const LandingPage = () => {
                 ].map((text, i) => (
                   <div 
                     key={i} 
-                    className={`flex items-start gap-3 p-4 rounded-lg bg-background/80 border border-border/50 ${i === 4 ? 'sm:col-span-2' : ''}`}
+                    className={`reveal flex items-start gap-3 p-5 rounded-xl bg-background/80 border border-border/50 backdrop-blur-sm card-hover-lift ${i === 4 ? 'sm:col-span-2' : ''}`}
+                    style={{ animationDelay: `${i * 0.1}s` }}
                   >
-                    <span className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-xs font-bold text-primary shrink-0">
+                    <span className="w-8 h-8 rounded-full bg-gradient-to-br from-primary to-primary/50 flex items-center justify-center text-sm font-bold text-primary-foreground shrink-0">
                       {i + 1}
                     </span>
-                    <span className="text-muted-foreground">{text}</span>
+                    <span className="text-muted-foreground text-lg">{text}</span>
                   </div>
                 ))}
               </div>
               
-              <div className="pt-6">
-                <p className="text-2xl md:text-3xl font-bold">
+              <div className="reveal pt-8">
+                <p className="text-2xl md:text-4xl font-bold">
                   O problema não é você.{' '}
                   <span className="text-expense">É a planilha.</span>
                 </p>
@@ -126,49 +172,62 @@ const LandingPage = () => {
         </section>
 
         {/* DEMONSTRAÇÃO */}
-        <section id="como-funciona" className="py-20 md:py-28 scroll-mt-20">
+        <section id="como-funciona" className="py-24 md:py-32 scroll-mt-20 relative">
           <div className="container">
-            <div className="max-w-5xl mx-auto space-y-12">
+            <div className="max-w-5xl mx-auto space-y-16">
               <div className="text-center space-y-4">
-                <Badge variant="secondary" className="px-4 py-1.5">Como funciona</Badge>
-                <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold">
-                  Veja na <span className="text-primary">prática</span>
+                <Badge variant="secondary" className="reveal px-4 py-1.5 text-sm">Como funciona</Badge>
+                <h2 className="reveal text-3xl md:text-4xl lg:text-5xl font-bold" style={{ animationDelay: '0.1s' }}>
+                  Veja na <span className="gradient-text">prática</span>
                 </h2>
-                <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+                <p className="reveal text-lg text-muted-foreground max-w-2xl mx-auto" style={{ animationDelay: '0.2s' }}>
                   Você lança, o FinanceX organiza e você enxerga. Sem ficar arrumando planilha.
                 </p>
               </div>
 
               {/* Main preview */}
-              <div className="relative">
-                <div className="absolute inset-4 bg-gradient-to-br from-primary/10 to-transparent rounded-2xl blur-2xl" />
-                <Card className="relative overflow-hidden shadow-xl">
-                  <img 
-                    src={dashboardPreview} 
-                    alt="Demonstração do dashboard FinanceX" 
-                    className="w-full h-auto"
-                  />
-                </Card>
+              <div className="reveal-scale relative">
+                <div className="absolute inset-8 bg-gradient-to-br from-primary/20 to-income/10 rounded-3xl blur-3xl" />
+                <div className="relative group">
+                  <div className="absolute -inset-0.5 bg-gradient-to-br from-primary to-income rounded-2xl blur opacity-20 group-hover:opacity-40 transition-opacity duration-500" />
+                  <Card className="relative overflow-hidden shadow-2xl border-0 rounded-2xl">
+                    <img 
+                      src={dashboardPreview} 
+                      alt="Demonstração do dashboard FinanceX" 
+                      className="w-full h-auto"
+                    />
+                  </Card>
+                </div>
               </div>
 
               {/* Feature cards */}
-              <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
                 {[
-                  { img: transactionsPreview, title: 'Lançamentos', desc: 'Registre em segundos' },
-                  { img: dashboardPreview, title: 'Dashboard', desc: 'Veja seu mês' },
-                  { img: debtsPreview, title: 'Dívidas', desc: 'Acompanhe o progresso' },
-                  { img: investmentsPreview, title: 'Investimentos', desc: 'Alcance suas metas' },
-                ].map((item) => (
-                  <Card key={item.title} className="group overflow-hidden hover:shadow-lg transition-all duration-300 hover:-translate-y-1">
-                    <div className="aspect-[4/3] bg-muted overflow-hidden">
+                  { img: transactionsPreview, title: 'Lançamentos', desc: 'Registre em segundos', icon: Zap },
+                  { img: dashboardPreview, title: 'Dashboard', desc: 'Veja seu mês', icon: LayoutDashboard },
+                  { img: debtsPreview, title: 'Dívidas', desc: 'Acompanhe o progresso', icon: TrendingUp },
+                  { img: investmentsPreview, title: 'Investimentos', desc: 'Alcance suas metas', icon: Rocket },
+                ].map((item, i) => (
+                  <Card 
+                    key={item.title} 
+                    className="reveal group overflow-hidden card-hover-lift border-border/50 bg-card/80 backdrop-blur-sm"
+                    style={{ animationDelay: `${i * 0.1}s` }}
+                  >
+                    <div className="aspect-[4/3] bg-muted overflow-hidden relative">
                       <img 
                         src={item.img} 
                         alt={item.title} 
-                        className="w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-500"
+                        className="w-full h-full object-cover object-top group-hover:scale-110 transition-transform duration-700"
                       />
+                      <div className="absolute inset-0 bg-gradient-to-t from-card to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                     </div>
-                    <CardContent className="py-4">
-                      <p className="font-semibold">{item.title}</p>
+                    <CardContent className="py-5 space-y-2">
+                      <div className="flex items-center gap-2">
+                        <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                          <item.icon className="w-4 h-4 text-primary" />
+                        </div>
+                        <p className="font-semibold">{item.title}</p>
+                      </div>
                       <p className="text-sm text-muted-foreground">{item.desc}</p>
                     </CardContent>
                   </Card>
@@ -179,31 +238,41 @@ const LandingPage = () => {
         </section>
 
         {/* COMO FUNCIONA - 3 PASSOS */}
-        <section className="bg-muted/50 py-20 md:py-28">
-          <div className="container">
+        <section className="bg-muted/30 py-24 md:py-32 relative overflow-hidden">
+          <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/5 rounded-full blur-[100px]" />
+          
+          <div className="container relative">
             <div className="max-w-4xl mx-auto">
-              <div className="text-center mb-12">
-                <h2 className="text-3xl md:text-4xl font-bold">
+              <div className="text-center mb-16">
+                <h2 className="reveal text-3xl md:text-4xl lg:text-5xl font-bold">
                   Simples assim
                 </h2>
               </div>
               
-              <div className="grid md:grid-cols-3 gap-8">
+              <div className="grid md:grid-cols-3 gap-8 relative">
+                {/* Connection line */}
+                <div className="hidden md:block absolute top-16 left-[20%] right-[20%] h-0.5 bg-gradient-to-r from-primary/20 via-primary to-primary/20" />
+                
                 {[
-                  { icon: Zap, title: 'Você anota em segundos', step: '01' },
-                  { icon: PieChart, title: 'O app organiza sozinho', step: '02' },
-                  { icon: LayoutDashboard, title: 'Você vê seu mês na hora', step: '03' },
-                ].map((item) => (
-                  <div key={item.step} className="relative text-center group">
-                    <div className="absolute -top-4 left-1/2 -translate-x-1/2 text-6xl font-black text-primary/10 select-none">
-                      {item.step}
-                    </div>
-                    <div className="relative pt-8">
-                      <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4 group-hover:bg-primary/20 transition-colors">
-                        <item.icon className="w-8 h-8 text-primary" />
+                  { icon: Zap, title: 'Você anota em segundos', step: '01', desc: 'Lançamento rápido e intuitivo' },
+                  { icon: PieChart, title: 'O app organiza sozinho', step: '02', desc: 'Categorização automática' },
+                  { icon: LayoutDashboard, title: 'Você vê seu mês na hora', step: '03', desc: 'Dashboard em tempo real' },
+                ].map((item, i) => (
+                  <div 
+                    key={item.step} 
+                    className="reveal relative text-center group"
+                    style={{ animationDelay: `${i * 0.15}s` }}
+                  >
+                    <div className="relative z-10 mb-6">
+                      <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center mx-auto shadow-xl shadow-primary/25 group-hover:scale-110 group-hover:shadow-primary/40 transition-all duration-300">
+                        <item.icon className="w-10 h-10 text-primary-foreground" />
                       </div>
-                      <h3 className="text-lg font-semibold">{item.title}</h3>
+                      <div className="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-background border-2 border-primary flex items-center justify-center text-xs font-bold text-primary">
+                        {item.step}
+                      </div>
                     </div>
+                    <h3 className="text-lg font-semibold mb-2">{item.title}</h3>
+                    <p className="text-sm text-muted-foreground">{item.desc}</p>
                   </div>
                 ))}
               </div>
@@ -212,13 +281,14 @@ const LandingPage = () => {
         </section>
 
         {/* MECANISMO ÚNICO */}
-        <section className="py-20 md:py-28">
+        <section className="py-24 md:py-32 relative">
           <div className="container">
-            <div className="max-w-4xl mx-auto">
-              <div className="grid md:grid-cols-2 gap-12 items-center">
-                <div className="space-y-6">
-                  <h2 className="text-3xl md:text-4xl font-bold">
-                    Tudo em um <span className="text-primary">lugar só</span>.
+            <div className="max-w-5xl mx-auto">
+              <div className="grid md:grid-cols-2 gap-16 items-center">
+                <div className="reveal-left space-y-8">
+                  <Badge variant="secondary" className="px-4 py-1.5">Recursos</Badge>
+                  <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold">
+                    Tudo em um <span className="gradient-text">lugar só</span>.
                   </h2>
                   <ul className="space-y-4">
                     {[
@@ -228,11 +298,14 @@ const LandingPage = () => {
                       { text: 'Importar e exportar dados', pro: true },
                       { text: 'Backup e sincronização', pro: true },
                     ].map((item, i) => (
-                      <li key={i} className="flex items-start gap-3 p-3 rounded-lg hover:bg-muted/50 transition-colors">
-                        <div className="w-6 h-6 rounded-full bg-income/10 flex items-center justify-center shrink-0 mt-0.5">
-                          <Check className="w-4 h-4 text-income" />
+                      <li 
+                        key={i} 
+                        className="flex items-start gap-4 p-4 rounded-xl hover:bg-muted/50 transition-colors group"
+                      >
+                        <div className="w-8 h-8 rounded-full bg-income/10 flex items-center justify-center shrink-0 group-hover:bg-income/20 transition-colors">
+                          <Check className="w-5 h-5 text-income" />
                         </div>
-                        <span className="flex-1">
+                        <span className="flex-1 text-lg">
                           {item.text}
                           {item.pro && <Badge variant="secondary" className="ml-2 text-xs">Pro</Badge>}
                         </span>
@@ -240,15 +313,18 @@ const LandingPage = () => {
                     ))}
                   </ul>
                 </div>
-                <div className="relative">
-                  <div className="absolute inset-4 bg-gradient-to-br from-income/20 to-primary/10 rounded-2xl blur-2xl" />
-                  <Card className="relative overflow-hidden shadow-xl">
-                    <img 
-                      src={investmentsPreview} 
-                      alt="Tela de investimentos e metas" 
-                      className="w-full h-auto"
-                    />
-                  </Card>
+                <div className="reveal-right relative">
+                  <div className="absolute inset-4 bg-gradient-to-br from-income/30 to-primary/10 rounded-3xl blur-3xl" />
+                  <div className="relative group">
+                    <div className="absolute -inset-1 bg-gradient-to-br from-income to-primary rounded-2xl blur opacity-20 group-hover:opacity-40 transition-opacity duration-500" />
+                    <Card className="relative overflow-hidden shadow-2xl border-0 rounded-2xl">
+                      <img 
+                        src={investmentsPreview} 
+                        alt="Tela de investimentos e metas" 
+                        className="w-full h-auto"
+                      />
+                    </Card>
+                  </div>
                 </div>
               </div>
             </div>
@@ -256,49 +332,51 @@ const LandingPage = () => {
         </section>
 
         {/* PARA QUEM É / NÃO É */}
-        <section className="bg-muted/50 py-20 md:py-28">
+        <section className="bg-muted/30 py-24 md:py-32">
           <div className="container">
-            <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-              <Card className="border-2 border-income/20 hover:border-income/40 transition-colors">
+            <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
+              <Card className="reveal border-2 border-income/20 hover:border-income/50 transition-all duration-300 card-hover-lift overflow-hidden group">
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-income to-income/50" />
                 <CardHeader className="pb-4">
-                  <div className="w-12 h-12 rounded-xl bg-income/10 flex items-center justify-center mb-2">
-                    <Check className="w-6 h-6 text-income" />
+                  <div className="w-14 h-14 rounded-2xl bg-income/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                    <Check className="w-7 h-7 text-income" />
                   </div>
-                  <CardTitle className="text-xl">É para você se</CardTitle>
+                  <CardTitle className="text-2xl">É para você se</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <ul className="space-y-3">
+                  <ul className="space-y-4">
                     {[
-                      'quer sair da planilha',
+                      'quer sair da planilha de vez',
                       'quer entender seus gastos sem complicar',
                       'quer ver o mês de um jeito simples',
                     ].map((text, i) => (
                       <li key={i} className="flex items-start gap-3">
-                        <Check className="w-5 h-5 text-income mt-0.5 shrink-0" />
-                        <span className="text-muted-foreground">{text}</span>
+                        <Check className="w-5 h-5 text-income mt-1 shrink-0" />
+                        <span className="text-muted-foreground text-lg">{text}</span>
                       </li>
                     ))}
                   </ul>
                 </CardContent>
               </Card>
               
-              <Card className="border-2 border-expense/20 hover:border-expense/40 transition-colors">
+              <Card className="reveal border-2 border-expense/20 hover:border-expense/50 transition-all duration-300 card-hover-lift overflow-hidden group" style={{ animationDelay: '0.1s' }}>
+                <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-expense to-expense/50" />
                 <CardHeader className="pb-4">
-                  <div className="w-12 h-12 rounded-xl bg-expense/10 flex items-center justify-center mb-2">
-                    <X className="w-6 h-6 text-expense" />
+                  <div className="w-14 h-14 rounded-2xl bg-expense/10 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                    <X className="w-7 h-7 text-expense" />
                   </div>
-                  <CardTitle className="text-xl">Não é para você se</CardTitle>
+                  <CardTitle className="text-2xl">Não é para você se</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <ul className="space-y-3">
+                  <ul className="space-y-4">
                     {[
                       'gosta de mexer em fórmula',
                       'quer um monte de gráfico só por enfeite',
                       'prefere sistemas complicados',
                     ].map((text, i) => (
                       <li key={i} className="flex items-start gap-3">
-                        <X className="w-5 h-5 text-expense mt-0.5 shrink-0" />
-                        <span className="text-muted-foreground">{text}</span>
+                        <X className="w-5 h-5 text-expense mt-1 shrink-0" />
+                        <span className="text-muted-foreground text-lg">{text}</span>
                       </li>
                     ))}
                   </ul>
@@ -309,58 +387,68 @@ const LandingPage = () => {
         </section>
 
         {/* PLANOS */}
-        <section id="planos" className="py-20 md:py-28 scroll-mt-20">
-          <div className="container">
-            <div className="max-w-4xl mx-auto space-y-12">
+        <section id="planos" className="py-24 md:py-32 scroll-mt-20 relative overflow-hidden">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/5 rounded-full blur-[150px]" />
+          
+          <div className="container relative">
+            <div className="max-w-4xl mx-auto space-y-16">
               <div className="text-center space-y-4">
-                <Badge variant="secondary" className="px-4 py-1.5">Planos</Badge>
-                <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold">
-                  Escolha o <span className="text-primary">seu plano</span>
+                <Badge variant="secondary" className="reveal px-4 py-1.5">Planos</Badge>
+                <h2 className="reveal text-3xl md:text-4xl lg:text-5xl font-bold" style={{ animationDelay: '0.1s' }}>
+                  Escolha o <span className="gradient-text">seu plano</span>
                 </h2>
-                <p className="text-muted-foreground">Comece grátis, evolua quando precisar.</p>
+                <p className="reveal text-lg text-muted-foreground" style={{ animationDelay: '0.2s' }}>
+                  Comece grátis, evolua quando precisar.
+                </p>
               </div>
 
-              <div className="grid md:grid-cols-2 gap-6">
+              <div className="grid md:grid-cols-2 gap-8">
                 {/* Free */}
-                <Card className="relative hover:shadow-lg transition-shadow">
-                  <CardHeader>
+                <Card className="reveal relative card-hover-lift bg-card/80 backdrop-blur-sm">
+                  <CardHeader className="pb-2">
                     <CardTitle className="text-2xl">Free</CardTitle>
                     <CardDescription className="text-base">Para começar e ganhar clareza</CardDescription>
-                    <div className="pt-4">
-                      <span className="text-4xl font-bold">R$ 0</span>
-                      <span className="text-muted-foreground">/mês</span>
+                    <div className="pt-6 pb-2">
+                      <span className="text-5xl font-bold">R$ 0</span>
+                      <span className="text-muted-foreground text-lg">/mês</span>
                     </div>
                   </CardHeader>
-                  <CardContent className="space-y-6">
-                    <ul className="space-y-3">
+                  <CardContent className="space-y-8">
+                    <ul className="space-y-4">
                       {['Lançamentos básicos', 'Dashboard do mês', 'Categorias', 'Resumo simples'].map((item) => (
                         <li key={item} className="flex items-center gap-3">
-                          <Check className="w-5 h-5 text-income shrink-0" />
-                          <span>{item}</span>
+                          <div className="w-6 h-6 rounded-full bg-income/10 flex items-center justify-center">
+                            <Check className="w-4 h-4 text-income" />
+                          </div>
+                          <span className="text-lg">{item}</span>
                         </li>
                       ))}
                     </ul>
-                    <Button variant="outline" className="w-full h-12 text-base" asChild>
+                    <Button variant="outline" className="w-full h-14 text-base" asChild>
                       <Link to="/cadastro">Criar conta grátis</Link>
                     </Button>
                   </CardContent>
                 </Card>
 
                 {/* Pro */}
-                <Card className="relative border-2 border-primary shadow-lg shadow-primary/10">
+                <Card className="reveal relative border-2 border-primary shadow-2xl shadow-primary/20 bg-card overflow-hidden" style={{ animationDelay: '0.1s' }}>
+                  <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary via-income to-primary" />
                   <div className="absolute -top-4 left-1/2 -translate-x-1/2">
-                    <Badge className="px-4 py-1.5 shadow-lg">Recomendado</Badge>
+                    <Badge className="px-4 py-1.5 shadow-lg bg-gradient-to-r from-primary to-primary/80">
+                      <Star className="w-3 h-3 mr-1 fill-current" />
+                      Recomendado
+                    </Badge>
                   </div>
-                  <CardHeader className="pt-8">
+                  <CardHeader className="pt-10 pb-2">
                     <CardTitle className="text-2xl">Pro</CardTitle>
                     <CardDescription className="text-base">Para controle total</CardDescription>
-                    <div className="pt-4">
-                      <span className="text-4xl font-bold">R$ 19</span>
-                      <span className="text-muted-foreground">/mês</span>
+                    <div className="pt-6 pb-2">
+                      <span className="text-5xl font-bold gradient-text">R$ 19</span>
+                      <span className="text-muted-foreground text-lg">/mês</span>
                     </div>
                   </CardHeader>
-                  <CardContent className="space-y-6">
-                    <ul className="space-y-3">
+                  <CardContent className="space-y-8">
+                    <ul className="space-y-4">
                       {[
                         'Tudo do Free',
                         'Histórico ilimitado',
@@ -370,19 +458,21 @@ const LandingPage = () => {
                         'Backup e sincronização',
                       ].map((item) => (
                         <li key={item} className="flex items-center gap-3">
-                          <Check className="w-5 h-5 text-income shrink-0" />
-                          <span>{item}</span>
+                          <div className="w-6 h-6 rounded-full bg-income/10 flex items-center justify-center">
+                            <Check className="w-4 h-4 text-income" />
+                          </div>
+                          <span className="text-lg">{item}</span>
                         </li>
                       ))}
                     </ul>
-                    <Button className="w-full h-12 text-base shadow-lg shadow-primary/25" asChild>
+                    <Button className="w-full h-14 text-base shadow-xl shadow-primary/30 shine-effect" asChild>
                       <Link to="/cadastro">Assinar Pro</Link>
                     </Button>
                   </CardContent>
                 </Card>
               </div>
 
-              <p className="text-sm text-muted-foreground text-center">
+              <p className="reveal text-sm text-muted-foreground text-center">
                 Assinatura no cartão. Cancele quando quiser.
               </p>
             </div>
@@ -390,27 +480,31 @@ const LandingPage = () => {
         </section>
 
         {/* CONFIANÇA E PRIVACIDADE */}
-        <section className="bg-muted/50 py-20 md:py-28">
+        <section className="bg-muted/30 py-24 md:py-32 relative">
           <div className="container">
-            <div className="max-w-3xl mx-auto text-center space-y-8">
-              <div className="w-20 h-20 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto">
-                <Shield className="w-10 h-10 text-primary" />
+            <div className="max-w-4xl mx-auto text-center space-y-12">
+              <div className="reveal w-24 h-24 rounded-3xl bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center mx-auto shadow-xl shadow-primary/25">
+                <Shield className="w-12 h-12 text-primary-foreground" />
               </div>
-              <h2 className="text-3xl md:text-4xl font-bold">
-                Seus dados são <span className="text-primary">seus</span>.
+              <h2 className="reveal text-3xl md:text-4xl lg:text-5xl font-bold" style={{ animationDelay: '0.1s' }}>
+                Seus dados são <span className="gradient-text">seus</span>.
               </h2>
               <div className="grid sm:grid-cols-3 gap-6">
                 {[
-                  { title: 'Sem truque', desc: 'Transparência total' },
-                  { title: 'Privacidade', desc: 'Tratada com seriedade' },
-                  { title: 'Estabilidade', desc: 'Experiência rápida' },
-                ].map((item) => (
-                  <div key={item.title} className="p-6 rounded-xl bg-background border border-border/50">
-                    <div className="w-10 h-10 rounded-lg bg-income/10 flex items-center justify-center mx-auto mb-4">
-                      <Check className="w-5 h-5 text-income" />
+                  { icon: Lock, title: 'Sem truque', desc: 'Transparência total em tudo' },
+                  { icon: Shield, title: 'Privacidade', desc: 'Tratada com seriedade máxima' },
+                  { icon: Zap, title: 'Estabilidade', desc: 'Experiência rápida e confiável' },
+                ].map((item, i) => (
+                  <div 
+                    key={item.title} 
+                    className="reveal p-8 rounded-2xl bg-background border border-border/50 card-hover-lift"
+                    style={{ animationDelay: `${i * 0.1}s` }}
+                  >
+                    <div className="w-14 h-14 rounded-xl bg-income/10 flex items-center justify-center mx-auto mb-6">
+                      <item.icon className="w-7 h-7 text-income" />
                     </div>
-                    <h3 className="font-semibold mb-1">{item.title}</h3>
-                    <p className="text-sm text-muted-foreground">{item.desc}</p>
+                    <h3 className="font-semibold text-lg mb-2">{item.title}</h3>
+                    <p className="text-muted-foreground">{item.desc}</p>
                   </div>
                 ))}
               </div>
@@ -419,26 +513,33 @@ const LandingPage = () => {
         </section>
 
         {/* FAQ */}
-        <section id="faq" className="py-20 md:py-28 scroll-mt-20">
+        <section id="faq" className="py-24 md:py-32 scroll-mt-20">
           <div className="container">
             <div className="max-w-2xl mx-auto space-y-12">
               <div className="text-center space-y-4">
-                <Badge variant="secondary" className="px-4 py-1.5">FAQ</Badge>
-                <h2 className="text-3xl md:text-4xl font-bold">Perguntas frequentes</h2>
+                <Badge variant="secondary" className="reveal px-4 py-1.5">FAQ</Badge>
+                <h2 className="reveal text-3xl md:text-4xl lg:text-5xl font-bold" style={{ animationDelay: '0.1s' }}>
+                  Perguntas frequentes
+                </h2>
               </div>
 
               <Accordion type="single" collapsible className="w-full space-y-4">
                 {[
-                  { q: 'O plano Free precisa de cartão?', a: 'Não.' },
-                  { q: 'Posso cancelar o Pro quando quiser?', a: 'Sim.' },
-                  { q: 'Funciona no celular e no computador?', a: 'Sim.' },
-                  { q: 'Posso importar dados?', a: 'Sim, no Pro.' },
-                  { q: 'O que muda do Free para o Pro?', a: 'O Pro destrava histórico, dívidas, investimentos, importação e sincronização.' },
-                  { q: 'Como começo?', a: 'Crie sua conta grátis e faça seu primeiro lançamento.' },
+                  { q: 'O plano Free precisa de cartão?', a: 'Não. Você pode usar o plano gratuito sem precisar cadastrar nenhum método de pagamento.' },
+                  { q: 'Posso cancelar o Pro quando quiser?', a: 'Sim. Sem burocracia, sem multa. Cancele direto pelo app.' },
+                  { q: 'Funciona no celular e no computador?', a: 'Sim. O FinanceX funciona em qualquer dispositivo com navegador.' },
+                  { q: 'Posso importar dados?', a: 'Sim, no plano Pro você pode importar e exportar seus dados em Excel.' },
+                  { q: 'O que muda do Free para o Pro?', a: 'O Pro destrava histórico ilimitado, controle de dívidas, metas de investimento, importação/exportação e sincronização em nuvem.' },
+                  { q: 'Como começo?', a: 'Crie sua conta grátis em 30 segundos e faça seu primeiro lançamento. É só isso.' },
                 ].map((item, i) => (
-                  <AccordionItem key={i} value={`item-${i}`} className="bg-muted/50 rounded-lg border px-4">
-                    <AccordionTrigger className="hover:no-underline py-4">{item.q}</AccordionTrigger>
-                    <AccordionContent className="pb-4 text-muted-foreground">{item.a}</AccordionContent>
+                  <AccordionItem 
+                    key={i} 
+                    value={`item-${i}`} 
+                    className="reveal bg-muted/30 rounded-xl border px-6 data-[state=open]:bg-muted/50 transition-colors"
+                    style={{ animationDelay: `${i * 0.05}s` }}
+                  >
+                    <AccordionTrigger className="hover:no-underline py-5 text-left text-lg">{item.q}</AccordionTrigger>
+                    <AccordionContent className="pb-5 text-muted-foreground text-base">{item.a}</AccordionContent>
                   </AccordionItem>
                 ))}
               </Accordion>
@@ -447,50 +548,66 @@ const LandingPage = () => {
         </section>
 
         {/* CTA FINAL */}
-        <section className="relative overflow-hidden py-20 md:py-28">
-          <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-income/10" />
-          <div className="absolute top-10 -right-20 w-72 h-72 bg-primary/20 rounded-full blur-3xl" />
-          <div className="absolute -bottom-10 -left-20 w-72 h-72 bg-income/20 rounded-full blur-3xl" />
+        <section className="relative overflow-hidden py-24 md:py-32">
+          {/* Animated background */}
+          <div className="absolute inset-0">
+            <div className="absolute top-1/4 -right-20 w-[500px] h-[500px] bg-primary/20 rounded-full blur-[100px] animate-blob" />
+            <div className="absolute -bottom-20 -left-20 w-[400px] h-[400px] bg-income/15 rounded-full blur-[100px] animate-blob" style={{ animationDelay: '2s' }} />
+          </div>
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-income/5" />
           
           <div className="container relative">
-            <div className="max-w-2xl mx-auto text-center space-y-8">
-              <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold">
-                Chega de <span className="text-primary">planilha</span>.
+            <div className="max-w-3xl mx-auto text-center space-y-10">
+              <h2 className="reveal text-4xl md:text-5xl lg:text-6xl font-bold">
+                Chega de <span className="gradient-text">planilha</span>.
               </h2>
-              <p className="text-xl text-muted-foreground">
+              <p className="reveal text-xl md:text-2xl text-muted-foreground" style={{ animationDelay: '0.1s' }}>
                 Crie sua conta e veja seu mês na hora.
               </p>
-              <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-                <Button size="lg" className="text-base px-8 h-12 shadow-lg shadow-primary/25" asChild>
+              <div className="reveal flex flex-col sm:flex-row items-center justify-center gap-4" style={{ animationDelay: '0.2s' }}>
+                <Button size="lg" className="text-lg px-10 h-16 shadow-xl shadow-primary/30 shine-effect group" asChild>
                   <Link to="/cadastro">
                     Criar conta grátis
-                    <ArrowRight className="w-4 h-4 ml-2" />
+                    <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
                   </Link>
                 </Button>
-                <Button size="lg" variant="ghost" onClick={() => scrollToSection('#planos')}>
+                <Button size="lg" variant="ghost" className="text-lg px-8 h-16" onClick={() => scrollToSection('#planos')}>
                   Ver planos
                 </Button>
+              </div>
+              
+              <div className="reveal flex items-center justify-center gap-8 pt-4" style={{ animationDelay: '0.3s' }}>
+                <div className="flex -space-x-3">
+                  {[1, 2, 3, 4].map((i) => (
+                    <div key={i} className="w-10 h-10 rounded-full bg-gradient-to-br from-primary/50 to-primary border-2 border-background flex items-center justify-center">
+                      <Users className="w-5 h-5 text-primary-foreground" />
+                    </div>
+                  ))}
+                </div>
+                <p className="text-muted-foreground">
+                  <span className="text-foreground font-semibold">+1.000</span> pessoas já usam
+                </p>
               </div>
             </div>
           </div>
         </section>
 
         {/* Footer */}
-        <footer className="border-t border-border py-12 bg-muted/30">
+        <footer className="border-t border-border py-16 bg-muted/20">
           <div className="container">
-            <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+            <div className="flex flex-col md:flex-row items-center justify-between gap-8">
               <div className="flex items-center gap-2">
-                <FinanceLogo size={24} />
-                <span className="font-bold">inanceX</span>
+                <FinanceLogo size={28} />
+                <span className="font-bold text-xl">inanceX</span>
               </div>
               <p className="text-sm text-muted-foreground">
                 © {new Date().getFullYear()} FinanceX. Todos os direitos reservados.
               </p>
-              <div className="flex items-center gap-6">
-                <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+              <div className="flex items-center gap-8">
+                <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors animated-underline">
                   Termos de uso
                 </a>
-                <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                <a href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors animated-underline">
                   Privacidade
                 </a>
               </div>
