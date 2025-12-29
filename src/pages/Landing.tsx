@@ -156,100 +156,167 @@ const Landing = () => {
               </div>
             </div>
 
-            {/* Right - App preview */}
-            {/* Right - iPhone mockup */}
-            <div className="flex-1 relative">
-              <div className="relative mx-auto max-w-[280px]">
-                {/* iPhone frame */}
-                <div className="relative bg-[#1a1a1a] rounded-[3rem] p-3 shadow-2xl shadow-black/40">
-                  {/* Side buttons - Volume */}
-                  <div className="absolute -left-1 top-28 w-1 h-8 bg-[#2a2a2a] rounded-l-sm" />
-                  <div className="absolute -left-1 top-40 w-1 h-12 bg-[#2a2a2a] rounded-l-sm" />
-                  <div className="absolute -left-1 top-56 w-1 h-12 bg-[#2a2a2a] rounded-l-sm" />
-                  {/* Side button - Power */}
-                  <div className="absolute -right-1 top-36 w-1 h-16 bg-[#2a2a2a] rounded-r-sm" />
-                  
-                  {/* Screen */}
-                  <div className="bg-background rounded-[2.4rem] overflow-hidden relative">
-                    {/* Dynamic Island */}
-                    <div className="absolute top-3 left-1/2 -translate-x-1/2 w-28 h-7 bg-[#1a1a1a] rounded-full z-10 flex items-center justify-center">
-                      <div className="w-3 h-3 rounded-full bg-[#2a2a2a] mr-8" />
-                    </div>
+            {/* Right - iPhone 3D mockup */}
+            <div className="flex-1 relative" style={{ perspective: '1200px' }}>
+              <div className="relative mx-auto max-w-[300px] pb-20">
+                {/* 3D iPhone Container */}
+                <div 
+                  className="iphone-3d relative"
+                  style={{ transformStyle: 'preserve-3d' }}
+                >
+                  {/* iPhone frame - Titanium finish */}
+                  <div 
+                    className="relative rounded-[3.2rem] p-[3px] overflow-hidden"
+                    style={{
+                      background: 'linear-gradient(145deg, #3a3a3c 0%, #1c1c1e 50%, #2c2c2e 100%)',
+                      boxShadow: `
+                        0 50px 100px -20px rgba(0, 0, 0, 0.5),
+                        0 30px 60px -30px rgba(0, 0, 0, 0.6),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.1),
+                        inset 0 -1px 0 rgba(0, 0, 0, 0.3)
+                      `
+                    }}
+                  >
+                    {/* Side buttons - Volume */}
+                    <div 
+                      className="absolute -left-[3px] top-28 w-[3px] h-8 rounded-l-sm"
+                      style={{ background: 'linear-gradient(90deg, #2a2a2c, #3a3a3c)' }}
+                    />
+                    <div 
+                      className="absolute -left-[3px] top-40 w-[3px] h-14 rounded-l-sm"
+                      style={{ background: 'linear-gradient(90deg, #2a2a2c, #3a3a3c)' }}
+                    />
+                    <div 
+                      className="absolute -left-[3px] top-[232px] w-[3px] h-14 rounded-l-sm"
+                      style={{ background: 'linear-gradient(90deg, #2a2a2c, #3a3a3c)' }}
+                    />
+                    {/* Side button - Power */}
+                    <div 
+                      className="absolute -right-[3px] top-36 w-[3px] h-20 rounded-r-sm"
+                      style={{ background: 'linear-gradient(270deg, #2a2a2c, #3a3a3c)' }}
+                    />
                     
-                    {/* App content mock */}
-                    <div className="pt-12 p-4 space-y-4">
-                      {/* Balance card */}
-                      <div className="bg-gradient-to-br from-primary to-primary/80 rounded-2xl p-4 text-primary-foreground">
-                        <p className="text-xs opacity-80 mb-1">Saldo total</p>
-                        <p className="text-2xl font-bold mb-3">R$ 4.180,00</p>
-                        <div className="flex gap-4 text-xs">
-                          <div>
-                            <span className="opacity-70">Receitas</span>
-                            <p className="font-semibold">R$ 8.500</p>
-                          </div>
-                          <div>
-                            <span className="opacity-70">Despesas</span>
-                            <p className="font-semibold">R$ 4.320</p>
+                    {/* Inner bezel */}
+                    <div 
+                      className="rounded-[2.9rem] p-[2px] overflow-hidden"
+                      style={{ background: '#000' }}
+                    >
+                      {/* Screen */}
+                      <div className="bg-background rounded-[2.7rem] overflow-hidden relative">
+                        {/* Screen shine effect */}
+                        <div className="iphone-screen-shine rounded-[2.7rem]" />
+                        
+                        {/* Dynamic Island */}
+                        <div 
+                          className="absolute top-3 left-1/2 -translate-x-1/2 w-[120px] h-[34px] bg-black rounded-full z-10 flex items-center px-4"
+                          style={{ boxShadow: 'inset 0 0 5px rgba(0,0,0,0.8)' }}
+                        >
+                          {/* Front camera */}
+                          <div className="w-3 h-3 rounded-full bg-[#1a1a1a] ring-1 ring-[#2a2a2a] ml-auto">
+                            <div className="w-1.5 h-1.5 rounded-full bg-[#0a3d62] m-[3px]" />
                           </div>
                         </div>
-                      </div>
-
-                      {/* Transactions */}
-                      <div className="space-y-2">
-                        <div className="flex items-center justify-between bg-muted/50 rounded-xl p-3">
-                          <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center">
-                              <TrendingUp className="h-4 w-4 text-emerald-500" />
-                            </div>
-                            <div>
-                              <p className="text-sm font-medium text-foreground">Salário</p>
-                              <p className="text-xs text-muted-foreground">Hoje</p>
-                            </div>
-                          </div>
-                          <span className="text-sm font-semibold text-income">+R$ 5.200</span>
-                        </div>
-                        <div className="flex items-center justify-between bg-muted/50 rounded-xl p-3">
-                          <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-full bg-orange-500/20 flex items-center justify-center">
-                              <CreditCard className="h-4 w-4 text-orange-500" />
-                            </div>
-                            <div>
-                              <p className="text-sm font-medium text-foreground">iFood</p>
-                              <p className="text-xs text-muted-foreground">Ontem</p>
-                            </div>
-                          </div>
-                          <span className="text-sm font-semibold text-expense">-R$ 48,90</span>
-                        </div>
-                      </div>
-
-                      {/* Chart placeholder */}
-                      <div className="h-24 bg-muted/30 rounded-xl flex items-end justify-around p-3 gap-1">
-                        {[40, 65, 45, 80, 55, 70, 90].map((h, i) => (
+                        
+                        {/* App content mock */}
+                        <div className="pt-14 p-4 space-y-4 min-h-[520px]">
+                          {/* Balance card */}
                           <div 
-                            key={i} 
-                            className="flex-1 bg-primary/60 rounded-t"
-                            style={{ height: `${h}%` }}
-                          />
-                        ))}
-                      </div>
-                      
-                      {/* Home indicator */}
-                      <div className="flex justify-center pt-2">
-                        <div className="w-32 h-1 bg-foreground/20 rounded-full" />
+                            className="rounded-2xl p-4 text-white relative overflow-hidden"
+                            style={{
+                              background: 'linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary) / 0.7) 100%)'
+                            }}
+                          >
+                            <div className="relative z-10">
+                              <p className="text-xs opacity-80 mb-1">Saldo total</p>
+                              <p className="text-2xl font-bold mb-3">R$ 4.180,00</p>
+                              <div className="flex gap-6 text-xs">
+                                <div>
+                                  <span className="opacity-70">Receitas</span>
+                                  <p className="font-semibold">R$ 8.500</p>
+                                </div>
+                                <div>
+                                  <span className="opacity-70">Despesas</span>
+                                  <p className="font-semibold">R$ 4.320</p>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Transactions */}
+                          <div className="space-y-2">
+                            <div className="flex items-center justify-between bg-muted/50 rounded-xl p-3 backdrop-blur-sm">
+                              <div className="flex items-center gap-3">
+                                <div className="w-9 h-9 rounded-full bg-emerald-500/20 flex items-center justify-center">
+                                  <TrendingUp className="h-4 w-4 text-emerald-500" />
+                                </div>
+                                <div>
+                                  <p className="text-sm font-medium text-foreground">Salário</p>
+                                  <p className="text-xs text-muted-foreground">Hoje</p>
+                                </div>
+                              </div>
+                              <span className="text-sm font-semibold text-income">+R$ 5.200</span>
+                            </div>
+                            <div className="flex items-center justify-between bg-muted/50 rounded-xl p-3 backdrop-blur-sm">
+                              <div className="flex items-center gap-3">
+                                <div className="w-9 h-9 rounded-full bg-orange-500/20 flex items-center justify-center">
+                                  <CreditCard className="h-4 w-4 text-orange-500" />
+                                </div>
+                                <div>
+                                  <p className="text-sm font-medium text-foreground">iFood</p>
+                                  <p className="text-xs text-muted-foreground">Ontem</p>
+                                </div>
+                              </div>
+                              <span className="text-sm font-semibold text-expense">-R$ 48,90</span>
+                            </div>
+                          </div>
+
+                          {/* Chart */}
+                          <div className="h-28 bg-muted/30 rounded-xl flex items-end justify-around p-4 gap-1.5 backdrop-blur-sm">
+                            {[40, 65, 45, 80, 55, 70, 90].map((h, i) => (
+                              <div 
+                                key={i} 
+                                className="flex-1 rounded-t transition-all duration-500"
+                                style={{ 
+                                  height: `${h}%`,
+                                  background: `linear-gradient(to top, hsl(var(--primary) / 0.8), hsl(var(--primary) / 0.4))`
+                                }}
+                              />
+                            ))}
+                          </div>
+                          
+                          {/* Home indicator */}
+                          <div className="flex justify-center pt-4 pb-2">
+                            <div className="w-32 h-1 bg-foreground/30 rounded-full" />
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
+                  
+                  {/* Reflection */}
+                  <div 
+                    className="absolute -bottom-[40%] left-1/2 -translate-x-1/2 w-[90%] h-[60%] rounded-[3rem] opacity-20 blur-sm pointer-events-none"
+                    style={{
+                      background: 'linear-gradient(to bottom, hsl(var(--primary) / 0.3), transparent)',
+                      transform: 'translateX(-50%) scaleY(-1) perspective(500px) rotateX(30deg)',
+                    }}
+                  />
                 </div>
 
-                {/* Floating elements */}
-                <div className="absolute -left-12 top-1/3 bg-card border border-border rounded-xl p-3 shadow-lg animate-float">
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-full bg-income/20 flex items-center justify-center">
-                      <Check className="h-4 w-4 text-income" />
+                {/* Floating notification */}
+                <div 
+                  className="absolute -left-16 top-1/4 bg-card/95 backdrop-blur-md border border-border/50 rounded-2xl p-3 shadow-2xl animate-float z-30"
+                  style={{
+                    boxShadow: '0 20px 40px -10px rgba(0,0,0,0.3), 0 10px 20px -5px rgba(0,0,0,0.2)'
+                  }}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-income/20 flex items-center justify-center">
+                      <Check className="h-5 w-5 text-income" />
                     </div>
                     <div>
-                      <p className="text-xs font-medium text-foreground">Meta atingida!</p>
-                      <p className="text-[10px] text-muted-foreground">Reserva de emergência</p>
+                      <p className="text-sm font-medium text-foreground">Meta atingida!</p>
+                      <p className="text-xs text-muted-foreground">Reserva de emergência</p>
                     </div>
                   </div>
                 </div>

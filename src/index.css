@@ -268,6 +268,90 @@
   animation: count-up 0.5s ease-out forwards;
 }
 
+/* iPhone 3D Mockup Animations */
+@keyframes iphone-float {
+  0%, 100% {
+    transform: perspective(1000px) rotateY(-15deg) rotateX(5deg) translateY(0);
+  }
+  50% {
+    transform: perspective(1000px) rotateY(-15deg) rotateX(5deg) translateY(-15px);
+  }
+}
+
+@keyframes iphone-glow {
+  0%, 100% {
+    box-shadow: 
+      0 50px 100px -20px rgba(0, 0, 0, 0.5),
+      0 30px 60px -30px rgba(0, 0, 0, 0.6),
+      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  }
+  50% {
+    box-shadow: 
+      0 60px 120px -20px rgba(0, 0, 0, 0.4),
+      0 40px 80px -30px rgba(0, 0, 0, 0.5),
+      inset 0 1px 0 rgba(255, 255, 255, 0.15);
+  }
+}
+
+@keyframes screen-shine {
+  0% {
+    transform: translateX(-100%) translateY(-100%) rotate(45deg);
+  }
+  100% {
+    transform: translateX(100%) translateY(100%) rotate(45deg);
+  }
+}
+
+.iphone-3d {
+  animation: iphone-float 6s ease-in-out infinite, iphone-glow 6s ease-in-out infinite;
+  transform-style: preserve-3d;
+}
+
+.iphone-3d::before {
+  content: '';
+  position: absolute;
+  inset: -3px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.3) 0%, transparent 50%, rgba(0,0,0,0.3) 100%);
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.iphone-screen-shine {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    115deg,
+    transparent 0%,
+    transparent 40%,
+    rgba(255, 255, 255, 0.1) 45%,
+    rgba(255, 255, 255, 0.2) 50%,
+    rgba(255, 255, 255, 0.1) 55%,
+    transparent 60%,
+    transparent 100%
+  );
+  pointer-events: none;
+  z-index: 20;
+  animation: screen-shine 4s ease-in-out infinite;
+}
+
+.iphone-reflection {
+  position: absolute;
+  bottom: -60%;
+  left: 0;
+  right: 0;
+  height: 100%;
+  background: inherit;
+  transform: scaleY(-1);
+  opacity: 0.15;
+  filter: blur(4px);
+  mask-image: linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 50%);
+  -webkit-mask-image: linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 50%);
+}
+
 /* Admin Card Gradient Effects */
 .admin-card-gradient {
   position: relative;
