@@ -149,11 +149,11 @@ const Landing = () => {
             </div>
 
             {/* Right - iPhone Mockup Image */}
-            <div className="flex-1 relative flex justify-center items-center min-h-[600px]">
-              <div className="relative" style={{ perspective: '2000px' }}>
+            <div className="flex-1 relative flex justify-center lg:justify-end items-center min-h-[500px] lg:min-h-[650px]">
+              <div className="relative">
                 {/* Floating notification - positioned outside iPhone */}
                 <div 
-                  className="notification-float absolute -left-12 md:-left-28 top-24 bg-card backdrop-blur-xl rounded-2xl p-3 pr-5 z-40"
+                  className="notification-float absolute -left-4 sm:-left-8 md:-left-20 top-16 sm:top-20 bg-card backdrop-blur-xl rounded-2xl p-3 pr-5 z-40 hidden sm:block"
                   style={{
                     boxShadow: '0 20px 40px -10px rgba(0, 0, 0, 0.2), 0 8px 16px -6px rgba(0, 0, 0, 0.1)',
                   }}
@@ -174,16 +174,16 @@ const Landing = () => {
                   <img 
                     src={iphoneMockup} 
                     alt="FinanceX App no iPhone" 
-                    className="w-[320px] sm:w-[380px] lg:w-[420px] h-auto drop-shadow-2xl"
+                    className="w-[280px] sm:w-[320px] md:w-[380px] lg:w-[450px] xl:w-[500px] h-auto"
                   />
                 </div>
 
                 {/* Bottom reflection/shadow */}
                 <div 
-                  className="absolute -bottom-8 left-1/2 -translate-x-1/2 w-[200px] h-[100px] rounded-[50%] pointer-events-none"
+                  className="absolute -bottom-6 left-1/2 -translate-x-1/2 w-[180px] lg:w-[250px] h-[80px] lg:h-[100px] rounded-[50%] pointer-events-none"
                   style={{
-                    background: 'radial-gradient(ellipse, rgba(0,0,0,0.25) 0%, transparent 70%)',
-                    filter: 'blur(10px)',
+                    background: 'radial-gradient(ellipse, rgba(0,0,0,0.2) 0%, transparent 70%)',
+                    filter: 'blur(12px)',
                   }}
                 />
               </div>
