@@ -157,169 +157,166 @@ const Landing = () => {
             </div>
 
             {/* Right - iPhone 3D mockup */}
-            <div className="flex-1 relative" style={{ perspective: '1200px' }}>
-              <div className="relative mx-auto max-w-[300px] pb-20">
+            <div className="flex-1 relative flex justify-center items-center min-h-[600px]">
+              <div className="relative" style={{ perspective: '2000px' }}>
+                {/* Floating notification - positioned outside iPhone */}
+                <div 
+                  className="notification-float absolute -left-8 md:-left-20 top-20 bg-card/98 backdrop-blur-xl border border-border/40 rounded-2xl p-3 pr-5 shadow-2xl z-40"
+                  style={{
+                    boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.35), 0 12px 24px -8px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(255, 255, 255, 0.05)',
+                  }}
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-11 h-11 rounded-full bg-income/15 flex items-center justify-center ring-2 ring-income/20">
+                      <Check className="h-5 w-5 text-income" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-foreground">Meta atingida!</p>
+                      <p className="text-xs text-muted-foreground">Reserva de emergência</p>
+                    </div>
+                  </div>
+                </div>
+
                 {/* 3D iPhone Container */}
                 <div 
                   className="iphone-3d relative"
                   style={{ transformStyle: 'preserve-3d' }}
                 >
-                  {/* iPhone frame - Titanium finish */}
+                  {/* iPhone frame - Premium titanium finish */}
                   <div 
-                    className="relative rounded-[3.2rem] p-[3px] overflow-hidden"
+                    className="relative rounded-[3.5rem] overflow-hidden"
                     style={{
-                      background: 'linear-gradient(145deg, #3a3a3c 0%, #1c1c1e 50%, #2c2c2e 100%)',
-                      boxShadow: `
-                        0 50px 100px -20px rgba(0, 0, 0, 0.5),
-                        0 30px 60px -30px rgba(0, 0, 0, 0.6),
-                        inset 0 1px 0 rgba(255, 255, 255, 0.1),
-                        inset 0 -1px 0 rgba(0, 0, 0, 0.3)
-                      `
+                      background: 'linear-gradient(160deg, #f5f5f7 0%, #d1d1d6 15%, #a1a1a6 40%, #8e8e93 60%, #636366 85%, #48484a 100%)',
+                      padding: '4px',
                     }}
                   >
                     {/* Side buttons - Volume */}
                     <div 
-                      className="absolute -left-[3px] top-28 w-[3px] h-8 rounded-l-sm"
-                      style={{ background: 'linear-gradient(90deg, #2a2a2c, #3a3a3c)' }}
+                      className="absolute -left-[5px] top-28 w-[5px] h-8 rounded-l-sm"
+                      style={{ background: 'linear-gradient(90deg, #48484a, #8e8e93, #636366)' }}
                     />
                     <div 
-                      className="absolute -left-[3px] top-40 w-[3px] h-14 rounded-l-sm"
-                      style={{ background: 'linear-gradient(90deg, #2a2a2c, #3a3a3c)' }}
+                      className="absolute -left-[5px] top-40 w-[5px] h-16 rounded-l-sm"
+                      style={{ background: 'linear-gradient(90deg, #48484a, #8e8e93, #636366)' }}
                     />
                     <div 
-                      className="absolute -left-[3px] top-[232px] w-[3px] h-14 rounded-l-sm"
-                      style={{ background: 'linear-gradient(90deg, #2a2a2c, #3a3a3c)' }}
+                      className="absolute -left-[5px] top-[240px] w-[5px] h-16 rounded-l-sm"
+                      style={{ background: 'linear-gradient(90deg, #48484a, #8e8e93, #636366)' }}
                     />
                     {/* Side button - Power */}
                     <div 
-                      className="absolute -right-[3px] top-36 w-[3px] h-20 rounded-r-sm"
-                      style={{ background: 'linear-gradient(270deg, #2a2a2c, #3a3a3c)' }}
+                      className="absolute -right-[5px] top-40 w-[5px] h-24 rounded-r-sm"
+                      style={{ background: 'linear-gradient(270deg, #48484a, #8e8e93, #636366)' }}
                     />
                     
                     {/* Inner bezel */}
                     <div 
-                      className="rounded-[2.9rem] p-[2px] overflow-hidden"
-                      style={{ background: '#000' }}
+                      className="rounded-[3.2rem] overflow-hidden"
+                      style={{ background: '#000', padding: '3px' }}
                     >
                       {/* Screen */}
-                      <div className="bg-background rounded-[2.7rem] overflow-hidden relative">
+                      <div className="bg-background rounded-[3rem] overflow-hidden relative" style={{ width: '280px' }}>
                         {/* Screen shine effect */}
-                        <div className="iphone-screen-shine rounded-[2.7rem]" />
+                        <div className="iphone-screen-shine rounded-[3rem]" />
                         
                         {/* Dynamic Island */}
                         <div 
-                          className="absolute top-3 left-1/2 -translate-x-1/2 w-[120px] h-[34px] bg-black rounded-full z-10 flex items-center px-4"
-                          style={{ boxShadow: 'inset 0 0 5px rgba(0,0,0,0.8)' }}
+                          className="absolute top-4 left-1/2 -translate-x-1/2 w-[110px] h-[32px] bg-black rounded-full z-10 flex items-center justify-end px-4"
+                          style={{ boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.8)' }}
                         >
                           {/* Front camera */}
-                          <div className="w-3 h-3 rounded-full bg-[#1a1a1a] ring-1 ring-[#2a2a2a] ml-auto">
-                            <div className="w-1.5 h-1.5 rounded-full bg-[#0a3d62] m-[3px]" />
+                          <div className="w-2.5 h-2.5 rounded-full bg-[#1a1a1a] ring-1 ring-[#333]">
+                            <div className="w-1 h-1 rounded-full bg-[#0a3d62] m-[3px]" />
                           </div>
                         </div>
                         
                         {/* App content mock */}
-                        <div className="pt-14 p-4 space-y-4 min-h-[520px]">
+                        <div className="pt-16 p-5 space-y-4 min-h-[560px]">
                           {/* Balance card */}
                           <div 
-                            className="rounded-2xl p-4 text-white relative overflow-hidden"
+                            className="rounded-2xl p-5 text-white relative overflow-hidden"
                             style={{
-                              background: 'linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--primary) / 0.7) 100%)'
+                              background: 'linear-gradient(145deg, hsl(217 91% 60%) 0%, hsl(221 83% 53%) 50%, hsl(224 76% 48%) 100%)'
                             }}
                           >
                             <div className="relative z-10">
-                              <p className="text-xs opacity-80 mb-1">Saldo total</p>
-                              <p className="text-2xl font-bold mb-3">R$ 4.180,00</p>
-                              <div className="flex gap-6 text-xs">
+                              <p className="text-xs opacity-80 mb-1 font-medium">Saldo total</p>
+                              <p className="text-3xl font-bold mb-4 tracking-tight">R$ 4.180,00</p>
+                              <div className="flex gap-8 text-xs">
                                 <div>
                                   <span className="opacity-70">Receitas</span>
-                                  <p className="font-semibold">R$ 8.500</p>
+                                  <p className="font-semibold text-sm">R$ 8.500</p>
                                 </div>
                                 <div>
                                   <span className="opacity-70">Despesas</span>
-                                  <p className="font-semibold">R$ 4.320</p>
+                                  <p className="font-semibold text-sm">R$ 4.320</p>
                                 </div>
                               </div>
                             </div>
+                            {/* Card gradient overlay */}
+                            <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-black/10" />
                           </div>
 
                           {/* Transactions */}
-                          <div className="space-y-2">
-                            <div className="flex items-center justify-between bg-muted/50 rounded-xl p-3 backdrop-blur-sm">
+                          <div className="space-y-3">
+                            <div className="flex items-center justify-between bg-card/80 rounded-xl p-3.5 backdrop-blur-sm border border-border/30">
                               <div className="flex items-center gap-3">
-                                <div className="w-9 h-9 rounded-full bg-emerald-500/20 flex items-center justify-center">
+                                <div className="w-10 h-10 rounded-full bg-emerald-500/15 flex items-center justify-center">
                                   <TrendingUp className="h-4 w-4 text-emerald-500" />
                                 </div>
                                 <div>
-                                  <p className="text-sm font-medium text-foreground">Salário</p>
+                                  <p className="text-sm font-semibold text-foreground">Salário</p>
                                   <p className="text-xs text-muted-foreground">Hoje</p>
                                 </div>
                               </div>
-                              <span className="text-sm font-semibold text-income">+R$ 5.200</span>
+                              <span className="text-sm font-bold text-income">+R$ 5.200</span>
                             </div>
-                            <div className="flex items-center justify-between bg-muted/50 rounded-xl p-3 backdrop-blur-sm">
+                            <div className="flex items-center justify-between bg-card/80 rounded-xl p-3.5 backdrop-blur-sm border border-border/30">
                               <div className="flex items-center gap-3">
-                                <div className="w-9 h-9 rounded-full bg-orange-500/20 flex items-center justify-center">
+                                <div className="w-10 h-10 rounded-full bg-orange-500/15 flex items-center justify-center">
                                   <CreditCard className="h-4 w-4 text-orange-500" />
                                 </div>
                                 <div>
-                                  <p className="text-sm font-medium text-foreground">iFood</p>
+                                  <p className="text-sm font-semibold text-foreground">iFood</p>
                                   <p className="text-xs text-muted-foreground">Ontem</p>
                                 </div>
                               </div>
-                              <span className="text-sm font-semibold text-expense">-R$ 48,90</span>
+                              <span className="text-sm font-bold text-expense">-R$ 48,90</span>
                             </div>
                           </div>
 
                           {/* Chart */}
-                          <div className="h-28 bg-muted/30 rounded-xl flex items-end justify-around p-4 gap-1.5 backdrop-blur-sm">
-                            {[40, 65, 45, 80, 55, 70, 90].map((h, i) => (
+                          <div className="h-28 bg-card/60 rounded-xl flex items-end justify-around p-4 gap-2 backdrop-blur-sm border border-border/20">
+                            {[35, 55, 40, 75, 50, 65, 85].map((h, i) => (
                               <div 
                                 key={i} 
-                                className="flex-1 rounded-t transition-all duration-500"
+                                className="flex-1 rounded-t-md transition-all duration-500"
                                 style={{ 
                                   height: `${h}%`,
-                                  background: `linear-gradient(to top, hsl(var(--primary) / 0.8), hsl(var(--primary) / 0.4))`
+                                  background: `linear-gradient(to top, hsl(217 91% 60%), hsl(221 83% 53% / 0.6))`
                                 }}
                               />
                             ))}
                           </div>
                           
                           {/* Home indicator */}
-                          <div className="flex justify-center pt-4 pb-2">
-                            <div className="w-32 h-1 bg-foreground/30 rounded-full" />
+                          <div className="flex justify-center pt-3 pb-1">
+                            <div className="w-32 h-1 bg-foreground/25 rounded-full" />
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                  
-                  {/* Reflection */}
-                  <div 
-                    className="absolute -bottom-[40%] left-1/2 -translate-x-1/2 w-[90%] h-[60%] rounded-[3rem] opacity-20 blur-sm pointer-events-none"
-                    style={{
-                      background: 'linear-gradient(to bottom, hsl(var(--primary) / 0.3), transparent)',
-                      transform: 'translateX(-50%) scaleY(-1) perspective(500px) rotateX(30deg)',
-                    }}
-                  />
                 </div>
 
-                {/* Floating notification */}
+                {/* Bottom reflection/shadow */}
                 <div 
-                  className="absolute -left-16 top-1/4 bg-card/95 backdrop-blur-md border border-border/50 rounded-2xl p-3 shadow-2xl animate-float z-30"
+                  className="absolute -bottom-8 left-1/2 -translate-x-1/2 w-[200px] h-[100px] rounded-[50%] pointer-events-none"
                   style={{
-                    boxShadow: '0 20px 40px -10px rgba(0,0,0,0.3), 0 10px 20px -5px rgba(0,0,0,0.2)'
+                    background: 'radial-gradient(ellipse, rgba(0,0,0,0.25) 0%, transparent 70%)',
+                    filter: 'blur(10px)',
                   }}
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-income/20 flex items-center justify-center">
-                      <Check className="h-5 w-5 text-income" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-foreground">Meta atingida!</p>
-                      <p className="text-xs text-muted-foreground">Reserva de emergência</p>
-                    </div>
-                  </div>
-                </div>
+                />
               </div>
             </div>
           </div>

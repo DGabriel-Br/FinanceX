@@ -271,47 +271,62 @@
 /* iPhone 3D Mockup Animations */
 @keyframes iphone-float {
   0%, 100% {
-    transform: perspective(1000px) rotateY(-15deg) rotateX(5deg) translateY(0);
+    transform: perspective(1500px) rotateY(-12deg) rotateX(8deg) rotateZ(2deg) translateY(0);
   }
   50% {
-    transform: perspective(1000px) rotateY(-15deg) rotateX(5deg) translateY(-15px);
+    transform: perspective(1500px) rotateY(-12deg) rotateX(8deg) rotateZ(2deg) translateY(-20px);
   }
 }
 
 @keyframes iphone-glow {
   0%, 100% {
-    box-shadow: 
-      0 50px 100px -20px rgba(0, 0, 0, 0.5),
-      0 30px 60px -30px rgba(0, 0, 0, 0.6),
-      inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    filter: drop-shadow(0 40px 60px rgba(0, 0, 0, 0.4)) drop-shadow(0 20px 30px rgba(0, 0, 0, 0.3));
   }
   50% {
-    box-shadow: 
-      0 60px 120px -20px rgba(0, 0, 0, 0.4),
-      0 40px 80px -30px rgba(0, 0, 0, 0.5),
-      inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    filter: drop-shadow(0 50px 80px rgba(0, 0, 0, 0.35)) drop-shadow(0 25px 40px rgba(0, 0, 0, 0.25));
+  }
+}
+
+@keyframes notification-float {
+  0%, 100% {
+    transform: translateY(0) rotate(-3deg);
+  }
+  50% {
+    transform: translateY(-10px) rotate(-3deg);
   }
 }
 
 @keyframes screen-shine {
   0% {
-    transform: translateX(-100%) translateY(-100%) rotate(45deg);
+    opacity: 0;
+    transform: translateX(-150%) translateY(-150%) rotate(45deg);
+  }
+  40%, 60% {
+    opacity: 1;
   }
   100% {
-    transform: translateX(100%) translateY(100%) rotate(45deg);
+    opacity: 0;
+    transform: translateX(150%) translateY(150%) rotate(45deg);
   }
 }
 
 .iphone-3d {
-  animation: iphone-float 6s ease-in-out infinite, iphone-glow 6s ease-in-out infinite;
+  animation: iphone-float 5s ease-in-out infinite, iphone-glow 5s ease-in-out infinite;
   transform-style: preserve-3d;
 }
 
 .iphone-3d::before {
   content: '';
   position: absolute;
-  inset: -3px;
-  background: linear-gradient(135deg, rgba(255,255,255,0.3) 0%, transparent 50%, rgba(0,0,0,0.3) 100%);
+  inset: -4px;
+  background: linear-gradient(
+    145deg, 
+    rgba(255, 255, 255, 0.4) 0%, 
+    rgba(255, 255, 255, 0.1) 20%,
+    transparent 50%, 
+    rgba(0, 0, 0, 0.2) 80%,
+    rgba(0, 0, 0, 0.4) 100%
+  );
   border-radius: inherit;
   pointer-events: none;
   z-index: 10;
@@ -324,18 +339,22 @@
   right: 0;
   bottom: 0;
   background: linear-gradient(
-    115deg,
+    120deg,
     transparent 0%,
-    transparent 40%,
-    rgba(255, 255, 255, 0.1) 45%,
-    rgba(255, 255, 255, 0.2) 50%,
-    rgba(255, 255, 255, 0.1) 55%,
-    transparent 60%,
+    transparent 35%,
+    rgba(255, 255, 255, 0.15) 42%,
+    rgba(255, 255, 255, 0.3) 50%,
+    rgba(255, 255, 255, 0.15) 58%,
+    transparent 65%,
     transparent 100%
   );
   pointer-events: none;
   z-index: 20;
-  animation: screen-shine 4s ease-in-out infinite;
+  animation: screen-shine 5s ease-in-out infinite;
+}
+
+.notification-float {
+  animation: notification-float 4s ease-in-out infinite;
 }
 
 .iphone-reflection {
