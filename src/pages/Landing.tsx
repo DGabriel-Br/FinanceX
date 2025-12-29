@@ -269,14 +269,14 @@ const Landing = () => {
                     Mais Popular
                   </div>
                 )}
-                <CardContent className="p-8">
+                <CardContent className="p-8 h-full flex flex-col">
                   <h3 className="text-2xl font-bold text-foreground mb-2">{plan.name}</h3>
                   <p className="text-muted-foreground mb-4">{plan.description}</p>
                   <div className="mb-6">
                     <span className="text-4xl font-bold text-foreground">{plan.price}</span>
                     <span className="text-muted-foreground">{plan.period}</span>
                   </div>
-                  <ul className="space-y-3 mb-8">
+                  <ul className="space-y-3 flex-1">
                     {plan.features.map((feature) => (
                       <li key={feature} className="flex items-center gap-3">
                         <Check className="h-5 w-5 text-income flex-shrink-0" />
@@ -285,7 +285,7 @@ const Landing = () => {
                     ))}
                   </ul>
                   <Button 
-                    className="w-full" 
+                    className="w-full mt-8" 
                     variant={plan.highlighted ? 'default' : 'outline'}
                     size="lg"
                     asChild
