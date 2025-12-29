@@ -197,23 +197,28 @@ const LandingPage = () => {
                 </div>
               </div>
               
-              {/* Right content - Phone mockup Desktop */}
-              <div className="reveal-right relative flex justify-end">
-                <div className="relative">
-                  {/* Glow effect behind phone */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-income/30 to-primary-foreground/20 rounded-[3rem] blur-3xl scale-90" />
+              {/* Right content - Landscape Phone mockup Desktop */}
+              <div className="reveal-right relative flex justify-center items-center">
+                <div className="relative" style={{ perspective: '1000px' }}>
+                  {/* Background decorative cards */}
+                  <div className="absolute -top-16 -right-8 w-[280px] h-[180px] bg-primary-foreground/10 rounded-3xl rotate-6 transform-gpu" />
+                  <div className="absolute -top-12 -right-4 w-[260px] h-[160px] bg-primary-foreground/5 rounded-2xl rotate-3 transform-gpu" />
                   
-                  {/* Phone frame */}
-                  <div className="relative w-[340px] xl:w-[380px]">
-                    {/* Phone bezel */}
-                    <div className="relative bg-foreground rounded-[2.5rem] p-2 shadow-2xl transform rotate-3 hover:rotate-0 transition-transform duration-500">
+                  {/* Glow effect behind phone */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-income/40 to-primary-foreground/30 rounded-[2rem] blur-3xl scale-110" />
+                  
+                  {/* Landscape Phone frame with 3D perspective */}
+                  <div 
+                    className="relative w-[480px] xl:w-[520px] 2xl:w-[560px] transform-gpu transition-transform duration-700 hover:scale-105"
+                    style={{ 
+                      transform: 'rotateX(5deg) rotateY(-8deg)',
+                      transformStyle: 'preserve-3d'
+                    }}
+                  >
+                    {/* Phone bezel - landscape orientation */}
+                    <div className="relative bg-foreground rounded-[1.5rem] p-1.5 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5),0_0_0_1px_rgba(255,255,255,0.1)]">
                       {/* Screen */}
-                      <div className="relative bg-background rounded-[2rem] overflow-hidden">
-                        {/* Status bar mockup */}
-                        <div className="absolute top-0 left-0 right-0 h-8 bg-sidebar flex items-center justify-center z-10">
-                          <div className="w-24 h-5 bg-foreground rounded-full" />
-                        </div>
-                        
+                      <div className="relative bg-background rounded-[1.2rem] overflow-hidden">
                         {/* App screenshot */}
                         <img 
                           src={dashboardPreview} 
@@ -222,32 +227,43 @@ const LandingPage = () => {
                         />
                       </div>
                       
-                      {/* Home indicator */}
-                      <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-28 h-1 bg-background/50 rounded-full" />
+                      {/* Side button detail (power button) */}
+                      <div className="absolute -right-1 top-[30%] w-1 h-8 bg-foreground rounded-r-full" />
+                      
+                      {/* Volume buttons */}
+                      <div className="absolute -right-1 top-[50%] w-1 h-6 bg-foreground rounded-r-full" />
+                      <div className="absolute -right-1 top-[62%] w-1 h-6 bg-foreground rounded-r-full" />
                     </div>
                   </div>
                   
-                  {/* Floating feature cards around phone - desktop only */}
-                  <div className="absolute -top-4 -left-24 bg-card rounded-xl p-3 shadow-xl border border-border/50 animate-float">
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-full bg-income/20 flex items-center justify-center">
-                        <TrendingUp className="w-4 h-4 text-income" />
+                  {/* Floating feature card - Saldo (top left) */}
+                  <div 
+                    className="absolute -top-6 -left-8 xl:-left-16 bg-card rounded-2xl p-4 shadow-[0_20px_40px_-12px_rgba(0,0,0,0.3)] border border-border/30 backdrop-blur-sm animate-float z-10"
+                    style={{ transform: 'translateZ(40px)' }}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-income/30 to-income/10 flex items-center justify-center shadow-inner">
+                        <TrendingUp className="w-5 h-5 text-income" />
                       </div>
                       <div>
-                        <p className="text-xs text-muted-foreground">Saldo</p>
-                        <p className="text-sm font-bold text-foreground">+ R$ 2.450</p>
+                        <p className="text-xs text-muted-foreground font-medium">Saldo</p>
+                        <p className="text-base font-bold text-income">+ R$ 2.450</p>
                       </div>
                     </div>
                   </div>
                   
-                  <div className="absolute -bottom-8 -right-16 bg-card rounded-xl p-3 shadow-xl border border-border/50 animate-float" style={{ animationDelay: '1.5s' }}>
-                    <div className="flex items-center gap-2">
-                      <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
-                        <PieChart className="w-4 h-4 text-primary" />
+                  {/* Floating feature card - Economia (bottom right) */}
+                  <div 
+                    className="absolute -bottom-4 -right-4 xl:-right-12 bg-card rounded-2xl p-4 shadow-[0_20px_40px_-12px_rgba(0,0,0,0.3)] border border-border/30 backdrop-blur-sm animate-float z-10" 
+                    style={{ animationDelay: '1.5s', transform: 'translateZ(30px)' }}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center shadow-inner">
+                        <PieChart className="w-5 h-5 text-primary" />
                       </div>
                       <div>
-                        <p className="text-xs text-muted-foreground">Economia</p>
-                        <p className="text-sm font-bold text-foreground">32% do mês</p>
+                        <p className="text-xs text-muted-foreground font-medium">Economia</p>
+                        <p className="text-base font-bold text-foreground">32% do mês</p>
                       </div>
                     </div>
                   </div>
