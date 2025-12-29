@@ -47,258 +47,165 @@ const LandingPage = () => {
       <PublicHeader />
 
       <main>
-        {/* HERO - Seção com visual impactante estilo mockup */}
-        <section className="relative overflow-hidden min-h-[100svh] flex items-center bg-gradient-to-br from-primary via-primary/90 to-primary/80">
-          {/* Floating geometric shapes - hidden on mobile for cleaner look */}
-          <div className="absolute inset-0 overflow-hidden">
-            {/* Large background card - desktop only */}
-            <div className="hidden md:block absolute top-[10%] right-[5%] w-[400px] h-[500px] bg-primary-foreground/10 rounded-3xl rotate-12 transform-gpu" />
-            <div className="hidden md:block absolute top-[15%] right-[10%] w-[350px] h-[450px] bg-primary-foreground/5 rounded-3xl rotate-6 transform-gpu" />
-            
-            {/* Small floating cards - desktop only */}
-            <div className="hidden lg:block absolute top-[20%] left-[5%] w-32 h-32 bg-primary-foreground/10 rounded-2xl -rotate-12 animate-float" />
-            <div className="hidden lg:block absolute bottom-[25%] left-[10%] w-24 h-24 bg-income/20 rounded-xl rotate-12 animate-float" style={{ animationDelay: '1s' }} />
-            <div className="hidden lg:block absolute top-[60%] right-[5%] w-20 h-20 bg-primary-foreground/15 rounded-lg -rotate-6 animate-float" style={{ animationDelay: '2s' }} />
-            
-            {/* Mobile subtle decorations */}
-            <div className="md:hidden absolute top-[10%] right-[5%] w-16 h-16 bg-primary-foreground/10 rounded-xl rotate-12" />
-            <div className="md:hidden absolute bottom-[15%] left-[5%] w-12 h-12 bg-income/15 rounded-lg -rotate-6" />
-            
-            {/* Gradient overlay for depth */}
-            <div className="absolute inset-0 bg-gradient-to-t from-primary/50 via-transparent to-transparent" />
+        {/* HERO - Design inspirado na referência */}
+        <section className="relative overflow-hidden min-h-[100svh] flex items-center">
+          {/* Background - Blue for mobile, white for desktop */}
+          <div className="absolute inset-0 bg-primary lg:bg-background" />
+          
+          {/* Desktop: Blue geometric shapes on the right */}
+          <div className="hidden lg:block absolute right-0 top-0 bottom-0 w-[55%]">
+            {/* Main blue background shape */}
+            <div className="absolute inset-0 bg-primary" />
+            {/* Decorative rounded rectangles */}
+            <div className="absolute top-[10%] -left-20 w-[350px] h-[450px] bg-primary-foreground/10 rounded-[3rem] rotate-6 transform-gpu" />
+            <div className="absolute top-[15%] -left-10 w-[300px] h-[400px] bg-primary-foreground/5 rounded-[2.5rem] rotate-3 transform-gpu" />
+            <div className="absolute bottom-[5%] left-[10%] w-[200px] h-[250px] bg-primary-foreground/8 rounded-[2rem] -rotate-6 transform-gpu" />
           </div>
           
-          <div className="container relative py-8 md:py-24">
-            {/* Mobile Layout - Stacked and centered */}
+          {/* Mobile: Subtle decorations */}
+          <div className="lg:hidden absolute inset-0 overflow-hidden">
+            <div className="absolute top-[8%] right-[5%] w-20 h-20 bg-primary-foreground/10 rounded-2xl rotate-12" />
+            <div className="absolute bottom-[20%] left-[5%] w-16 h-16 bg-primary-foreground/8 rounded-xl -rotate-6" />
+          </div>
+          
+          <div className="container relative py-12 md:py-24 z-10">
+            {/* Mobile Layout */}
             <div className="flex flex-col items-center text-center lg:hidden">
-              {/* Phone mockup - Mobile (smaller and centered, portrait mode) */}
-              <div className="reveal-scale relative mb-8 mt-4 px-12 sm:px-16">
-                <div className="relative flex justify-center">
-                  {/* Glow effect behind phone */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-income/40 to-primary-foreground/30 rounded-[2.5rem] blur-2xl scale-110" />
-                  
-                  {/* Phone frame - portrait mode, compact with fixed aspect ratio */}
-                  <div className="relative w-[150px] xs:w-[170px] sm:w-[190px]">
-                    {/* Phone bezel */}
-                    <div className="relative bg-foreground rounded-[1.5rem] p-[3px] shadow-[0_20px_40px_-12px_rgba(0,0,0,0.4)]">
-                      {/* Screen with fixed aspect ratio for phone */}
-                      <div className="relative bg-background rounded-[1.3rem] overflow-hidden aspect-[9/19.5]">
-                        {/* App screenshot - using mobile preview, cover to fill */}
-                        <img 
-                          src={mobileDashboardPreview} 
-                          alt="Dashboard do FinanceX" 
-                          className="w-full h-full object-cover object-top"
-                        />
-                      </div>
-                      
-                      {/* Home indicator */}
-                      <div className="absolute bottom-[3px] left-1/2 -translate-x-1/2 w-14 h-[3px] bg-background/50 rounded-full" />
-                    </div>
-                    
-                    {/* Floating card - Saldo (top left) - Mobile */}
-                    <div 
-                      className="absolute -top-4 -left-14 xs:-left-16 sm:-left-20 bg-card rounded-xl py-2 px-3 shadow-[0_10px_25px_-8px_rgba(0,0,0,0.3)] border border-border/30 backdrop-blur-sm animate-float z-10"
-                    >
-                      <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-income/30 to-income/10 flex items-center justify-center shadow-sm">
-                          <TrendingUp className="w-4 h-4 text-income" />
-                        </div>
-                        <div>
-                          <p className="text-[10px] text-muted-foreground font-medium leading-tight">Saldo</p>
-                          <p className="text-sm font-bold text-income leading-tight">+ R$ 2.450</p>
-                        </div>
-                      </div>
-                    </div>
-                    
-                    {/* Floating card - Economia (bottom right) - Mobile */}
-                    <div 
-                      className="absolute -bottom-4 -right-14 xs:-right-16 sm:-right-20 bg-card rounded-xl py-2 px-3 shadow-[0_10px_25px_-8px_rgba(0,0,0,0.3)] border border-border/30 backdrop-blur-sm animate-float z-10"
-                      style={{ animationDelay: '1.5s' }}
-                    >
-                      <div className="flex items-center gap-2">
-                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center shadow-sm">
-                          <PieChart className="w-4 h-4 text-primary" />
-                        </div>
-                        <div>
-                          <p className="text-[10px] text-muted-foreground font-medium leading-tight">Economia</p>
-                          <p className="text-sm font-bold text-foreground leading-tight">32% do mês</p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+              {/* Decorative line */}
+              <div className="w-12 h-1 bg-primary-foreground/50 rounded-full mb-6" />
+              
+              {/* Title - Mobile */}
+              <h1 className="reveal text-3xl xs:text-4xl sm:text-5xl font-bold tracking-tight leading-[1.15] text-primary-foreground mb-4">
+                Tenha o controle<br />
+                de <span className="text-income">suas finanças</span><br />
+                na palma da mão
+              </h1>
+              
+              <p className="reveal text-base sm:text-lg text-primary-foreground/80 max-w-sm mx-auto leading-relaxed mb-6" style={{ animationDelay: '0.1s' }}>
+                Monitore seus gastos, faça orçamentos personalizados e defina metas financeiras. Simplifique sua vida financeira!
+              </p>
+              
+              {/* CTA Button - Mobile */}
+              <div className="reveal w-full max-w-xs mb-8" style={{ animationDelay: '0.2s' }}>
+                <Button size="lg" className="w-full text-base h-14 bg-primary-foreground text-primary hover:bg-primary-foreground/90 rounded-full shadow-xl" asChild>
+                  <Link to="/cadastro">
+                    Comece agora!
+                  </Link>
+                </Button>
               </div>
               
-              {/* Content - Mobile */}
-              <div className="space-y-5 px-2">
-                <div className="reveal inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary-foreground/10 border border-primary-foreground/20 text-primary-foreground text-xs font-medium backdrop-blur-sm">
-                  <Sparkles className="w-3 h-3" />
-                  Controle financeiro simplificado
-                </div>
-                
-                <h1 className="reveal text-3xl xs:text-4xl sm:text-5xl font-bold tracking-tight leading-[1.1] text-primary-foreground" style={{ animationDelay: '0.1s' }}>
-                  Chega de{' '}
-                  <span className="relative inline-block">
-                    planilha
-                    <svg className="absolute -bottom-1 left-0 w-full h-3" viewBox="0 0 200 12" preserveAspectRatio="none">
-                      <path d="M0,8 Q50,0 100,8 T200,8" fill="none" stroke="hsl(var(--income))" strokeWidth="4" strokeLinecap="round"/>
-                    </svg>
-                  </span>
-                  .
-                </h1>
-                
-                <p className="reveal text-base sm:text-lg text-primary-foreground/80 max-w-sm mx-auto leading-relaxed" style={{ animationDelay: '0.2s' }}>
-                  No FinanceX você lança e pronto. O app organiza e mostra seu mês na hora.
-                </p>
-                
-                <div className="reveal flex flex-col gap-3 pt-2" style={{ animationDelay: '0.3s' }}>
-                  <Button size="lg" variant="secondary" className="text-base px-6 h-12 shadow-xl bg-primary-foreground text-primary hover:bg-primary-foreground/90 shine-effect group w-full" asChild>
-                    <Link to="/cadastro">
-                      Criar conta grátis
-                      <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-                    </Link>
-                  </Button>
-                  <Button size="lg" variant="ghost" className="text-base px-6 h-12 text-primary-foreground border border-primary-foreground/30 hover:bg-primary-foreground/10 hover:text-primary-foreground w-full" onClick={() => scrollToSection('#como-funciona')}>
-                    Ver como funciona
-                  </Button>
-                </div>
-                
-                <div className="reveal flex items-center gap-4 justify-center text-xs text-primary-foreground/70 pt-2" style={{ animationDelay: '0.4s' }}>
-                  <span className="flex items-center gap-1.5">
-                    <Check className="w-3.5 h-3.5 text-income" />
-                    Sem cartão
-                  </span>
-                  <span className="flex items-center gap-1.5">
-                    <Check className="w-3.5 h-3.5 text-income" />
-                    Setup em 30s
-                  </span>
+              {/* App Store Badges - Mobile */}
+              <div className="reveal flex items-center gap-3 mb-10" style={{ animationDelay: '0.3s' }}>
+                <a href="#" className="flex items-center gap-2 px-4 py-2.5 bg-foreground/10 border border-primary-foreground/30 rounded-lg hover:bg-foreground/20 transition-colors">
+                  <svg className="w-5 h-5 text-primary-foreground" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+                  </svg>
+                  <div className="text-left">
+                    <p className="text-[8px] text-primary-foreground/70 leading-none">Download on the</p>
+                    <p className="text-xs font-semibold text-primary-foreground leading-tight">App Store</p>
+                  </div>
+                </a>
+                <a href="#" className="flex items-center gap-2 px-4 py-2.5 bg-foreground/10 border border-primary-foreground/30 rounded-lg hover:bg-foreground/20 transition-colors">
+                  <svg className="w-5 h-5 text-primary-foreground" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M3,20.5V3.5C3,2.91 3.34,2.39 3.84,2.15L13.69,12L3.84,21.85C3.34,21.6 3,21.09 3,20.5M16.81,15.12L6.05,21.34L14.54,12.85L16.81,15.12M20.16,10.81C20.5,11.08 20.75,11.5 20.75,12C20.75,12.5 20.5,12.92 20.16,13.19L17.89,14.5L15.39,12L17.89,9.5L20.16,10.81M6.05,2.66L16.81,8.88L14.54,11.15L6.05,2.66Z"/>
+                  </svg>
+                  <div className="text-left">
+                    <p className="text-[8px] text-primary-foreground/70 leading-none">GET IT ON</p>
+                    <p className="text-xs font-semibold text-primary-foreground leading-tight">Google Play</p>
+                  </div>
+                </a>
+              </div>
+              
+              {/* Phone Mockup - Mobile */}
+              <div className="reveal-scale relative" style={{ animationDelay: '0.4s' }}>
+                <div className="relative w-[200px] xs:w-[220px] sm:w-[260px]">
+                  {/* Phone bezel */}
+                  <div className="relative bg-foreground rounded-[2rem] p-1 shadow-[0_30px_60px_-15px_rgba(0,0,0,0.5)]">
+                    {/* Screen */}
+                    <div className="relative bg-background rounded-[1.7rem] overflow-hidden aspect-[9/19.5]">
+                      <img 
+                        src={mobileDashboardPreview} 
+                        alt="Dashboard do FinanceX" 
+                        className="w-full h-full object-cover object-top"
+                      />
+                    </div>
+                    {/* Home indicator */}
+                    <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-20 h-1 bg-background/50 rounded-full" />
+                  </div>
                 </div>
               </div>
             </div>
             
-            {/* Desktop Layout - Side by side */}
-            <div className="hidden lg:grid lg:grid-cols-2 gap-8 items-center">
+            {/* Desktop Layout - Text left, Phone right */}
+            <div className="hidden lg:grid lg:grid-cols-2 gap-16 items-center">
               {/* Left content - Desktop */}
-              <div className="space-y-8 text-left">
-                <div className="reveal inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary-foreground/10 border border-primary-foreground/20 text-primary-foreground text-sm font-medium backdrop-blur-sm">
-                  <Sparkles className="w-4 h-4" />
-                  Controle financeiro simplificado
-                </div>
+              <div className="space-y-8 text-left pr-8">
+                {/* Decorative line */}
+                <div className="w-16 h-1.5 bg-primary rounded-full" />
                 
-                <h1 className="reveal text-5xl xl:text-6xl 2xl:text-7xl font-bold tracking-tight leading-[1.1] text-primary-foreground" style={{ animationDelay: '0.1s' }}>
-                  Chega de{' '}
-                  <span className="relative inline-block">
-                    planilha
-                    <svg className="absolute -bottom-2 left-0 w-full h-4 text-income" viewBox="0 0 200 12" preserveAspectRatio="none">
-                      <path d="M0,8 Q50,0 100,8 T200,8" fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round"/>
-                    </svg>
-                  </span>
-                  .
+                <h1 className="reveal text-5xl xl:text-6xl 2xl:text-7xl font-bold tracking-tight leading-[1.1] text-foreground">
+                  Tenha o controle<br />
+                  de <span className="text-primary">suas finanças</span><br />
+                  na palma da mão
                 </h1>
                 
-                <p className="reveal text-xl text-primary-foreground/80 max-w-lg leading-relaxed" style={{ animationDelay: '0.2s' }}>
-                  No FinanceX você lança e pronto. O app organiza e mostra seu mês na hora.
+                <p className="reveal text-lg xl:text-xl text-muted-foreground max-w-lg leading-relaxed" style={{ animationDelay: '0.1s' }}>
+                  Monitore seus gastos, faça orçamentos personalizados e defina metas financeiras. Simplifique sua vida financeira!
                 </p>
                 
-                <div className="reveal flex flex-row gap-4" style={{ animationDelay: '0.3s' }}>
-                  <Button size="lg" variant="secondary" className="text-base px-8 h-14 shadow-xl bg-primary-foreground text-primary hover:bg-primary-foreground/90 shine-effect group" asChild>
+                {/* CTA Button - Desktop */}
+                <div className="reveal" style={{ animationDelay: '0.2s' }}>
+                  <Button size="lg" variant="outline" className="text-base px-12 h-14 border-2 border-primary text-primary hover:bg-primary hover:text-primary-foreground rounded-full transition-all duration-300" asChild>
                     <Link to="/cadastro">
-                      Criar conta grátis
-                      <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                      Comece agora!
                     </Link>
-                  </Button>
-                  <Button size="lg" variant="ghost" className="text-base px-8 h-14 text-primary-foreground border border-primary-foreground/30 hover:bg-primary-foreground/10 hover:text-primary-foreground" onClick={() => scrollToSection('#como-funciona')}>
-                    Ver como funciona
                   </Button>
                 </div>
                 
-                <div className="reveal flex items-center gap-6 text-sm text-primary-foreground/70" style={{ animationDelay: '0.4s' }}>
-                  <span className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-income" />
-                    Sem cartão
-                  </span>
-                  <span className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-income" />
-                    Setup em 30s
-                  </span>
+                {/* App Store Badges - Desktop */}
+                <div className="reveal flex items-center gap-4 pt-4" style={{ animationDelay: '0.3s' }}>
+                  <a href="#" className="flex items-center gap-2 px-5 py-3 bg-foreground border border-border rounded-xl hover:bg-foreground/90 transition-colors">
+                    <svg className="w-6 h-6 text-background" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/>
+                    </svg>
+                    <div className="text-left">
+                      <p className="text-[9px] text-background/70 leading-none">Download on the</p>
+                      <p className="text-sm font-semibold text-background leading-tight">App Store</p>
+                    </div>
+                  </a>
+                  <a href="#" className="flex items-center gap-2 px-5 py-3 bg-foreground border border-border rounded-xl hover:bg-foreground/90 transition-colors">
+                    <svg className="w-6 h-6 text-primary" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M3,20.5V3.5C3,2.91 3.34,2.39 3.84,2.15L13.69,12L3.84,21.85C3.34,21.6 3,21.09 3,20.5M16.81,15.12L6.05,21.34L14.54,12.85L16.81,15.12M20.16,10.81C20.5,11.08 20.75,11.5 20.75,12C20.75,12.5 20.5,12.92 20.16,13.19L17.89,14.5L15.39,12L17.89,9.5L20.16,10.81M6.05,2.66L16.81,8.88L14.54,11.15L6.05,2.66Z"/>
+                    </svg>
+                    <div className="text-left">
+                      <p className="text-[9px] text-background/70 leading-none">GET IT ON</p>
+                      <p className="text-sm font-semibold text-background leading-tight">Google Play</p>
+                    </div>
+                  </a>
                 </div>
               </div>
               
-              {/* Right content - Landscape Phone mockup Desktop */}
+              {/* Right content - Phone mockup Desktop */}
               <div className="reveal-right relative flex justify-center items-center">
-                <div className="relative" style={{ perspective: '1000px' }}>
-                  {/* Background decorative cards */}
-                  <div className="absolute -top-16 -right-8 w-[280px] h-[180px] bg-primary-foreground/10 rounded-3xl rotate-6 transform-gpu" />
-                  <div className="absolute -top-12 -right-4 w-[260px] h-[160px] bg-primary-foreground/5 rounded-2xl rotate-3 transform-gpu" />
-                  
-                  {/* Glow effect behind phone */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-income/40 to-primary-foreground/30 rounded-[2rem] blur-3xl scale-110" />
-                  
-                  {/* Portrait Phone frame with 3D perspective */}
-                  <div 
-                    className="relative w-[280px] xl:w-[300px] 2xl:w-[320px] transform-gpu transition-transform duration-700 hover:scale-105"
-                    style={{ 
-                      transform: 'rotateX(5deg) rotateY(-8deg)',
-                      transformStyle: 'preserve-3d'
-                    }}
-                  >
-                    {/* Phone bezel - portrait orientation */}
-                    <div className="relative bg-foreground rounded-[2rem] p-1.5 shadow-[0_25px_50px_-12px_rgba(0,0,0,0.5),0_0_0_1px_rgba(255,255,255,0.1)]">
-                      {/* Screen with fixed aspect ratio */}
-                      <div className="relative bg-background rounded-[1.7rem] overflow-hidden aspect-[9/19.5]">
-                        {/* App screenshot */}
+                <div className="relative">
+                  {/* Phone with shadow */}
+                  <div className="relative w-[320px] xl:w-[360px] 2xl:w-[400px]">
+                    {/* Phone bezel */}
+                    <div className="relative bg-foreground rounded-[2.5rem] p-1.5 shadow-[0_40px_80px_-20px_rgba(0,0,0,0.4)]">
+                      {/* Screen */}
+                      <div className="relative bg-background rounded-[2.2rem] overflow-hidden aspect-[9/19.5]">
                         <img 
                           src={mobileDashboardPreview} 
                           alt="Dashboard do FinanceX" 
                           className="w-full h-full object-cover object-top"
                         />
                       </div>
-                      
                       {/* Home indicator */}
-                      <div className="absolute bottom-1.5 left-1/2 -translate-x-1/2 w-24 h-1 bg-background/50 rounded-full" />
-                    </div>
-                  </div>
-                  
-                  {/* Floating feature card - Saldo (top left) */}
-                  <div 
-                    className="absolute -top-6 -left-8 xl:-left-16 bg-card rounded-2xl p-4 shadow-[0_20px_40px_-12px_rgba(0,0,0,0.3)] border border-border/30 backdrop-blur-sm animate-float z-10"
-                    style={{ transform: 'translateZ(40px)' }}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-income/30 to-income/10 flex items-center justify-center shadow-inner">
-                        <TrendingUp className="w-5 h-5 text-income" />
-                      </div>
-                      <div>
-                        <p className="text-xs text-muted-foreground font-medium">Saldo</p>
-                        <p className="text-base font-bold text-income">+ R$ 2.450</p>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  {/* Floating feature card - Economia (bottom right) */}
-                  <div 
-                    className="absolute -bottom-4 -right-4 xl:-right-12 bg-card rounded-2xl p-4 shadow-[0_20px_40px_-12px_rgba(0,0,0,0.3)] border border-border/30 backdrop-blur-sm animate-float z-10" 
-                    style={{ animationDelay: '1.5s', transform: 'translateZ(30px)' }}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary/30 to-primary/10 flex items-center justify-center shadow-inner">
-                        <PieChart className="w-5 h-5 text-primary" />
-                      </div>
-                      <div>
-                        <p className="text-xs text-muted-foreground font-medium">Economia</p>
-                        <p className="text-base font-bold text-foreground">32% do mês</p>
-                      </div>
+                      <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-28 h-1 bg-background/50 rounded-full" />
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-          </div>
-          
-          {/* Scroll indicator - hidden on very small screens */}
-          <div className="hidden sm:block absolute bottom-6 md:bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
-            <div className="w-5 h-8 md:w-6 md:h-10 rounded-full border-2 border-primary-foreground/30 flex items-start justify-center p-1.5 md:p-2">
-              <div className="w-1 h-1.5 md:h-2 bg-primary-foreground/50 rounded-full animate-pulse" />
             </div>
           </div>
         </section>
