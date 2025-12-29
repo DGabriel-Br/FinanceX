@@ -157,18 +157,27 @@ const Landing = () => {
             </div>
 
             {/* Right - App preview */}
+            {/* Right - iPhone mockup */}
             <div className="flex-1 relative">
-              <div className="relative mx-auto max-w-sm">
-                {/* Phone frame */}
-                <div className="relative bg-sidebar rounded-[2.5rem] p-2 shadow-2xl shadow-black/20">
-                  <div className="bg-background rounded-[2rem] overflow-hidden">
-                    {/* Status bar */}
-                    <div className="bg-sidebar h-6 flex items-center justify-center">
-                      <div className="w-20 h-4 bg-foreground/10 rounded-full" />
+              <div className="relative mx-auto max-w-[280px]">
+                {/* iPhone frame */}
+                <div className="relative bg-[#1a1a1a] rounded-[3rem] p-3 shadow-2xl shadow-black/40">
+                  {/* Side buttons - Volume */}
+                  <div className="absolute -left-1 top-28 w-1 h-8 bg-[#2a2a2a] rounded-l-sm" />
+                  <div className="absolute -left-1 top-40 w-1 h-12 bg-[#2a2a2a] rounded-l-sm" />
+                  <div className="absolute -left-1 top-56 w-1 h-12 bg-[#2a2a2a] rounded-l-sm" />
+                  {/* Side button - Power */}
+                  <div className="absolute -right-1 top-36 w-1 h-16 bg-[#2a2a2a] rounded-r-sm" />
+                  
+                  {/* Screen */}
+                  <div className="bg-background rounded-[2.4rem] overflow-hidden relative">
+                    {/* Dynamic Island */}
+                    <div className="absolute top-3 left-1/2 -translate-x-1/2 w-28 h-7 bg-[#1a1a1a] rounded-full z-10 flex items-center justify-center">
+                      <div className="w-3 h-3 rounded-full bg-[#2a2a2a] mr-8" />
                     </div>
                     
                     {/* App content mock */}
-                    <div className="p-4 space-y-4">
+                    <div className="pt-12 p-4 space-y-4">
                       {/* Balance card */}
                       <div className="bg-gradient-to-br from-primary to-primary/80 rounded-2xl p-4 text-primary-foreground">
                         <p className="text-xs opacity-80 mb-1">Saldo total</p>
@@ -223,12 +232,17 @@ const Landing = () => {
                           />
                         ))}
                       </div>
+                      
+                      {/* Home indicator */}
+                      <div className="flex justify-center pt-2">
+                        <div className="w-32 h-1 bg-foreground/20 rounded-full" />
+                      </div>
                     </div>
                   </div>
                 </div>
 
                 {/* Floating elements */}
-                <div className="absolute -left-8 top-1/4 bg-card border border-border rounded-xl p-3 shadow-lg animate-float">
+                <div className="absolute -left-12 top-1/3 bg-card border border-border rounded-xl p-3 shadow-lg animate-float">
                   <div className="flex items-center gap-2">
                     <div className="w-8 h-8 rounded-full bg-income/20 flex items-center justify-center">
                       <Check className="h-4 w-4 text-income" />
