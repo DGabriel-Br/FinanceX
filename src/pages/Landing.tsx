@@ -14,6 +14,7 @@ import {
   ChevronRight
 } from 'lucide-react';
 import { FinanceLogo } from '@/components/ui/FinanceLogo';
+import iphoneMockup from '@/assets/iphone-mockup.png';
 
 const Landing = () => {
   const features = [
@@ -147,7 +148,7 @@ const Landing = () => {
 
             </div>
 
-            {/* Right - iPhone 3D mockup */}
+            {/* Right - iPhone Mockup Image */}
             <div className="flex-1 relative flex justify-center items-center min-h-[600px]">
               <div className="relative" style={{ perspective: '2000px' }}>
                 {/* Floating notification - positioned outside iPhone */}
@@ -168,155 +169,13 @@ const Landing = () => {
                   </div>
                 </div>
 
-                {/* 3D iPhone Container */}
-                <div 
-                  className="iphone-3d relative"
-                  style={{ transformStyle: 'preserve-3d' }}
-                >
-                  {/* 3D Side depth - Right edge */}
-                  <div 
-                    className="absolute top-0 -right-3 w-3 h-full"
-                    style={{
-                      background: 'linear-gradient(90deg, #636366 0%, #3a3a3c 50%, #2c2c2e 100%)',
-                      borderRadius: '0 8px 8px 0',
-                      transform: 'rotateY(-90deg) translateZ(0px)',
-                      transformOrigin: 'left center',
-                    }}
+                {/* iPhone Mockup Image */}
+                <div className="iphone-3d relative">
+                  <img 
+                    src={iphoneMockup} 
+                    alt="FinanceX App no iPhone" 
+                    className="w-[320px] sm:w-[380px] lg:w-[420px] h-auto drop-shadow-2xl"
                   />
-                  
-                  {/* iPhone frame - Premium titanium finish */}
-                  <div 
-                    className="relative overflow-hidden"
-                    style={{
-                      background: 'linear-gradient(120deg, #f5f5f7 0%, #e8e8ed 10%, #d1d1d6 30%, #a1a1a6 60%, #8e8e93 80%, #636366 100%)',
-                      padding: '5px',
-                      borderRadius: '56px',
-                      boxShadow: '8px 0 20px -5px rgba(0, 0, 0, 0.3)',
-                    }}
-                  >
-                    {/* Right side 3D edge visible */}
-                    <div 
-                      className="absolute top-0 -right-[8px] w-[8px] h-full pointer-events-none"
-                      style={{
-                        background: 'linear-gradient(90deg, #636366 0%, #48484a 40%, #3a3a3c 70%, #2c2c2e 100%)',
-                        borderRadius: '0 12px 12px 0',
-                      }}
-                    />
-                    
-                    {/* Side buttons - Volume (left side, less visible due to rotation) */}
-                    <div 
-                      className="absolute -left-[4px] top-28 w-[4px] h-8 opacity-60"
-                      style={{ background: 'linear-gradient(90deg, #48484a, #636366)', borderRadius: '3px 0 0 3px' }}
-                    />
-                    <div 
-                      className="absolute -left-[4px] top-40 w-[4px] h-14 opacity-60"
-                      style={{ background: 'linear-gradient(90deg, #48484a, #636366)', borderRadius: '3px 0 0 3px' }}
-                    />
-                    
-                    {/* Side button - Power (right side, more prominent) */}
-                    <div 
-                      className="absolute -right-[6px] top-40 w-[6px] h-24"
-                      style={{ background: 'linear-gradient(270deg, #2c2c2e, #48484a, #636366)', borderRadius: '0 4px 4px 0' }}
-                    />
-                    
-                    {/* Inner bezel */}
-                    <div 
-                      className="overflow-hidden"
-                      style={{ background: '#000', padding: '3px', borderRadius: '52px' }}
-                    >
-                      {/* Screen */}
-                      <div className="bg-background overflow-hidden relative" style={{ width: '280px', borderRadius: '49px' }}>
-                        {/* Screen shine effect */}
-                        <div className="iphone-screen-shine" style={{ borderRadius: '49px' }} />
-                        
-                        {/* Dynamic Island */}
-                        <div 
-                          className="absolute top-4 left-1/2 -translate-x-1/2 w-[110px] h-[32px] bg-black rounded-full z-10 flex items-center justify-end px-4"
-                          style={{ boxShadow: 'inset 0 1px 3px rgba(0,0,0,0.8)' }}
-                        >
-                          {/* Front camera */}
-                          <div className="w-2.5 h-2.5 rounded-full bg-[#1a1a1a] ring-1 ring-[#333]">
-                            <div className="w-1 h-1 rounded-full bg-[#0a3d62] m-[3px]" />
-                          </div>
-                        </div>
-                        
-                        {/* App content mock */}
-                        <div className="pt-16 p-5 space-y-4 min-h-[560px]">
-                          {/* Balance card */}
-                          <div 
-                            className="rounded-2xl p-5 text-white relative overflow-hidden"
-                            style={{
-                              background: 'linear-gradient(145deg, hsl(217 91% 60%) 0%, hsl(221 83% 53%) 50%, hsl(224 76% 48%) 100%)'
-                            }}
-                          >
-                            <div className="relative z-10">
-                              <p className="text-xs opacity-80 mb-1 font-medium">Saldo total</p>
-                              <p className="text-3xl font-bold mb-4 tracking-tight">R$ 4.180,00</p>
-                              <div className="flex gap-8 text-xs">
-                                <div>
-                                  <span className="opacity-70">Receitas</span>
-                                  <p className="font-semibold text-sm">R$ 8.500</p>
-                                </div>
-                                <div>
-                                  <span className="opacity-70">Despesas</span>
-                                  <p className="font-semibold text-sm">R$ 4.320</p>
-                                </div>
-                              </div>
-                            </div>
-                            {/* Card gradient overlay */}
-                            <div className="absolute inset-0 bg-gradient-to-br from-white/10 via-transparent to-black/10" />
-                          </div>
-
-                          {/* Transactions */}
-                          <div className="space-y-3">
-                            <div className="flex items-center justify-between bg-card/80 rounded-xl p-3.5 backdrop-blur-sm border border-border/30">
-                              <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-full bg-emerald-500/15 flex items-center justify-center">
-                                  <TrendingUp className="h-4 w-4 text-emerald-500" />
-                                </div>
-                                <div>
-                                  <p className="text-sm font-semibold text-foreground">Salário</p>
-                                  <p className="text-xs text-muted-foreground">Hoje</p>
-                                </div>
-                              </div>
-                              <span className="text-sm font-bold text-income">+R$ 5.200</span>
-                            </div>
-                            <div className="flex items-center justify-between bg-card/80 rounded-xl p-3.5 backdrop-blur-sm border border-border/30">
-                              <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 rounded-full bg-orange-500/15 flex items-center justify-center">
-                                  <CreditCard className="h-4 w-4 text-orange-500" />
-                                </div>
-                                <div>
-                                  <p className="text-sm font-semibold text-foreground">iFood</p>
-                                  <p className="text-xs text-muted-foreground">Ontem</p>
-                                </div>
-                              </div>
-                              <span className="text-sm font-bold text-expense">-R$ 48,90</span>
-                            </div>
-                          </div>
-
-                          {/* Chart */}
-                          <div className="h-28 bg-card/60 rounded-xl flex items-end justify-around p-4 gap-2 backdrop-blur-sm border border-border/20">
-                            {[35, 55, 40, 75, 50, 65, 85].map((h, i) => (
-                              <div 
-                                key={i} 
-                                className="flex-1 rounded-t-md transition-all duration-500"
-                                style={{ 
-                                  height: `${h}%`,
-                                  background: `linear-gradient(to top, hsl(217 91% 60%), hsl(221 83% 53% / 0.6))`
-                                }}
-                              />
-                            ))}
-                          </div>
-                          
-                          {/* Home indicator */}
-                          <div className="flex justify-center pt-3 pb-1">
-                            <div className="w-32 h-1 bg-foreground/25 rounded-full" />
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
                 </div>
 
                 {/* Bottom reflection/shadow */}
