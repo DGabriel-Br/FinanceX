@@ -9,6 +9,7 @@ import { PublicHeader } from '@/components/landing/PublicHeader';
 import dashboardPreview from '@/assets/dashboard-preview.png';
 import transactionsPreview from '@/assets/transactions-preview.png';
 import debtsPreview from '@/assets/debts-preview.png';
+import investmentsPreview from '@/assets/investments-preview.png';
 
 const LandingPage = () => {
   const scrollToSection = (id: string) => {
