@@ -77,22 +77,22 @@ const LandingPage = () => {
                   {/* Glow effect behind phone */}
                   <div className="absolute inset-0 bg-gradient-to-br from-income/40 to-primary-foreground/30 rounded-[2.5rem] blur-2xl scale-95" />
                   
-                  {/* Phone frame - portrait mode, compact */}
-                  <div className="relative w-[180px] xs:w-[200px] sm:w-[220px]">
+                  {/* Phone frame - portrait mode, compact with fixed aspect ratio */}
+                  <div className="relative w-[160px] xs:w-[180px] sm:w-[200px]">
                     {/* Phone bezel */}
-                    <div className="relative bg-foreground rounded-[1.8rem] p-1 shadow-[0_20px_40px_-12px_rgba(0,0,0,0.4)]">
-                      {/* Screen */}
-                      <div className="relative bg-background rounded-[1.4rem] overflow-hidden">
-                        {/* App screenshot - using mobile preview */}
+                    <div className="relative bg-foreground rounded-[1.5rem] p-[3px] shadow-[0_20px_40px_-12px_rgba(0,0,0,0.4)]">
+                      {/* Screen with fixed aspect ratio for phone */}
+                      <div className="relative bg-background rounded-[1.3rem] overflow-hidden aspect-[9/19.5]">
+                        {/* App screenshot - using mobile preview, cover to fill */}
                         <img 
                           src={mobileDashboardPreview} 
                           alt="Dashboard do FinanceX" 
-                          className="w-full h-auto"
+                          className="w-full h-full object-cover object-top"
                         />
                       </div>
                       
                       {/* Home indicator */}
-                      <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-16 h-1 bg-background/50 rounded-full" />
+                      <div className="absolute bottom-[3px] left-1/2 -translate-x-1/2 w-14 h-[3px] bg-background/50 rounded-full" />
                     </div>
                   </div>
                 </div>
