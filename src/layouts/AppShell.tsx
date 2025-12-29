@@ -1,19 +1,14 @@
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { ReactNode, useState, useEffect, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { Sidebar } from '@/components/finance/Sidebar';
-import { Dashboard } from '@/components/finance/Dashboard';
-import { Transactions } from '@/components/finance/Transactions';
-import { Debts } from '@/components/finance/Debts';
-import { Investments } from '@/components/finance/Investments';
 import { MobileHeader } from '@/components/finance/MobileHeader';
 import { MobileNav } from '@/components/finance/MobileNav';
 import { FloatingAddButton } from '@/components/finance/FloatingAddButton';
 import { PullToRefresh } from '@/components/finance/PullToRefresh';
 import { OfflineModal } from '@/components/finance/OfflineModal';
-import { syncService } from '@/lib/offline/syncService';
-import { useTransactions } from '@/hooks/useTransactions';
-import { useDebts } from '@/hooks/useDebts';
+import { OnboardingTour } from '@/components/onboarding/OnboardingTour';
+import { FinanceLogo } from '@/components/ui/FinanceLogo';
 import { useTheme } from '@/hooks/useTheme';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { useAdminRole } from '@/hooks/useAdminRole';
@@ -22,7 +17,7 @@ import { useOnboarding } from '@/hooks/useOnboarding';
 import { useIsNativeApp } from '@/hooks/useIsNativeApp';
 import { useNavigationBar } from '@/hooks/useNavigationBar';
 import { useRealtimeSync } from '@/hooks/useRealtimeSync';
-import { OnboardingTour } from '@/components/onboarding/OnboardingTour';
+import { syncService } from '@/lib/offline/syncService';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -33,7 +28,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
-import { FinanceLogo } from '@/components/ui/FinanceLogo';
 
 type Tab = 'dashboard' | 'lancamentos' | 'investimentos' | 'dividas';
 
@@ -49,7 +43,13 @@ const getTabFromPath = (pathname: string): Tab => {
 
 const getTabIndex = (tab: Tab): number => tabOrder.indexOf(tab);
 
-const Index = () => {
+interface AppShellProps {
+  children: ReactNode;
+  onRefresh?: () => Promise<void>;
+  onAddTransaction?: (transaction: any) => Promise<void>;
+}
+
+export const AppShell = ({ children, onRefresh, onAddTransaction }: AppShellProps) => {
   const location = useLocation();
   const navigate = useNavigate();
   const activeTab = getTabFromPath(location.pathname);
@@ -59,7 +59,8 @@ const Index = () => {
   const [showSplash, setShowSplash] = useState(true);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
-  const [tourHighlightedTab, setTourHighlightedTab] = useState<'dashboard' | 'lancamentos' | 'investimentos' | 'dividas' | null>(null);
+  const [tourHighlightedTab, setTourHighlightedTab] = useState<Tab | null>(null);
+
   // Detecta direção da navegação entre abas
   useEffect(() => {
     if (activeTab !== prevTab) {
@@ -69,10 +70,11 @@ const Index = () => {
       setPrevTab(activeTab);
     }
   }, [activeTab, prevTab]);
+
   const { theme, toggleTheme } = useTheme();
   const { user, loading: authLoading, signOut, refreshUser } = useAuthContext();
   const { isAdmin } = useAdminRole();
-  const { showValues, toggleValuesVisibility, formatValue } = useValuesVisibility();
+  const { showValues, toggleValuesVisibility } = useValuesVisibility();
   const { showTour, completeTour, skipTour } = useOnboarding(user?.id);
   const isNativeApp = useIsNativeApp();
   
@@ -81,29 +83,6 @@ const Index = () => {
   
   // Ativa sincronização em tempo real com o servidor
   useRealtimeSync();
-
-  // IMPORTANTE: Todos os hooks devem ser chamados antes de qualquer early return
-  const {
-    transactions,
-    loading: transactionsLoading,
-    customRange,
-    setCustomRange,
-    addTransaction,
-    updateTransaction,
-    deleteTransaction,
-    getFilteredTransactions,
-    getTotals,
-    refetch: refetchTransactions,
-  } = useTransactions();
-
-  const {
-    debts,
-    loading: debtsLoading,
-    addDebt,
-    updateDebt,
-    deleteDebt,
-    refetch: refetchDebts,
-  } = useDebts();
 
   // Tempo mínimo de exibição da splash screen (1.5 segundos)
   useEffect(() => {
@@ -120,25 +99,20 @@ const Index = () => {
     }
   }, [user, authLoading, navigate]);
 
-  // Sincronizar e recarregar dados quando o usuário logar
+  // Sincronizar quando o usuário logar
   useEffect(() => {
     if (user && navigator.onLine) {
-      syncService.syncAll().then(() => {
-        refetchTransactions();
-        refetchDebts();
-      });
+      syncService.syncAll();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user?.id]);
 
-  // Pull to refresh handler para mobile - atualiza TODOS os dados
+  // Pull to refresh handler
   const handlePullRefresh = useCallback(async () => {
-    await Promise.all([
-      refetchTransactions(),
-      refetchDebts(),
-      refreshUser(), // Atualiza dados do usuário (incluindo avatar)
-    ]);
-  }, [refetchTransactions, refetchDebts, refreshUser]);
+    if (onRefresh) {
+      await onRefresh();
+    }
+    await refreshUser();
+  }, [onRefresh, refreshUser]);
 
   const handleSignOutRequest = () => {
     setShowLogoutConfirm(true);
@@ -148,16 +122,15 @@ const Index = () => {
     setShowLogoutConfirm(false);
     setIsLoggingOut(true);
     await signOut();
-    // Aguarda 3s para exibir a tela de logout
     setTimeout(() => {
       navigate('/login', { replace: true });
     }, 3000);
   };
 
+  // Estados de loading
   if (authLoading || showSplash || isLoggingOut) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-background">
-        {/* Logo animada */}
         <div className="relative mb-6">
           <div className="relative flex items-end">
             <div className="absolute -inset-4 bg-gradient-to-r from-primary/20 via-income/20 to-primary/20 rounded-2xl blur-2xl animate-pulse" />
@@ -169,7 +142,6 @@ const Index = () => {
               inanceX
             </span>
           </div>
-          {/* Anel de loading ao redor do logo */}
           <div className="absolute -inset-4 rounded-3xl border-2 border-primary/30 animate-spin" style={{ animationDuration: '3s' }} />
           <div className="absolute -inset-5 rounded-3xl border-2 border-t-primary border-r-transparent border-b-transparent border-l-transparent animate-spin" style={{ animationDuration: '1.5s' }} />
         </div>
@@ -178,7 +150,6 @@ const Index = () => {
           {isLoggingOut ? 'Saindo...' : 'Carregando seu controle financeiro...'}
         </p>
         
-        {/* Barra de progresso */}
         <div className="w-48 h-1 bg-muted rounded-full mt-6 overflow-hidden">
           <div className="h-full bg-gradient-to-r from-income to-primary rounded-full animate-[loading_1.5s_ease-in-out_infinite]" />
         </div>
@@ -190,16 +161,12 @@ const Index = () => {
     return null;
   }
 
-  const filteredTransactions = getFilteredTransactions();
-  const totals = getTotals();
-
   return (
     <>
-      {/* Modal de aviso offline - apenas no app nativo */}
       {isNativeApp && <OfflineModal />}
       
       <div className={`flex ${isNativeApp ? 'flex-col' : ''} min-h-screen w-full relative`}>
-        {/* Sidebar - desktop (oculta no app nativo) */}
+        {/* Sidebar - desktop */}
         {!isNativeApp && (
           <Sidebar 
             activeTab={activeTab} 
@@ -216,17 +183,17 @@ const Index = () => {
           />
         )}
 
-        {/* Mobile Header - apenas no app nativo */}
+        {/* Mobile Header */}
         {isNativeApp && (
-            <MobileHeader
-              userName={user.user_metadata?.full_name}
-              userEmail={user.email}
-              userAvatar={user.user_metadata?.avatar_url}
-              showValues={showValues}
-              onToggleValues={toggleValuesVisibility}
-              theme={theme}
-              onToggleTheme={toggleTheme}
-            />
+          <MobileHeader
+            userName={user.user_metadata?.full_name}
+            userEmail={user.email}
+            userAvatar={user.user_metadata?.avatar_url}
+            showValues={showValues}
+            onToggleValues={toggleValuesVisibility}
+            theme={theme}
+            onToggleTheme={toggleTheme}
+          />
         )}
 
         {/* Conteúdo principal */}
@@ -242,55 +209,7 @@ const Index = () => {
                   slideDirection === 'none' && "animate-fade-in"
                 )}
               >
-                {activeTab === 'dashboard' ? (
-                  <Dashboard
-                    totals={totals}
-                    customRange={customRange}
-                    onCustomRangeChange={setCustomRange}
-                    transactions={filteredTransactions}
-                    allTransactions={transactions}
-                    debts={debts}
-                    onNavigateToDebts={() => navigate('/dividas')}
-                    showValues={showValues}
-                    onToggleValues={toggleValuesVisibility}
-                    formatValue={formatValue}
-                  />
-                ) : activeTab === 'lancamentos' ? (
-                  <Transactions
-                    transactions={filteredTransactions}
-                    customRange={customRange}
-                    onCustomRangeChange={setCustomRange}
-                    onAdd={addTransaction}
-                    onUpdate={updateTransaction}
-                    onDelete={deleteTransaction}
-                    formatValue={formatValue}
-                    showValues={showValues}
-                    onToggleValues={toggleValuesVisibility}
-                  />
-                ) : activeTab === 'investimentos' ? (
-                  <Investments
-                    transactions={filteredTransactions}
-                    allTransactions={transactions}
-                    customRange={customRange}
-                    onCustomRangeChange={setCustomRange}
-                    onNavigateToTransactions={() => navigate('/lancamentos')}
-                    onAddTransaction={addTransaction}
-                    formatValue={formatValue}
-                    showValues={showValues}
-                    onToggleValues={toggleValuesVisibility}
-                  />
-                ) : (
-                  <Debts
-                    debts={debts}
-                    transactions={transactions}
-                    onAddDebt={addDebt}
-                    onUpdateDebt={updateDebt}
-                    onDeleteDebt={deleteDebt}
-                    formatValue={formatValue}
-                    showValues={showValues}
-                    onToggleValues={toggleValuesVisibility}
-                  />
-                )}
+                {children}
               </div>
             </PullToRefresh>
           ) : (
@@ -303,63 +222,15 @@ const Index = () => {
                 slideDirection === 'none' && "animate-fade-in"
               )}
             >
-              {activeTab === 'dashboard' ? (
-                <Dashboard
-                  totals={totals}
-                  customRange={customRange}
-                  onCustomRangeChange={setCustomRange}
-                  transactions={filteredTransactions}
-                  allTransactions={transactions}
-                  debts={debts}
-                  onNavigateToDebts={() => navigate('/dividas')}
-                  showValues={showValues}
-                  onToggleValues={toggleValuesVisibility}
-                  formatValue={formatValue}
-                />
-              ) : activeTab === 'lancamentos' ? (
-                <Transactions
-                  transactions={filteredTransactions}
-                  customRange={customRange}
-                  onCustomRangeChange={setCustomRange}
-                  onAdd={addTransaction}
-                  onUpdate={updateTransaction}
-                  onDelete={deleteTransaction}
-                  formatValue={formatValue}
-                  showValues={showValues}
-                  onToggleValues={toggleValuesVisibility}
-                />
-              ) : activeTab === 'investimentos' ? (
-                <Investments
-                  transactions={filteredTransactions}
-                  allTransactions={transactions}
-                  customRange={customRange}
-                  onCustomRangeChange={setCustomRange}
-                  onNavigateToTransactions={() => navigate('/lancamentos')}
-                  onAddTransaction={addTransaction}
-                  formatValue={formatValue}
-                  showValues={showValues}
-                  onToggleValues={toggleValuesVisibility}
-                />
-              ) : (
-                <Debts
-                  debts={debts}
-                  transactions={transactions}
-                  onAddDebt={addDebt}
-                  onUpdateDebt={updateDebt}
-                  onDeleteDebt={deleteDebt}
-                  formatValue={formatValue}
-                  showValues={showValues}
-                  onToggleValues={toggleValuesVisibility}
-                />
-              )}
+              {children}
             </div>
           )}
         </main>
 
-        {/* Mobile Navigation - apenas no app nativo */}
+        {/* Mobile Navigation */}
         {isNativeApp && (
           <>
-            <FloatingAddButton onAddTransaction={addTransaction} />
+            {onAddTransaction && <FloatingAddButton onAddTransaction={onAddTransaction} />}
             <MobileNav
               activeTab={activeTab}
               theme={theme}
@@ -372,7 +243,7 @@ const Index = () => {
         )}
       </div>
 
-      {/* Tour de onboarding para novos usuários */}
+      {/* Tour de onboarding */}
       {showTour && (
         <OnboardingTour 
           onComplete={completeTour} 
@@ -401,5 +272,3 @@ const Index = () => {
     </>
   );
 };
-
-export default Index;
