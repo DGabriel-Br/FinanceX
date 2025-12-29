@@ -160,8 +160,8 @@ export default function Auth() {
 
   useEffect(() => {
     if (!loading && !adminLoading && user) {
-      // Redirect admins to admin panel, regular users to dashboard
-      navigate(isAdmin ? '/admin' : '/');
+      // Always redirect to dashboard, admins can access admin panel from settings
+      navigate('/');
     }
   }, [user, loading, isAdmin, adminLoading, navigate]);
 
@@ -285,9 +285,8 @@ export default function Auth() {
         }
         toast.success('Login realizado com sucesso!');
         
-        // Check if user is admin and redirect accordingly
-        const adminStatus = await checkIsAdmin();
-        navigate(adminStatus ? '/admin' : '/');
+        // Always redirect to dashboard, admins can access admin panel from settings
+        navigate('/');
       }
     }
   };
