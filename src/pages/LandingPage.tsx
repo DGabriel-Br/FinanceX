@@ -71,33 +71,28 @@ const LandingPage = () => {
           <div className="container relative py-8 md:py-24">
             {/* Mobile Layout - Stacked and centered */}
             <div className="flex flex-col items-center text-center lg:hidden">
-              {/* Phone mockup - Mobile (smaller and centered) */}
-              <div className="reveal-scale relative mb-8 mt-4">
+              {/* Phone mockup - Mobile (smaller and centered, portrait mode) */}
+              <div className="reveal-scale relative mb-6 mt-2">
                 <div className="relative">
                   {/* Glow effect behind phone */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-income/30 to-primary-foreground/20 rounded-[2rem] blur-2xl scale-90" />
+                  <div className="absolute inset-0 bg-gradient-to-br from-income/40 to-primary-foreground/30 rounded-[2.5rem] blur-2xl scale-95" />
                   
-                  {/* Phone frame - smaller on mobile */}
-                  <div className="relative w-[200px] xs:w-[220px] sm:w-[260px]">
+                  {/* Phone frame - portrait mode, compact */}
+                  <div className="relative w-[180px] xs:w-[200px] sm:w-[220px]">
                     {/* Phone bezel */}
-                    <div className="relative bg-foreground rounded-[2rem] p-1.5 shadow-2xl">
+                    <div className="relative bg-foreground rounded-[1.8rem] p-1 shadow-[0_20px_40px_-12px_rgba(0,0,0,0.4)]">
                       {/* Screen */}
-                      <div className="relative bg-background rounded-[1.5rem] overflow-hidden">
-                        {/* Status bar mockup */}
-                        <div className="absolute top-0 left-0 right-0 h-6 bg-sidebar flex items-center justify-center z-10">
-                          <div className="w-16 h-4 bg-foreground rounded-full" />
-                        </div>
-                        
-                        {/* App screenshot */}
+                      <div className="relative bg-background rounded-[1.4rem] overflow-hidden">
+                        {/* App screenshot - using mobile preview */}
                         <img 
-                          src={dashboardPreview} 
+                          src={mobileDashboardPreview} 
                           alt="Dashboard do FinanceX" 
                           className="w-full h-auto"
                         />
                       </div>
                       
                       {/* Home indicator */}
-                      <div className="absolute bottom-1.5 left-1/2 -translate-x-1/2 w-20 h-1 bg-background/50 rounded-full" />
+                      <div className="absolute bottom-1 left-1/2 -translate-x-1/2 w-16 h-1 bg-background/50 rounded-full" />
                     </div>
                   </div>
                 </div>
