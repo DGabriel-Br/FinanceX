@@ -6,6 +6,9 @@ import { Badge } from '@/components/ui/badge';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Separator } from '@/components/ui/separator';
 import { PublicHeader } from '@/components/landing/PublicHeader';
+import dashboardPreview from '@/assets/dashboard-preview.png';
+import transactionsPreview from '@/assets/transactions-preview.png';
+import debtsPreview from '@/assets/debts-preview.png';
 
 const LandingPage = () => {
   const scrollToSection = (id: string) => {
@@ -41,12 +44,13 @@ const LandingPage = () => {
               <p className="text-sm text-muted-foreground">Sem cartão no Free.</p>
             </div>
             <div>
-              <Card className="overflow-hidden">
-                <div className="aspect-video bg-muted flex items-center justify-center">
-                  <div className="text-center text-muted-foreground">
-                    <LayoutDashboard className="w-16 h-16 mx-auto mb-2 opacity-50" />
-                    <span className="text-sm">Preview do Dashboard</span>
-                  </div>
+              <Card className="overflow-hidden shadow-lg">
+                <div className="aspect-video bg-muted">
+                  <img 
+                    src={dashboardPreview} 
+                    alt="Dashboard do FinanceX mostrando resumo financeiro mensal" 
+                    className="w-full h-full object-cover"
+                  />
                 </div>
                 <CardContent className="py-3">
                   <p className="text-sm text-muted-foreground text-center">Dashboard do FinanceX</p>
@@ -102,31 +106,50 @@ const LandingPage = () => {
               </p>
             </div>
 
-            <Card className="overflow-hidden">
-              <div className="aspect-video bg-muted flex items-center justify-center">
-                <div className="text-center text-muted-foreground">
-                  <Play className="w-16 h-16 mx-auto mb-2 opacity-50" />
-                  <span className="text-sm">Vídeo demonstrativo</span>
-                </div>
+            <Card className="overflow-hidden shadow-lg">
+              <div className="aspect-video bg-muted">
+                <img 
+                  src={dashboardPreview} 
+                  alt="Demonstração do dashboard FinanceX" 
+                  className="w-full h-full object-cover"
+                />
               </div>
             </Card>
 
             <div className="grid sm:grid-cols-3 gap-4">
-              <Card className="text-center">
-                <CardContent className="pt-6">
-                  <Zap className="w-8 h-8 mx-auto mb-2 text-primary" />
+              <Card className="text-center overflow-hidden">
+                <div className="aspect-square bg-muted">
+                  <img 
+                    src={transactionsPreview} 
+                    alt="Tela de lançamentos" 
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <CardContent className="py-4">
                   <p className="font-medium">Lançamentos</p>
                 </CardContent>
               </Card>
-              <Card className="text-center">
-                <CardContent className="pt-6">
-                  <LayoutDashboard className="w-8 h-8 mx-auto mb-2 text-primary" />
+              <Card className="text-center overflow-hidden">
+                <div className="aspect-square bg-muted">
+                  <img 
+                    src={dashboardPreview} 
+                    alt="Tela do dashboard" 
+                    className="w-full h-full object-cover object-left-top"
+                  />
+                </div>
+                <CardContent className="py-4">
                   <p className="font-medium">Dashboard</p>
                 </CardContent>
               </Card>
-              <Card className="text-center">
-                <CardContent className="pt-6">
-                  <TrendingUp className="w-8 h-8 mx-auto mb-2 text-primary" />
+              <Card className="text-center overflow-hidden">
+                <div className="aspect-square bg-muted">
+                  <img 
+                    src={debtsPreview} 
+                    alt="Tela de dívidas e investimentos" 
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+                <CardContent className="py-4">
                   <p className="font-medium">Dívidas e Investimentos</p>
                 </CardContent>
               </Card>
