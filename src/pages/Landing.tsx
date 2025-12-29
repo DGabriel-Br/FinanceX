@@ -115,10 +115,6 @@ const Landing = () => {
           <div className="flex flex-col lg:flex-row lg:items-center lg:gap-16">
             {/* Left content */}
             <div className="flex-1 mb-12 lg:mb-0">
-              <div className="inline-flex items-center gap-2 bg-foreground/5 backdrop-blur-sm px-3 py-1.5 rounded-full text-xs font-medium text-foreground/70 mb-8 border border-border/50">
-                <Sparkles className="h-3.5 w-3.5" />
-                Novo: Sincronização automática
-              </div>
               
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-foreground tracking-tight leading-[1.1] mb-6">
                 Pare de{' '}
