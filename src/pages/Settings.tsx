@@ -20,7 +20,8 @@ import {
   Plus,
   X,
   Trash2,
-  AlertTriangle
+  AlertTriangle,
+  LayoutDashboard
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -35,6 +36,7 @@ import { cn } from '@/lib/utils';
 import { useTheme } from '@/hooks/useTheme';
 import { useIsNativeApp } from '@/hooks/useIsNativeApp';
 import { useCustomCategories } from '@/hooks/useCustomCategories';
+import { useAdminRole } from '@/hooks/useAdminRole';
 import { incomeCategoryLabels, expenseCategoryLabels } from '@/types/transaction';
 import {
   Sheet,
@@ -76,6 +78,7 @@ export default function Settings() {
   const { user, loading, refreshUser, signOut } = useAuthContext();
   const { theme, toggleTheme } = useTheme();
   const isNativeApp = useIsNativeApp();
+  const { isAdmin } = useAdminRole();
   
   // Estado para seção ativa
   const [activeSection, setActiveSection] = useState<SettingsSection>(null);
@@ -446,8 +449,23 @@ export default function Settings() {
           </p>
         </div>
 
+        {/* Admin Panel Button - only for admins */}
+        {isAdmin && (
+          <div className="px-4 pb-2 pt-2 animate-fade-in opacity-0" style={{ animationDelay: '0.5s', animationFillMode: 'forwards' }}>
+            <Button
+              onClick={() => navigate('/admin')}
+              variant="outline"
+              className="w-full h-14 text-base font-semibold rounded-xl border-primary/30 bg-primary/10 hover:bg-primary/20 text-primary hover:scale-[1.02] active:scale-[0.98] transition-all"
+            >
+              <LayoutDashboard className="w-5 h-5 mr-2" />
+              <span>Painel Admin</span>
+              <ChevronRight className="w-5 h-5 ml-auto" />
+            </Button>
+          </div>
+        )}
+
         {/* Logout Button */}
-        <div className="px-4 pb-2 pt-2 animate-fade-in opacity-0" style={{ animationDelay: '0.5s', animationFillMode: 'forwards' }}>
+        <div className="px-4 pb-2 pt-2 animate-fade-in opacity-0" style={{ animationDelay: isAdmin ? '0.55s' : '0.5s', animationFillMode: 'forwards' }}>
           <Button
             onClick={handleSignOut}
             variant="destructive"
