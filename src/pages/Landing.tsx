@@ -4,6 +4,7 @@ import { useAuthContext } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { FinanceLogo } from '@/components/ui/FinanceLogo';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
+import { ParallaxDivider } from '@/components/ui/ParallaxDivider';
 import { 
   Check, 
   X, 
@@ -204,13 +205,7 @@ export default function Landing() {
             </div>
           </div>
           
-          {/* Diagonal gradient divider - dark to light */}
-          <div className="absolute -bottom-px left-0 right-0 h-20 lg:h-28 overflow-hidden">
-            <div 
-              className="absolute inset-0 bg-gradient-to-b from-transparent to-[#f8f9fb]"
-              style={{ clipPath: 'polygon(0 0, 100% 60%, 100% 100%, 0 100%)' }}
-            />
-          </div>
+          <ParallaxDivider direction="dark-to-light" />
         </section>
 
         {/* Problem Section - Light with refined typography */}
@@ -263,13 +258,7 @@ export default function Landing() {
             </div>
           </div>
           
-          {/* Diagonal gradient divider - light to dark */}
-          <div className="absolute -bottom-px left-0 right-0 h-20 lg:h-28 overflow-hidden">
-            <div 
-              className="absolute inset-0 bg-gradient-to-b from-transparent to-landing-dark"
-              style={{ clipPath: 'polygon(0 60%, 100% 0, 100% 100%, 0 100%)' }}
-            />
-          </div>
+          <ParallaxDivider direction="light-to-dark" />
         </section>
 
         {/* How it Works - Dark with premium depth */}
@@ -368,13 +357,7 @@ export default function Landing() {
             </div>
           </div>
           
-          {/* Diagonal gradient divider - dark to light */}
-          <div className="absolute -bottom-px left-0 right-0 h-20 lg:h-28 overflow-hidden">
-            <div 
-              className="absolute inset-0 bg-gradient-to-b from-transparent to-[#f8f9fb]"
-              style={{ clipPath: 'polygon(0 0, 100% 60%, 100% 100%, 0 100%)' }}
-            />
-          </div>
+          <ParallaxDivider direction="dark-to-light" />
         </section>
 
         {/* For Who Section - Light with refined cards */}
@@ -452,13 +435,7 @@ export default function Landing() {
             </div>
           </div>
           
-          {/* Diagonal gradient divider - light to dark */}
-          <div className="absolute -bottom-px left-0 right-0 h-20 lg:h-28 overflow-hidden">
-            <div 
-              className="absolute inset-0 bg-gradient-to-b from-transparent to-landing-dark"
-              style={{ clipPath: 'polygon(0 60%, 100% 0, 100% 100%, 0 100%)' }}
-            />
-          </div>
+          <ParallaxDivider direction="light-to-dark" />
         </section>
 
         {/* Pricing - Dark with layered depth */}
@@ -544,13 +521,7 @@ export default function Landing() {
             </ScrollReveal>
           </div>
           
-          {/* Diagonal gradient divider - dark to light */}
-          <div className="absolute -bottom-px left-0 right-0 h-20 lg:h-28 overflow-hidden">
-            <div 
-              className="absolute inset-0 bg-gradient-to-b from-transparent to-[#f8f9fb]"
-              style={{ clipPath: 'polygon(0 0, 100% 60%, 100% 100%, 0 100%)' }}
-            />
-          </div>
+          <ParallaxDivider direction="dark-to-light" />
         </section>
 
         {/* Testimonials - Premium section with refined design */}
