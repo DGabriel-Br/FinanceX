@@ -479,7 +479,7 @@ export default function Landing() {
                         </span>
                         <span className="text-white/40 text-base lg:text-lg">/mês</span>
                       </div>
-                      <p className="text-white/40 text-sm lg:text-base whitespace-nowrap text-center">
+                      <p className="text-white/40 text-sm lg:text-base">
                         Tudo incluso para controlar seu dinheiro com clareza.
                       </p>
                     </div>
