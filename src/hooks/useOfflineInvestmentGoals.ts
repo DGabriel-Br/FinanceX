@@ -69,10 +69,12 @@ export const useOfflineInvestmentGoals = () => {
           });
         },
         syncToServer: async () => {
+          // SECURITY: Always include user_id filter for defense in depth
           const result = await supabase
             .from('investment_goals')
             .update({ target_value: targetValue })
-            .eq('id', existingLocal.id);
+            .eq('id', existingLocal.id)
+            .eq('user_id', userId);
           return { error: result.error };
         },
         onSyncSuccess: async (now) => {
@@ -151,10 +153,12 @@ export const useOfflineInvestmentGoals = () => {
           });
         },
         deleteFromServer: async () => {
+          // SECURITY: Always include user_id filter for defense in depth
           const result = await supabase
             .from('investment_goals')
             .delete()
-            .eq('id', existingLocal.id);
+            .eq('id', existingLocal.id)
+            .eq('user_id', userId);
           return { error: result.error };
         },
         removeFromLocal: async () => {

@@ -8,6 +8,8 @@ import {
   getProgressiveDelay,
   clearAllSecureItems 
 } from '@/lib/secureStorage';
+import { db } from '@/lib/offline/database';
+import { logger } from '@/lib/logger';
 
 interface LoginResult {
   error: any;
@@ -192,8 +194,24 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const signOut = async () => {
-    // Clear secure storage on logout
-    await clearAllSecureItems();
+    // SECURITY: Clear ALL user data on logout to prevent data leakage
+    try {
+      // Get current user ID before signing out
+      const currentUserId = user?.id;
+      
+      // Clear secure storage (email, login attempts)
+      await clearAllSecureItems();
+      
+      // CRITICAL: Clear IndexedDB offline data to prevent next user seeing previous user's data
+      if (currentUserId) {
+        await db.clearUserData(currentUserId);
+        logger.info('Cleared offline data for user on logout');
+      }
+    } catch (error) {
+      logger.error('Error clearing user data on logout:', error);
+      // Continue with logout even if cleanup fails
+    }
+    
     const { error } = await supabase.auth.signOut();
     return { error };
   };

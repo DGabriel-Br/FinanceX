@@ -3,6 +3,20 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+    
+    <!-- Security: Content Security Policy -->
+    <meta http-equiv="Content-Security-Policy" content="
+      default-src 'self';
+      script-src 'self' 'unsafe-inline' 'unsafe-eval';
+      style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
+      font-src 'self' https://fonts.gstatic.com;
+      img-src 'self' data: blob: https:;
+      connect-src 'self' https://*.supabase.co wss://*.supabase.co;
+      frame-ancestors 'self';
+      base-uri 'self';
+      form-action 'self';
+    ">
+    
     <title>FinanceX - Suas Finanças, Sob Controle</title>
     <meta name="description" content="FinanceX - Aplicação de controle financeiro pessoal simples e eficiente. Registre receitas e despesas, acompanhe investimentos e mantenha suas finanças organizadas.">
     <meta name="author" content="FinanceX" />
