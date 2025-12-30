@@ -1,10 +1,15 @@
+import { useMemo } from 'react';
 import { Transaction, TransactionType } from '@/types/transaction';
 import { PeriodFilter, CustomDateRange } from './PeriodFilter';
 import { TransactionForm } from './TransactionForm';
 import { TransactionList } from './TransactionList';
+import { VirtualizedTransactionList } from './VirtualizedTransactionList';
 import { ExcelImportExport } from './ExcelImportExport';
-import { useCustomCategories, CustomCategory } from '@/hooks/useCustomCategories';
+import { useCustomCategories } from '@/hooks/useCustomCategories';
 import { useIsMobile } from '@/hooks/use-mobile';
+
+// Threshold for virtualization - use virtualized list when more than 100 items
+const VIRTUALIZATION_THRESHOLD = 100;
 
 interface TransactionsProps {
   transactions: Transaction[];
@@ -117,17 +122,27 @@ export const Transactions = ({
           </div>
         )}
 
-        {/* Lista */}
+        {/* Lista - usa virtualização para listas grandes */}
         <div 
           className="lg:col-span-2 opacity-0 animate-slide-in-right"
           style={{ animationDelay: '0.15s' }}
         >
-          <TransactionList
-            transactions={transactions}
-            onUpdate={onUpdate}
-            onDelete={onDelete}
-            formatValue={formatValue}
-          />
+          {transactions.length > VIRTUALIZATION_THRESHOLD ? (
+            <VirtualizedTransactionList
+              transactions={transactions}
+              onUpdate={onUpdate}
+              onDelete={onDelete}
+              formatValue={formatValue}
+              height={600}
+            />
+          ) : (
+            <TransactionList
+              transactions={transactions}
+              onUpdate={onUpdate}
+              onDelete={onDelete}
+              formatValue={formatValue}
+            />
+          )}
         </div>
       </div>
     </div>
