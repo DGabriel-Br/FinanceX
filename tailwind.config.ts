@@ -16,6 +16,7 @@ export default {
       fontFamily: {
         sans: ["Inter", "system-ui", "sans-serif"],
         serif: ["Instrument Serif", "Georgia", "serif"],
+        display: ["Sora", "Inter", "system-ui", "sans-serif"],
       },
       colors: {
         border: "hsl(var(--border))",
@@ -64,12 +65,19 @@ export default {
         // Cores financeiras
         income: "hsl(var(--income))",
         expense: "hsl(var(--expense))",
-        success: "hsl(var(--income))", // Alias para income (verde)
+        success: "hsl(var(--income))",
         // Mobile header
         "mobile-header": {
           DEFAULT: "hsl(var(--mobile-header))",
           foreground: "hsl(var(--mobile-header-foreground))",
         },
+        // Landing page premium colors
+        "landing-dark": "hsl(var(--landing-dark))",
+        "landing-dark-secondary": "hsl(var(--landing-dark-secondary))",
+        "landing-cyan": "hsl(var(--landing-cyan))",
+        "landing-cyan-light": "hsl(var(--landing-cyan-light))",
+        "landing-teal": "hsl(var(--landing-teal))",
+        "landing-green": "hsl(var(--landing-green))",
       },
       borderRadius: {
         lg: "var(--radius)",
