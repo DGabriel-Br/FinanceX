@@ -160,8 +160,8 @@ export default function Auth() {
 
   useEffect(() => {
     if (!loading && !adminLoading && user) {
-      // Always redirect to dashboard, admins can access admin panel from settings
-      navigate('/');
+      // Always redirect to dashboard (não para / pois no nativo causa loop)
+      navigate('/dashboard');
     }
   }, [user, loading, isAdmin, adminLoading, navigate]);
 
@@ -251,7 +251,7 @@ export default function Auth() {
         }
       } else {
         toast.success('Conta criada com sucesso!');
-        navigate('/');
+        navigate('/dashboard');
       }
     } else {
       const result = await signIn(email, password);
@@ -285,8 +285,8 @@ export default function Auth() {
         }
         toast.success('Login realizado com sucesso!');
         
-        // Always redirect to dashboard, admins can access admin panel from settings
-        navigate('/');
+        // Redirect to dashboard (não para / pois no app nativo causa loop)
+        navigate('/dashboard');
       }
     }
   };
@@ -298,7 +298,7 @@ export default function Auth() {
         onSignIn={signIn}
         onSignUp={signUp}
         onResetPassword={resetPassword}
-        onSuccess={() => navigate('/')}
+        onSuccess={() => navigate('/dashboard')}
       />
     );
   }
