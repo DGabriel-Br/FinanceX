@@ -178,7 +178,7 @@ export default function Landing() {
                       {/* Balance highlight */}
                       <div className="p-4 lg:p-5 rounded-xl bg-gradient-to-br from-landing-cyan/[0.08] to-landing-teal/[0.03] border border-landing-cyan/10">
                         <p className="text-xs text-white/40 mb-1.5 tracking-wide uppercase">Sobrou este mês</p>
-                        <p className="text-2xl lg:text-3xl font-bold bg-gradient-to-r from-landing-cyan to-landing-teal bg-clip-text text-transparent">
+                        <p className="text-2xl lg:text-3xl font-bold text-landing-green">
                           R$ 1.352,50
                         </p>
                       </div>
