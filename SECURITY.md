@@ -378,7 +378,58 @@ localStorage.setItem('token', authToken);
 
 ---
 
-## 🔮 7. Recomendações Futuras
+## 📱 8. Checklist de Responsividade
+
+### Mudanças Aplicadas
+
+| Arquivo | Mudança |
+|---------|---------|
+| `src/index.css` | Adicionadas classes utilitárias: `pb-mobile-nav`, `page-container`, `no-overflow-x` |
+| `src/layouts/AppShell.tsx` | `main` usa `pb-mobile-nav` e `overflow-x-hidden` para prevenir overflow |
+| `src/components/finance/MobileNav.tsx` | Safe-area-bottom separado, touch-target para melhor toque |
+| `src/components/finance/Dashboard.tsx` | Removido resize listener, usando `useIsMobile` hook com media query |
+| `src/components/finance/Transactions.tsx` | Usando `page-container` |
+| `src/components/finance/Debts.tsx` | Usando `page-container` |
+| `src/components/finance/Investments.tsx` | Usando `page-container` |
+
+### Checklist de Validação Manual
+
+#### Teste 1: Responsividade em 320px (dispositivo pequeno)
+1. Abrir DevTools → toggle device toolbar
+2. Selecionar 320px de largura
+3. Navegar por Dashboard, Lançamentos, Dívidas, Investimentos
+4. ✅ **Esperado:** Nenhum overflow horizontal, cards se adaptam, texto trunca corretamente
+
+#### Teste 2: Responsividade em 375px (iPhone padrão)
+1. Configurar DevTools para 375px
+2. Verificar cabeçalhos e botões
+3. ✅ **Esperado:** Layout equilibrado, botões clicáveis, nenhum elemento cortado
+
+#### Teste 3: Responsividade em 768px (tablet)
+1. Configurar DevTools para 768px
+2. Verificar transição para layout desktop
+3. ✅ **Esperado:** Sidebar aparece, grid se reorganiza, conteúdo usa espaço disponível
+
+#### Teste 4: Bottom Nav não sobrepõe conteúdo (mobile)
+1. Navegar até Lançamentos ou Dívidas em mobile
+2. Rolar até o final da página
+3. ✅ **Esperado:** Último item da lista visível acima do bottom nav
+
+#### Teste 5: Safe Area em dispositivo com notch (nativo)
+1. Rodar app em iPhone X/11/12/13/14 ou similar
+2. Verificar padding inferior do bottom nav
+3. ✅ **Esperado:** Espaço respeitado para home indicator
+
+### Critérios de Aceite
+- [x] Nenhum overflow horizontal em 320px
+- [x] Bottom nav não sobrepõe conteúdo
+- [x] Safe areas respeitadas em dispositivos nativos
+- [x] Resize listeners removidos do Dashboard (usando media query)
+- [x] Container padrão aplicado em todas as páginas de finanças
+
+---
+
+## 🔮 9. Recomendações Futuras
 
 1. **Habilitar Leaked Password Protection** no Supabase Dashboard
 2. **Implementar rate limiting** para APIs sensíveis

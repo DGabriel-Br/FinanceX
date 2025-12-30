@@ -159,6 +159,21 @@
   .safe-area-top {
     padding-top: env(safe-area-inset-top, 0px);
   }
+
+  /* Altura do bottom nav para cálculo de padding */
+  .pb-mobile-nav {
+    padding-bottom: calc(4rem + env(safe-area-inset-bottom, 0px));
+  }
+
+  /* Container responsivo padrão */
+  .page-container {
+    @apply p-4 md:p-6 lg:p-8 w-full max-w-full overflow-x-hidden;
+  }
+
+  /* Prevenir overflow horizontal em mobile */
+  .no-overflow-x {
+    @apply max-w-full overflow-x-hidden;
+  }
 }
 
 /* Mobile optimizations */

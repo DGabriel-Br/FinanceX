@@ -197,13 +197,18 @@ export const AppShell = ({ children, onRefresh, onAddTransaction }: AppShellProp
         )}
 
         {/* Conteúdo principal */}
-        <main className={`flex-1 flex flex-col overflow-auto ${isNativeApp ? 'pb-24' : 'bg-background'}`}>
+        <main 
+          className={cn(
+            "flex-1 flex flex-col overflow-auto overflow-x-hidden",
+            isNativeApp ? "pb-mobile-nav bg-background" : "bg-background"
+          )}
+        >
           {isNativeApp ? (
             <PullToRefresh onRefresh={handlePullRefresh} className="flex-1">
               <div 
                 key={activeTab} 
                 className={cn(
-                  "flex-1",
+                  "flex-1 max-w-full",
                   slideDirection === 'left' && "animate-slide-in-right",
                   slideDirection === 'right' && "animate-slide-in-left",
                   slideDirection === 'none' && "animate-fade-in"
@@ -216,7 +221,7 @@ export const AppShell = ({ children, onRefresh, onAddTransaction }: AppShellProp
             <div 
               key={activeTab} 
               className={cn(
-                "flex-1",
+                "flex-1 max-w-full",
                 slideDirection === 'left' && "animate-slide-in-right",
                 slideDirection === 'right' && "animate-slide-in-left",
                 slideDirection === 'none' && "animate-fade-in"

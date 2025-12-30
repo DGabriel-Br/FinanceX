@@ -311,15 +311,15 @@ export const Investments = ({
   const overallProgress = totalGoalsTarget > 0 ? (totalGoalsInvested / totalGoalsTarget) * 100 : 0;
 
   return (
-    <div className="p-4 md:p-8">
+    <div className="page-container">
       {/* Header */}
       <div 
-        className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 md:mb-8 opacity-0 animate-fade-in"
+        className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 mb-6 md:mb-8 opacity-0 animate-fade-in"
         style={{ animationDelay: '0.05s' }}
       >
-        <div>
-          <h2 className="text-xl md:text-2xl font-bold text-foreground">Controle de Investimentos</h2>
-          <p className="text-sm md:text-base text-muted-foreground mt-1">Acompanhe seus aportes</p>
+        <div className="min-w-0">
+          <h2 className="text-xl md:text-2xl font-bold text-foreground truncate">Controle de Investimentos</h2>
+          <p className="text-sm md:text-base text-muted-foreground mt-1 truncate">Acompanhe seus aportes</p>
         </div>
         
         {/* Botões visíveis apenas em desktop */}
