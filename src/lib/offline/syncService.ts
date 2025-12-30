@@ -133,6 +133,7 @@ class SyncService {
           });
         } else {
           // Atualizar transação existente
+          // SECURITY: Always include user_id filter for defense in depth
           const { error } = await supabase
             .from('transactions')
             .update({
@@ -142,7 +143,8 @@ class SyncService {
               description: transaction.description,
               value: transaction.value,
             })
-            .eq('id', transaction.id);
+            .eq('id', transaction.id)
+            .eq('user_id', userId);
 
           if (error) throw error;
 
@@ -167,7 +169,8 @@ class SyncService {
 
     for (const transaction of deletedTransactions) {
       try {
-        const { error } = await supabase.from('transactions').delete().eq('id', transaction.id);
+        // SECURITY: Always include user_id filter for defense in depth
+        const { error } = await supabase.from('transactions').delete().eq('id', transaction.id).eq('user_id', userId);
         if (error) {
           logger.error('Erro ao deletar transação no servidor:', error);
         } else {
@@ -224,6 +227,7 @@ class SyncService {
             serverUpdatedAt: Date.now(),
           });
         } else {
+          // SECURITY: Always include user_id filter for defense in depth
           const { error } = await supabase
             .from('debts')
             .update({
@@ -233,7 +237,8 @@ class SyncService {
               start_date: debt.startDate,
               paid_value: debt.paidValue,
             })
-            .eq('id', debt.id);
+            .eq('id', debt.id)
+            .eq('user_id', userId);
 
           if (error) throw error;
 
@@ -258,7 +263,8 @@ class SyncService {
 
     for (const debt of deletedDebts) {
       try {
-        const { error } = await supabase.from('debts').delete().eq('id', debt.id);
+        // SECURITY: Always include user_id filter for defense in depth
+        const { error } = await supabase.from('debts').delete().eq('id', debt.id).eq('user_id', userId);
         if (error) {
           logger.error('Erro ao deletar dívida no servidor:', error);
         } else {
@@ -309,12 +315,14 @@ class SyncService {
             serverUpdatedAt: Date.now(),
           });
         } else {
+          // SECURITY: Always include user_id filter for defense in depth
           const { error } = await supabase
             .from('investment_goals')
             .update({
               target_value: goal.targetValue,
             })
-            .eq('id', goal.id);
+            .eq('id', goal.id)
+            .eq('user_id', userId);
 
           if (error) throw error;
 
@@ -339,7 +347,8 @@ class SyncService {
 
     for (const goal of deletedGoals) {
       try {
-        const { error } = await supabase.from('investment_goals').delete().eq('id', goal.id);
+        // SECURITY: Always include user_id filter for defense in depth
+        const { error } = await supabase.from('investment_goals').delete().eq('id', goal.id).eq('user_id', userId);
         if (error) {
           logger.error('Erro ao deletar meta no servidor:', error);
         } else {

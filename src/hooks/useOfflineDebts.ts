@@ -109,6 +109,8 @@ export const useOfflineDebts = () => {
 
   // Atualizar dívida
   const updateDebt = useCallback(async (id: string, updates: Partial<Omit<Debt, 'id' | 'createdAt'>>) => {
+    if (!userId) return;
+    
     await offlineUpdate({
       id,
       messages: debtMessages,
@@ -127,7 +129,8 @@ export const useOfflineDebts = () => {
         if (updates.startDate !== undefined) updateData.start_date = updates.startDate;
         if (updates.paidValue !== undefined) updateData.paid_value = updates.paidValue;
 
-        const result = await supabase.from('debts').update(updateData).eq('id', id);
+        // SECURITY: Always include user_id filter for defense in depth
+        const result = await supabase.from('debts').update(updateData).eq('id', id).eq('user_id', userId);
         return { error: result.error };
       },
       onSyncSuccess: async (now) => {
@@ -137,10 +140,12 @@ export const useOfflineDebts = () => {
         });
       },
     });
-  }, []);
+  }, [userId]);
 
   // Excluir dívida
   const deleteDebt = useCallback(async (id: string) => {
+    if (!userId) return;
+    
     await offlineDelete({
       id,
       messages: debtMessages,
@@ -152,14 +157,15 @@ export const useOfflineDebts = () => {
         });
       },
       deleteFromServer: async () => {
-        const result = await supabase.from('debts').delete().eq('id', id);
+        // SECURITY: Always include user_id filter for defense in depth
+        const result = await supabase.from('debts').delete().eq('id', id).eq('user_id', userId);
         return { error: result.error };
       },
       removeFromLocal: async () => {
         await db.debts.delete(id);
       },
     });
-  }, []);
+  }, [userId]);
 
   const refetch = useCallback(async () => {
     if (navigator.onLine) {

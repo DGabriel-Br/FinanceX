@@ -123,6 +123,8 @@ export const useOfflineTransactions = () => {
 
   // Atualizar transação
   const updateTransaction = useCallback(async (id: string, updates: Partial<Omit<Transaction, 'id' | 'createdAt'>>) => {
+    if (!userId) return;
+    
     await offlineUpdate({
       id,
       messages: transactionMessages,
@@ -134,6 +136,7 @@ export const useOfflineTransactions = () => {
         });
       },
       syncToServer: async () => {
+        // SECURITY: Always include user_id filter for defense in depth
         const result = await supabase
           .from('transactions')
           .update({
@@ -143,7 +146,8 @@ export const useOfflineTransactions = () => {
             description: updates.description,
             value: updates.value,
           })
-          .eq('id', id);
+          .eq('id', id)
+          .eq('user_id', userId);
         return { error: result.error };
       },
       onSyncSuccess: async (now) => {
@@ -153,10 +157,12 @@ export const useOfflineTransactions = () => {
         });
       },
     });
-  }, []);
+  }, [userId]);
 
   // Excluir transação
   const deleteTransaction = useCallback(async (id: string) => {
+    if (!userId) return;
+    
     await offlineDelete({
       id,
       messages: transactionMessages,
@@ -168,14 +174,15 @@ export const useOfflineTransactions = () => {
         });
       },
       deleteFromServer: async () => {
-        const result = await supabase.from('transactions').delete().eq('id', id);
+        // SECURITY: Always include user_id filter for defense in depth
+        const result = await supabase.from('transactions').delete().eq('id', id).eq('user_id', userId);
         return { error: result.error };
       },
       removeFromLocal: async () => {
         await db.transactions.delete(id);
       },
     });
-  }, []);
+  }, [userId]);
 
   // Filtrar transações por período
   const getFilteredTransactions = useCallback(() => {
