@@ -509,15 +509,21 @@ export default function Landing() {
           </div>
         </section>
 
-        {/* Testimonials - Light with refined asymmetric layout */}
-        <section className="py-16 lg:py-28 bg-[#f8f9fb] text-landing-dark relative overflow-hidden">
-          <div className="w-full max-w-7xl mx-auto px-5 lg:px-8 relative">
+        {/* Testimonials - Premium section with refined design */}
+        <section className="py-20 lg:py-32 bg-gradient-to-b from-[#f8f9fb] via-white to-[#f8f9fb] text-landing-dark relative overflow-hidden">
+          {/* Subtle decorative elements */}
+          <div className="absolute inset-0 pointer-events-none">
+            <div className="absolute top-0 left-1/4 w-96 h-96 bg-landing-cyan/[0.03] rounded-full blur-3xl" />
+            <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-landing-teal/[0.03] rounded-full blur-3xl" />
+          </div>
+
+          <div className="w-full max-w-6xl mx-auto px-5 lg:px-8 relative">
             <ScrollReveal direction="up" duration={700}>
-              <div className="text-center mb-10 lg:mb-14">
-                <div className="flex items-center justify-center gap-3 mb-4 lg:mb-5">
-                  <div className="h-px w-6 lg:w-8 bg-landing-cyan" />
-                  <span className="text-[11px] lg:text-xs font-semibold tracking-[0.2em] uppercase text-landing-cyan/80">Depoimentos</span>
-                  <div className="h-px w-6 lg:w-8 bg-landing-cyan" />
+              <div className="text-center mb-14 lg:mb-20">
+                <div className="flex items-center justify-center gap-3 mb-5 lg:mb-6">
+                  <div className="h-px w-8 lg:w-12 bg-gradient-to-r from-transparent to-landing-cyan" />
+                  <span className="text-[11px] lg:text-xs font-semibold tracking-[0.25em] uppercase text-landing-cyan">Depoimentos</span>
+                  <div className="h-px w-8 lg:w-12 bg-gradient-to-l from-transparent to-landing-cyan" />
                 </div>
                 <h2 
                   className="text-2xl sm:text-3xl lg:text-4xl xl:text-[2.75rem] font-bold tracking-[-0.02em] text-landing-dark/95"
@@ -525,131 +531,145 @@ export default function Landing() {
                 >
                   O que nossos usuários dizem
                 </h2>
+                <p className="text-landing-dark/50 mt-4 max-w-lg mx-auto text-sm lg:text-base">
+                  Histórias reais de pessoas que transformaram sua relação com dinheiro
+                </p>
               </div>
             </ScrollReveal>
 
-            {/* Testimonials grid - asymmetric with varying heights */}
-            <div className="grid md:grid-cols-12 gap-6 lg:gap-8">
-              {/* Testimonial 1 - Featured, taller */}
-              <ScrollReveal direction="up" delay={0} duration={700} className="md:col-span-7">
-                <div className="bg-white border border-black/[0.04] rounded-2xl lg:rounded-3xl p-6 lg:p-8 h-full shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-500 relative">
-                  <div className="absolute top-5 right-6 lg:top-6 lg:right-8 text-5xl lg:text-6xl font-serif text-landing-cyan/[0.08] leading-none select-none">"</div>
-                  
-                  <div className="flex items-center gap-3 lg:gap-4 mb-5 lg:mb-6">
-                    <div className="h-12 w-12 lg:h-14 lg:w-14 rounded-full bg-gradient-to-br from-landing-cyan to-landing-teal flex items-center justify-center text-white font-bold text-base lg:text-lg shadow-lg shadow-landing-cyan/20">
-                      RM
+            {/* Two-column masonry-style layout */}
+            <div className="grid md:grid-cols-2 gap-6 lg:gap-8">
+              {/* Left column */}
+              <div className="space-y-6 lg:space-y-8">
+                {/* Testimonial 1 - Featured */}
+                <ScrollReveal direction="up" delay={0} duration={700}>
+                  <div className="group bg-white rounded-2xl lg:rounded-3xl p-7 lg:p-9 shadow-[0_2px_20px_-4px_rgba(0,0,0,0.06)] hover:shadow-[0_12px_40px_-8px_rgba(0,0,0,0.12)] transition-all duration-500 relative border border-black/[0.03] hover:border-landing-cyan/20">
+                    {/* Decorative gradient line */}
+                    <div className="absolute top-0 left-8 right-8 h-px bg-gradient-to-r from-transparent via-landing-cyan/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                    
+                    <div className="flex items-start justify-between mb-6">
+                      <div className="flex items-center gap-4">
+                        <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-landing-cyan to-landing-teal flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-landing-cyan/25 group-hover:shadow-landing-cyan/40 transition-shadow duration-500">
+                          RM
+                        </div>
+                        <div>
+                          <p className="font-semibold text-lg text-landing-dark/90">Rafael Mendes</p>
+                          <p className="text-landing-dark/45 text-sm">Designer Freelancer</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        {[...Array(5)].map((_, i) => (
+                          <svg key={i} className="w-4 h-4 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                          </svg>
+                        ))}
+                      </div>
                     </div>
-                    <div>
-                      <p className="font-semibold text-base lg:text-lg text-landing-dark/90">Rafael Mendes</p>
-                      <p className="text-landing-dark/40 text-xs lg:text-sm">Designer Freelancer</p>
-                    </div>
+                    
+                    <blockquote className="text-landing-dark/60 text-base lg:text-lg leading-relaxed">
+                      "Eu já tinha desistido de controlar meu dinheiro. Tentei de tudo: planilha, app de banco, 
+                      até caderninho. O FinanceX foi o primeiro que realmente funcionou pra mim. 
+                      <span className="text-landing-dark/85 font-medium">Em 2 meses eu já sabia exatamente pra onde ia cada centavo.</span>"
+                    </blockquote>
                   </div>
-                  
-                  <p className="text-landing-dark/55 text-base lg:text-lg leading-relaxed mb-5 lg:mb-6">
-                    "Eu já tinha desistido de controlar meu dinheiro. Tentei de tudo: planilha, app de banco, 
-                    até caderninho. O FinanceX foi o primeiro que realmente funcionou pra mim. 
-                    <span className="text-landing-dark/80 font-medium"> Em 2 meses eu já sabia exatamente pra onde ia cada centavo.</span>"
-                  </p>
-                  
-                  <div className="flex items-center gap-0.5">
-                    {[...Array(5)].map((_, i) => (
-                      <svg key={i} className="w-4 h-4 lg:w-5 lg:h-5 text-landing-cyan" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                      </svg>
-                    ))}
-                  </div>
-                </div>
-              </ScrollReveal>
+                </ScrollReveal>
 
-              {/* Testimonial 2 - Shorter */}
-              <ScrollReveal direction="up" delay={80} duration={700} className="md:col-span-5">
-                <div className="bg-white border border-black/[0.04] rounded-2xl lg:rounded-3xl p-6 lg:p-8 h-full shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-500 relative">
-                  <div className="absolute top-5 right-6 text-4xl lg:text-5xl font-serif text-landing-teal/[0.08] leading-none select-none">"</div>
-                  
-                  <div className="flex items-center gap-3 mb-5">
-                    <div className="h-10 w-10 lg:h-12 lg:w-12 rounded-full bg-gradient-to-br from-landing-teal to-landing-green flex items-center justify-center text-white font-bold text-sm lg:text-base shadow-lg shadow-landing-teal/20">
-                      CS
+                {/* Testimonial 3 */}
+                <ScrollReveal direction="up" delay={120} duration={700}>
+                  <div className="group bg-white rounded-2xl lg:rounded-3xl p-7 lg:p-9 shadow-[0_2px_20px_-4px_rgba(0,0,0,0.06)] hover:shadow-[0_12px_40px_-8px_rgba(0,0,0,0.12)] transition-all duration-500 relative border border-black/[0.03] hover:border-landing-green/20">
+                    <div className="absolute top-0 left-8 right-8 h-px bg-gradient-to-r from-transparent via-landing-green/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                    
+                    <div className="flex items-start justify-between mb-6">
+                      <div className="flex items-center gap-4">
+                        <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-landing-green to-landing-cyan flex items-center justify-center text-white font-bold shadow-lg shadow-landing-green/25 group-hover:shadow-landing-green/40 transition-shadow duration-500">
+                          PA
+                        </div>
+                        <div>
+                          <p className="font-semibold text-landing-dark/90">Pedro Almeida</p>
+                          <p className="text-landing-dark/45 text-sm">Analista de Sistemas</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        {[...Array(5)].map((_, i) => (
+                          <svg key={i} className="w-3.5 h-3.5 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                          </svg>
+                        ))}
+                      </div>
                     </div>
-                    <div>
-                      <p className="font-semibold text-landing-dark/90">Camila Santos</p>
-                      <p className="text-landing-dark/40 text-xs">Professora</p>
-                    </div>
+                    
+                    <blockquote className="text-landing-dark/60 text-base leading-relaxed">
+                      "Finalmente consigo ver quanto sobra no mês. 
+                      <span className="text-landing-dark/85 font-medium">Agora sei se posso ou não fazer aquela compra.</span>"
+                    </blockquote>
                   </div>
-                  
-                  <p className="text-landing-dark/55 text-sm lg:text-base leading-relaxed mb-4 lg:mb-5">
-                    "Simples do jeito que deveria ser. Abro, lanço o gasto, fecho. 
-                    <span className="text-landing-dark/80 font-medium"> Sem complicação.</span>"
-                  </p>
-                  
-                  <div className="flex items-center gap-0.5">
-                    {[...Array(5)].map((_, i) => (
-                      <svg key={i} className="w-3.5 h-3.5 lg:w-4 lg:h-4 text-landing-teal" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                      </svg>
-                    ))}
-                  </div>
-                </div>
-              </ScrollReveal>
+                </ScrollReveal>
+              </div>
 
-              {/* Testimonial 3 */}
-              <ScrollReveal direction="up" delay={120} duration={700} className="md:col-span-5">
-                <div className="bg-white border border-black/[0.04] rounded-2xl lg:rounded-3xl p-6 lg:p-8 h-full shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-500 relative md:-translate-y-6">
-                  <div className="absolute top-5 right-6 text-4xl lg:text-5xl font-serif text-landing-green/[0.08] leading-none select-none">"</div>
-                  
-                  <div className="flex items-center gap-3 mb-5">
-                    <div className="h-10 w-10 lg:h-12 lg:w-12 rounded-full bg-gradient-to-br from-landing-green to-landing-cyan flex items-center justify-center text-white font-bold text-sm lg:text-base shadow-lg shadow-landing-green/20">
-                      PA
+              {/* Right column - offset for masonry effect */}
+              <div className="space-y-6 lg:space-y-8 md:pt-12">
+                {/* Testimonial 2 */}
+                <ScrollReveal direction="up" delay={60} duration={700}>
+                  <div className="group bg-white rounded-2xl lg:rounded-3xl p-7 lg:p-9 shadow-[0_2px_20px_-4px_rgba(0,0,0,0.06)] hover:shadow-[0_12px_40px_-8px_rgba(0,0,0,0.12)] transition-all duration-500 relative border border-black/[0.03] hover:border-landing-teal/20">
+                    <div className="absolute top-0 left-8 right-8 h-px bg-gradient-to-r from-transparent via-landing-teal/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                    
+                    <div className="flex items-start justify-between mb-6">
+                      <div className="flex items-center gap-4">
+                        <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-landing-teal to-landing-green flex items-center justify-center text-white font-bold shadow-lg shadow-landing-teal/25 group-hover:shadow-landing-teal/40 transition-shadow duration-500">
+                          CS
+                        </div>
+                        <div>
+                          <p className="font-semibold text-landing-dark/90">Camila Santos</p>
+                          <p className="text-landing-dark/45 text-sm">Professora</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        {[...Array(5)].map((_, i) => (
+                          <svg key={i} className="w-3.5 h-3.5 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                          </svg>
+                        ))}
+                      </div>
                     </div>
-                    <div>
-                      <p className="font-semibold text-landing-dark/90">Pedro Almeida</p>
-                      <p className="text-landing-dark/40 text-xs">Analista de Sistemas</p>
-                    </div>
+                    
+                    <blockquote className="text-landing-dark/60 text-base leading-relaxed">
+                      "Simples do jeito que deveria ser. Abro, lanço o gasto, fecho. 
+                      <span className="text-landing-dark/85 font-medium">Sem complicação.</span>"
+                    </blockquote>
                   </div>
-                  
-                  <p className="text-landing-dark/55 text-sm lg:text-base leading-relaxed mb-4 lg:mb-5">
-                    "Finalmente consigo ver quanto sobra no mês. 
-                    <span className="text-landing-dark/80 font-medium"> Agora sei se posso ou não fazer aquela compra.</span>"
-                  </p>
-                  
-                  <div className="flex items-center gap-0.5">
-                    {[...Array(5)].map((_, i) => (
-                      <svg key={i} className="w-3.5 h-3.5 lg:w-4 lg:h-4 text-landing-green" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                      </svg>
-                    ))}
-                  </div>
-                </div>
-              </ScrollReveal>
+                </ScrollReveal>
 
-              {/* Testimonial 4 */}
-              <ScrollReveal direction="up" delay={160} duration={700} className="md:col-span-7">
-                <div className="bg-white border border-black/[0.04] rounded-2xl lg:rounded-3xl p-6 lg:p-8 h-full shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-500 relative md:-translate-y-6">
-                  <div className="absolute top-5 right-6 text-4xl lg:text-5xl font-serif text-landing-cyan/[0.08] leading-none select-none">"</div>
-                  
-                  <div className="flex items-center gap-3 mb-5">
-                    <div className="h-10 w-10 lg:h-12 lg:w-12 rounded-full bg-gradient-to-br from-landing-cyan to-landing-teal flex items-center justify-center text-white font-bold text-sm lg:text-base shadow-lg shadow-landing-cyan/20">
-                      JL
+                {/* Testimonial 4 */}
+                <ScrollReveal direction="up" delay={180} duration={700}>
+                  <div className="group bg-white rounded-2xl lg:rounded-3xl p-7 lg:p-9 shadow-[0_2px_20px_-4px_rgba(0,0,0,0.06)] hover:shadow-[0_12px_40px_-8px_rgba(0,0,0,0.12)] transition-all duration-500 relative border border-black/[0.03] hover:border-landing-cyan/20">
+                    <div className="absolute top-0 left-8 right-8 h-px bg-gradient-to-r from-transparent via-landing-cyan/30 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                    
+                    <div className="flex items-start justify-between mb-6">
+                      <div className="flex items-center gap-4">
+                        <div className="h-12 w-12 rounded-2xl bg-gradient-to-br from-landing-cyan to-landing-teal flex items-center justify-center text-white font-bold shadow-lg shadow-landing-cyan/25 group-hover:shadow-landing-cyan/40 transition-shadow duration-500">
+                          JL
+                        </div>
+                        <div>
+                          <p className="font-semibold text-landing-dark/90">Juliana Lima</p>
+                          <p className="text-landing-dark/45 text-sm">Empreendedora</p>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        {[...Array(5)].map((_, i) => (
+                          <svg key={i} className="w-3.5 h-3.5 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
+                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                          </svg>
+                        ))}
+                      </div>
                     </div>
-                    <div>
-                      <p className="font-semibold text-landing-dark/90">Juliana Lima</p>
-                      <p className="text-landing-dark/40 text-xs">Empreendedora</p>
-                    </div>
+                    
+                    <blockquote className="text-landing-dark/60 text-base leading-relaxed">
+                      "O melhor é que funciona offline. Lanço os gastos na hora, mesmo sem internet. 
+                      Quando chego em casa, já está tudo sincronizado. <span className="text-landing-dark/85 font-medium">Praticidade total.</span>"
+                    </blockquote>
                   </div>
-                  
-                  <p className="text-landing-dark/55 text-sm lg:text-base leading-relaxed mb-4 lg:mb-5">
-                    "O melhor é que funciona offline. Lanço os gastos na hora, mesmo sem internet. 
-                    Quando chego em casa, já está tudo sincronizado. <span className="text-landing-dark/80 font-medium">Praticidade total.</span>"
-                  </p>
-                  
-                  <div className="flex items-center gap-0.5">
-                    {[...Array(5)].map((_, i) => (
-                      <svg key={i} className="w-3.5 h-3.5 lg:w-4 lg:h-4 text-landing-cyan" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                      </svg>
-                    ))}
-                  </div>
-                </div>
-              </ScrollReveal>
+                </ScrollReveal>
+              </div>
             </div>
           </div>
         </section>
