@@ -8,7 +8,8 @@ import {
   LandingFooter, 
   HeroSection, 
   TestimonialsSection,
-  PricingSection 
+  PricingSection,
+  FAQSection
 } from '@/components/landing';
 import { 
   Check, 
@@ -328,6 +329,7 @@ export default function Landing() {
         <HowItWorksSection />
         <ForWhoSection />
         <PricingSection />
+        <FAQSection />
         <TestimonialsSection />
         <FinalCTASection />
       </main>
