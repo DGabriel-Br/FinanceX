@@ -736,12 +736,6 @@ export default function Landing() {
               </a>
             </div>
           </div>
-          
-          <div className="mt-6 lg:mt-8 pt-6 lg:pt-8 border-t border-white/[0.04] text-center">
-            <p className="text-xs lg:text-sm text-white/30">
-              © {new Date().getFullYear()} FinanceX. Todos os direitos reservados.
-            </p>
-          </div>
         </div>
       </footer>
     </div>
