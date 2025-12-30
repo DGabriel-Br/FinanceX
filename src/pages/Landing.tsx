@@ -150,8 +150,13 @@ export default function Landing() {
                       <div className="flex items-center justify-between mb-6 lg:mb-7">
                         <div>
                           <p className="text-xs text-white/40 mb-1 tracking-wide uppercase">Resumo mensal</p>
-                          <p className="text-base lg:text-lg font-semibold text-white/90 capitalize">
-                            {new Date().toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}
+                          <p className="text-base lg:text-lg font-semibold text-white/90">
+                            {(() => {
+                              const date = new Date();
+                              const month = date.toLocaleDateString('pt-BR', { month: 'long' });
+                              const year = date.getFullYear();
+                              return `${month.charAt(0).toUpperCase() + month.slice(1)} de ${year}`;
+                            })()}
                           </p>
                         </div>
                         <div className="h-9 w-9 lg:h-10 lg:w-10 rounded-xl bg-landing-green/15 flex items-center justify-center">
