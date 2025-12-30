@@ -43,9 +43,9 @@ const queryClient = new QueryClient({
   },
 });
 
-// Loading fallback component
+// Loading fallback component - usa fundo escuro para evitar flash branco
 const PageLoader = () => (
-  <div className="flex items-center justify-center min-h-[50vh]">
+  <div className="flex items-center justify-center min-h-screen bg-sidebar">
     <Loader2 className="w-8 h-8 animate-spin text-primary" />
   </div>
 );
