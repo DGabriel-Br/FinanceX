@@ -204,12 +204,23 @@ export default function Landing() {
             </div>
           </div>
           
-          {/* Bottom fade into next section */}
-          <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#f8f9fb] to-transparent" />
+          {/* Curved divider - dark to light */}
+          <div className="absolute bottom-0 left-0 right-0 w-full overflow-hidden leading-[0]">
+            <svg 
+              className="relative block w-full h-[60px] lg:h-[100px]" 
+              viewBox="0 0 1200 120" 
+              preserveAspectRatio="none"
+            >
+              <path 
+                d="M0,0 C300,100 900,100 1200,0 L1200,120 L0,120 Z" 
+                className="fill-[#f8f9fb]"
+              />
+            </svg>
+          </div>
         </section>
 
         {/* Problem Section - Light with refined typography */}
-        <section className="py-16 lg:py-28 bg-[#f8f9fb] text-landing-dark relative overflow-hidden">
+        <section className="pt-8 lg:pt-16 pb-16 lg:pb-28 bg-[#f8f9fb] text-landing-dark relative overflow-hidden">
           <div className="w-full max-w-7xl mx-auto px-5 lg:px-8 relative">
             <div className="grid lg:grid-cols-12 gap-8 lg:gap-12">
               {/* Content - 8 cols for asymmetry */}
@@ -257,10 +268,24 @@ export default function Landing() {
               <div className="hidden lg:block lg:col-span-4" />
             </div>
           </div>
+          
+          {/* Curved divider - light to dark */}
+          <div className="absolute bottom-0 left-0 right-0 w-full overflow-hidden leading-[0]">
+            <svg 
+              className="relative block w-full h-[60px] lg:h-[100px]" 
+              viewBox="0 0 1200 120" 
+              preserveAspectRatio="none"
+            >
+              <path 
+                d="M0,0 C300,100 900,100 1200,0 L1200,120 L0,120 Z" 
+                className="fill-landing-dark"
+              />
+            </svg>
+          </div>
         </section>
 
         {/* How it Works - Dark with premium depth */}
-        <section className="py-16 lg:py-28 bg-landing-dark relative overflow-hidden">
+        <section className="pt-8 lg:pt-16 pb-16 lg:pb-28 bg-landing-dark relative overflow-hidden">
           {/* Multi-layer background for depth */}
           <div className="absolute inset-0">
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_50%_80%_at_20%_40%,rgba(34,211,238,0.06),transparent_50%)]" />
@@ -354,10 +379,24 @@ export default function Landing() {
               </ScrollReveal>
             </div>
           </div>
+          
+          {/* Curved divider - dark to light */}
+          <div className="absolute bottom-0 left-0 right-0 w-full overflow-hidden leading-[0]">
+            <svg 
+              className="relative block w-full h-[60px] lg:h-[100px]" 
+              viewBox="0 0 1200 120" 
+              preserveAspectRatio="none"
+            >
+              <path 
+                d="M0,0 C300,100 900,100 1200,0 L1200,120 L0,120 Z" 
+                className="fill-[#f8f9fb]"
+              />
+            </svg>
+          </div>
         </section>
 
         {/* For Who Section - Light with refined cards */}
-        <section className="py-16 lg:py-28 bg-[#f8f9fb] text-landing-dark relative">
+        <section className="pt-8 lg:pt-16 pb-16 lg:pb-28 bg-[#f8f9fb] text-landing-dark relative overflow-hidden">
           <div className="w-full max-w-7xl mx-auto px-5 lg:px-8">
             <ScrollReveal direction="up" duration={700}>
               <div className="text-center mb-10 lg:mb-14">
@@ -430,10 +469,24 @@ export default function Landing() {
               </ScrollReveal>
             </div>
           </div>
+          
+          {/* Curved divider - light to dark */}
+          <div className="absolute bottom-0 left-0 right-0 w-full overflow-hidden leading-[0]">
+            <svg 
+              className="relative block w-full h-[60px] lg:h-[100px]" 
+              viewBox="0 0 1200 120" 
+              preserveAspectRatio="none"
+            >
+              <path 
+                d="M0,0 C300,100 900,100 1200,0 L1200,120 L0,120 Z" 
+                className="fill-landing-dark"
+              />
+            </svg>
+          </div>
         </section>
 
         {/* Pricing - Dark with layered depth */}
-        <section className="py-16 lg:py-28 bg-landing-dark relative overflow-hidden">
+        <section className="pt-8 lg:pt-16 pb-16 lg:pb-28 bg-landing-dark relative overflow-hidden">
           {/* Premium depth layers */}
           <div className="absolute inset-0">
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_50%_100%,rgba(34,211,238,0.08),transparent_60%)]" />
@@ -514,10 +567,24 @@ export default function Landing() {
               </div>
             </ScrollReveal>
           </div>
+          
+          {/* Curved divider - dark to light */}
+          <div className="absolute bottom-0 left-0 right-0 w-full overflow-hidden leading-[0]">
+            <svg 
+              className="relative block w-full h-[60px] lg:h-[100px]" 
+              viewBox="0 0 1200 120" 
+              preserveAspectRatio="none"
+            >
+              <path 
+                d="M0,0 C300,100 900,100 1200,0 L1200,120 L0,120 Z" 
+                className="fill-[#f8f9fb]"
+              />
+            </svg>
+          </div>
         </section>
 
         {/* Testimonials - Premium section with refined design */}
-        <section className="py-20 lg:py-32 bg-gradient-to-b from-[#f8f9fb] via-white to-[#f8f9fb] text-landing-dark relative overflow-hidden">
+        <section className="pt-8 lg:pt-16 pb-20 lg:pb-32 bg-gradient-to-b from-[#f8f9fb] via-white to-[#f8f9fb] text-landing-dark relative overflow-hidden">
           {/* Subtle decorative elements */}
           <div className="absolute inset-0 pointer-events-none">
             <div className="absolute top-0 left-1/4 w-96 h-96 bg-landing-cyan/[0.03] rounded-full blur-3xl" />
