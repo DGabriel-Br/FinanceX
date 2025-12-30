@@ -122,7 +122,7 @@ export default function Landing() {
                       onClick={() => navigate('/cadastro')} 
                       className="h-12 lg:h-14 px-6 lg:px-8 text-sm lg:text-base rounded-full bg-gradient-to-r from-landing-cyan to-landing-teal text-landing-dark font-semibold hover:shadow-[0_0_48px_rgba(34,211,238,0.35)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-500 border-0"
                     >
-                      Começar gratuitamente
+                      Começar agora
                       <ArrowRight className="ml-2 h-4 w-4 lg:h-5 lg:w-5" />
                     </Button>
                     <Button 
