@@ -214,7 +214,7 @@ export default function Landing() {
         </section>
 
         {/* Problem Section - Light with refined typography */}
-        <section className="pt-8 lg:pt-16 pb-16 lg:pb-28 bg-[#f8f9fb] text-landing-dark relative overflow-hidden">
+        <section className="pt-8 lg:pt-16 pb-40 lg:pb-56 bg-[#f8f9fb] text-landing-dark relative overflow-hidden">
           <div className="w-full max-w-7xl mx-auto px-5 lg:px-8 relative">
             <div className="grid lg:grid-cols-12 gap-8 lg:gap-12">
               {/* Content - 8 cols for asymmetry */}
@@ -273,7 +273,7 @@ export default function Landing() {
         </section>
 
         {/* How it Works - Dark with premium depth */}
-        <section className="pt-8 lg:pt-16 pb-16 lg:pb-28 bg-landing-dark relative overflow-hidden">
+        <section className="pt-8 lg:pt-16 pb-40 lg:pb-56 bg-landing-dark relative overflow-hidden">
           {/* Multi-layer background for depth */}
           <div className="absolute inset-0">
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_50%_80%_at_20%_40%,rgba(34,211,238,0.06),transparent_50%)]" />
@@ -378,7 +378,7 @@ export default function Landing() {
         </section>
 
         {/* For Who Section - Light with refined cards */}
-        <section className="pt-8 lg:pt-16 pb-16 lg:pb-28 bg-[#f8f9fb] text-landing-dark relative overflow-hidden">
+        <section className="pt-8 lg:pt-16 pb-40 lg:pb-56 bg-[#f8f9fb] text-landing-dark relative overflow-hidden">
           <div className="w-full max-w-7xl mx-auto px-5 lg:px-8">
             <ScrollReveal direction="up" duration={700}>
               <div className="text-center mb-10 lg:mb-14">
@@ -462,7 +462,7 @@ export default function Landing() {
         </section>
 
         {/* Pricing - Dark with layered depth */}
-        <section className="pt-8 lg:pt-16 pb-16 lg:pb-28 bg-landing-dark relative overflow-hidden">
+        <section className="pt-8 lg:pt-16 pb-40 lg:pb-56 bg-landing-dark relative overflow-hidden">
           {/* Premium depth layers */}
           <div className="absolute inset-0">
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_50%_100%,rgba(34,211,238,0.08),transparent_60%)]" />
