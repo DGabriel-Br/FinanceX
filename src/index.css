@@ -1,12 +1,13 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Sistema de design para aplicação financeira */
+/* Sistema de design para aplicação financeira premium */
 
 @layer base {
   :root {
@@ -44,6 +45,14 @@
     /* Cores financeiras */
     --income: 142 71% 45%;
     --expense: 0 84% 60%;
+
+    /* Landing page - cores premium inspiradas no logo */
+    --landing-dark: 220 25% 8%;
+    --landing-dark-secondary: 220 25% 12%;
+    --landing-cyan: 187 85% 53%;
+    --landing-cyan-light: 187 85% 70%;
+    --landing-teal: 171 77% 64%;
+    --landing-green: 142 69% 58%;
 
     /* Mobile header - usa mesma cor da sidebar */
     --mobile-header: 220 25% 12%;
@@ -91,6 +100,10 @@
 
     --income: 142 71% 45%;
     --expense: 0 70% 55%;
+
+    /* Landing page - cores premium */
+    --landing-dark: 220 25% 6%;
+    --landing-dark-secondary: 220 25% 10%;
 
     /* Mobile header - usa mesma cor da sidebar */
     --mobile-header: 220 30% 6%;
