@@ -1,4 +1,12 @@
 import { db, isTempId, LocalTransaction, LocalDebt, LocalInvestmentGoal } from './database';
+import { 
+  batchUpsertTransactions, 
+  batchDeleteTransactions, 
+  batchUpsertDebts, 
+  batchDeleteDebts, 
+  batchUpsertGoals, 
+  batchDeleteGoals 
+} from './batchOperations';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { logger } from '@/lib/logger';
@@ -393,27 +401,64 @@ class SyncService {
     return synced;
   }
 
-  // Baixar dados do servidor e remover itens deletados remotamente
+  // Baixar dados do servidor usando sync incremental
+  // Usa lastSyncAt para puxar apenas dados modificados desde a última sincronização
   private async pullFromServer(userId: string): Promise<void> {
     // SECURITY: Always filter by user_id for defense in depth
     // Even though RLS should handle this, explicit filtering prevents data leakage
-    // if RLS policies are accidentally misconfigured
     
+    // Obter timestamp da última sincronização
+    const syncMeta = await db.syncMeta.get('lastSync');
+    const lastSyncAt = syncMeta?.lastSyncAt || 0;
+    const isFullSync = lastSyncAt === 0;
+    
+    logger.info(`Pull from server - ${isFullSync ? 'full sync' : `incremental since ${new Date(lastSyncAt).toISOString()}`}`);
+    
+    // Para sync incremental, buscar apenas itens modificados após lastSyncAt
+    // Para full sync, buscar tudo
+    await Promise.all([
+      this.pullTransactions(userId, lastSyncAt, isFullSync),
+      this.pullDebts(userId, lastSyncAt, isFullSync),
+      this.pullGoals(userId, lastSyncAt, isFullSync),
+    ]);
+  }
+
+  private async pullTransactions(userId: string, lastSyncAt: number, isFullSync: boolean): Promise<void> {
     // Buscar transações do servidor
-    const { data: serverTransactions } = await supabase
+    let query = supabase
       .from('transactions')
       .select('*')
-      .eq('user_id', userId)
-      .order('created_at', { ascending: false });
+      .eq('user_id', userId);
+    
+    // Sync incremental: buscar apenas modificados após lastSyncAt
+    // Nota: created_at é usado pois transactions não tem updated_at
+    if (!isFullSync && lastSyncAt > 0) {
+      // Converter timestamp para segundos (created_at é bigint em ms)
+      query = query.gt('created_at', lastSyncAt);
+    }
+    
+    const { data: serverTransactions } = await query.order('created_at', { ascending: false });
 
-    if (serverTransactions) {
-      const serverIds = new Set(serverTransactions.map(t => t.id));
+    if (serverTransactions && serverTransactions.length > 0) {
+      const now = Date.now();
       
-      // Atualizar/adicionar transações do servidor
+      // Preparar entidades para batch upsert
+      const entitiesToUpsert: LocalTransaction[] = [];
+      
+      // Buscar locais pendentes para não sobrescrever
+      const localPendingIds = new Set(
+        (await db.transactions
+          .where('syncStatus')
+          .equals('pending')
+          .filter(t => t.userId === userId)
+          .toArray()
+        ).map(t => t.id)
+      );
+      
       for (const t of serverTransactions) {
-        const local = await db.transactions.get(t.id);
-        if (!local || local.syncStatus === 'synced') {
-          await db.transactions.put({
+        // Não sobrescrever itens pendentes locais
+        if (!localPendingIds.has(t.id)) {
+          entitiesToUpsert.push({
             id: t.id,
             type: t.type,
             category: t.category,
@@ -423,41 +468,75 @@ class SyncService {
             createdAt: Number(t.created_at),
             userId: t.user_id || userId,
             syncStatus: 'synced',
-            localUpdatedAt: Date.now(),
-            serverUpdatedAt: Date.now(),
+            localUpdatedAt: now,
+            serverUpdatedAt: now,
             version: 1,
           });
         }
       }
-
-      // Remover transações locais sincronizadas que não existem mais no servidor
-      const localSyncedTransactions = await db.transactions
-        .filter(t => t.userId === userId && t.syncStatus === 'synced' && !isTempId(t.id))
-        .toArray();
       
-      for (const local of localSyncedTransactions) {
-        if (!serverIds.has(local.id)) {
-          await db.transactions.delete(local.id);
-          logger.info(`Transação removida localmente (deletada no servidor): ${local.id}`);
-        }
+      // Batch upsert
+      if (entitiesToUpsert.length > 0) {
+        await batchUpsertTransactions(entitiesToUpsert);
+        logger.info(`Synced ${entitiesToUpsert.length} transactions from server`);
       }
     }
 
-    // Buscar dívidas do servidor
-    // SECURITY: Always filter by user_id for defense in depth
-    const { data: serverDebts } = await supabase
+    // No full sync, remover transações locais que não existem mais no servidor
+    if (isFullSync) {
+      const { data: allServerTransactions } = await supabase
+        .from('transactions')
+        .select('id')
+        .eq('user_id', userId);
+      
+      if (allServerTransactions) {
+        const serverIds = new Set(allServerTransactions.map(t => t.id));
+        
+        const localSyncedTransactions = await db.transactions
+          .filter(t => t.userId === userId && t.syncStatus === 'synced' && !isTempId(t.id))
+          .toArray();
+        
+        const idsToDelete = localSyncedTransactions
+          .filter(local => !serverIds.has(local.id))
+          .map(local => local.id);
+        
+        if (idsToDelete.length > 0) {
+          await batchDeleteTransactions(idsToDelete);
+          logger.info(`Deleted ${idsToDelete.length} stale transactions from local`);
+        }
+      }
+    }
+  }
+
+  private async pullDebts(userId: string, lastSyncAt: number, isFullSync: boolean): Promise<void> {
+    let query = supabase
       .from('debts')
       .select('*')
-      .eq('user_id', userId)
-      .order('created_at', { ascending: false });
+      .eq('user_id', userId);
+    
+    if (!isFullSync && lastSyncAt > 0) {
+      query = query.gt('created_at', lastSyncAt);
+    }
+    
+    const { data: serverDebts } = await query.order('created_at', { ascending: false });
 
-    if (serverDebts) {
-      const serverIds = new Set(serverDebts.map(d => d.id));
+    if (serverDebts && serverDebts.length > 0) {
+      const now = Date.now();
+      
+      const localPendingIds = new Set(
+        (await db.debts
+          .where('syncStatus')
+          .equals('pending')
+          .filter(d => d.userId === userId)
+          .toArray()
+        ).map(d => d.id)
+      );
+      
+      const entitiesToUpsert: LocalDebt[] = [];
       
       for (const d of serverDebts) {
-        const local = await db.debts.get(d.id);
-        if (!local || local.syncStatus === 'synced') {
-          await db.debts.put({
+        if (!localPendingIds.has(d.id)) {
+          entitiesToUpsert.push({
             id: d.id,
             name: d.name,
             totalValue: Number(d.total_value),
@@ -467,62 +546,114 @@ class SyncService {
             createdAt: Number(d.created_at),
             userId: d.user_id || userId,
             syncStatus: 'synced',
-            localUpdatedAt: Date.now(),
-            serverUpdatedAt: Date.now(),
+            localUpdatedAt: now,
+            serverUpdatedAt: now,
             version: 1,
           });
         }
       }
-
-      // Remover dívidas locais que não existem mais no servidor
-      const localSyncedDebts = await db.debts
-        .filter(d => d.userId === userId && d.syncStatus === 'synced' && !isTempId(d.id))
-        .toArray();
       
-      for (const local of localSyncedDebts) {
-        if (!serverIds.has(local.id)) {
-          await db.debts.delete(local.id);
-          logger.info(`Dívida removida localmente (deletada no servidor): ${local.id}`);
-        }
+      if (entitiesToUpsert.length > 0) {
+        await batchUpsertDebts(entitiesToUpsert);
+        logger.info(`Synced ${entitiesToUpsert.length} debts from server`);
       }
     }
 
-    // Buscar metas do servidor
-    // SECURITY: Always filter by user_id for defense in depth
-    const { data: serverGoals } = await supabase
+    if (isFullSync) {
+      const { data: allServerDebts } = await supabase
+        .from('debts')
+        .select('id')
+        .eq('user_id', userId);
+      
+      if (allServerDebts) {
+        const serverIds = new Set(allServerDebts.map(d => d.id));
+        
+        const localSyncedDebts = await db.debts
+          .filter(d => d.userId === userId && d.syncStatus === 'synced' && !isTempId(d.id))
+          .toArray();
+        
+        const idsToDelete = localSyncedDebts
+          .filter(local => !serverIds.has(local.id))
+          .map(local => local.id);
+        
+        if (idsToDelete.length > 0) {
+          await batchDeleteDebts(idsToDelete);
+          logger.info(`Deleted ${idsToDelete.length} stale debts from local`);
+        }
+      }
+    }
+  }
+
+  private async pullGoals(userId: string, lastSyncAt: number, isFullSync: boolean): Promise<void> {
+    let query = supabase
       .from('investment_goals')
       .select('*')
       .eq('user_id', userId);
+    
+    if (!isFullSync && lastSyncAt > 0) {
+      // investment_goals usa timestamp real, converter para formato ISO
+      const lastSyncDate = new Date(lastSyncAt).toISOString();
+      query = query.gt('created_at', lastSyncDate);
+    }
+    
+    const { data: serverGoals } = await query;
 
-    if (serverGoals) {
-      const serverIds = new Set(serverGoals.map(g => g.id));
+    if (serverGoals && serverGoals.length > 0) {
+      const now = Date.now();
+      
+      const localPendingIds = new Set(
+        (await db.investmentGoals
+          .where('syncStatus')
+          .equals('pending')
+          .filter(g => g.userId === userId)
+          .toArray()
+        ).map(g => g.id)
+      );
+      
+      const entitiesToUpsert: LocalInvestmentGoal[] = [];
       
       for (const g of serverGoals) {
-        const local = await db.investmentGoals.get(g.id);
-        if (!local || local.syncStatus === 'synced') {
-          await db.investmentGoals.put({
+        if (!localPendingIds.has(g.id)) {
+          entitiesToUpsert.push({
             id: g.id,
             type: g.type,
             targetValue: Number(g.target_value),
             createdAt: new Date(g.created_at).getTime(),
             userId: g.user_id || userId,
             syncStatus: 'synced',
-            localUpdatedAt: Date.now(),
-            serverUpdatedAt: Date.now(),
+            localUpdatedAt: now,
+            serverUpdatedAt: now,
             version: 1,
           });
         }
       }
-
-      // Remover metas locais que não existem mais no servidor
-      const localSyncedGoals = await db.investmentGoals
-        .filter(g => g.userId === userId && g.syncStatus === 'synced' && !isTempId(g.id))
-        .toArray();
       
-      for (const local of localSyncedGoals) {
-        if (!serverIds.has(local.id)) {
-          await db.investmentGoals.delete(local.id);
-          logger.info(`Meta removida localmente (deletada no servidor): ${local.id}`);
+      if (entitiesToUpsert.length > 0) {
+        await batchUpsertGoals(entitiesToUpsert);
+        logger.info(`Synced ${entitiesToUpsert.length} goals from server`);
+      }
+    }
+
+    if (isFullSync) {
+      const { data: allServerGoals } = await supabase
+        .from('investment_goals')
+        .select('id')
+        .eq('user_id', userId);
+      
+      if (allServerGoals) {
+        const serverIds = new Set(allServerGoals.map(g => g.id));
+        
+        const localSyncedGoals = await db.investmentGoals
+          .filter(g => g.userId === userId && g.syncStatus === 'synced' && !isTempId(g.id))
+          .toArray();
+        
+        const idsToDelete = localSyncedGoals
+          .filter(local => !serverIds.has(local.id))
+          .map(local => local.id);
+        
+        if (idsToDelete.length > 0) {
+          await batchDeleteGoals(idsToDelete);
+          logger.info(`Deleted ${idsToDelete.length} stale goals from local`);
         }
       }
     }
