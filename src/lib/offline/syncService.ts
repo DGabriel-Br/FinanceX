@@ -50,13 +50,40 @@ class SyncService {
         return result;
       }
 
-      // Usar getSession que funciona mesmo offline (usa cache local)
-      const { data: { session } } = await supabase.auth.getSession();
-      const user = session?.user;
+      // SECURITY: Strict session validation before any sync operations
+      // This is critical to prevent sync with stale or invalid sessions
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
       
-      if (!user) {
+      // Fail closed: Any session error means no sync
+      if (sessionError) {
+        logger.error('Session validation error during sync:', sessionError);
+        result.success = false;
+        result.errors.push('Erro ao validar sessão');
+        return result;
+      }
+      
+      const user = session?.user;
+      const userId = user?.id;
+      
+      // SECURITY: Both session and userId must exist
+      // This prevents sync operations with partial/corrupted session state
+      if (!session || !user || !userId) {
+        logger.warn('Sync blocked: Invalid session state', { 
+          hasSession: !!session, 
+          hasUser: !!user, 
+          hasUserId: !!userId 
+        });
         result.success = false;
         result.errors.push('Usuário não autenticado');
+        return result;
+      }
+      
+      // SECURITY: Validate userId format (UUID v4)
+      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+      if (!uuidRegex.test(userId)) {
+        logger.error('Sync blocked: Invalid userId format', { userId });
+        result.success = false;
+        result.errors.push('ID de usuário inválido');
         return result;
       }
 
@@ -368,10 +395,15 @@ class SyncService {
 
   // Baixar dados do servidor e remover itens deletados remotamente
   private async pullFromServer(userId: string): Promise<void> {
+    // SECURITY: Always filter by user_id for defense in depth
+    // Even though RLS should handle this, explicit filtering prevents data leakage
+    // if RLS policies are accidentally misconfigured
+    
     // Buscar transações do servidor
     const { data: serverTransactions } = await supabase
       .from('transactions')
       .select('*')
+      .eq('user_id', userId)
       .order('created_at', { ascending: false });
 
     if (serverTransactions) {
@@ -412,9 +444,11 @@ class SyncService {
     }
 
     // Buscar dívidas do servidor
+    // SECURITY: Always filter by user_id for defense in depth
     const { data: serverDebts } = await supabase
       .from('debts')
       .select('*')
+      .eq('user_id', userId)
       .order('created_at', { ascending: false });
 
     if (serverDebts) {
@@ -454,9 +488,11 @@ class SyncService {
     }
 
     // Buscar metas do servidor
+    // SECURITY: Always filter by user_id for defense in depth
     const { data: serverGoals } = await supabase
       .from('investment_goals')
-      .select('*');
+      .select('*')
+      .eq('user_id', userId);
 
     if (serverGoals) {
       const serverIds = new Set(serverGoals.map(g => g.id));
