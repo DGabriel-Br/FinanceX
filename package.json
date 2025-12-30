@@ -8,7 +8,9 @@
     "build": "vite build",
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "security:grep": "grep -rn 'dangerouslySetInnerHTML\\|service_role\\|from.*select.*(?!.*user_id)' src/",
+    "security:audit": "npm audit --audit-level=high"
   },
   "dependencies": {
     "@capacitor/android": "^8.0.0",
