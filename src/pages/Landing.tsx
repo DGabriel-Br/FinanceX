@@ -204,18 +204,12 @@ export default function Landing() {
             </div>
           </div>
           
-          {/* Curved divider - dark to light */}
-          <div className="absolute bottom-0 left-0 right-0 w-full overflow-hidden leading-[0]">
-            <svg 
-              className="relative block w-full h-[60px] lg:h-[100px]" 
-              viewBox="0 0 1200 120" 
-              preserveAspectRatio="none"
-            >
-              <path 
-                d="M0,0 C300,100 900,100 1200,0 L1200,120 L0,120 Z" 
-                className="fill-[#f8f9fb]"
-              />
-            </svg>
+          {/* Diagonal gradient divider - dark to light */}
+          <div className="absolute -bottom-px left-0 right-0 h-32 lg:h-48 overflow-hidden">
+            <div 
+              className="absolute inset-0 bg-gradient-to-b from-transparent via-landing-dark to-[#f8f9fb]"
+              style={{ clipPath: 'polygon(0 0, 100% 30%, 100% 100%, 0 100%)' }}
+            />
           </div>
         </section>
 
@@ -269,18 +263,12 @@ export default function Landing() {
             </div>
           </div>
           
-          {/* Curved divider - light to dark */}
-          <div className="absolute bottom-0 left-0 right-0 w-full overflow-hidden leading-[0]">
-            <svg 
-              className="relative block w-full h-[60px] lg:h-[100px]" 
-              viewBox="0 0 1200 120" 
-              preserveAspectRatio="none"
-            >
-              <path 
-                d="M0,0 C300,100 900,100 1200,0 L1200,120 L0,120 Z" 
-                className="fill-landing-dark"
-              />
-            </svg>
+          {/* Diagonal gradient divider - light to dark */}
+          <div className="absolute -bottom-px left-0 right-0 h-32 lg:h-48 overflow-hidden">
+            <div 
+              className="absolute inset-0 bg-gradient-to-b from-transparent via-[#f8f9fb] to-landing-dark"
+              style={{ clipPath: 'polygon(0 30%, 100% 0, 100% 100%, 0 100%)' }}
+            />
           </div>
         </section>
 
@@ -380,18 +368,12 @@ export default function Landing() {
             </div>
           </div>
           
-          {/* Curved divider - dark to light */}
-          <div className="absolute bottom-0 left-0 right-0 w-full overflow-hidden leading-[0]">
-            <svg 
-              className="relative block w-full h-[60px] lg:h-[100px]" 
-              viewBox="0 0 1200 120" 
-              preserveAspectRatio="none"
-            >
-              <path 
-                d="M0,0 C300,100 900,100 1200,0 L1200,120 L0,120 Z" 
-                className="fill-[#f8f9fb]"
-              />
-            </svg>
+          {/* Diagonal gradient divider - dark to light */}
+          <div className="absolute -bottom-px left-0 right-0 h-32 lg:h-48 overflow-hidden">
+            <div 
+              className="absolute inset-0 bg-gradient-to-b from-transparent via-landing-dark to-[#f8f9fb]"
+              style={{ clipPath: 'polygon(0 0, 100% 30%, 100% 100%, 0 100%)' }}
+            />
           </div>
         </section>
 
@@ -470,18 +452,12 @@ export default function Landing() {
             </div>
           </div>
           
-          {/* Curved divider - light to dark */}
-          <div className="absolute bottom-0 left-0 right-0 w-full overflow-hidden leading-[0]">
-            <svg 
-              className="relative block w-full h-[60px] lg:h-[100px]" 
-              viewBox="0 0 1200 120" 
-              preserveAspectRatio="none"
-            >
-              <path 
-                d="M0,0 C300,100 900,100 1200,0 L1200,120 L0,120 Z" 
-                className="fill-landing-dark"
-              />
-            </svg>
+          {/* Diagonal gradient divider - light to dark */}
+          <div className="absolute -bottom-px left-0 right-0 h-32 lg:h-48 overflow-hidden">
+            <div 
+              className="absolute inset-0 bg-gradient-to-b from-transparent via-[#f8f9fb] to-landing-dark"
+              style={{ clipPath: 'polygon(0 30%, 100% 0, 100% 100%, 0 100%)' }}
+            />
           </div>
         </section>
 
@@ -568,18 +544,12 @@ export default function Landing() {
             </ScrollReveal>
           </div>
           
-          {/* Curved divider - dark to light */}
-          <div className="absolute bottom-0 left-0 right-0 w-full overflow-hidden leading-[0]">
-            <svg 
-              className="relative block w-full h-[60px] lg:h-[100px]" 
-              viewBox="0 0 1200 120" 
-              preserveAspectRatio="none"
-            >
-              <path 
-                d="M0,0 C300,100 900,100 1200,0 L1200,120 L0,120 Z" 
-                className="fill-[#f8f9fb]"
-              />
-            </svg>
+          {/* Diagonal gradient divider - dark to light */}
+          <div className="absolute -bottom-px left-0 right-0 h-32 lg:h-48 overflow-hidden">
+            <div 
+              className="absolute inset-0 bg-gradient-to-b from-transparent via-landing-dark to-[#f8f9fb]"
+              style={{ clipPath: 'polygon(0 0, 100% 30%, 100% 100%, 0 100%)' }}
+            />
           </div>
         </section>
 
