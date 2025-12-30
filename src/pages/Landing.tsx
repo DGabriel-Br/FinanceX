@@ -46,7 +46,7 @@ const ProblemSection = memo(function ProblemSection() {
                   <span className="text-landing-dark/90 font-medium"> mas o dinheiro sumiu.</span>
                 </p>
                 <p className="leading-[1.7]">
-                  Você já tentou planilha. Funcionou por uma semana. Depois virou aquele arquivo que você nem abre mais.
+                  Você já tentou planilha. Funcionou por uma semana. Depois virou aquele arquivo que você nunca mais abriu.
                 </p>
                 <p className="leading-[1.7]">
                   Ou baixou um app cheio de função, conectou com banco, configurou categorias... 
@@ -119,9 +119,9 @@ const HowItWorksSection = memo(function HowItWorksSection() {
                 </div>
                 <span className="text-5xl lg:text-6xl font-bold text-white/[0.06] group-hover:text-white/[0.1] transition-colors duration-500">02</span>
               </div>
-              <h3 className="text-xl lg:text-2xl font-semibold text-white/90 mb-3 lg:mb-4">O app organiza</h3>
+              <h3 className="text-xl lg:text-2xl font-semibold text-white/90 mb-3 lg:mb-4">O app organiza pra você</h3>
               <p className="text-white/45 text-base lg:text-lg leading-relaxed">
-                Categorias prontas. Tudo separado automaticamente.
+                Categorias prontas. Tudo separado automaticamente. Você não precisa montar nada.
               </p>
             </article>
           </ScrollReveal>

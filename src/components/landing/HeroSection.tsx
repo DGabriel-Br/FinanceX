@@ -28,15 +28,15 @@ export const HeroSection = memo(function HeroSection() {
                 className="text-[2.5rem] sm:text-5xl lg:text-6xl xl:text-[4.25rem] font-bold leading-[1.08] tracking-[-0.02em] mb-6 lg:mb-8"
                 style={{ fontFamily: "'Sora', sans-serif" }}
               >
-                <span className="text-white/95">Se você não sabe</span>
+                <span className="text-white/95">Se você não sabe pra onde seu dinheiro vai,</span>
                 <br />
                 <span className="bg-gradient-to-r from-landing-cyan via-landing-teal to-landing-green bg-clip-text text-transparent">
-                  pra onde seu dinheiro vai
+                  o FinanceX mostra. Simples assim.
                 </span>
               </h1>
               
               <p className="text-base lg:text-lg text-white/50 leading-relaxed mb-8 lg:mb-10 max-w-lg">
-                Você anota o que gasta. O app te mostra, de forma clara, se você pode gastar mais ou se precisa parar.
+                Você anota o que gasta. O app mostra, com clareza, se você pode gastar mais ou se precisa parar.
               </p>
               
               <div className="flex flex-col sm:flex-row gap-3 lg:gap-4">
