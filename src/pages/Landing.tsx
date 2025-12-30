@@ -101,7 +101,7 @@ export default function Landing() {
                 <ScrollReveal direction="up" duration={800}>
                   {/* Headline */}
                   <h1 
-                    className="text-[2.5rem] sm:text-5xl lg:text-6xl xl:text-[4.25rem] font-bold leading-[1.08] tracking-[-0.02em] mb-6 lg:mb-8"
+                    className="text-[2.75rem] sm:text-[3.5rem] lg:text-7xl xl:text-[5rem] font-bold leading-[1.05] tracking-[-0.02em] mb-6 lg:mb-8"
                     style={{ fontFamily: "'Sora', sans-serif" }}
                   >
                     <span className="text-white/95">Se você não sabe</span>
