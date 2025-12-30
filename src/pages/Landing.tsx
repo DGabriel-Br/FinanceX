@@ -205,16 +205,16 @@ export default function Landing() {
           </div>
           
           {/* Diagonal gradient divider - dark to light */}
-          <div className="absolute -bottom-px left-0 right-0 h-32 lg:h-48 overflow-hidden">
+          <div className="absolute -bottom-px left-0 right-0 h-20 lg:h-28 overflow-hidden">
             <div 
-              className="absolute inset-0 bg-gradient-to-b from-transparent via-landing-dark to-[#f8f9fb]"
-              style={{ clipPath: 'polygon(0 0, 100% 30%, 100% 100%, 0 100%)' }}
+              className="absolute inset-0 bg-gradient-to-b from-transparent to-[#f8f9fb]"
+              style={{ clipPath: 'polygon(0 0, 100% 60%, 100% 100%, 0 100%)' }}
             />
           </div>
         </section>
 
         {/* Problem Section - Light with refined typography */}
-        <section className="pt-8 lg:pt-16 pb-40 lg:pb-56 bg-[#f8f9fb] text-landing-dark relative overflow-hidden">
+        <section className="pt-12 lg:pt-20 pb-32 lg:pb-40 bg-[#f8f9fb] text-landing-dark relative overflow-hidden">
           <div className="w-full max-w-7xl mx-auto px-5 lg:px-8 relative">
             <div className="grid lg:grid-cols-12 gap-8 lg:gap-12">
               {/* Content - 8 cols for asymmetry */}
@@ -264,16 +264,16 @@ export default function Landing() {
           </div>
           
           {/* Diagonal gradient divider - light to dark */}
-          <div className="absolute -bottom-px left-0 right-0 h-32 lg:h-48 overflow-hidden">
+          <div className="absolute -bottom-px left-0 right-0 h-20 lg:h-28 overflow-hidden">
             <div 
-              className="absolute inset-0 bg-gradient-to-b from-transparent via-[#f8f9fb] to-landing-dark"
-              style={{ clipPath: 'polygon(0 30%, 100% 0, 100% 100%, 0 100%)' }}
+              className="absolute inset-0 bg-gradient-to-b from-transparent to-landing-dark"
+              style={{ clipPath: 'polygon(0 60%, 100% 0, 100% 100%, 0 100%)' }}
             />
           </div>
         </section>
 
         {/* How it Works - Dark with premium depth */}
-        <section className="pt-8 lg:pt-16 pb-40 lg:pb-56 bg-landing-dark relative overflow-hidden">
+        <section className="pt-12 lg:pt-20 pb-32 lg:pb-40 bg-landing-dark relative overflow-hidden">
           {/* Multi-layer background for depth */}
           <div className="absolute inset-0">
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_50%_80%_at_20%_40%,rgba(34,211,238,0.06),transparent_50%)]" />
@@ -369,16 +369,16 @@ export default function Landing() {
           </div>
           
           {/* Diagonal gradient divider - dark to light */}
-          <div className="absolute -bottom-px left-0 right-0 h-32 lg:h-48 overflow-hidden">
+          <div className="absolute -bottom-px left-0 right-0 h-20 lg:h-28 overflow-hidden">
             <div 
-              className="absolute inset-0 bg-gradient-to-b from-transparent via-landing-dark to-[#f8f9fb]"
-              style={{ clipPath: 'polygon(0 0, 100% 30%, 100% 100%, 0 100%)' }}
+              className="absolute inset-0 bg-gradient-to-b from-transparent to-[#f8f9fb]"
+              style={{ clipPath: 'polygon(0 0, 100% 60%, 100% 100%, 0 100%)' }}
             />
           </div>
         </section>
 
         {/* For Who Section - Light with refined cards */}
-        <section className="pt-8 lg:pt-16 pb-40 lg:pb-56 bg-[#f8f9fb] text-landing-dark relative overflow-hidden">
+        <section className="pt-12 lg:pt-20 pb-32 lg:pb-40 bg-[#f8f9fb] text-landing-dark relative overflow-hidden">
           <div className="w-full max-w-7xl mx-auto px-5 lg:px-8">
             <ScrollReveal direction="up" duration={700}>
               <div className="text-center mb-10 lg:mb-14">
@@ -453,16 +453,16 @@ export default function Landing() {
           </div>
           
           {/* Diagonal gradient divider - light to dark */}
-          <div className="absolute -bottom-px left-0 right-0 h-32 lg:h-48 overflow-hidden">
+          <div className="absolute -bottom-px left-0 right-0 h-20 lg:h-28 overflow-hidden">
             <div 
-              className="absolute inset-0 bg-gradient-to-b from-transparent via-[#f8f9fb] to-landing-dark"
-              style={{ clipPath: 'polygon(0 30%, 100% 0, 100% 100%, 0 100%)' }}
+              className="absolute inset-0 bg-gradient-to-b from-transparent to-landing-dark"
+              style={{ clipPath: 'polygon(0 60%, 100% 0, 100% 100%, 0 100%)' }}
             />
           </div>
         </section>
 
         {/* Pricing - Dark with layered depth */}
-        <section className="pt-8 lg:pt-16 pb-40 lg:pb-56 bg-landing-dark relative overflow-hidden">
+        <section className="pt-12 lg:pt-20 pb-32 lg:pb-40 bg-landing-dark relative overflow-hidden">
           {/* Premium depth layers */}
           <div className="absolute inset-0">
             <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_50%_100%,rgba(34,211,238,0.08),transparent_60%)]" />
@@ -545,16 +545,16 @@ export default function Landing() {
           </div>
           
           {/* Diagonal gradient divider - dark to light */}
-          <div className="absolute -bottom-px left-0 right-0 h-32 lg:h-48 overflow-hidden">
+          <div className="absolute -bottom-px left-0 right-0 h-20 lg:h-28 overflow-hidden">
             <div 
-              className="absolute inset-0 bg-gradient-to-b from-transparent via-landing-dark to-[#f8f9fb]"
-              style={{ clipPath: 'polygon(0 0, 100% 30%, 100% 100%, 0 100%)' }}
+              className="absolute inset-0 bg-gradient-to-b from-transparent to-[#f8f9fb]"
+              style={{ clipPath: 'polygon(0 0, 100% 60%, 100% 100%, 0 100%)' }}
             />
           </div>
         </section>
 
         {/* Testimonials - Premium section with refined design */}
-        <section className="pt-8 lg:pt-16 pb-20 lg:pb-32 bg-gradient-to-b from-[#f8f9fb] via-white to-[#f8f9fb] text-landing-dark relative overflow-hidden">
+        <section className="pt-12 lg:pt-20 pb-20 lg:pb-32 bg-gradient-to-b from-[#f8f9fb] via-white to-[#f8f9fb] text-landing-dark relative overflow-hidden">
           {/* Subtle decorative elements */}
           <div className="absolute inset-0 pointer-events-none">
             <div className="absolute top-0 left-1/4 w-96 h-96 bg-landing-cyan/[0.03] rounded-full blur-3xl" />
