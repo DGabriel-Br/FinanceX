@@ -653,61 +653,6 @@ export default function Landing() {
             </div>
           </div>
         </section>
-
-        {/* Security - Dark with subtle depth */}
-        <section className="py-16 lg:py-28 bg-landing-dark relative overflow-hidden">
-          <div className="absolute inset-0">
-            <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_40%_at_10%_50%,rgba(45,212,191,0.05),transparent_50%)]" />
-          </div>
-          
-          <div className="w-full max-w-7xl mx-auto px-5 lg:px-8 relative">
-            <ScrollReveal direction="up" duration={700}>
-              <div className="max-w-4xl mx-auto text-center">
-                <div className="flex items-center justify-center gap-3 lg:gap-4 mb-6 lg:mb-8">
-                  <div className="h-12 w-12 lg:h-14 lg:w-14 rounded-xl lg:rounded-2xl bg-gradient-to-br from-landing-cyan/15 to-landing-teal/5 flex items-center justify-center">
-                    <Lock className="h-6 w-6 lg:h-7 lg:w-7 text-landing-cyan" />
-                  </div>
-                  <h2 
-                    className="text-xl sm:text-2xl lg:text-3xl font-bold tracking-[-0.02em] text-white/95"
-                    style={{ fontFamily: "'Sora', sans-serif" }}
-                  >
-                    Segurança e privacidade
-                  </h2>
-                </div>
-
-                <div className="grid sm:grid-cols-2 gap-5 lg:gap-6 mt-8 lg:mt-10 text-left max-w-2xl mx-auto">
-                  <div className="flex gap-3 lg:gap-4 p-4 lg:p-5 rounded-xl lg:rounded-2xl bg-white/[0.03] border border-white/[0.05] hover:bg-white/[0.05] transition-colors duration-300">
-                    <div className="h-9 w-9 lg:h-10 lg:w-10 rounded-lg lg:rounded-xl bg-landing-cyan/15 flex items-center justify-center flex-shrink-0">
-                      <Shield className="w-4 h-4 lg:w-5 lg:h-5 text-landing-cyan" />
-                    </div>
-                    <div>
-                      <p className="font-semibold mb-1.5 text-white/90 text-sm lg:text-base">Dados criptografados</p>
-                      <p className="text-white/45 text-sm leading-relaxed">
-                        Seus dados ficam criptografados. Ninguém além de você tem acesso.
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex gap-3 lg:gap-4 p-4 lg:p-5 rounded-xl lg:rounded-2xl bg-white/[0.03] border border-white/[0.05] hover:bg-white/[0.05] transition-colors duration-300">
-                    <div className="h-9 w-9 lg:h-10 lg:w-10 rounded-lg lg:rounded-xl bg-landing-teal/15 flex items-center justify-center flex-shrink-0">
-                      <Smartphone className="w-4 h-4 lg:w-5 lg:h-5 text-landing-teal" />
-                    </div>
-                    <div>
-                      <p className="font-semibold mb-1.5 text-white/90 text-sm lg:text-base">Funciona offline</p>
-                      <p className="text-white/45 text-sm leading-relaxed">
-                        Lance gastos sem internet e sincronize depois.
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                <p className="text-white/35 mt-10 lg:mt-12 pt-8 border-t border-white/[0.06] text-sm max-w-lg mx-auto">
-                  Não vendemos dados. Não mostramos anúncios. O negócio é simples: você paga, o app funciona.
-                </p>
-              </div>
-            </ScrollReveal>
-          </div>
-        </section>
-
         {/* Final CTA - Premium gradient depth */}
         <section className="py-20 lg:py-32 bg-landing-dark relative overflow-hidden">
           <div className="absolute inset-0">
