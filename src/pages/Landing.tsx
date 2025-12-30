@@ -330,9 +330,6 @@ export default function Landing() {
         <ForWhoSection />
         <PricingSection />
         <FAQSection />
-        <div className="w-full max-w-2xl mx-auto px-8">
-          <div className="h-px bg-gradient-to-r from-transparent via-landing-dark/10 to-transparent" />
-        </div>
         <TestimonialsSection />
         <FinalCTASection />
       </main>
