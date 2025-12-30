@@ -479,8 +479,8 @@ export default function Landing() {
                         </span>
                         <span className="text-white/40 text-base lg:text-lg">/mês</span>
                       </div>
-                      <p className="text-white/40 text-sm lg:text-base">
-                        Cancela quando quiser. Sem multa.
+                      <p className="text-white/40 text-sm lg:text-base whitespace-nowrap">
+                        Tudo incluso para controlar seu dinheiro com clareza.
                       </p>
                     </div>
 
