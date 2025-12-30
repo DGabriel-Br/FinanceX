@@ -34,6 +34,8 @@ import {
   calculateInvestmentTotals,
   getInvestmentActivities,
   calculateGoalProgress,
+  encodeInvestmentDescription,
+  getCleanDescription,
 } from '@/core/finance';
 
 interface InvestmentsProps {
@@ -174,9 +176,12 @@ export const Investments = ({
       return;
     }
 
-    const description = withdrawDescription.trim() 
-      ? `Resgate ${investmentTypeLabels[withdrawType]} - ${withdrawDescription.trim()}`
-      : `Resgate ${investmentTypeLabels[withdrawType]}`;
+    // Usa o novo formato estruturado para identificação precisa
+    const description = encodeInvestmentDescription(
+      withdrawType,
+      withdrawDescription.trim() || investmentTypeLabels[withdrawType],
+      true // isWithdrawal
+    );
     
     setIsSubmitting(true);
     try {

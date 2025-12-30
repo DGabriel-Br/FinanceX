@@ -55,3 +55,12 @@ export {
   type DebtSummary,
   type DebtProgress,
 } from './debts';
+
+// Investment metadata (structured description encoding/decoding)
+export {
+  encodeInvestmentDescription,
+  decodeInvestmentDescription,
+  getCleanDescription,
+  hasStructuredTag,
+  type InvestmentMetadata,
+} from './investmentMetadata';

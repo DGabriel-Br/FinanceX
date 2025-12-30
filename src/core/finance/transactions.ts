@@ -112,13 +112,21 @@ export const filterInvestmentDeposits = (transactions: Transaction[]): Transacti
 };
 
 /**
- * Filtra resgates de investimento (receitas com 'resgate' na descrição)
+ * Filtra resgates de investimento
+ * Suporta tanto o novo formato estruturado [RES:tipo] quanto o legado com 'resgate' no texto
  */
 export const filterInvestmentWithdrawals = (transactions: Transaction[]): Transaction[] => {
-  return transactions.filter(t => 
-    t.type === 'receita' && 
-    t.description.toLowerCase().includes('resgate')
-  );
+  const WITHDRAWAL_TAG_REGEX = /^\[RES:[a-z_]+\]/i;
+  
+  return transactions.filter(t => {
+    if (t.type !== 'receita') return false;
+    
+    // Verifica o novo formato estruturado
+    if (WITHDRAWAL_TAG_REGEX.test(t.description)) return true;
+    
+    // Fallback: formato legado
+    return t.description.toLowerCase().includes('resgate');
+  });
 };
 
 // Helper para criar Date a partir de string YYYY-MM-DD sem problemas de fuso
