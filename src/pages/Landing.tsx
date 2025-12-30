@@ -49,7 +49,7 @@ export default function Landing() {
       {/* Header - Premium glass effect */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-landing-dark/70 backdrop-blur-2xl border-b border-white/[0.04]">
         <div className="w-full max-w-7xl mx-auto px-5 lg:px-8">
-          <div className="h-14 lg:h-18 flex items-center justify-between">
+          <div className="h-16 lg:h-20 flex items-center justify-between">
             <Link to="/" className="flex items-end group transition-opacity duration-300 hover:opacity-80">
               <FinanceLogo size={28} className="lg:w-8 lg:h-8" />
               <span 
