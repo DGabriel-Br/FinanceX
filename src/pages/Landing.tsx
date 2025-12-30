@@ -191,12 +191,12 @@ export default function Landing() {
                       </div>
                     </div>
 
-                    {/* Floating badge - offset from grid */}
-                    <div className="absolute -top-3 -right-2 lg:-top-5 lg:-right-4 bg-landing-dark-secondary/90 backdrop-blur-lg border border-white/[0.08] rounded-xl lg:rounded-2xl p-2.5 lg:p-3 shadow-xl hidden sm:flex items-center gap-2 hover:scale-105 transition-transform duration-500">
-                      <div className="h-7 w-7 lg:h-8 lg:w-8 rounded-full bg-landing-green/15 flex items-center justify-center">
+                    {/* Floating badge - refined positioning */}
+                    <div className="absolute -top-4 right-4 lg:-top-6 lg:right-0 bg-gradient-to-br from-landing-dark-secondary to-landing-dark backdrop-blur-xl border border-landing-green/20 rounded-full py-2 px-4 lg:py-2.5 lg:px-5 shadow-[0_8px_32px_rgba(0,0,0,0.4)] hidden sm:flex items-center gap-2.5 hover:scale-105 hover:border-landing-green/40 transition-all duration-500">
+                      <div className="h-6 w-6 lg:h-7 lg:w-7 rounded-full bg-landing-green/20 flex items-center justify-center">
                         <Check className="h-3.5 w-3.5 lg:h-4 lg:w-4 text-landing-green" />
                       </div>
-                      <span className="text-xs lg:text-sm font-medium text-white/80 pr-0.5">Saldo positivo</span>
+                      <span className="text-xs lg:text-sm font-semibold text-landing-green">Saldo positivo</span>
                     </div>
                   </div>
                 </ScrollReveal>
