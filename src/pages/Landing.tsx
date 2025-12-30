@@ -514,8 +514,8 @@ export default function Landing() {
         <section className="py-24 lg:py-32 bg-[#f8f9fb] text-landing-dark">
           <div className="w-full max-w-7xl mx-auto px-6 lg:px-8">
             <ScrollReveal direction="up" duration={600}>
-              <div className="max-w-4xl">
-                <div className="flex items-center gap-4 mb-8">
+              <div className="max-w-4xl mx-auto text-center">
+                <div className="flex items-center justify-center gap-4 mb-8">
                   <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-landing-cyan/10 to-landing-teal/5 flex items-center justify-center">
                     <Lock className="h-7 w-7 text-landing-cyan" />
                   </div>
@@ -527,8 +527,8 @@ export default function Landing() {
                   </h2>
                 </div>
 
-                <div className="grid sm:grid-cols-2 gap-8 mt-10">
-                  <div className="flex gap-4">
+                <div className="grid sm:grid-cols-2 gap-8 mt-10 text-left">
+                  <div className="flex gap-4 justify-center sm:justify-start">
                     <div className="h-10 w-10 rounded-xl bg-landing-cyan/10 flex items-center justify-center flex-shrink-0">
                       <Shield className="w-5 h-5 text-landing-cyan" />
                     </div>
@@ -539,7 +539,7 @@ export default function Landing() {
                       </p>
                     </div>
                   </div>
-                  <div className="flex gap-4">
+                  <div className="flex gap-4 justify-center sm:justify-start">
                     <div className="h-10 w-10 rounded-xl bg-landing-teal/10 flex items-center justify-center flex-shrink-0">
                       <Smartphone className="w-5 h-5 text-landing-teal" />
                     </div>
