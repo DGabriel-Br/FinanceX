@@ -195,10 +195,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const signOut = async () => {
     // SECURITY: Clear ALL user data on logout to prevent data leakage
+    // This is defense in depth - critical for shared device scenarios
+    const currentUserId = user?.id;
+    
     try {
-      // Get current user ID before signing out
-      const currentUserId = user?.id;
-      
       // Clear secure storage (email, login attempts)
       await clearAllSecureItems();
       
@@ -208,8 +208,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         logger.info('Cleared offline data for user on logout');
       }
     } catch (error) {
-      logger.error('Error clearing user data on logout:', error);
-      // Continue with logout even if cleanup fails
+      logger.error('Error clearing user data on logout (primary method):', error);
+      
+      // SECURITY FALLBACK: Nuclear option - delete entire database if user-specific cleanup fails
+      // This ensures no data leakage even if clearUserData fails
+      try {
+        logger.warn('Attempting nuclear database cleanup as fallback');
+        await db.delete();
+        logger.info('Nuclear database cleanup successful');
+      } catch (nuclearError) {
+        logger.error('Nuclear database cleanup also failed:', nuclearError);
+        // At this point, we've tried everything. Log for monitoring but continue logout.
+        // The app will recreate the database on next login.
+      }
     }
     
     const { error } = await supabase.auth.signOut();
