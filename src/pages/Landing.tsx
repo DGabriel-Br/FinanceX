@@ -510,17 +510,175 @@ export default function Landing() {
           </div>
         </section>
 
-        {/* Security - Light */}
-        <section className="py-24 lg:py-32 bg-[#f8f9fb] text-landing-dark">
-          <div className="w-full max-w-7xl mx-auto px-6 lg:px-8">
+        {/* Testimonials - Light background */}
+        <section className="py-24 lg:py-32 bg-[#f8f9fb] text-landing-dark relative overflow-hidden">
+          {/* Subtle pattern */}
+          <div 
+            className="absolute inset-0 opacity-[0.02]"
+            style={{
+              backgroundImage: `radial-gradient(circle at 1px 1px, rgba(0,0,0,0.15) 1px, transparent 0)`,
+              backgroundSize: '32px 32px'
+            }}
+          />
+          
+          <div className="w-full max-w-7xl mx-auto px-6 lg:px-8 relative">
+            <ScrollReveal direction="up" duration={600}>
+              <div className="text-center mb-16">
+                <div className="flex items-center justify-center gap-3 mb-6">
+                  <div className="h-px w-8 bg-landing-cyan" />
+                  <span className="text-sm font-semibold tracking-widest uppercase text-landing-cyan">Depoimentos</span>
+                  <div className="h-px w-8 bg-landing-cyan" />
+                </div>
+                <h2 
+                  className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight"
+                  style={{ fontFamily: "'Sora', sans-serif" }}
+                >
+                  O que nossos usuários dizem
+                </h2>
+              </div>
+            </ScrollReveal>
+
+            {/* Testimonials grid - asymmetric */}
+            <div className="grid md:grid-cols-12 gap-6">
+              {/* Testimonial 1 - Featured */}
+              <ScrollReveal direction="up" delay={0} duration={600} className="md:col-span-7">
+                <div className="bg-white border border-black/5 rounded-3xl p-8 lg:p-10 h-full shadow-sm hover:shadow-lg transition-shadow duration-500 relative">
+                  {/* Quote mark */}
+                  <div className="absolute top-6 right-8 text-6xl font-serif text-landing-cyan/10 leading-none">"</div>
+                  
+                  <div className="flex items-center gap-4 mb-6">
+                    <div className="h-14 w-14 rounded-full bg-gradient-to-br from-landing-cyan to-landing-teal flex items-center justify-center text-white font-bold text-lg">
+                      RM
+                    </div>
+                    <div>
+                      <p className="font-semibold text-lg">Rafael Mendes</p>
+                      <p className="text-landing-dark/50 text-sm">Designer Freelancer</p>
+                    </div>
+                  </div>
+                  
+                  <p className="text-landing-dark/70 text-lg leading-relaxed mb-6">
+                    "Eu já tinha desistido de controlar meu dinheiro. Tentei de tudo: planilha, app de banco, 
+                    até caderninho. O FinanceX foi o primeiro que realmente funcionou pra mim. 
+                    <span className="text-landing-dark font-medium"> Em 2 meses eu já sabia exatamente pra onde ia cada centavo.</span>"
+                  </p>
+                  
+                  <div className="flex items-center gap-1">
+                    {[...Array(5)].map((_, i) => (
+                      <svg key={i} className="w-5 h-5 text-landing-cyan" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                      </svg>
+                    ))}
+                  </div>
+                </div>
+              </ScrollReveal>
+
+              {/* Testimonial 2 */}
+              <ScrollReveal direction="up" delay={100} duration={600} className="md:col-span-5">
+                <div className="bg-white border border-black/5 rounded-3xl p-8 h-full shadow-sm hover:shadow-lg transition-shadow duration-500 relative">
+                  <div className="absolute top-6 right-8 text-5xl font-serif text-landing-teal/10 leading-none">"</div>
+                  
+                  <div className="flex items-center gap-4 mb-6">
+                    <div className="h-12 w-12 rounded-full bg-gradient-to-br from-landing-teal to-landing-green flex items-center justify-center text-white font-bold">
+                      CS
+                    </div>
+                    <div>
+                      <p className="font-semibold">Camila Santos</p>
+                      <p className="text-landing-dark/50 text-sm">Professora</p>
+                    </div>
+                  </div>
+                  
+                  <p className="text-landing-dark/70 leading-relaxed mb-5">
+                    "Simples do jeito que deveria ser. Abro, lanço o gasto, fecho. 
+                    <span className="text-landing-dark font-medium"> Sem complicação.</span>"
+                  </p>
+                  
+                  <div className="flex items-center gap-1">
+                    {[...Array(5)].map((_, i) => (
+                      <svg key={i} className="w-4 h-4 text-landing-teal" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                      </svg>
+                    ))}
+                  </div>
+                </div>
+              </ScrollReveal>
+
+              {/* Testimonial 3 */}
+              <ScrollReveal direction="up" delay={150} duration={600} className="md:col-span-5">
+                <div className="bg-white border border-black/5 rounded-3xl p-8 h-full shadow-sm hover:shadow-lg transition-shadow duration-500 relative">
+                  <div className="absolute top-6 right-8 text-5xl font-serif text-landing-green/10 leading-none">"</div>
+                  
+                  <div className="flex items-center gap-4 mb-6">
+                    <div className="h-12 w-12 rounded-full bg-gradient-to-br from-landing-green to-landing-cyan flex items-center justify-center text-white font-bold">
+                      PA
+                    </div>
+                    <div>
+                      <p className="font-semibold">Pedro Almeida</p>
+                      <p className="text-landing-dark/50 text-sm">Analista de Sistemas</p>
+                    </div>
+                  </div>
+                  
+                  <p className="text-landing-dark/70 leading-relaxed mb-5">
+                    "Finalmente consigo ver quanto sobra no mês. 
+                    <span className="text-landing-dark font-medium"> Agora sei se posso ou não fazer aquela compra.</span>"
+                  </p>
+                  
+                  <div className="flex items-center gap-1">
+                    {[...Array(5)].map((_, i) => (
+                      <svg key={i} className="w-4 h-4 text-landing-green" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                      </svg>
+                    ))}
+                  </div>
+                </div>
+              </ScrollReveal>
+
+              {/* Testimonial 4 */}
+              <ScrollReveal direction="up" delay={200} duration={600} className="md:col-span-7">
+                <div className="bg-white border border-black/5 rounded-3xl p-8 h-full shadow-sm hover:shadow-lg transition-shadow duration-500 relative">
+                  <div className="absolute top-6 right-8 text-5xl font-serif text-landing-cyan/10 leading-none">"</div>
+                  
+                  <div className="flex items-center gap-4 mb-6">
+                    <div className="h-12 w-12 rounded-full bg-gradient-to-br from-landing-cyan to-landing-teal flex items-center justify-center text-white font-bold">
+                      JL
+                    </div>
+                    <div>
+                      <p className="font-semibold">Juliana Lima</p>
+                      <p className="text-landing-dark/50 text-sm">Empreendedora</p>
+                    </div>
+                  </div>
+                  
+                  <p className="text-landing-dark/70 leading-relaxed mb-5">
+                    "O melhor é que funciona offline. Lanço os gastos na hora, mesmo sem internet. 
+                    Quando chego em casa, já está tudo sincronizado. <span className="text-landing-dark font-medium">Praticidade total.</span>"
+                  </p>
+                  
+                  <div className="flex items-center gap-1">
+                    {[...Array(5)].map((_, i) => (
+                      <svg key={i} className="w-4 h-4 text-landing-cyan" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                      </svg>
+                    ))}
+                  </div>
+                </div>
+              </ScrollReveal>
+            </div>
+          </div>
+        </section>
+
+        {/* Security - Dark for contrast after testimonials */}
+        <section className="py-24 lg:py-32 bg-landing-dark relative overflow-hidden">
+          {/* Background accent */}
+          <div className="absolute top-0 left-0 w-[400px] h-[400px] rounded-full bg-landing-teal/5 blur-[100px]" />
+          
+          <div className="w-full max-w-7xl mx-auto px-6 lg:px-8 relative">
             <ScrollReveal direction="up" duration={600}>
               <div className="max-w-4xl mx-auto text-center">
                 <div className="flex items-center justify-center gap-4 mb-8">
-                  <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-landing-cyan/10 to-landing-teal/5 flex items-center justify-center">
+                  <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-landing-cyan/20 to-landing-teal/10 flex items-center justify-center">
                     <Lock className="h-7 w-7 text-landing-cyan" />
                   </div>
                   <h2 
-                    className="text-2xl sm:text-3xl font-bold tracking-tight"
+                    className="text-2xl sm:text-3xl font-bold tracking-tight text-white"
                     style={{ fontFamily: "'Sora', sans-serif" }}
                   >
                     Segurança e privacidade
@@ -529,36 +687,37 @@ export default function Landing() {
 
                 <div className="grid sm:grid-cols-2 gap-8 mt-10 text-left">
                   <div className="flex gap-4 justify-center sm:justify-start">
-                    <div className="h-10 w-10 rounded-xl bg-landing-cyan/10 flex items-center justify-center flex-shrink-0">
+                    <div className="h-10 w-10 rounded-xl bg-landing-cyan/20 flex items-center justify-center flex-shrink-0">
                       <Shield className="w-5 h-5 text-landing-cyan" />
                     </div>
                     <div>
-                      <p className="font-semibold mb-2">Dados criptografados</p>
-                      <p className="text-landing-dark/60 leading-relaxed">
+                      <p className="font-semibold mb-2 text-white">Dados criptografados</p>
+                      <p className="text-white/60 leading-relaxed">
                         Seus dados ficam criptografados. Ninguém além de você tem acesso.
                       </p>
                     </div>
                   </div>
                   <div className="flex gap-4 justify-center sm:justify-start">
-                    <div className="h-10 w-10 rounded-xl bg-landing-teal/10 flex items-center justify-center flex-shrink-0">
+                    <div className="h-10 w-10 rounded-xl bg-landing-teal/20 flex items-center justify-center flex-shrink-0">
                       <Smartphone className="w-5 h-5 text-landing-teal" />
                     </div>
                     <div>
-                      <p className="font-semibold mb-2">Funciona offline</p>
-                      <p className="text-landing-dark/60 leading-relaxed">
+                      <p className="font-semibold mb-2 text-white">Funciona offline</p>
+                      <p className="text-white/60 leading-relaxed">
                         Lance gastos sem internet e sincronize depois.
                       </p>
                     </div>
                   </div>
                 </div>
 
-                <p className="text-landing-dark/50 mt-12 pt-8 border-t border-black/5">
+                <p className="text-white/40 mt-12 pt-8 border-t border-white/10">
                   Não vendemos dados. Não mostramos anúncios. O negócio é simples: você paga, o app funciona.
                 </p>
               </div>
             </ScrollReveal>
           </div>
         </section>
+
 
         {/* Final CTA - Dark gradient */}
         <section className="py-24 lg:py-32 bg-landing-dark relative overflow-hidden">
