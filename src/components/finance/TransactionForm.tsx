@@ -10,6 +10,13 @@ import {
   incomeCategoryIcons,
   expenseCategoryIcons
 } from '@/types/transaction';
+import { 
+  InvestmentType, 
+  investmentTypeLabels, 
+  investmentTypeIcons,
+  VALID_INVESTMENT_TYPES 
+} from '@/types/investment';
+import { encodeInvestmentDescription } from '@/core/finance/investmentMetadata';
 import { getLocalDateString } from '@/hooks/useTransactions';
 import { cn } from '@/lib/utils';
 import { Calendar } from '@/components/ui/calendar';
@@ -37,6 +44,7 @@ const expenseCategories: ExpenseCategory[] = ['contas_fixas', 'investimentos', '
 export const TransactionForm = ({ onSubmit }: TransactionFormProps) => {
   const [type, setType] = useState<TransactionType>('despesa');
   const [category, setCategory] = useState<TransactionCategory>('contas_fixas');
+  const [investmentType, setInvestmentType] = useState<InvestmentType>('reserva_emergencia');
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [description, setDescription] = useState('');
   const [value, setValue] = useState('');
@@ -101,17 +109,23 @@ export const TransactionForm = ({ onSubmit }: TransactionFormProps) => {
     const validatedData = validateForm();
     if (!validatedData) return;
 
+    // Se for investimento, codificar o tipo na descrição
+    const finalDescription = category === 'investimentos'
+      ? encodeInvestmentDescription(investmentType, validatedData.description, false)
+      : validatedData.description;
+
     onSubmit({
       type: validatedData.type as TransactionType,
       category: validatedData.category as TransactionCategory,
       date: validatedData.date,
-      description: validatedData.description,
+      description: finalDescription,
       value: validatedData.value,
     });
 
     // Limpar formulário
     setDescription('');
     setValue('');
+    setInvestmentType('reserva_emergencia');
     setErrors(null);
     setTouched({});
   };
@@ -188,6 +202,35 @@ export const TransactionForm = ({ onSubmit }: TransactionFormProps) => {
             })}
           </div>
         </div>
+
+        {/* Tipo de Investimento (apenas quando categoria é investimentos) */}
+        {category === 'investimentos' && (
+          <div>
+            <label className="block text-sm font-medium text-foreground mb-2">Tipo de Investimento</label>
+            <div className="grid grid-cols-2 gap-2">
+              {VALID_INVESTMENT_TYPES.map(invType => {
+                const Icon = investmentTypeIcons[invType];
+                const isSelected = investmentType === invType;
+                return (
+                  <button
+                    key={invType}
+                    type="button"
+                    onClick={() => setInvestmentType(invType)}
+                    className={cn(
+                      'flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 border text-left',
+                      isSelected
+                        ? 'bg-primary/10 text-primary border-primary'
+                        : 'bg-muted text-muted-foreground border-transparent hover:bg-muted/80'
+                    )}
+                  >
+                    <Icon className="w-4 h-4 flex-shrink-0" />
+                    <span className="truncate">{investmentTypeLabels[invType]}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
         {/* Data */}
         <div>
