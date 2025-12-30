@@ -5,8 +5,9 @@ import { CategoryCharts } from './CategoryCharts';
 import { Transaction } from '@/types/transaction';
 import { Debt } from '@/types/debt';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, Cell, ReferenceLine } from 'recharts';
-import { useMemo, useState, useEffect } from 'react';
+import { useMemo } from 'react';
 import { calculatePreviousYearBalance, calculateMonthlyData } from '@/core/finance';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface DashboardProps {
   totals: {
@@ -58,15 +59,8 @@ export const Dashboard = ({
   onToggleValues,
   formatValue
 }: DashboardProps) => {
-  // Detectar se é mobile
-  const [isMobile, setIsMobile] = useState(false);
-  
-  useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 768);
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
+  // Usar hook de media query em vez de resize listener
+  const isMobile = useIsMobile();
 
   // Obtém o ano a partir do customRange ou usa o ano atual
   const selectedYear = customRange?.start?.getFullYear() || new Date().getFullYear();
@@ -85,11 +79,11 @@ export const Dashboard = ({
   }, [allTransactions, selectedYear, previousYearBalance]);
 
   return (
-    <div className="p-4 md:p-8">
+    <div className="page-container">
       {/* Header */}
-      <div className="flex items-start justify-between gap-3 mb-6 md:mb-8">
+      <div className="flex items-start justify-between gap-2 sm:gap-3 mb-6 md:mb-8">
         <div className="min-w-0 flex-1">
-          <h2 className="text-xl md:text-2xl font-bold text-foreground">Dashboard</h2>
+          <h2 className="text-xl md:text-2xl font-bold text-foreground truncate">Dashboard</h2>
           <p className="text-sm md:text-base text-muted-foreground mt-1 hidden sm:block">Resumo das suas finanças</p>
         </div>
         <PeriodFilter 
