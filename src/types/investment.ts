@@ -61,8 +61,40 @@ export interface Investment {
   createdAt: number;
 }
 
-// Função para extrair o tipo de investimento da descrição
+// Lista de tipos válidos para validação
+export const VALID_INVESTMENT_TYPES: InvestmentType[] = [
+  'reserva_emergencia',
+  'acoes',
+  'fundos_imobiliarios',
+  'renda_fixa',
+  'tesouro_direto',
+  'criptomoedas',
+  'outros_investimentos',
+];
+
+/**
+ * Extração legada baseada em texto (para compatibilidade com dados antigos)
+ * Use decodeInvestmentDescription de @/core/finance para o sistema completo
+ */
 export const extractInvestmentType = (description: string): InvestmentType => {
+  // Primeiro tenta o formato estruturado
+  const investmentMatch = description.match(/^\[INV:([a-z_]+)\]/i);
+  if (investmentMatch) {
+    const extractedType = investmentMatch[1].toLowerCase() as InvestmentType;
+    if (VALID_INVESTMENT_TYPES.includes(extractedType)) {
+      return extractedType;
+    }
+  }
+  
+  const withdrawalMatch = description.match(/^\[RES:([a-z_]+)\]/i);
+  if (withdrawalMatch) {
+    const extractedType = withdrawalMatch[1].toLowerCase() as InvestmentType;
+    if (VALID_INVESTMENT_TYPES.includes(extractedType)) {
+      return extractedType;
+    }
+  }
+  
+  // Fallback: parsing legado baseado em texto
   const descLower = description.toLowerCase();
   
   if (descLower.includes('reserva') || descLower.includes('emergência') || descLower.includes('emergencia')) {

@@ -8,9 +8,9 @@ import {
   investmentTypeLabels, 
   investmentTypeColors,
   investmentTypeIcons,
-  extractInvestmentType 
 } from '@/types/investment';
 import { filterInvestmentDeposits, filterInvestmentWithdrawals } from './transactions';
+import { decodeInvestmentDescription, getCleanDescription } from './investmentMetadata';
 import { LucideIcon } from 'lucide-react';
 
 export interface InvestmentSummary {
@@ -52,14 +52,14 @@ export const aggregateInvestmentsByType = (
   
   // Soma aportes
   for (const t of deposits) {
-    const type = extractInvestmentType(t.description);
+    const { type } = decodeInvestmentDescription(t.description);
     const current = grouped.get(type) || 0;
     grouped.set(type, current + t.value);
   }
   
   // Subtrai resgates
   for (const t of withdrawals) {
-    const type = extractInvestmentType(t.description);
+    const { type } = decodeInvestmentDescription(t.description);
     const current = grouped.get(type) || 0;
     grouped.set(type, Math.max(0, current - t.value));
   }
@@ -119,13 +119,13 @@ export const getInvestmentActivities = (
   const aportes: InvestmentActivity[] = deposits.map(t => ({
     ...t,
     activityType: 'aporte' as const,
-    investmentType: extractInvestmentType(t.description),
+    investmentType: decodeInvestmentDescription(t.description).type,
   }));
   
   const resgates: InvestmentActivity[] = withdrawals.map(t => ({
     ...t,
     activityType: 'resgate' as const,
-    investmentType: extractInvestmentType(t.description),
+    investmentType: decodeInvestmentDescription(t.description).type,
   }));
   
   let activities: InvestmentActivity[];
