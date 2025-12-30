@@ -85,6 +85,9 @@ export const PricingSection = memo(function PricingSection() {
                   Assinar agora
                   <ArrowRight className="ml-2 h-4 w-4 lg:h-5 lg:w-5" />
                 </Button>
+                <p className="text-center text-white/40 text-xs lg:text-sm mt-4">
+                  Cancele quando quiser. Sem multa.
+                </p>
               </div>
             </div>
           </article>
