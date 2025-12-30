@@ -3,9 +3,8 @@ import { Debt } from '@/types/debt';
 import { supabase } from '@/integrations/supabase/client';
 import { db, generateTempId, LocalDebt } from '@/lib/offline/database';
 import { syncService } from '@/lib/offline/syncService';
-import { toast } from 'sonner';
+import { offlineAdd, offlineUpdate, offlineDelete, debtMessages } from '@/lib/offline/repository';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { logger } from '@/lib/logger';
 import { useAuthContext } from '@/contexts/AuthContext';
 
 export const useOfflineDebts = () => {
@@ -39,7 +38,6 @@ export const useOfflineDebts = () => {
     createdAt: d.createdAt,
   }));
 
-  // Inicialização - marcar como carregado (sync é feito pelo Index.tsx)
   useEffect(() => {
     if (authLoading) return;
     setLoading(false);
@@ -47,90 +45,81 @@ export const useOfflineDebts = () => {
 
   // Adicionar dívida
   const addDebt = useCallback(async (debt: Omit<Debt, 'id' | 'createdAt'>) => {
-    try {
-      if (!userId) throw new Error('Usuário não autenticado');
+    if (!userId) return null;
 
-      const now = Date.now();
-      const tempId = generateTempId();
-      
-      const localDebt: LocalDebt = {
-        id: tempId,
+    const tempId = generateTempId();
+
+    const result = await offlineAdd<LocalDebt, { id: string; created_at: number }>({
+      tempId,
+      messages: debtMessages,
+      createLocal: (id, now) => ({
+        id,
         name: debt.name,
         totalValue: debt.totalValue,
         monthlyInstallment: debt.monthlyInstallment,
         startDate: debt.startDate,
         paidValue: debt.paidValue || 0,
         createdAt: now,
-        userId,
+        userId: userId!,
         syncStatus: 'pending',
         localUpdatedAt: now,
         version: 1,
-      };
-
-      await db.debts.add(localDebt);
-
-      if (navigator.onLine) {
-        try {
-          const { data, error } = await supabase
-            .from('debts')
-            .insert({
-              name: debt.name,
-              total_value: debt.totalValue,
-              monthly_installment: debt.monthlyInstallment,
-              start_date: debt.startDate,
-              paid_value: debt.paidValue || 0,
-              user_id: userId,
-            })
-            .select()
-            .single();
-
-          if (!error && data) {
-            // CRÍTICO: Usar transação atômica para evitar race condition com realtime
-            await db.transaction('rw', db.debts, async () => {
-              const tempItem = await db.debts.get(tempId);
-              if (tempItem) {
-                await db.debts.delete(tempId);
-                await db.debts.put({
-                  ...localDebt,
-                  id: data.id,
-                  createdAt: Number(data.created_at),
-                  syncStatus: 'synced',
-                  serverUpdatedAt: now,
-                });
-              }
+      }),
+      addToDb: async (entity) => {
+        await db.debts.add(entity);
+      },
+      syncToServer: async () => {
+        const result = await supabase
+          .from('debts')
+          .insert({
+            name: debt.name,
+            total_value: debt.totalValue,
+            monthly_installment: debt.monthlyInstallment,
+            start_date: debt.startDate,
+            paid_value: debt.paidValue || 0,
+            user_id: userId,
+          })
+          .select()
+          .single();
+        return { data: result.data, error: result.error };
+      },
+      onSyncSuccess: async (data, tempId, now) => {
+        await db.transaction('rw', db.debts, async () => {
+          const tempItem = await db.debts.get(tempId);
+          if (tempItem) {
+            await db.debts.delete(tempId);
+            await db.debts.put({
+              ...tempItem,
+              id: data.id,
+              createdAt: Number(data.created_at),
+              syncStatus: 'synced',
+              serverUpdatedAt: now,
             });
           }
-        } catch (syncError) {
-          logger.error('Erro ao sincronizar dívida:', syncError);
-        }
-      }
+        });
+      },
+    });
 
-      toast.success(navigator.onLine ? 'Dívida adicionada!' : 'Dívida salva localmente');
-      
-      return {
-        id: tempId,
-        ...debt,
-        createdAt: now,
-      };
-    } catch (error) {
-      logger.error('Erro ao adicionar dívida:', error);
-      toast.error('Erro ao adicionar dívida');
-      return null;
-    }
+    return result ? {
+      id: result.id,
+      ...debt,
+      createdAt: result.createdAt,
+    } : null;
   }, [userId]);
 
   // Atualizar dívida
   const updateDebt = useCallback(async (id: string, updates: Partial<Omit<Debt, 'id' | 'createdAt'>>) => {
-    try {
-      const now = Date.now();
-      
-      await db.debts.update(id, {
-        ...updates,
-        syncStatus: 'pending',
-        localUpdatedAt: now,
-      });
-
-      if (navigator.onLine) {
+    await offlineUpdate({
+      id,
+      messages: debtMessages,
+      updateLocal: async (now) => {
+        await db.debts.update(id, {
+          ...updates,
+          syncStatus: 'pending',
+          localUpdatedAt: now,
+        });
+      },
+      syncToServer: async () => {
         const updateData: Record<string, unknown> = {};
         if (updates.name !== undefined) updateData.name = updates.name;
         if (updates.totalValue !== undefined) updateData.total_value = updates.totalValue;
@@ -138,53 +127,38 @@ export const useOfflineDebts = () => {
         if (updates.startDate !== undefined) updateData.start_date = updates.startDate;
         if (updates.paidValue !== undefined) updateData.paid_value = updates.paidValue;
 
-        const { error } = await supabase
-          .from('debts')
-          .update(updateData)
-          .eq('id', id);
-
-        if (!error) {
-          await db.debts.update(id, {
-            syncStatus: 'synced',
-            serverUpdatedAt: now,
-          });
-        }
-      }
-
-      toast.success(navigator.onLine ? 'Dívida atualizada!' : 'Alteração salva localmente');
-    } catch (error) {
-      logger.error('Erro ao atualizar dívida:', error);
-      toast.error('Erro ao atualizar dívida');
-    }
+        const result = await supabase.from('debts').update(updateData).eq('id', id);
+        return { error: result.error };
+      },
+      onSyncSuccess: async (now) => {
+        await db.debts.update(id, {
+          syncStatus: 'synced',
+          serverUpdatedAt: now,
+        });
+      },
+    });
   }, []);
 
   // Excluir dívida
   const deleteDebt = useCallback(async (id: string) => {
-    try {
-      const now = Date.now();
-
-      await db.debts.update(id, {
-        isDeleted: true,
-        syncStatus: 'pending',
-        localUpdatedAt: now,
-      });
-
-      if (navigator.onLine) {
-        const { error } = await supabase
-          .from('debts')
-          .delete()
-          .eq('id', id);
-
-        if (!error) {
-          await db.debts.delete(id);
-        }
-      }
-
-      toast.success(navigator.onLine ? 'Dívida excluída!' : 'Exclusão salva localmente');
-    } catch (error) {
-      logger.error('Erro ao excluir dívida:', error);
-      toast.error('Erro ao excluir dívida');
-    }
+    await offlineDelete({
+      id,
+      messages: debtMessages,
+      markAsDeleted: async (now) => {
+        await db.debts.update(id, {
+          isDeleted: true,
+          syncStatus: 'pending',
+          localUpdatedAt: now,
+        });
+      },
+      deleteFromServer: async () => {
+        const result = await supabase.from('debts').delete().eq('id', id);
+        return { error: result.error };
+      },
+      removeFromLocal: async () => {
+        await db.debts.delete(id);
+      },
+    });
   }, []);
 
   const refetch = useCallback(async () => {

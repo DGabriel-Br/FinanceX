@@ -5,9 +5,8 @@ import { startOfMonth, endOfMonth } from 'date-fns';
 import { supabase } from '@/integrations/supabase/client';
 import { db, generateTempId, LocalTransaction } from '@/lib/offline/database';
 import { syncService } from '@/lib/offline/syncService';
-import { toast } from 'sonner';
+import { offlineAdd, offlineUpdate, offlineDelete, transactionMessages } from '@/lib/offline/repository';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { logger } from '@/lib/logger';
 import { useAuthContext } from '@/contexts/AuthContext';
 
 // Função para obter data local no formato YYYY-MM-DD
@@ -59,100 +58,83 @@ export const useOfflineTransactions = () => {
     createdAt: t.createdAt,
   }));
 
-  // Inicialização - marcar como carregado (sync é feito pelo Index.tsx)
   useEffect(() => {
     if (authLoading) return;
     setLoading(false);
   }, [authLoading]);
 
-  // Adicionar transação (funciona offline)
+  // Adicionar transação
   const addTransaction = useCallback(async (transaction: Omit<Transaction, 'id' | 'createdAt'>) => {
-    try {
-      if (!userId) throw new Error('Usuário não autenticado');
+    if (!userId) return;
 
-      const now = Date.now();
-      const tempId = generateTempId();
-      
-      const localTransaction: LocalTransaction = {
-        id: tempId,
+    const tempId = generateTempId();
+
+    await offlineAdd<LocalTransaction, { id: string; created_at: number }>({
+      tempId,
+      messages: transactionMessages,
+      createLocal: (id, now) => ({
+        id,
         type: transaction.type,
         category: transaction.category,
         date: transaction.date,
         description: transaction.description,
         value: transaction.value,
         createdAt: now,
-        userId,
+        userId: userId!,
         syncStatus: 'pending',
         localUpdatedAt: now,
         version: 1,
-      };
-
-      // Salvar localmente primeiro
-      await db.transactions.add(localTransaction);
-
-      // Se online, sincronizar imediatamente
-      if (navigator.onLine) {
-        try {
-          const { data, error } = await supabase
-            .from('transactions')
-            .insert({
-              type: transaction.type,
-              category: transaction.category,
-              date: transaction.date,
-              description: transaction.description,
-              value: transaction.value,
-              user_id: userId,
-            })
-            .select()
-            .single();
-
-          if (!error && data) {
-            // CRÍTICO: Usar transação atômica para evitar race condition com realtime
-            await db.transaction('rw', db.transactions, async () => {
-              // Verificar se o item temp ainda existe (não foi processado por realtime)
-              const tempItem = await db.transactions.get(tempId);
-              if (tempItem) {
-                await db.transactions.delete(tempId);
-                await db.transactions.put({
-                  ...localTransaction,
-                  id: data.id,
-                  createdAt: Number(data.created_at),
-                  syncStatus: 'synced',
-                  serverUpdatedAt: now,
-                });
-              }
+      }),
+      addToDb: async (entity) => {
+        await db.transactions.add(entity);
+      },
+      syncToServer: async () => {
+        const result = await supabase
+          .from('transactions')
+          .insert({
+            type: transaction.type,
+            category: transaction.category,
+            date: transaction.date,
+            description: transaction.description,
+            value: transaction.value,
+            user_id: userId,
+          })
+          .select()
+          .single();
+        return { data: result.data, error: result.error };
+      },
+      onSyncSuccess: async (data, tempId, now) => {
+        await db.transaction('rw', db.transactions, async () => {
+          const tempItem = await db.transactions.get(tempId);
+          if (tempItem) {
+            await db.transactions.delete(tempId);
+            await db.transactions.put({
+              ...tempItem,
+              id: data.id,
+              createdAt: Number(data.created_at),
+              syncStatus: 'synced',
+              serverUpdatedAt: now,
             });
           }
-        } catch (syncError) {
-          // Falha no sync, mas dados locais estão salvos
-          logger.error('Erro ao sincronizar transação:', syncError);
-        }
-      }
-
-      toast.success(navigator.onLine ? 'Transação adicionada!' : 'Transação salva localmente');
-    } catch (error) {
-      logger.error('Erro ao adicionar transação:', error);
-      toast.error('Erro ao adicionar transação');
-    }
+        });
+      },
+    });
   }, [userId]);
 
   // Atualizar transação
   const updateTransaction = useCallback(async (id: string, updates: Partial<Omit<Transaction, 'id' | 'createdAt'>>) => {
-    try {
-      const existing = await db.transactions.get(id);
-      if (!existing) throw new Error('Transação não encontrada');
-
-      const now = Date.now();
-      
-      await db.transactions.update(id, {
-        ...updates,
-        syncStatus: 'pending',
-        localUpdatedAt: now,
-      });
-
-      // Se online, sincronizar imediatamente
-      if (navigator.onLine) {
-        const { error } = await supabase
+    await offlineUpdate({
+      id,
+      messages: transactionMessages,
+      updateLocal: async (now) => {
+        await db.transactions.update(id, {
+          ...updates,
+          syncStatus: 'pending',
+          localUpdatedAt: now,
+        });
+      },
+      syncToServer: async () => {
+        const result = await supabase
           .from('transactions')
           .update({
             type: updates.type,
@@ -162,51 +144,37 @@ export const useOfflineTransactions = () => {
             value: updates.value,
           })
           .eq('id', id);
-
-        if (!error) {
-          await db.transactions.update(id, {
-            syncStatus: 'synced',
-            serverUpdatedAt: now,
-          });
-        }
-      }
-
-      toast.success(navigator.onLine ? 'Transação atualizada!' : 'Alteração salva localmente');
-    } catch (error) {
-      logger.error('Erro ao atualizar transação:', error);
-      toast.error('Erro ao atualizar transação');
-    }
+        return { error: result.error };
+      },
+      onSyncSuccess: async (now) => {
+        await db.transactions.update(id, {
+          syncStatus: 'synced',
+          serverUpdatedAt: now,
+        });
+      },
+    });
   }, []);
 
   // Excluir transação
   const deleteTransaction = useCallback(async (id: string) => {
-    try {
-      const now = Date.now();
-
-      // Marcar como deletada
-      await db.transactions.update(id, {
-        isDeleted: true,
-        syncStatus: 'pending',
-        localUpdatedAt: now,
-      });
-
-      // Se online, sincronizar imediatamente
-      if (navigator.onLine) {
-        const { error } = await supabase
-          .from('transactions')
-          .delete()
-          .eq('id', id);
-
-        if (!error) {
-          await db.transactions.delete(id);
-        }
-      }
-
-      toast.success(navigator.onLine ? 'Transação excluída!' : 'Exclusão salva localmente');
-    } catch (error) {
-      logger.error('Erro ao excluir transação:', error);
-      toast.error('Erro ao excluir transação');
-    }
+    await offlineDelete({
+      id,
+      messages: transactionMessages,
+      markAsDeleted: async (now) => {
+        await db.transactions.update(id, {
+          isDeleted: true,
+          syncStatus: 'pending',
+          localUpdatedAt: now,
+        });
+      },
+      deleteFromServer: async () => {
+        const result = await supabase.from('transactions').delete().eq('id', id);
+        return { error: result.error };
+      },
+      removeFromLocal: async () => {
+        await db.transactions.delete(id);
+      },
+    });
   }, []);
 
   // Filtrar transações por período
@@ -260,17 +228,14 @@ export const useOfflineTransactions = () => {
     const filtered = getFilteredTransactions();
     const previousBalance = getPreviousBalance();
     
-    // Receitas do período
     const receitasPeriodo = filtered
       .filter(t => t.type === 'receita')
       .reduce((sum, t) => sum + t.value, 0);
     
-    // Despesas do período
     const despesasPeriodo = filtered
       .filter(t => t.type === 'despesa')
       .reduce((sum, t) => sum + t.value, 0);
     
-    // Se saldo anterior é positivo, soma nas receitas; se negativo, soma nas despesas
     const receitas = receitasPeriodo + (previousBalance > 0 ? previousBalance : 0);
     const despesas = despesasPeriodo + (previousBalance < 0 ? Math.abs(previousBalance) : 0);
     
@@ -285,7 +250,6 @@ export const useOfflineTransactions = () => {
     };
   }, [getFilteredTransactions, getPreviousBalance]);
 
-  // Forçar refresh
   const refetch = useCallback(async () => {
     if (navigator.onLine) {
       await syncService.syncAll();

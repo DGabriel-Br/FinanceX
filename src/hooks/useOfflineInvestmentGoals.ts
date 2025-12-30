@@ -3,9 +3,8 @@ import { InvestmentType } from '@/types/investment';
 import { supabase } from '@/integrations/supabase/client';
 import { db, generateTempId, LocalInvestmentGoal } from '@/lib/offline/database';
 import { syncService } from '@/lib/offline/syncService';
-import { toast } from 'sonner';
+import { offlineAdd, offlineUpdate, offlineDelete, goalMessages } from '@/lib/offline/repository';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { logger } from '@/lib/logger';
 import { useAuthContext } from '@/contexts/AuthContext';
 
 export interface InvestmentGoal {
@@ -39,7 +38,6 @@ export const useOfflineInvestmentGoals = () => {
     targetValue: g.targetValue,
   }));
 
-  // Inicialização - marcar como carregado (sync é feito pelo Index.tsx)
   useEffect(() => {
     if (authLoading) return;
     setLoading(false);
@@ -47,129 +45,122 @@ export const useOfflineInvestmentGoals = () => {
 
   // Adicionar ou atualizar meta
   const setGoal = useCallback(async (type: InvestmentType, targetValue: number) => {
-    try {
-      if (!userId) throw new Error('Usuário não autenticado');
+    if (!userId) return;
 
-      const now = Date.now();
-      
-      // Verificar se já existe localmente
-      const existingLocal = await db.investmentGoals
-        .where('userId')
-        .equals(userId)
-        .filter(g => g.type === type && !g.isDeleted)
-        .first();
-      
-      if (existingLocal) {
-        // Atualizar
-        await db.investmentGoals.update(existingLocal.id, {
-          targetValue,
-          syncStatus: 'pending',
-          localUpdatedAt: now,
-        });
-
-        if (navigator.onLine) {
-          const { error } = await supabase
+    const now = Date.now();
+    
+    // Verificar se já existe localmente
+    const existingLocal = await db.investmentGoals
+      .where('userId')
+      .equals(userId)
+      .filter(g => g.type === type && !g.isDeleted)
+      .first();
+    
+    if (existingLocal) {
+      // Atualizar existente
+      await offlineUpdate({
+        id: existingLocal.id,
+        messages: goalMessages,
+        updateLocal: async (now) => {
+          await db.investmentGoals.update(existingLocal.id, {
+            targetValue,
+            syncStatus: 'pending',
+            localUpdatedAt: now,
+          });
+        },
+        syncToServer: async () => {
+          const result = await supabase
             .from('investment_goals')
             .update({ target_value: targetValue })
             .eq('id', existingLocal.id);
+          return { error: result.error };
+        },
+        onSyncSuccess: async (now) => {
+          await db.investmentGoals.update(existingLocal.id, {
+            syncStatus: 'synced',
+            serverUpdatedAt: now,
+          });
+        },
+      });
+    } else {
+      // Inserir nova
+      const tempId = generateTempId();
 
-          if (!error) {
-            await db.investmentGoals.update(existingLocal.id, {
-              syncStatus: 'synced',
-              serverUpdatedAt: now,
-            });
-          }
-        }
-      } else {
-        // Inserir nova
-        const tempId = generateTempId();
-        
-        const localGoal: LocalInvestmentGoal = {
-          id: tempId,
+      await offlineAdd<LocalInvestmentGoal, { id: string; created_at: string }>({
+        tempId,
+        messages: goalMessages,
+        createLocal: (id, now) => ({
+          id,
           type,
           targetValue,
           createdAt: now,
-          userId,
+          userId: userId!,
           syncStatus: 'pending',
           localUpdatedAt: now,
           version: 1,
-        };
-
-        await db.investmentGoals.add(localGoal);
-
-        if (navigator.onLine) {
-          try {
-            const { data, error } = await supabase
-              .from('investment_goals')
-              .insert({ type, target_value: targetValue, user_id: userId })
-              .select()
-              .single();
-
-            if (!error && data) {
-              // CRÍTICO: Usar transação atômica para evitar race condition com realtime
-              await db.transaction('rw', db.investmentGoals, async () => {
-                const tempItem = await db.investmentGoals.get(tempId);
-                if (tempItem) {
-                  await db.investmentGoals.delete(tempId);
-                  await db.investmentGoals.put({
-                    ...localGoal,
-                    id: data.id,
-                    createdAt: new Date(data.created_at).getTime(),
-                    syncStatus: 'synced',
-                    serverUpdatedAt: now,
-                  });
-                }
+        }),
+        addToDb: async (entity) => {
+          await db.investmentGoals.add(entity);
+        },
+        syncToServer: async () => {
+          const result = await supabase
+            .from('investment_goals')
+            .insert({ type, target_value: targetValue, user_id: userId })
+            .select()
+            .single();
+          return { data: result.data, error: result.error };
+        },
+        onSyncSuccess: async (data, tempId, now) => {
+          await db.transaction('rw', db.investmentGoals, async () => {
+            const tempItem = await db.investmentGoals.get(tempId);
+            if (tempItem) {
+              await db.investmentGoals.delete(tempId);
+              await db.investmentGoals.put({
+                ...tempItem,
+                id: data.id,
+                createdAt: new Date(data.created_at).getTime(),
+                syncStatus: 'synced',
+                serverUpdatedAt: now,
               });
             }
-          } catch (syncError) {
-            logger.error('Erro ao sincronizar meta:', syncError);
-          }
-        }
-      }
-
-      toast.success(navigator.onLine ? 'Meta atualizada!' : 'Meta salva localmente');
-    } catch (error) {
-      logger.error('Erro ao salvar meta:', error);
-      toast.error('Erro ao salvar meta');
+          });
+        },
+      });
     }
   }, [userId]);
 
   // Remover meta
   const removeGoal = useCallback(async (type: InvestmentType) => {
-    try {
-      if (!userId) throw new Error('Usuário não autenticado');
+    if (!userId) return;
 
-      const now = Date.now();
-      
-      const existingLocal = await db.investmentGoals
-        .where('userId')
-        .equals(userId)
-        .filter(g => g.type === type && !g.isDeleted)
-        .first();
+    const existingLocal = await db.investmentGoals
+      .where('userId')
+      .equals(userId)
+      .filter(g => g.type === type && !g.isDeleted)
+      .first();
 
-      if (existingLocal) {
-        await db.investmentGoals.update(existingLocal.id, {
-          isDeleted: true,
-          syncStatus: 'pending',
-          localUpdatedAt: now,
-        });
-
-        if (navigator.onLine) {
-          const { error } = await supabase
+    if (existingLocal) {
+      await offlineDelete({
+        id: existingLocal.id,
+        messages: goalMessages,
+        markAsDeleted: async (now) => {
+          await db.investmentGoals.update(existingLocal.id, {
+            isDeleted: true,
+            syncStatus: 'pending',
+            localUpdatedAt: now,
+          });
+        },
+        deleteFromServer: async () => {
+          const result = await supabase
             .from('investment_goals')
             .delete()
             .eq('id', existingLocal.id);
-
-          if (!error) {
-            await db.investmentGoals.delete(existingLocal.id);
-          }
-        }
-      }
-
-      toast.success(navigator.onLine ? 'Meta removida!' : 'Remoção salva localmente');
-    } catch (error) {
-      logger.error('Erro ao remover meta:', error);
-      toast.error('Erro ao remover meta');
+          return { error: result.error };
+        },
+        removeFromLocal: async () => {
+          await db.investmentGoals.delete(existingLocal.id);
+        },
+      });
     }
   }, [userId]);
 
