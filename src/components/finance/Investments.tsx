@@ -28,6 +28,13 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { toast } from 'sonner';
+import { 
+  aggregateInvestmentsByType, 
+  getInvestmentSummary, 
+  calculateInvestmentTotals,
+  getInvestmentActivities,
+  calculateGoalProgress,
+} from '@/core/finance';
 
 interface InvestmentsProps {
   transactions: Transaction[];
@@ -193,121 +200,37 @@ export const Investments = ({
     }
   };
 
-  // Filtra transações de investimento (aportes)
-  const investmentTransactions = useMemo(() => {
-    return transactions.filter(t => t.type === 'despesa' && t.category === 'investimentos');
-  }, [transactions]);
-
-  // Filtra transações de resgate de investimento
-  const withdrawalTransactions = useMemo(() => {
-    return transactions.filter(t => 
-      t.type === 'receita' && 
-      t.description.toLowerCase().includes('resgate')
-    );
-  }, [transactions]);
-
-  // Todas as transações de investimento (para cálculos gerais)
-  const allInvestmentTransactions = useMemo(() => {
-    return allTransactions.filter(t => t.type === 'despesa' && t.category === 'investimentos');
-  }, [allTransactions]);
-
-  // Todas as transações de resgate (para cálculos gerais)
-  const allWithdrawalTransactions = useMemo(() => {
-    return allTransactions.filter(t => 
-      t.type === 'receita' && 
-      t.description.toLowerCase().includes('resgate')
-    );
-  }, [allTransactions]);
-
-  // Agrupa investimentos por tipo (histórico completo para metas) - subtraindo resgates
+  // Agrupa investimentos por tipo (histórico completo para metas) - usando função do core
   const investmentsByTypeAllTime = useMemo(() => {
-    const grouped = new Map<InvestmentType, number>();
-    
-    // Soma aportes
-    allInvestmentTransactions.forEach(t => {
-      const type = extractInvestmentType(t.description);
-      const current = grouped.get(type) || 0;
-      grouped.set(type, current + t.value);
-    });
+    return aggregateInvestmentsByType(allTransactions);
+  }, [allTransactions]);
 
-    // Subtrai resgates
-    allWithdrawalTransactions.forEach(t => {
-      const type = extractInvestmentType(t.description);
-      const current = grouped.get(type) || 0;
-      grouped.set(type, Math.max(0, current - t.value));
-    });
-
-    return grouped;
-  }, [allInvestmentTransactions, allWithdrawalTransactions]);
-
-  // Agrupa investimentos por tipo (período selecionado) - saldo líquido
+  // Resumo de investimentos por tipo (período selecionado) - usando função do core
   const investmentsByType = useMemo(() => {
-    const grouped = new Map<InvestmentType, number>();
-    
-    // Soma aportes
-    investmentTransactions.forEach(t => {
-      const type = extractInvestmentType(t.description);
-      const current = grouped.get(type) || 0;
-      grouped.set(type, current + t.value);
-    });
+    return getInvestmentSummary(transactions).map(item => ({
+      ...item,
+      formatter: displayValue,
+    }));
+  }, [transactions, displayValue]);
 
-    // Subtrai resgates
-    withdrawalTransactions.forEach(t => {
-      const type = extractInvestmentType(t.description);
-      const current = grouped.get(type) || 0;
-      grouped.set(type, Math.max(0, current - t.value));
-    });
+  // Totais de investimento no período - usando função do core
+  const periodTotals = useMemo(() => {
+    return calculateInvestmentTotals(transactions);
+  }, [transactions]);
 
-    return Array.from(grouped.entries())
-      .map(([type, value]) => ({
-        type,
-        name: investmentTypeLabels[type],
-        value,
-        color: investmentTypeColors[type],
-        Icon: investmentTypeIcons[type],
-        formatter: displayValue,
-      }))
-      .filter(item => item.value > 0)
-      .sort((a, b) => b.value - a.value);
-  }, [investmentTransactions, withdrawalTransactions, displayValue]);
+  const totalInvested = periodTotals.netInvested;
 
-  // Total investido no período (aportes - resgates)
-  const totalInvested = useMemo(() => {
-    const aportes = investmentTransactions.reduce((sum, t) => sum + t.value, 0);
-    const resgates = withdrawalTransactions.reduce((sum, t) => sum + t.value, 0);
-    return Math.max(0, aportes - resgates);
-  }, [investmentTransactions, withdrawalTransactions]);
+  // Totais de investimento (histórico completo) - usando função do core
+  const allTimeTotals = useMemo(() => {
+    return calculateInvestmentTotals(allTransactions);
+  }, [allTransactions]);
 
-  // Total investido (histórico completo - aportes menos resgates)
-  const totalInvestedAllTime = useMemo(() => {
-    const aportes = allInvestmentTransactions.reduce((sum, t) => sum + t.value, 0);
-    const resgates = allWithdrawalTransactions.reduce((sum, t) => sum + t.value, 0);
-    return Math.max(0, aportes - resgates);
-  }, [allInvestmentTransactions, allWithdrawalTransactions]);
+  const totalInvestedAllTime = allTimeTotals.netInvested;
 
-  // Histórico unificado de movimentações (aportes e resgates)
+  // Histórico unificado de movimentações - usando função do core
   const allActivities = useMemo(() => {
-    const aportes = investmentTransactions.map(t => ({
-      ...t,
-      activityType: 'aporte' as const,
-    }));
-    
-    const resgates = withdrawalTransactions.map(t => ({
-      ...t,
-      activityType: 'resgate' as const,
-    }));
-    
-    let activities = [...aportes, ...resgates];
-    
-    // Aplicar filtro
-    if (activityFilter === 'aporte') {
-      activities = aportes;
-    } else if (activityFilter === 'resgate') {
-      activities = resgates;
-    }
-    
-    return activities.sort((a, b) => b.createdAt - a.createdAt);
-  }, [investmentTransactions, withdrawalTransactions, activityFilter]);
+    return getInvestmentActivities(transactions, activityFilter);
+  }, [transactions, activityFilter]);
 
   // Paginação
   const totalPages = Math.ceil(allActivities.length / itemsPerPage);
@@ -354,12 +277,12 @@ export const Investments = ({
     setGoalInputValue('');
   };
 
-  // Dados das metas com progresso
+  // Dados das metas com progresso - usando função do core
   const goalsWithProgress = useMemo(() => {
     return allInvestmentTypes.map(type => {
       const invested = investmentsByTypeAllTime.get(type) || 0;
       const target = getGoal(type) || 0;
-      const progress = target > 0 ? Math.min((invested / target) * 100, 100) : 0;
+      const { progress, remaining } = calculateGoalProgress(invested, target);
       const Icon = investmentTypeIcons[type];
       const color = investmentTypeColors[type];
       
@@ -369,7 +292,7 @@ export const Investments = ({
         invested,
         target,
         progress,
-        remaining: Math.max(target - invested, 0),
+        remaining,
         Icon,
         color,
         hasGoal: target > 0,

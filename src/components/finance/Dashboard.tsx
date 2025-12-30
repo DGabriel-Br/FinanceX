@@ -6,7 +6,7 @@ import { Transaction } from '@/types/transaction';
 import { Debt } from '@/types/debt';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, Cell, ReferenceLine } from 'recharts';
 import { useMemo, useState, useEffect } from 'react';
-
+import { calculatePreviousYearBalance, calculateMonthlyData } from '@/core/finance';
 
 interface DashboardProps {
   totals: {
@@ -74,70 +74,15 @@ export const Dashboard = ({
   const currentYear = new Date().getFullYear();
   const isCurrentYear = selectedYear === currentYear;
 
-  // Calcula o saldo acumulado até o início do ano selecionado
+  // Calcula o saldo acumulado até o início do ano selecionado (usando função do core)
   const previousYearBalance = useMemo(() => {
-    let balance = 0;
-    allTransactions.forEach((transaction) => {
-      const [year] = transaction.date.split('-');
-      const transactionYear = parseInt(year);
-      
-      if (transactionYear < selectedYear) {
-        if (transaction.type === 'receita') {
-          balance += transaction.value;
-        } else {
-          balance -= transaction.value;
-        }
-      }
-    });
-    return balance;
+    return calculatePreviousYearBalance(allTransactions, selectedYear);
   }, [allTransactions, selectedYear]);
 
-  // Agrupa transações por mês para o gráfico
+  // Agrupa transações por mês para o gráfico (usando função do core)
   const chartData = useMemo(() => {
-    // Primeiro, calcula receitas e despesas brutas de cada mês
-    const monthlyRaw = MONTHS.map((month, index) => ({
-      name: month,
-      receitasBrutas: 0,
-      despesasBrutas: 0,
-      month: index,
-      isCurrentMonth: isCurrentYear && index === currentMonth,
-    }));
-
-    // Agrupa transações por mês do ano selecionado
-    allTransactions.forEach((transaction) => {
-      const [year, monthStr] = transaction.date.split('-');
-      const transactionYear = parseInt(year);
-      const monthIndex = parseInt(monthStr) - 1;
-
-      if (transactionYear === selectedYear && monthIndex >= 0 && monthIndex < 12) {
-        if (transaction.type === 'receita') {
-          monthlyRaw[monthIndex].receitasBrutas += transaction.value;
-        } else {
-          monthlyRaw[monthIndex].despesasBrutas += transaction.value;
-        }
-      }
-    });
-
-    // Agora, calcula receitas e despesas com saldo anterior acumulado
-    let saldoAcumulado = previousYearBalance;
-    
-    return monthlyRaw.map((month) => {
-      // Se saldo anterior é positivo, soma nas receitas; se negativo, soma nas despesas
-      const receitas = month.receitasBrutas + (saldoAcumulado > 0 ? saldoAcumulado : 0);
-      const despesas = month.despesasBrutas + (saldoAcumulado < 0 ? Math.abs(saldoAcumulado) : 0);
-      
-      // Calcula o novo saldo acumulado para o próximo mês
-      saldoAcumulado = receitas - despesas;
-      
-      return {
-        name: month.name,
-        receitas,
-        despesas,
-        month: month.month,
-        isCurrentMonth: month.isCurrentMonth,
-      };
-    });
-  }, [allTransactions, selectedYear, isCurrentYear, currentMonth, previousYearBalance]);
+    return calculateMonthlyData(allTransactions, selectedYear, previousYearBalance);
+  }, [allTransactions, selectedYear, previousYearBalance]);
 
   return (
     <div className="p-4 md:p-8">
