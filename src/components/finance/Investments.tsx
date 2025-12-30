@@ -501,7 +501,7 @@ export const Investments = ({
       >
         <p className="text-sm text-muted-foreground">
           💡 <strong>Como funciona:</strong> Os investimentos são identificados automaticamente a partir dos lançamentos com categoria "Investimentos". 
-          Na descrição, inclua palavras-chave como "Reserva", "Ações", "FII", "Tesouro", "CDB", "Cripto" para classificação automática.
+          O tipo é definido ao registrar o aporte/resgate e preservado na descrição.
         </p>
       </div>
 
