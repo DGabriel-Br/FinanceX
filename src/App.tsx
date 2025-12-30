@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route, Navigate, Outlet } from "react-router-dom
 import { AuthProvider } from "@/contexts/AuthContext";
 import { AdminPeriodProvider } from "@/contexts/AdminPeriodContext";
 import { Loader2 } from "lucide-react";
+import { NativeRedirect } from "@/components/routing/NativeRedirect";
 
 // Lazy load pages for better initial bundle size
 const FinanceLayout = lazy(() => import("./pages/finance/FinanceLayout"));
@@ -67,8 +68,8 @@ const App = () => (
         <BrowserRouter>
           <Suspense fallback={<PageLoader />}>
             <Routes>
-              {/* Public landing page */}
-              <Route path="/" element={<Landing />} />
+              {/* Public landing page - only on web, native redirects to login/welcome */}
+              <Route path="/" element={<NativeRedirect webElement={<Landing />} nativeRedirectTo="/login" />} />
               <Route path="/landing" element={<Navigate to="/" replace />} />
               
               {/* Plans page */}
