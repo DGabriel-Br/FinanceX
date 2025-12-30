@@ -15,6 +15,10 @@ const TransactionsPage = lazy(() => import("./pages/finance/TransactionsPage"));
 const InvestmentsPage = lazy(() => import("./pages/finance/InvestmentsPage"));
 const DebtsPage = lazy(() => import("./pages/finance/DebtsPage"));
 
+// Landing and Plans - lazy loaded for performance
+const Landing = lazy(() => import("./pages/Landing"));
+const Plans = lazy(() => import("./pages/Plans"));
+
 // Auth pages - loaded eagerly since they're entry points
 import Auth from "./pages/Auth";
 import ResetPassword from "./pages/ResetPassword";
@@ -63,10 +67,16 @@ const App = () => (
         <BrowserRouter>
           <Suspense fallback={<PageLoader />}>
             <Routes>
+              {/* Public landing page */}
+              <Route path="/" element={<Landing />} />
+              <Route path="/landing" element={<Navigate to="/" replace />} />
+              
+              {/* Plans page */}
+              <Route path="/planos" element={<Plans />} />
+              
               {/* Finance routes - using shared layout */}
               <Route element={<FinanceLayout />}>
-                <Route path="/" element={<DashboardPage />} />
-                <Route path="/dashboard" element={<Navigate to="/" replace />} />
+                <Route path="/dashboard" element={<DashboardPage />} />
                 <Route path="/lancamentos" element={<TransactionsPage />} />
                 <Route path="/investimentos" element={<InvestmentsPage />} />
                 <Route path="/dividas" element={<DebtsPage />} />
