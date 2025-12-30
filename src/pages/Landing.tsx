@@ -49,9 +49,12 @@ export default function Landing() {
       <header className="fixed top-0 left-0 right-0 z-50 bg-background/90 backdrop-blur-xl border-b border-border/40">
         <div className="w-full max-w-7xl mx-auto px-6 lg:px-8">
           <div className="h-16 lg:h-20 flex items-center justify-between">
-            <Link to="/" className="flex items-baseline">
-              <FinanceLogo size={24} className="relative top-[3px]" />
-              <span className="text-xl font-bold tracking-tight" style={{ fontFamily: "'Orbitron', sans-serif" }}>
+            <Link to="/" className="flex items-end group">
+              <FinanceLogo size={32} />
+              <span 
+                className="text-xl font-black tracking-wider -ml-0.5"
+                style={{ fontFamily: "'Orbitron', sans-serif" }}
+              >
                 inanceX
               </span>
             </Link>
@@ -452,9 +455,12 @@ export default function Landing() {
       <footer className="border-t border-border py-12">
         <div className="w-full max-w-7xl mx-auto px-6 lg:px-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-8">
-            <div className="flex items-baseline">
-              <FinanceLogo size={20} className="relative top-[2px]" />
-              <span className="text-lg font-bold tracking-tight" style={{ fontFamily: "'Orbitron', sans-serif" }}>
+            <div className="flex items-end">
+              <FinanceLogo size={28} />
+              <span 
+                className="text-lg font-black tracking-wider -ml-0.5"
+                style={{ fontFamily: "'Orbitron', sans-serif" }}
+              >
                 inanceX
               </span>
             </div>
