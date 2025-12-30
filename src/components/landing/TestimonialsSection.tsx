@@ -100,39 +100,40 @@ export const TestimonialsSection = memo(function TestimonialsSection() {
   const rightColumn = testimonials.filter((_, i) => i % 2 === 1);
 
   return (
-    <section className="py-20 lg:py-32 bg-gradient-to-b from-[#f8f9fb] via-white to-[#f8f9fb] text-landing-dark relative overflow-hidden">
+    <section className="py-24 lg:py-36 bg-[#f3f4f6] text-landing-dark relative overflow-hidden">
+      {/* Subtle texture overlay */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-landing-cyan/[0.03] rounded-full blur-3xl" />
-        <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-landing-teal/[0.03] rounded-full blur-3xl" />
+        <div className="absolute top-20 left-1/4 w-[500px] h-[500px] bg-landing-cyan/[0.02] rounded-full blur-[100px]" />
+        <div className="absolute bottom-20 right-1/4 w-[400px] h-[400px] bg-landing-teal/[0.02] rounded-full blur-[100px]" />
       </div>
 
       <div className="w-full max-w-6xl mx-auto px-5 lg:px-8 relative">
         <ScrollReveal direction="up" duration={700}>
-          <header className="text-center mb-14 lg:mb-20">
+          <header className="text-center mb-16 lg:mb-24">
             <div className="flex items-center justify-center gap-3 mb-5 lg:mb-6">
-              <div className="h-px w-8 lg:w-12 bg-gradient-to-r from-transparent to-landing-cyan" />
-              <span className="text-[11px] lg:text-xs font-semibold tracking-[0.25em] uppercase text-landing-cyan">Depoimentos</span>
-              <div className="h-px w-8 lg:w-12 bg-gradient-to-l from-transparent to-landing-cyan" />
+              <div className="h-px w-8 lg:w-12 bg-gradient-to-r from-transparent to-landing-cyan/50" />
+              <span className="text-[10px] lg:text-[11px] font-semibold tracking-[0.3em] uppercase text-landing-cyan/70">Depoimentos</span>
+              <div className="h-px w-8 lg:w-12 bg-gradient-to-l from-transparent to-landing-cyan/50" />
             </div>
             <h2 
-              className="text-2xl sm:text-3xl lg:text-4xl xl:text-[2.75rem] font-bold tracking-[-0.02em] text-landing-dark/95"
+              className="text-2xl sm:text-3xl lg:text-4xl xl:text-[2.75rem] font-bold tracking-[-0.02em] text-landing-dark/90"
               style={{ fontFamily: "'Sora', sans-serif" }}
             >
               O que nossos usuários dizem
             </h2>
-            <p className="text-landing-dark/50 mt-4 max-w-lg mx-auto text-sm lg:text-base">
+            <p className="text-landing-dark/45 mt-4 max-w-lg mx-auto text-sm lg:text-base">
               Histórias reais de pessoas que transformaram sua relação com dinheiro
             </p>
           </header>
         </ScrollReveal>
 
-        <div className="grid md:grid-cols-2 gap-6 lg:gap-8">
-          <div className="space-y-6 lg:space-y-8">
+        <div className="grid md:grid-cols-2 gap-5 lg:gap-6">
+          <div className="space-y-5 lg:space-y-6">
             {leftColumn.map((t) => (
               <TestimonialCard key={t.name} testimonial={t} />
             ))}
           </div>
-          <div className="space-y-6 lg:space-y-8 md:pt-12">
+          <div className="space-y-5 lg:space-y-6 md:pt-16">
             {rightColumn.map((t) => (
               <TestimonialCard key={t.name} testimonial={t} />
             ))}
