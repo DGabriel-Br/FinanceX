@@ -12,6 +12,7 @@ import {
 } from '@/components/ui/dialog';
 import { formatCurrency } from '@/lib/currency';
 import { DebtForm, DebtCard } from './debt';
+import { calculateDebtPaidValue, calculateDebtsSummary } from '@/core/finance';
 
 interface DebtsProps {
   debts: Debt[];
@@ -24,16 +25,7 @@ interface DebtsProps {
   onToggleValues?: () => void;
 }
 
-// Calcula valor pago de uma dívida com base nas transações + valor inicial
-const getTotalPaidValue = (debt: Debt, transactions: Transaction[]): number => {
-  const transactionsPaid = transactions
-    .filter(t => t.type === 'despesa' && t.category === 'dividas' && 
-            t.description.toLowerCase().includes(debt.name.toLowerCase()))
-    .reduce((sum, t) => sum + t.value, 0);
-  return debt.paidValue + transactionsPaid;
-};
-
-export const Debts = ({ 
+export const Debts = ({
   debts, 
   transactions,
   onAddDebt,
@@ -48,15 +40,8 @@ export const Debts = ({
   // Helper para formatar valores usando o prop ou fallback
   const displayValue = (value: number) => formatValue ? formatValue(value) : formatCurrency(value);
 
-  // Calcula estatísticas gerais
-  const stats = debts.reduce((acc, debt) => {
-    const paidValue = getTotalPaidValue(debt, transactions);
-    return {
-      totalDebt: acc.totalDebt + debt.totalValue,
-      totalPaid: acc.totalPaid + paidValue,
-      totalRemaining: acc.totalRemaining + Math.max(0, debt.totalValue - paidValue),
-    };
-  }, { totalDebt: 0, totalPaid: 0, totalRemaining: 0 });
+  // Calcula estatísticas gerais usando função do core
+  const stats = calculateDebtsSummary(debts, transactions);
 
   const handleAddDebt = (debt: Omit<Debt, 'id' | 'createdAt'>) => {
     onAddDebt(debt);
@@ -180,7 +165,7 @@ export const Debts = ({
             >
               <DebtCard
                 debt={debt}
-                paidValue={getTotalPaidValue(debt, transactions)}
+                paidValue={calculateDebtPaidValue(debt, transactions)}
                 onUpdate={(updates) => onUpdateDebt(debt.id, updates)}
                 onDelete={() => onDeleteDebt(debt.id)}
                 displayValue={displayValue}
