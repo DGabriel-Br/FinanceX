@@ -102,12 +102,6 @@ export default function Landing() {
               {/* Left content - 7 cols */}
               <div className="lg:col-span-7">
                 <ScrollReveal direction="up" duration={600}>
-                  {/* Badge */}
-                  <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 mb-8">
-                    <div className="w-2 h-2 rounded-full bg-landing-green animate-pulse" />
-                    <span className="text-sm text-white/70 font-medium">Controle financeiro simplificado</span>
-                  </div>
-                  
                   {/* Headline */}
                   <h1 
                     className="text-4xl sm:text-5xl lg:text-6xl xl:text-7xl font-bold leading-[1.05] tracking-tight mb-8"
