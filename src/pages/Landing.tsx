@@ -150,7 +150,9 @@ export default function Landing() {
                       <div className="flex items-center justify-between mb-6 lg:mb-7">
                         <div>
                           <p className="text-xs text-white/40 mb-1 tracking-wide uppercase">Resumo mensal</p>
-                          <p className="text-base lg:text-lg font-semibold text-white/90">Dezembro 2024</p>
+                          <p className="text-base lg:text-lg font-semibold text-white/90 capitalize">
+                            {new Date().toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })}
+                          </p>
                         </div>
                         <div className="h-9 w-9 lg:h-10 lg:w-10 rounded-xl bg-landing-green/15 flex items-center justify-center">
                           <TrendingUp className="h-4 w-4 lg:h-5 lg:w-5 text-landing-green" />
