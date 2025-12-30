@@ -5,10 +5,10 @@ import { ScrollReveal } from '@/components/ui/ScrollReveal';
 import { Check, ArrowRight } from 'lucide-react';
 
 const features = [
-  { title: 'Use sem limites', description: 'Lançamentos ilimitados, sem travas ou planos escondidos.' },
-  { title: 'Controle completo', description: 'Acompanhe dívidas e investimentos no mesmo lugar.' },
-  { title: 'Funciona na vida real', description: 'Use offline no celular, mesmo sem internet.' },
-  { title: 'Sempre sincronizado', description: 'Seus dados atualizados em todos os dispositivos.' }
+  { title: 'Uso sem limites', description: 'Lançamentos ilimitados, sem travas.' },
+  { title: 'Controle completo', description: 'Dívidas e investimentos no mesmo lugar.' },
+  { title: 'Funciona na vida real', description: 'Offline no celular, mesmo sem internet.' },
+  { title: 'Sempre sincronizado', description: 'Dados atualizados em todos os dispositivos.' }
 ];
 
 export const PricingSection = memo(function PricingSection() {
@@ -50,7 +50,7 @@ export const PricingSection = memo(function PricingSection() {
                   </span>
                 </div>
 
-                <div className="text-center pt-4 lg:pt-5 mb-6 lg:mb-8">
+                <div className="text-center pt-4 lg:pt-5 mb-2">
                   <div className="flex items-baseline justify-center gap-1 mb-2">
                     <span 
                       className="text-4xl lg:text-5xl xl:text-6xl font-bold text-white/95"
@@ -60,8 +60,11 @@ export const PricingSection = memo(function PricingSection() {
                     </span>
                     <span className="text-white/40 text-base lg:text-lg">/mês</span>
                   </div>
-                  <p className="text-white/40 text-sm lg:text-base">
-                    Tudo incluso para controlar seu dinheiro com clareza.
+                  <p className="text-white/40 text-sm lg:text-base mb-6 lg:mb-8">
+                    Cancela quando quiser. Sem multa.
+                  </p>
+                  <p className="text-white/50 text-sm lg:text-base border-t border-white/[0.06] pt-6">
+                    Tudo incluso para controlar seu dinheiro com clareza
                   </p>
                 </div>
 
@@ -86,7 +89,7 @@ export const PricingSection = memo(function PricingSection() {
                   <ArrowRight className="ml-2 h-4 w-4 lg:h-5 lg:w-5" />
                 </Button>
                 <p className="text-center text-white/40 text-xs lg:text-sm mt-4">
-                  Cancele quando quiser. Sem multa.
+                  Não vendemos dados. Não mostramos anúncios.
                 </p>
               </div>
             </div>
