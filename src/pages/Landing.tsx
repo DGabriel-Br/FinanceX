@@ -529,7 +529,7 @@ export default function Landing() {
             </ScrollReveal>
 
             {/* Testimonials grid - asymmetric with varying heights */}
-            <div className="grid md:grid-cols-12 gap-5 lg:gap-6">
+            <div className="grid md:grid-cols-12 gap-6 lg:gap-8">
               {/* Testimonial 1 - Featured, taller */}
               <ScrollReveal direction="up" delay={0} duration={700} className="md:col-span-7">
                 <div className="bg-white border border-black/[0.04] rounded-2xl lg:rounded-3xl p-6 lg:p-8 h-full shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-500 relative">
