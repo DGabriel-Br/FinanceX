@@ -484,16 +484,19 @@ export default function Landing() {
                       </p>
                     </div>
 
-                    <div className="space-y-3 mb-8 lg:mb-10">
+                    <div className="space-y-4 mb-8 lg:mb-10">
                       {[
-                        { icon: Zap, text: 'Lançamentos ilimitados' },
-                        { icon: Target, text: 'Controle de dívidas e investimentos' },
-                        { icon: Smartphone, text: 'Funciona offline no celular' },
-                        { icon: Shield, text: 'Sincroniza entre dispositivos' }
+                        { title: 'Use sem limites', description: 'Lançamentos ilimitados, sem travas ou planos escondidos.' },
+                        { title: 'Controle completo', description: 'Acompanhe dívidas e investimentos no mesmo lugar.' },
+                        { title: 'Funciona na vida real', description: 'Use offline no celular, mesmo sem internet.' },
+                        { title: 'Sempre sincronizado', description: 'Seus dados atualizados em todos os dispositivos.' }
                       ].map((feature, i) => (
-                        <div key={i} className="flex items-center gap-3 lg:gap-4 p-3 rounded-xl bg-white/[0.03] border border-white/[0.04] hover:bg-white/[0.05] transition-colors duration-300">
-                          <feature.icon className="w-4 h-4 lg:w-5 lg:h-5 text-landing-cyan flex-shrink-0" />
-                          <span className="text-white/70 text-sm lg:text-base">{feature.text}</span>
+                        <div key={i} className="flex items-start gap-3 lg:gap-4">
+                          <Check className="w-5 h-5 text-landing-green flex-shrink-0 mt-0.5" />
+                          <div>
+                            <span className="text-white/90 font-semibold text-sm lg:text-base block">{feature.title}</span>
+                            <span className="text-white/50 text-sm">{feature.description}</span>
+                          </div>
                         </div>
                       ))}
                     </div>
