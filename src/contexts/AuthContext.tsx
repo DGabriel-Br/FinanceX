@@ -22,8 +22,6 @@ interface AuthContextType {
   user: User | null;
   session: Session | null;
   loading: boolean;
-  isAdmin: boolean;
-  adminLoading: boolean;
   signUp: (email: string, password: string, name?: string) => Promise<{ error: any }>;
   signIn: (email: string, password: string) => Promise<LoginResult>;
   signOut: () => Promise<{ error: any }>;
@@ -31,7 +29,6 @@ interface AuthContextType {
   updatePassword: (newPassword: string) => Promise<{ error: any }>;
   refreshUser: () => Promise<void>;
   checkLoginBlocked: () => Promise<{ blocked: boolean; remainingSeconds: number }>;
-  checkIsAdmin: () => Promise<boolean>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -42,8 +39,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [adminLoading, setAdminLoading] = useState(true);
 
   const refreshUser = useCallback(async () => {
     try {
@@ -59,20 +54,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   }, []);
 
-  const checkIsAdmin = useCallback(async (): Promise<boolean> => {
-    try {
-      const { data, error } = await supabase.rpc('is_admin');
-      if (error) {
-        console.error('Error checking admin role:', error);
-        return false;
-      }
-      return data === true;
-    } catch (error) {
-      console.error('Error checking admin role:', error);
-      return false;
-    }
-  }, []);
-
   useEffect(() => {
     // Set up auth state listener FIRST
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -80,19 +61,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         setSession(session);
         setUser(session?.user ?? null);
         setLoading(false);
-        
-        // Check admin status after auth state changes
-        if (session?.user) {
-          setTimeout(async () => {
-            setAdminLoading(true);
-            const adminStatus = await checkIsAdmin();
-            setIsAdmin(adminStatus);
-            setAdminLoading(false);
-          }, 0);
-        } else {
-          setIsAdmin(false);
-          setAdminLoading(false);
-        }
       }
     );
 
@@ -101,20 +69,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       setSession(session);
       setUser(session?.user ?? null);
       setLoading(false);
-      
-      if (session?.user) {
-        const adminStatus = await checkIsAdmin();
-        setIsAdmin(adminStatus);
-      }
-      setAdminLoading(false);
     }).catch(() => {
       // Se falhar (improvável), ainda assim parar loading
       setLoading(false);
-      setAdminLoading(false);
     });
 
     return () => subscription.unsubscribe();
-  }, [checkIsAdmin]);
+  }, []);
 
   const signUp = async (email: string, password: string, name?: string) => {
     const redirectUrl = `${window.location.origin}/`;
@@ -252,8 +213,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       user,
       session,
       loading,
-      isAdmin,
-      adminLoading,
       signUp,
       signIn,
       signOut,
@@ -261,7 +220,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       updatePassword,
       refreshUser,
       checkLoginBlocked,
-      checkIsAdmin,
     }}>
       {children}
     </AuthContext.Provider>

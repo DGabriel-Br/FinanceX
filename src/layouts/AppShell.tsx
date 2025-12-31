@@ -11,7 +11,6 @@ import { OnboardingTour } from '@/components/onboarding/OnboardingTour';
 import { FinanceLogo } from '@/components/ui/FinanceLogo';
 import { useTheme } from '@/hooks/useTheme';
 import { useAuthContext } from '@/contexts/AuthContext';
-import { useAdminRole } from '@/hooks/useAdminRole';
 import { useValuesVisibility } from '@/hooks/useValuesVisibility';
 import { useOnboarding } from '@/hooks/useOnboarding';
 import { useIsNativeApp } from '@/hooks/useIsNativeApp';
@@ -73,7 +72,6 @@ export const AppShell = ({ children, onRefresh, onAddTransaction }: AppShellProp
 
   const { theme, toggleTheme } = useTheme();
   const { user, loading: authLoading, signOut, refreshUser } = useAuthContext();
-  const { isAdmin } = useAdminRole();
   const { showValues, toggleValuesVisibility } = useValuesVisibility();
   const { showTour, completeTour, skipTour } = useOnboarding(user?.id);
   const isNativeApp = useIsNativeApp();
@@ -178,7 +176,6 @@ export const AppShell = ({ children, onRefresh, onAddTransaction }: AppShellProp
             userEmail={user.email}
             userAvatar={user.user_metadata?.avatar_url}
             onSignOut={handleSignOutRequest}
-            isAdmin={isAdmin}
             highlightedTab={showTour ? tourHighlightedTab : null}
           />
         )}

@@ -77,7 +77,7 @@ export default function Auth() {
   const [isShaking, setIsShaking] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
   const [resendCountdown, setResendCountdown] = useState(0);
-  const { user, loading, isAdmin, adminLoading, signIn, signUp, resetPassword, checkIsAdmin } = useAuthContext();
+  const { user, loading, signIn, signUp, resetPassword } = useAuthContext();
   const navigate = useNavigate();
 
   // Load saved email on mount (NEVER store passwords!)
@@ -159,11 +159,11 @@ export default function Auth() {
   };
 
   useEffect(() => {
-    if (!loading && !adminLoading && user) {
+    if (!loading && user) {
       // Always redirect to dashboard (não para / pois no nativo causa loop)
       navigate('/dashboard');
     }
-  }, [user, loading, isAdmin, adminLoading, navigate]);
+  }, [user, loading, navigate]);
 
   const triggerShake = () => {
     setIsShaking(true);
