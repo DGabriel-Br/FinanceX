@@ -118,13 +118,13 @@ export const PricingSection = memo(function PricingSection() {
                     </>
                   ) : (
                     <>
-                      Começar agora
+                      Iniciar teste
                       <ArrowRight className="ml-2 h-4 w-4 lg:h-5 lg:w-5" />
                     </>
                   )}
                 </Button>
                 <p className="text-center text-white/40 text-xs lg:text-sm mt-4">
-                  Não vendemos dados. Não mostramos anúncios.
+                  Ao iniciar o teste, você concorda com a cobrança automática de R$14,90/mês após 3 dias. Você pode cancelar quando quiser, em 1 clique.
                 </p>
               </div>
             </div>
