@@ -3,9 +3,8 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route, Navigate, Outlet } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
-import { AdminPeriodProvider } from "@/contexts/AdminPeriodContext";
 import { Loader2 } from "lucide-react";
 import { NativeRedirect } from "@/components/routing/NativeRedirect";
 
@@ -26,14 +25,6 @@ import ResetPassword from "./pages/ResetPassword";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 
-// Admin pages - lazy loaded
-const AdminOverview = lazy(() => import("./pages/admin/AdminOverview"));
-const AdminUsers = lazy(() => import("./pages/admin/AdminUsers"));
-const AdminActivity = lazy(() => import("./pages/admin/AdminActivity"));
-const AdminSecurity = lazy(() => import("./pages/admin/AdminSecurity"));
-const AdminSystem = lazy(() => import("./pages/admin/AdminSystem"));
-const AdminRoles = lazy(() => import("./pages/admin/AdminRoles"));
-
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
@@ -48,15 +39,6 @@ const PageLoader = () => (
   <div className="flex items-center justify-center min-h-screen bg-sidebar">
     <Loader2 className="w-8 h-8 animate-spin text-primary" />
   </div>
-);
-
-// Layout component that provides AdminPeriodContext to all admin routes
-const AdminPeriodLayout = () => (
-  <AdminPeriodProvider>
-    <Suspense fallback={<PageLoader />}>
-      <Outlet />
-    </Suspense>
-  </AdminPeriodProvider>
 );
 
 const App = () => (
@@ -90,16 +72,6 @@ const App = () => (
               <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/auth" element={<Navigate to="/login" replace />} />
               <Route path="/settings" element={<Settings />} />
-              
-              {/* Admin Routes - wrapped with AdminPeriodProvider via layout */}
-              <Route element={<AdminPeriodLayout />}>
-                <Route path="/admin" element={<AdminOverview />} />
-                <Route path="/admin/usuarios" element={<AdminUsers />} />
-                <Route path="/admin/atividade" element={<AdminActivity />} />
-                <Route path="/admin/seguranca" element={<AdminSecurity />} />
-                <Route path="/admin/sistema" element={<AdminSystem />} />
-                <Route path="/admin/roles" element={<AdminRoles />} />
-              </Route>
               
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />

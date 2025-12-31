@@ -1,4 +1,4 @@
-import { LayoutDashboard, Receipt, ChevronLeft, ChevronRight, Moon, Sun, CreditCard, TrendingUp, LogOut, Settings, Shield } from 'lucide-react';
+import { LayoutDashboard, Receipt, ChevronLeft, ChevronRight, Moon, Sun, CreditCard, TrendingUp, LogOut, Settings } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { Switch } from '@/components/ui/switch';
@@ -16,7 +16,6 @@ export interface SidebarProps {
   userEmail?: string;
   userAvatar?: string | null;
   onSignOut?: () => void;
-  isAdmin?: boolean;
   highlightedTab?: Tab | null; // Tab a ser destacada durante o tour
 }
 
@@ -37,7 +36,6 @@ export const Sidebar = ({
   userEmail,
   userAvatar,
   onSignOut,
-  isAdmin,
   highlightedTab
 }: SidebarProps) => {
   return (
@@ -180,21 +178,6 @@ export const Sidebar = ({
             />
           )}
         </div>
-
-        {/* Admin Panel Button - Only for admins */}
-        {isAdmin && (
-          <Link
-            to="/admin"
-            title="Painel Administrativo"
-            className={cn(
-              'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
-              collapsed && 'justify-center px-0'
-            )}
-          >
-            <Shield className="w-5 h-5 flex-shrink-0" />
-            {!collapsed && <span>Painel Admin</span>}
-          </Link>
-        )}
 
         {/* Settings Button */}
         <Link
