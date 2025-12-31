@@ -51,7 +51,6 @@ const App = () => (
             <Routes>
               {/* Public landing page - only on web, native redirects to login/welcome */}
               <Route path="/" element={<NativeRedirect webElement={<Landing />} nativeRedirectTo="/login" />} />
-              <Route path="/landing" element={<Navigate to="/" replace />} />
               
               {/* Finance routes - using shared layout */}
               <Route element={<FinanceLayout />}>
