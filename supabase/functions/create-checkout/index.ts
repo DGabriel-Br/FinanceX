@@ -58,7 +58,7 @@ serve(async (req) => {
 
     const origin = req.headers.get("origin") || "https://financex.lovable.app";
 
-    // Create subscription checkout session
+    // Create subscription checkout session with 3-day trial
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       customer_email: customerId ? undefined : userEmail,
@@ -69,6 +69,9 @@ serve(async (req) => {
         },
       ],
       mode: "subscription",
+      subscription_data: {
+        trial_period_days: 3,
+      },
       success_url: `${origin}/dashboard?checkout=success`,
       cancel_url: `${origin}/?checkout=canceled`,
       allow_promotion_codes: true,
