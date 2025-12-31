@@ -83,9 +83,9 @@ export const PricingSection = memo(function PricingSection() {
                 <Button 
                   className="w-full h-12 lg:h-14 text-sm lg:text-base rounded-full bg-gradient-to-r from-landing-cyan to-landing-teal text-landing-dark font-semibold hover:shadow-[0_0_40px_rgba(34,211,238,0.4)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-500 border-0" 
                   size="lg" 
-                  onClick={() => navigate('/planos')}
+                  onClick={() => navigate('/cadastro')}
                 >
-                  Assinar agora
+                  Começar agora
                   <ArrowRight className="ml-2 h-4 w-4 lg:h-5 lg:w-5" />
                 </Button>
                 <p className="text-center text-white/40 text-xs lg:text-sm mt-4">

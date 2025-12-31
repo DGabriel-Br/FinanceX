@@ -15,9 +15,8 @@ const TransactionsPage = lazy(() => import("./pages/finance/TransactionsPage"));
 const InvestmentsPage = lazy(() => import("./pages/finance/InvestmentsPage"));
 const DebtsPage = lazy(() => import("./pages/finance/DebtsPage"));
 
-// Landing and Plans - lazy loaded for performance
+// Landing - lazy loaded for performance
 const Landing = lazy(() => import("./pages/Landing"));
-const Plans = lazy(() => import("./pages/Plans"));
 
 // Auth pages - loaded eagerly since they're entry points
 import Auth from "./pages/Auth";
@@ -53,9 +52,6 @@ const App = () => (
               {/* Public landing page - only on web, native redirects to login/welcome */}
               <Route path="/" element={<NativeRedirect webElement={<Landing />} nativeRedirectTo="/login" />} />
               <Route path="/landing" element={<Navigate to="/" replace />} />
-              
-              {/* Plans page */}
-              <Route path="/planos" element={<Plans />} />
               
               {/* Finance routes - using shared layout */}
               <Route element={<FinanceLayout />}>
