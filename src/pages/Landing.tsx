@@ -1,6 +1,5 @@
 import { useEffect, memo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuthContext } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
 import { 
@@ -297,28 +296,9 @@ const FinalCTASection = memo(function FinalCTASection() {
 
 // Main Landing Page Component
 export default function Landing() {
-  const { user, loading } = useAuthContext();
-  const navigate = useNavigate();
-
   useEffect(() => {
     document.title = 'FinanceX - Veja pra onde seu dinheiro vai';
   }, []);
-
-  useEffect(() => {
-    if (!loading && user) {
-      navigate('/dashboard');
-    }
-  }, [user, loading, navigate]);
-
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-landing-dark flex items-center justify-center">
-        <div className="w-6 h-6 border-2 border-landing-cyan border-t-transparent rounded-full animate-spin" />
-      </div>
-    );
-  }
-
-  if (user) return null;
 
   return (
     <div className="min-h-screen bg-landing-dark text-white overflow-x-hidden">
