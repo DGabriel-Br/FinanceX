@@ -40,7 +40,7 @@ export const PricingSection = memo(function PricingSection() {
   };
 
   return (
-    <section className="py-16 lg:py-28 bg-landing-dark relative overflow-hidden">
+    <section id="pricing" className="py-16 lg:py-28 bg-landing-dark relative overflow-hidden">
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_50%_100%,rgba(34,211,238,0.08),transparent_60%)]" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_30%,rgba(15,23,42,0.4)_100%)]" />
