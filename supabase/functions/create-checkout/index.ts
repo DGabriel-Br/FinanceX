@@ -106,7 +106,6 @@ serve(async (req) => {
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       customer_email: customerId ? undefined : userEmail,
-      customer_creation: customerId ? undefined : "always",
       line_items: [
         {
           price: "price_1SkYlU1qJqkZgiRaCWyFWo0u",
@@ -135,12 +134,6 @@ serve(async (req) => {
         submit: {
           message: "Seu período de teste gratuito de 3 dias começa agora. Você só será cobrado após o término do teste.",
         },
-        terms_of_service_acceptance: {
-          message: "Ao continuar, você concorda com nossos [Termos de Serviço](https://financex.lovable.app/termos).",
-        },
-      },
-      consent_collection: {
-        terms_of_service: "required",
       },
       locale: "pt-BR",
       payment_method_types: ["card"],
