@@ -32,7 +32,6 @@ serve(async (req) => {
     const authHeader = req.headers.get("Authorization");
     let userEmail: string | undefined;
     let customerId: string | undefined;
-    let userName: string | undefined;
 
     // Check if user is authenticated
     if (authHeader) {
@@ -42,8 +41,7 @@ serve(async (req) => {
       
       if (user?.email) {
         userEmail = user.email;
-        userName = user.user_metadata?.full_name || user.user_metadata?.name;
-        logStep("User authenticated", { email: userEmail, name: userName });
+        logStep("User authenticated", { email: userEmail });
       }
     }
 
@@ -55,54 +53,12 @@ serve(async (req) => {
       if (customers.data.length > 0) {
         customerId = customers.data[0].id;
         logStep("Found existing customer", { customerId });
-
-        // Check if user already has an active subscription
-        const subscriptions = await stripe.subscriptions.list({
-          customer: customerId,
-          status: "active",
-          limit: 1,
-        });
-
-        if (subscriptions.data.length > 0) {
-          logStep("User already has active subscription");
-          return new Response(
-            JSON.stringify({ 
-              error: "Você já possui uma assinatura ativa",
-              hasActiveSubscription: true 
-            }),
-            {
-              headers: { ...corsHeaders, "Content-Type": "application/json" },
-              status: 400,
-            }
-          );
-        }
-
-        // Check for trialing subscription
-        const trialingSubscriptions = await stripe.subscriptions.list({
-          customer: customerId,
-          status: "trialing",
-          limit: 1,
-        });
-
-        if (trialingSubscriptions.data.length > 0) {
-          logStep("User already has trialing subscription");
-          return new Response(
-            JSON.stringify({ 
-              error: "Você já está no período de teste",
-              hasActiveSubscription: true 
-            }),
-            {
-              headers: { ...corsHeaders, "Content-Type": "application/json" },
-              status: 400,
-            }
-          );
-        }
       }
     }
 
     const origin = req.headers.get("origin") || "https://financex.lovable.app";
 
-    // Create subscription checkout session with 3-day trial and enhanced options
+    // Create subscription checkout session with 3-day trial
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       customer_email: customerId ? undefined : userEmail,
@@ -115,35 +71,15 @@ serve(async (req) => {
       mode: "subscription",
       subscription_data: {
         trial_period_days: 3,
-        metadata: {
-          user_email: userEmail || "",
-        },
       },
       success_url: `${origin}/dashboard?checkout=success`,
       cancel_url: `${origin}/?checkout=canceled`,
       allow_promotion_codes: true,
       billing_address_collection: "required",
-      phone_number_collection: {
-        enabled: true,
-      },
-      tax_id_collection: {
-        enabled: true,
-        required: "if_supported",
-      },
-      custom_text: {
-        submit: {
-          message: "Seu período de teste gratuito de 3 dias começa agora. Você só será cobrado após o término do teste.",
-        },
-      },
       locale: "pt-BR",
-      payment_method_types: ["card"],
     });
 
-    logStep("Checkout session created", { 
-      sessionId: session.id, 
-      url: session.url,
-      trialDays: 3 
-    });
+    logStep("Checkout session created", { sessionId: session.id, url: session.url });
 
     return new Response(JSON.stringify({ url: session.url }), {
       headers: { ...corsHeaders, "Content-Type": "application/json" },
