@@ -283,122 +283,6 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      admin_add_admin_role: {
-        Args: { target_user_id: string }
-        Returns: boolean
-      }
-      admin_block_user: { Args: { target_user_id: string }; Returns: boolean }
-      admin_get_active_users_in_range: {
-        Args: { end_date: string; start_date: string }
-        Returns: number
-      }
-      admin_get_active_users_today: { Args: never; Returns: number }
-      admin_get_active_users_week: { Args: never; Returns: number }
-      admin_get_all_admins: {
-        Args: never
-        Returns: {
-          email: string
-          full_name: string
-          role_created_at: string
-          user_id: string
-        }[]
-      }
-      admin_get_audit_events_in_range: {
-        Args: { end_date: string; start_date: string }
-        Returns: number
-      }
-      admin_get_audit_events_today: { Args: never; Returns: number }
-      admin_get_blocked_users_count: { Args: never; Returns: number }
-      admin_get_financial_stats: {
-        Args: never
-        Returns: {
-          active_users_with_transactions: number
-          avg_transactions_per_user: number
-          total_transactions: number
-          total_users: number
-        }[]
-      }
-      admin_get_financial_stats_in_range: {
-        Args: { end_date: string; start_date: string }
-        Returns: {
-          active_users_with_transactions: number
-          avg_transaction_value: number
-          total_expense: number
-          total_income: number
-          total_transactions: number
-        }[]
-      }
-      admin_get_new_users_in_range: {
-        Args: { end_date: string; start_date: string }
-        Returns: number
-      }
-      admin_get_recent_audit_events: {
-        Args: { limit_count?: number }
-        Returns: {
-          action: string
-          changed_fields: string[]
-          created_at: string
-          id: string
-          record_id: string
-          table_name: string
-          user_id: string
-        }[]
-      }
-      admin_get_total_users: { Args: never; Returns: number }
-      admin_get_transactions_by_day: {
-        Args: never
-        Returns: {
-          count: number
-          date: string
-          volume: number
-        }[]
-      }
-      admin_get_transactions_by_day_in_range: {
-        Args: { end_date: string; start_date: string }
-        Returns: {
-          count: number
-          date: string
-          volume: number
-        }[]
-      }
-      admin_get_transactions_in_range: {
-        Args: { end_date: string; start_date: string }
-        Returns: number
-      }
-      admin_get_transactions_today: { Args: never; Returns: number }
-      admin_get_users_blocked_in_range: {
-        Args: { end_date: string; start_date: string }
-        Returns: number
-      }
-      admin_get_users_list: {
-        Args: never
-        Returns: {
-          created_at: string
-          email: string
-          full_name: string
-          is_blocked: boolean
-          last_sign_in_at: string
-          transaction_count: number
-          user_id: string
-        }[]
-      }
-      admin_get_volume_in_range: {
-        Args: { end_date: string; start_date: string }
-        Returns: number
-      }
-      admin_get_volume_today: { Args: never; Returns: number }
-      admin_remove_admin_role: {
-        Args: { target_user_id: string }
-        Returns: boolean
-      }
-      admin_sync_missing_profiles: {
-        Args: never
-        Returns: {
-          synced_count: number
-          synced_emails: string[]
-        }[]
-      }
-      admin_unblock_user: { Args: { target_user_id: string }; Returns: boolean }
       check_user_blocked: { Args: { user_id: string }; Returns: boolean }
       delete_user_account: { Args: never; Returns: boolean }
       get_my_profile: {
@@ -411,14 +295,6 @@ export type Database = {
           is_blocked: boolean
         }[]
       }
-      has_role: {
-        Args: {
-          _role: Database["public"]["Enums"]["app_role"]
-          _user_id: string
-        }
-        Returns: boolean
-      }
-      is_admin: { Args: never; Returns: boolean }
     }
     Enums: {
       app_role: "admin" | "user"
