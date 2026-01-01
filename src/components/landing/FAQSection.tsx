@@ -28,7 +28,7 @@ const faqs = [
 
 export const FAQSection = memo(function FAQSection() {
   return (
-    <section className="py-14 lg:py-20 bg-white text-landing-dark">
+    <section className="pt-12 pb-10 lg:pt-16 lg:pb-14 bg-white text-landing-dark">
       <div className="w-full max-w-3xl mx-auto px-5 lg:px-8">
         <ScrollReveal direction="up" duration={700}>
           <header className="text-center mb-8 lg:mb-10">
