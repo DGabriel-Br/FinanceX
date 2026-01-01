@@ -210,7 +210,7 @@ const ForWhoSection = memo(function ForWhoSection() {
   ];
 
   return (
-    <section className="py-16 lg:py-28 bg-[#f8f9fb] text-landing-dark relative overflow-hidden">
+    <section className="pt-14 pb-10 lg:pt-24 lg:pb-16 bg-[#f8f9fb] text-landing-dark relative overflow-hidden">
       <div className="w-full max-w-7xl mx-auto px-5 lg:px-8">
         <ScrollReveal direction="up" duration={700}>
           <header className="text-center mb-10 lg:mb-14">
@@ -281,7 +281,7 @@ const FinalCTASection = memo(function FinalCTASection() {
   const navigate = useNavigate();
 
   return (
-    <section className="py-20 lg:py-32 bg-landing-dark relative overflow-hidden">
+    <section className="pt-16 pb-14 lg:pt-24 lg:pb-20 bg-landing-dark relative overflow-hidden">
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-gradient-to-t from-landing-dark via-landing-dark-secondary/30 to-landing-dark" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_70%_50%_at_50%_50%,rgba(34,211,238,0.08),transparent_60%)]" />
