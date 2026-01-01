@@ -22,7 +22,7 @@ const faqs = [
   },
   {
     question: 'É difícil de usar?',
-    answer: 'Não. Você lança o que gastou em segundos. Sem configuração complicada.',
+    answer: 'Não. Se você sabe digitar um valor, sabe usar o FinanceX. Não tem configuração, não tem curva de aprendizado.',
   },
 ];
 
