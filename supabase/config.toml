@@ -9,7 +9,10 @@ verify_jwt = false
 [functions.stripe-webhook]
 verify_jwt = false
 
-[functions.get-checkout-session]
+[functions.get-setup-token]
+verify_jwt = false
+
+[functions.setup-initial-password]
 verify_jwt = false
 
 [functions.send-password-email]

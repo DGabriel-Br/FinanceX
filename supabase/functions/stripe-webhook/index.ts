@@ -127,6 +127,21 @@ serve(async (req) => {
 
             user = newUserData.user;
             logStep("User created successfully", { userId: user.id, email: customerEmail });
+
+            // Create password setup token for frictionless password setup
+            const { error: tokenError } = await supabaseClient
+              .from("password_setup_tokens")
+              .insert({
+                user_id: user.id,
+                email: customerEmail,
+                stripe_session_id: session.id,
+              });
+
+            if (tokenError) {
+              logStep("ERROR: Failed to create setup token", { error: tokenError.message });
+            } else {
+              logStep("Password setup token created", { userId: user.id, sessionId: session.id });
+            }
           } else {
             logStep("User already exists", { userId: user.id, email: customerEmail });
             

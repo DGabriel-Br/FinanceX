@@ -23,7 +23,7 @@ import Auth from "./pages/Auth";
 import ResetPassword from "./pages/ResetPassword";
 import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
-import Welcome from "./pages/Welcome";
+import SetupPassword from "./pages/SetupPassword";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -65,7 +65,7 @@ const App = () => (
               <Route path="/login" element={<Auth />} />
               <Route path="/esqueci-senha" element={<Auth />} />
               <Route path="/reset-password" element={<ResetPassword />} />
-              <Route path="/bem-vindo" element={<Welcome />} />
+              <Route path="/setup-password" element={<SetupPassword />} />
               <Route path="/auth" element={<Navigate to="/login" replace />} />
               <Route path="/settings" element={<Settings />} />
               
