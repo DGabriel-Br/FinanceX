@@ -70,8 +70,8 @@ export const PricingSection = memo(function PricingSection() {
               
               <div className="relative bg-gradient-to-b from-white/[0.08] to-white/[0.02] border border-white/[0.08] rounded-2xl lg:rounded-3xl p-6 lg:p-8">
                 <div className="absolute -top-3 lg:-top-4 left-1/2 -translate-x-1/2">
-                  <span className="bg-gradient-to-r from-landing-cyan to-landing-teal text-landing-dark text-xs lg:text-sm font-semibold px-4 py-1.5 rounded-full shadow-lg">
-                    Plano único
+                  <span className="bg-gradient-to-r from-landing-cyan to-landing-teal text-landing-dark text-[10px] lg:text-xs font-semibold px-3 lg:px-4 py-1.5 rounded-full shadow-lg whitespace-nowrap">
+                    Controle financeiro simples. Sem complicação.
                   </span>
                 </div>
 
