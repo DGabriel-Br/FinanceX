@@ -18,7 +18,7 @@ const faqs = [
   },
   {
     question: 'Meus dados ficam seguros?',
-    answer: 'Ficam. Seus dados são privados e ninguém além de você tem acesso.',
+    answer: 'Sim. Seus dados ficam protegidos e não são vendidos nem compartilhados. O FinanceX não exibe anúncios e não usa seus dados para outros fins.',
   },
   {
     question: 'É difícil de usar?',
