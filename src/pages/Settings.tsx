@@ -21,7 +21,8 @@ import {
   X,
   Trash2,
   AlertTriangle,
-  CreditCard
+  CreditCard,
+  RotateCcw
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -36,6 +37,7 @@ import { cn } from '@/lib/utils';
 import { useTheme } from '@/hooks/useTheme';
 import { useIsNativeApp } from '@/hooks/useIsNativeApp';
 import { useCustomCategories } from '@/hooks/useCustomCategories';
+import { useOnboarding } from '@/hooks/useOnboarding';
 import { incomeCategoryLabels, expenseCategoryLabels } from '@/types/transaction';
 import {
   Sheet,
@@ -77,6 +79,7 @@ export default function Settings() {
   const { user, loading, refreshUser, signOut } = useAuthContext();
   const { theme, toggleTheme } = useTheme();
   const isNativeApp = useIsNativeApp();
+  const { resetOnboarding } = useOnboarding(user?.id);
   
   // Estado para seção ativa
   const [activeSection, setActiveSection] = useState<SettingsSection>(null);
@@ -579,6 +582,7 @@ export default function Settings() {
                 theme={theme}
                 toggleTheme={toggleTheme}
                 setActiveSection={setActiveSection}
+                resetOnboarding={resetOnboarding}
               />
             </div>
           </DrawerContent>
@@ -849,6 +853,19 @@ export default function Settings() {
                   </div>
                   <ChevronRight className="w-5 h-5 text-muted-foreground" />
                 </button>
+                <button
+                  onClick={() => {
+                    resetOnboarding();
+                    toast.success('Onboarding resetado! Recarregue a página para ver novamente.');
+                  }}
+                  className="w-full flex items-center justify-between p-3 bg-muted/50 rounded-xl hover:bg-muted transition-colors"
+                >
+                  <div className="flex items-center gap-3">
+                    <RotateCcw className="w-5 h-5 text-amber-500" />
+                    <span className="text-sm font-medium">Resetar onboarding</span>
+                  </div>
+                  <ChevronRight className="w-5 h-5 text-muted-foreground" />
+                </button>
               </div>
             </AccordionContent>
           </AccordionItem>
@@ -1068,7 +1085,12 @@ function SecuritySheetContent({ currentPassword, setCurrentPassword, showCurrent
   );
 }
 
-function PreferencesSheetContent({ theme, toggleTheme, setActiveSection }: any) {
+function PreferencesSheetContent({ theme, toggleTheme, setActiveSection, resetOnboarding }: any) {
+  const handleResetOnboarding = () => {
+    resetOnboarding();
+    toast.success('Onboarding resetado! Recarregue a página para ver novamente.');
+  };
+
   return (
     <div className="space-y-3">
       <div className="flex items-center justify-between p-4 bg-muted/50 rounded-xl animate-fade-in opacity-0" style={{ animationDelay: '0.1s', animationFillMode: 'forwards' }}>
@@ -1107,7 +1129,19 @@ function PreferencesSheetContent({ theme, toggleTheme, setActiveSection }: any) 
         </div>
         <ChevronRight className="w-5 h-5 text-muted-foreground" />
       </button>
-      <p className="text-xs text-muted-foreground text-center pt-4 animate-fade-in opacity-0" style={{ animationDelay: '0.35s', animationFillMode: 'forwards' }}>
+      <button onClick={handleResetOnboarding} className="w-full flex items-center justify-between p-4 bg-muted/50 rounded-xl hover:bg-muted active:scale-[0.98] transition-all animate-fade-in opacity-0" style={{ animationDelay: '0.25s', animationFillMode: 'forwards' }}>
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center">
+            <RotateCcw className="w-5 h-5 text-amber-500" />
+          </div>
+          <div className="text-left">
+            <p className="text-sm font-medium text-foreground">Resetar onboarding</p>
+            <p className="text-xs text-muted-foreground">Ver tutorial novamente</p>
+          </div>
+        </div>
+        <ChevronRight className="w-5 h-5 text-muted-foreground" />
+      </button>
+      <p className="text-xs text-muted-foreground text-center pt-4 animate-fade-in opacity-0" style={{ animationDelay: '0.4s', animationFillMode: 'forwards' }}>
         Algumas opções estarão disponíveis em breve
       </p>
     </div>
