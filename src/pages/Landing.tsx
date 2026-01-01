@@ -69,6 +69,12 @@ const ProblemSection = memo(function ProblemSection() {
                   <br />
                   É que tentaram complicar algo que deveria ser simples.
                 </p>
+                <p 
+                  className="mt-4 text-sm lg:text-base text-landing-dark/70"
+                  style={{ fontFamily: "'Sora', sans-serif" }}
+                >
+                  Controle financeiro não precisa virar um segundo emprego.
+                </p>
               </div>
             </ScrollReveal>
           </div>
