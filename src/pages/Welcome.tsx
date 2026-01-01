@@ -23,11 +23,22 @@ export default function Welcome() {
   const isSuccess = searchParams.get('checkout') === 'success';
 
   useEffect(() => {
+    // Redireciona se não veio do checkout
+    if (!isSuccess) {
+      navigate('/');
+      return;
+    }
+    
     setMounted(true);
     // Delay para animação
     const timer = setTimeout(() => setShowContent(true), 300);
     return () => clearTimeout(timer);
-  }, []);
+  }, [isSuccess, navigate]);
+
+  // Não renderiza nada enquanto verifica
+  if (!isSuccess) {
+    return null;
+  }
 
   const handleSendPasswordLink = async () => {
     try {
