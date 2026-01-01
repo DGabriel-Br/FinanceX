@@ -1,9 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import { Debt } from '@/types/debt';
 import { supabase } from '@/integrations/supabase/client';
-import { db, generateTempId, LocalDebt } from '@/lib/offline/database';
-import { syncService } from '@/lib/offline/syncService';
-import { offlineAdd, offlineUpdate, offlineDelete, debtMessages } from '@/lib/offline/repository';
+import { db, generateTempId, LocalDebt } from '@/infra/offline/database';
+import { syncService } from '@/infra/offline/syncService';
+import { offlineAdd, offlineUpdate, offlineDelete, debtMessages } from '@/infra/offline/repository';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useAuthContext } from '@/contexts/AuthContext';
 

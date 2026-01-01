@@ -3,9 +3,9 @@ import { Transaction, TransactionCategory } from '@/types/transaction';
 import { CustomDateRange } from '@/components/finance/PeriodFilter';
 import { startOfMonth, endOfMonth } from 'date-fns';
 import { supabase } from '@/integrations/supabase/client';
-import { db, generateTempId, LocalTransaction } from '@/lib/offline/database';
-import { syncService } from '@/lib/offline/syncService';
-import { offlineAdd, offlineUpdate, offlineDelete, transactionMessages } from '@/lib/offline/repository';
+import { db, generateTempId, LocalTransaction } from '@/infra/offline/database';
+import { syncService } from '@/infra/offline/syncService';
+import { offlineAdd, offlineUpdate, offlineDelete, transactionMessages } from '@/infra/offline/repository';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useAuthContext } from '@/contexts/AuthContext';
 

@@ -1,6 +1,6 @@
 import { useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { db, isTempId } from '@/lib/offline/database';
+import { db, isTempId } from '@/infra/offline/database';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { logger } from '@/lib/logger';
 

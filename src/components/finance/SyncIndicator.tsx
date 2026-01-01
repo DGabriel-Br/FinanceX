@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react';
 import { Cloud, CloudOff, RefreshCw, Check, AlertCircle, Database, Wifi, WifiOff } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useOnlineStatus } from '@/hooks/useOnlineStatus';
-import { syncService } from '@/lib/offline/syncService';
-import { db } from '@/lib/offline/database';
+import { syncService } from '@/infra/offline/syncService';
+import { db } from '@/infra/offline/database';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import {

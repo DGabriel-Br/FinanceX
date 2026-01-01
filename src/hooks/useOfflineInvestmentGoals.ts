@@ -1,9 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
 import { InvestmentType } from '@/types/investment';
 import { supabase } from '@/integrations/supabase/client';
-import { db, generateTempId, LocalInvestmentGoal } from '@/lib/offline/database';
-import { syncService } from '@/lib/offline/syncService';
-import { offlineAdd, offlineUpdate, offlineDelete, goalMessages } from '@/lib/offline/repository';
+import { db, generateTempId, LocalInvestmentGoal } from '@/infra/offline/database';
+import { syncService } from '@/infra/offline/syncService';
+import { offlineAdd, offlineUpdate, offlineDelete, goalMessages } from '@/infra/offline/repository';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useAuthContext } from '@/contexts/AuthContext';
 
