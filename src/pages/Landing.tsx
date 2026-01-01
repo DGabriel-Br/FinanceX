@@ -105,7 +105,7 @@ const HowItWorksSection = memo(function HowItWorksSection() {
             className="text-2xl sm:text-3xl lg:text-4xl xl:text-[2.75rem] font-bold tracking-[-0.02em] text-white/95 mb-10 lg:mb-14"
             style={{ fontFamily: "'Sora', sans-serif" }}
           >
-            Como funciona
+            Como funciona (sem complicação)
           </h2>
         </ScrollReveal>
         
