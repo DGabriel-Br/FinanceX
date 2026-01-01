@@ -101,7 +101,7 @@ export const TestimonialsSection = memo(function TestimonialsSection() {
   const rightColumn = testimonials.filter((_, i) => i % 2 === 1);
 
   return (
-    <section className="pt-16 pb-14 lg:pt-24 lg:pb-20 bg-[#f3f4f6] text-landing-dark relative overflow-hidden">
+    <section className="pt-16 pb-8 lg:pt-24 lg:pb-12 bg-[#f3f4f6] text-landing-dark relative overflow-hidden">
       {/* Subtle texture overlay */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-20 left-1/4 w-[500px] h-[500px] bg-landing-cyan/[0.02] rounded-full blur-[100px]" />
