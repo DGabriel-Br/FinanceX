@@ -36,7 +36,7 @@ export const HeroSection = memo(function HeroSection() {
               </h1>
               
               <p className="text-base lg:text-lg text-white/50 leading-relaxed mb-8 lg:mb-10 max-w-lg">
-                Você anota o que gasta. O app mostra, com clareza, se você pode gastar mais ou se precisa parar.
+                Você anota o que gasta. O FinanceX mostra, com clareza, se você pode gastar mais ou se precisa parar.
               </p>
               
               <div className="flex flex-col sm:flex-row gap-3 lg:gap-4">

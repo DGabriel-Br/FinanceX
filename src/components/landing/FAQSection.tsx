@@ -10,7 +10,7 @@ import {
 const faqs = [
   {
     question: 'Posso cancelar quando quiser?',
-    answer: 'Sim. Você pode cancelar a qualquer momento, direto pelo app. Sem multa, sem burocracia.',
+    answer: 'Sim. Você pode cancelar a qualquer momento, direto pelo FinanceX. Sem multa, sem burocracia.',
   },
   {
     question: 'Funciona offline?',

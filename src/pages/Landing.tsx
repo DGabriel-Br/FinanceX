@@ -49,7 +49,7 @@ const ProblemSection = memo(function ProblemSection() {
                   Você já tentou planilha. Funcionou por uma semana. Depois virou aquele arquivo que você nunca mais abriu.
                 </p>
                 <p className="leading-[1.7]">
-                  Ou baixou um app cheio de função, conectou com banco, configurou categorias... 
+                  Ou baixou uma ferramenta cheia de função, conectou com banco, configurou categorias... 
                   e desistiu porque era coisa demais.
                 </p>
               </div>
@@ -108,7 +108,7 @@ const HowItWorksSection = memo(function HowItWorksSection() {
               </div>
               <h3 className="text-xl lg:text-2xl font-semibold text-white/90 mb-3 lg:mb-4">Você lança o que gastou</h3>
               <p className="text-white/45 text-base lg:text-lg leading-relaxed">
-                Gastou R$ 45 no mercado? Abre o app, digita, pronto. Menos de 10 segundos.
+                Gastou R$ 45 no mercado? Abre o FinanceX, digita, pronto. Menos de 10 segundos.
               </p>
             </article>
           </ScrollReveal>
@@ -121,7 +121,7 @@ const HowItWorksSection = memo(function HowItWorksSection() {
                 </div>
                 <span className="text-5xl lg:text-6xl font-bold text-white/[0.06] group-hover:text-white/[0.1] transition-colors duration-500">02</span>
               </div>
-              <h3 className="text-xl lg:text-2xl font-semibold text-white/90 mb-3 lg:mb-4">O app organiza pra você</h3>
+              <h3 className="text-xl lg:text-2xl font-semibold text-white/90 mb-3 lg:mb-4">O FinanceX organiza pra você</h3>
               <p className="text-white/45 text-base lg:text-lg leading-relaxed">
                 Categorias prontas. Tudo separado automaticamente. Você não precisa montar nada.
               </p>
