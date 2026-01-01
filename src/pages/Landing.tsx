@@ -271,6 +271,13 @@ const ForWhoSection = memo(function ForWhoSection() {
             </article>
           </ScrollReveal>
         </div>
+
+        <ScrollReveal direction="up" delay={150} duration={700}>
+          <p className="text-center text-landing-dark/50 text-sm lg:text-base mt-8 lg:mt-10 max-w-md mx-auto leading-relaxed">
+            O FinanceX foi feito pra quem quer clareza.<br />
+            Não pra quem quer controle excessivo.
+          </p>
+        </ScrollReveal>
       </div>
     </section>
   );
