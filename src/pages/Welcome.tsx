@@ -197,7 +197,7 @@ export default function Welcome() {
               ) : (
                 <>
                   <Mail className="mr-2 h-5 w-5" />
-                  Enviar link para definir senha
+                  Receber link de acesso
                 </>
               )}
             </Button>
