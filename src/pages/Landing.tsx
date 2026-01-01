@@ -62,12 +62,12 @@ const ProblemSection = memo(function ProblemSection() {
 
               <div className="mt-10 lg:mt-12 pl-5 lg:pl-6 border-l-[3px] border-landing-cyan/60">
                 <p 
-                  className="text-lg lg:text-xl xl:text-2xl font-semibold text-landing-dark/85 leading-snug"
+                  className="text-lg lg:text-xl xl:text-2xl text-landing-dark/85 leading-snug"
                   style={{ fontFamily: "'Sora', sans-serif" }}
                 >
-                  O problema não é você.
+                  <span className="font-semibold">O problema não é você.</span>
                   <br />
-                  É que essas soluções complicam algo que deveria ser simples.
+                  É que tentaram complicar algo que deveria ser simples.
                 </p>
               </div>
             </ScrollReveal>
