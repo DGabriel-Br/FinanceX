@@ -118,9 +118,11 @@ const HowItWorksSection = memo(function HowItWorksSection() {
                 </div>
                 <span className="text-5xl lg:text-6xl font-bold text-white/[0.06] group-hover:text-white/[0.1] transition-colors duration-500">01</span>
               </div>
-              <h3 className="text-xl lg:text-2xl font-semibold text-white/90 mb-3 lg:mb-4">Você lança o que gastou</h3>
+              <h3 className="text-xl lg:text-2xl font-semibold text-white/90 mb-3 lg:mb-4">Você registra o que gastou</h3>
               <p className="text-white/45 text-base lg:text-lg leading-relaxed">
-                Gastou R$ 45 no mercado? Abre o FinanceX, digita, pronto. Menos de 10 segundos.
+                Gastou R$45 no mercado? Abriu, digitou, pronto.
+                <br />
+                <span className="font-semibold text-white/70">Leva menos de 10 segundos.</span>
               </p>
             </article>
           </ScrollReveal>
