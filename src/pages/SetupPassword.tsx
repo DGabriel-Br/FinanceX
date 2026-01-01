@@ -6,6 +6,7 @@ import { z } from "zod";
 import { Lock, Eye, EyeOff, Loader2, CheckCircle, RefreshCw, Mail } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import { track } from "@/infra/analytics";
 import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { PasswordStrengthMeter } from "@/components/ui/PasswordStrengthMeter";
@@ -82,6 +83,8 @@ export default function SetupPassword() {
           setEmail(data.email);
           setToken(data.token);
           setStatus("found");
+          // Track checkout completed when user arrives with valid token
+          track('checkout_completed');
           break;
         
         case "existing_user":
@@ -214,6 +217,9 @@ export default function SetupPassword() {
         throw new Error("Senha definida, mas ocorreu um erro ao fazer login. Tente fazer login manualmente.");
       }
 
+      // Track password setup completed
+      track('password_setup_completed');
+      
       toast.success("Senha definida com sucesso!");
       navigate("/dashboard");
     } catch (err) {

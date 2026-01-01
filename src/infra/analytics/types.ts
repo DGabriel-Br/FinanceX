@@ -8,6 +8,10 @@ export const ANALYTICS_EVENTS = [
   'signup_completed',
   'first_value',
   'paywall_viewed',
+  'checkout_started',
+  'checkout_completed',
+  'password_setup_completed',
+  'subscription_verified',
 ] as const;
 
 export type AnalyticsEventName = (typeof ANALYTICS_EVENTS)[number];

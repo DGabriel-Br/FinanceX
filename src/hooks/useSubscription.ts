@@ -1,6 +1,7 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuthContext } from '@/contexts/AuthContext';
+import { track } from '@/infra/analytics';
 
 interface UseSubscriptionReturn {
   loading: boolean;
@@ -12,6 +13,7 @@ export function useSubscription(): UseSubscriptionReturn {
   const { user } = useAuthContext();
   const [loading, setLoading] = useState(true);
   const [hasActiveSubscription, setHasActiveSubscription] = useState(false);
+  const hasTrackedRef = useRef(false);
 
   const checkSubscription = useCallback(async () => {
     if (!user?.id) {
@@ -29,7 +31,14 @@ export function useSubscription(): UseSubscriptionReturn {
         console.error('Error checking subscription:', error);
         setHasActiveSubscription(false);
       } else {
-        setHasActiveSubscription(data === true);
+        const isActive = data === true;
+        setHasActiveSubscription(isActive);
+        
+        // Track subscription verified only once per session
+        if (isActive && !hasTrackedRef.current) {
+          hasTrackedRef.current = true;
+          track('subscription_verified');
+        }
       }
     } catch (err) {
       console.error('Error checking subscription:', err);
