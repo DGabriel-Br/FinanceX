@@ -117,7 +117,7 @@ export const PricingSection = memo(function PricingSection() {
                     </>
                   ) : (
                     <>
-                      Experimente de graça
+                      Descobrir quanto sobra agora
                       <ArrowRight className="ml-2 h-4 w-4 lg:h-5 lg:w-5" />
                     </>
                   )}
