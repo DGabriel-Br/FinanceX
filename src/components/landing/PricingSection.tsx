@@ -1,9 +1,8 @@
 import { memo, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
-import { Check, ArrowRight, Loader2 } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { Check, ArrowRight } from 'lucide-react';
+import { CheckoutModal } from '@/components/checkout/CheckoutModal';
 
 const features = [
   { title: 'Uso sem limites', description: 'Lançamentos ilimitados, sem travas.' },
@@ -13,31 +12,7 @@ const features = [
 ];
 
 export const PricingSection = memo(function PricingSection() {
-  const [isLoading, setIsLoading] = useState(false);
-
-  const handleCheckout = async () => {
-    setIsLoading(true);
-    try {
-      const { data, error } = await supabase.functions.invoke('create-checkout');
-      
-      if (error) {
-        console.error('Checkout error:', error);
-        toast.error('Erro ao iniciar checkout. Tente novamente.');
-        return;
-      }
-
-      if (data?.url) {
-        window.open(data.url, '_blank');
-      } else {
-        toast.error('Erro ao obter link de checkout.');
-      }
-    } catch (err) {
-      console.error('Checkout error:', err);
-      toast.error('Erro ao iniciar checkout. Tente novamente.');
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
 
   return (
     <section id="pricing" className="py-16 lg:py-28 bg-landing-dark relative overflow-hidden">
@@ -108,20 +83,10 @@ export const PricingSection = memo(function PricingSection() {
                 <Button 
                   className="w-full h-12 lg:h-14 text-sm lg:text-base rounded-full bg-gradient-to-r from-landing-cyan to-landing-teal text-landing-dark font-semibold hover:shadow-[0_0_40px_rgba(34,211,238,0.4)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-500 border-0" 
                   size="lg" 
-                  onClick={handleCheckout}
-                  disabled={isLoading}
+                  onClick={() => setIsCheckoutOpen(true)}
                 >
-                  {isLoading ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 lg:h-5 lg:w-5 animate-spin" />
-                      Processando...
-                    </>
-                  ) : (
-                    <>
-                      Iniciar teste
-                      <ArrowRight className="ml-2 h-4 w-4 lg:h-5 lg:w-5" />
-                    </>
-                  )}
+                  Iniciar teste
+                  <ArrowRight className="ml-2 h-4 w-4 lg:h-5 lg:w-5" />
                 </Button>
                 <p className="text-center text-white/40 text-xs lg:text-sm mt-4">
                   Ao iniciar o teste, você concorda com a cobrança automática de R$14,90/mês após 3 dias. Você pode cancelar quando quiser, em 1 clique.
@@ -131,6 +96,11 @@ export const PricingSection = memo(function PricingSection() {
           </article>
         </ScrollReveal>
       </div>
+
+      <CheckoutModal 
+        isOpen={isCheckoutOpen} 
+        onClose={() => setIsCheckoutOpen(false)} 
+      />
     </section>
   );
 });
