@@ -174,14 +174,14 @@ const ForWhoSection = memo(function ForWhoSection() {
   const forYou = [
     'Você ganha dinheiro mas não sabe pra onde ele vai',
     'Você quer algo simples que funcione no celular',
-    'Você já desistiu de planilha e de app complicado',
+    'Você já desistiu de planilha e de ferramenta complicada',
     'Você quer clareza, não controle obsessivo'
   ];
 
   const notForYou = [
     'Você quer conectar conta bancária automaticamente',
     'Você precisa de relatórios complexos pra empresa',
-    'Você quer um app gratuito com tudo',
+    'Você quer uma ferramenta gratuita com tudo',
     'Você já tem um sistema que funciona'
   ];
 
