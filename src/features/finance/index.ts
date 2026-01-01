@@ -2,3 +2,5 @@
 // Este é o barrel export principal da feature finance
 
 export * from './components';
+export * from './hooks';
+export * from './state';
