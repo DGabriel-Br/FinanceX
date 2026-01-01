@@ -42,14 +42,20 @@ const ProblemSection = memo(function ProblemSection() {
               
               <div className="space-y-4 lg:space-y-5 text-base lg:text-lg text-landing-dark/55 max-w-2xl">
                 <p className="leading-[1.7]">
-                  Chega no fim do mês e você não entende. Trabalhou, recebeu, não fez nenhuma loucura... 
-                  <span className="text-landing-dark/90 font-medium"> mas o dinheiro sumiu.</span>
+                  Chega no fim do mês e você não entende.
+                  <br />
+                  Trabalhou, recebeu, não fez nenhuma loucura…
+                  <br />
+                  <span className="text-landing-dark/90 font-medium">mas o dinheiro sumiu.</span>
                 </p>
                 <p className="leading-[1.7]">
-                  Você já tentou planilha. Funcionou por uma semana. Depois virou aquele arquivo que você nunca mais abriu.
+                  Você até tentou planilha. Funcionou por uma semana.
+                  <br />
+                  Depois virou mais um arquivo esquecido.
                 </p>
                 <p className="leading-[1.7]">
-                  Ou baixou uma ferramenta cheia de função, conectou com banco, configurou categorias... 
+                  Ou baixou um app cheio de função, conectou banco, configurou tudo…
+                  <br />
                   e desistiu porque era coisa demais.
                 </p>
               </div>
