@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
-import { Dashboard } from '@/components/finance/Dashboard';
-import { useFinanceData } from '@/contexts/FinanceDataContext';
+import { Dashboard } from '@/features/finance/components';
+import { useFinanceData } from '@/features/finance/state';
 
 const DashboardPage = () => {
   const navigate = useNavigate();

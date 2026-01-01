@@ -1,6 +1,6 @@
 import { useNavigate } from 'react-router-dom';
-import { Investments } from '@/components/finance/Investments';
-import { useFinanceData } from '@/contexts/FinanceDataContext';
+import { Investments } from '@/features/finance/components';
+import { useFinanceData } from '@/features/finance/state';
 
 const InvestmentsPage = () => {
   const navigate = useNavigate();
