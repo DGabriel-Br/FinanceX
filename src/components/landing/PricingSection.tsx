@@ -88,9 +88,6 @@ export const PricingSection = memo(function PricingSection() {
                   <p className="text-white/40 text-sm lg:text-base mb-6 lg:mb-8">
                     Menos de R$ 0,50 por dia pra saber exatamente onde seu dinheiro vai.
                   </p>
-                  <p className="text-white/50 text-sm lg:text-base border-t border-white/[0.06] pt-6">
-                    Tudo incluso para controlar seu dinheiro com clareza
-                  </p>
                 </div>
 
                 <ul className="space-y-4 mb-8 lg:mb-10">
