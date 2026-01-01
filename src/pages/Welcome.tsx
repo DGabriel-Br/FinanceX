@@ -201,6 +201,7 @@ export default function Welcome() {
                 </>
               )}
             </Button>
+            <p className="text-white/50 text-xs">Você vai definir sua senha com segurança.</p>
           </div>
         ) : (
           <div className={cn(
