@@ -154,9 +154,11 @@ const HowItWorksSection = memo(function HowItWorksSection() {
                     </div>
                     <span className="text-5xl lg:text-6xl font-bold text-white/[0.06] group-hover:text-white/[0.1] transition-colors duration-500">03</span>
                   </div>
-                  <h3 className="text-xl lg:text-2xl font-semibold text-white/90 mb-3 lg:mb-4">Você vê o que acontece</h3>
+                  <h3 className="text-xl lg:text-2xl font-semibold text-white/90 mb-3 lg:mb-4">Você vê exatamente o que acontece</h3>
                   <p className="text-white/45 text-base lg:text-lg leading-relaxed">
-                    Quanto entrou, quanto saiu, quanto sobrou. Claro, direto, sem gráfico complicado.
+                    Quanto entrou, quanto saiu e quanto sobrou.
+                    <br />
+                    Claro, direto, sem gráfico inútil.
                   </p>
                 </div>
                 <div className="flex justify-center lg:justify-end">
