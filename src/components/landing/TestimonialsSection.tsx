@@ -119,10 +119,10 @@ export const TestimonialsSection = memo(function TestimonialsSection() {
               className="text-2xl sm:text-3xl lg:text-4xl xl:text-[2.75rem] font-bold tracking-[-0.02em] text-landing-dark/90"
               style={{ fontFamily: "'Sora', sans-serif" }}
             >
-              O que nossos usuários dizem
+              O que muda quando você passa a ver seu dinheiro
             </h2>
             <p className="text-landing-dark/45 mt-4 max-w-lg mx-auto text-sm lg:text-base">
-              Histórias reais de pessoas que transformaram sua relação com dinheiro
+              Histórias reais de pessoas que ganharam clareza financeira
             </p>
           </header>
         </ScrollReveal>
