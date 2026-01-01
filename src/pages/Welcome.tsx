@@ -154,7 +154,7 @@ export default function Welcome() {
           "text-3xl sm:text-4xl font-bold text-white mb-4 transition-all duration-500 delay-300",
           showContent ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
         )}>
-          Pronto. Sua conta está criada.
+          Pronto.<br />Sua conta está criada.
         </h1>
 
         {/* Description */}
