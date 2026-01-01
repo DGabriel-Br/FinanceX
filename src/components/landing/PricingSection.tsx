@@ -86,7 +86,7 @@ export const PricingSection = memo(function PricingSection() {
                     <span className="text-white/40 text-base lg:text-lg">/mês</span>
                   </div>
                   <p className="text-white/40 text-sm lg:text-base mb-6 lg:mb-8">
-                    Cancela quando quiser. Sem multa.
+                    Menos de R$ 0,50 por dia pra saber exatamente onde seu dinheiro vai.
                   </p>
                   <p className="text-white/50 text-sm lg:text-base border-t border-white/[0.06] pt-6">
                     Tudo incluso para controlar seu dinheiro com clareza
