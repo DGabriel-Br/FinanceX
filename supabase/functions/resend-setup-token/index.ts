@@ -1,5 +1,5 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
+import { createClient, SupabaseClient } from "https://esm.sh/@supabase/supabase-js@2.57.2";
 
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
@@ -10,6 +10,66 @@ const logStep = (step: string, details?: Record<string, unknown>) => {
   const detailsStr = details ? ` - ${JSON.stringify(details)}` : '';
   console.log(`[RESEND-SETUP-TOKEN] ${step}${detailsStr}`);
 };
+
+// Rate limit check: 1 per minute, 5 per hour
+async function checkRateLimit(supabase: SupabaseClient, email: string): Promise<{ allowed: boolean; message?: string }> {
+  const action = 'resend_setup_token';
+  
+  // Check last minute
+  const oneMinuteAgo = new Date(Date.now() - 60 * 1000).toISOString();
+  const { data: recentEmails, error: recentError } = await supabase
+    .from('email_rate_limits')
+    .select('id')
+    .eq('email', email)
+    .eq('action', action)
+    .gte('created_at', oneMinuteAgo);
+    
+  if (recentError) {
+    logStep("Rate limit check error", { error: recentError.message });
+    return { allowed: true };
+  }
+  
+  if (recentEmails && recentEmails.length >= 1) {
+    logStep("Rate limited - too many requests in last minute", { email, count: recentEmails.length });
+    return { allowed: false, message: "Aguarde 1 minuto antes de solicitar outro email." };
+  }
+  
+  // Check last hour
+  const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+  const { data: hourlyEmails, error: hourlyError } = await supabase
+    .from('email_rate_limits')
+    .select('id')
+    .eq('email', email)
+    .eq('action', action)
+    .gte('created_at', oneHourAgo);
+    
+  if (hourlyError) {
+    logStep("Hourly rate limit check error", { error: hourlyError.message });
+    return { allowed: true };
+  }
+  
+  if (hourlyEmails && hourlyEmails.length >= 5) {
+    logStep("Rate limited - too many requests in last hour", { email, count: hourlyEmails.length });
+    return { allowed: false, message: "Limite de 5 emails por hora atingido. Tente novamente mais tarde." };
+  }
+  
+  return { allowed: true };
+}
+
+async function recordEmailSent(supabase: SupabaseClient, email: string): Promise<void> {
+  const { error } = await supabase
+    .from('email_rate_limits')
+    .insert({ email, action: 'resend_setup_token' });
+    
+  if (error) {
+    logStep("Failed to record rate limit", { error: error.message });
+  }
+  
+  // Cleanup old records occasionally (1% of requests)
+  if (Math.random() < 0.01) {
+    await supabase.rpc('cleanup_old_rate_limits');
+  }
+}
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -35,6 +95,16 @@ serve(async (req) => {
 
     const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
+    // Check rate limit FIRST
+    const rateLimitResult = await checkRateLimit(supabase, email);
+    if (!rateLimitResult.allowed) {
+      logStep("Request rate limited", { email });
+      return new Response(
+        JSON.stringify({ error: rateLimitResult.message }),
+        { headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 429 }
+      );
+    }
+
     // Find user by email
     const { data: userData, error: userError } = await supabase.auth.admin.listUsers();
     if (userError) {
@@ -42,7 +112,7 @@ serve(async (req) => {
       throw new Error("Erro ao buscar usuário");
     }
 
-    const user = userData.users.find(u => u.email === email);
+    const user = userData.users.find((u: { email?: string }) => u.email === email);
     if (!user) {
       logStep("User not found", { email });
       throw new Error("Usuário não encontrado. Verifique se você completou o checkout.");
@@ -88,8 +158,10 @@ serve(async (req) => {
 
     logStep("New token created", { tokenId: tokenData.token });
 
+    // Record email for rate limiting
+    await recordEmailSent(supabase, email);
+
     // Send email with new link
-    const setupUrl = `${supabaseUrl.replace('.supabase.co', '.lovable.app')}/setup-password?token=${tokenData.token}`;
     const appUrl = "https://financex.lovable.app";
     const directSetupUrl = `${appUrl}/setup-password?token=${tokenData.token}`;
 

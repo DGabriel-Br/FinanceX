@@ -182,6 +182,27 @@ export type Database = {
         }
         Relationships: []
       }
+      email_rate_limits: {
+        Row: {
+          action: string
+          created_at: string
+          email: string
+          id: string
+        }
+        Insert: {
+          action: string
+          created_at?: string
+          email: string
+          id?: string
+        }
+        Update: {
+          action?: string
+          created_at?: string
+          email?: string
+          id?: string
+        }
+        Relationships: []
+      }
       hidden_default_categories: {
         Row: {
           category_key: string
@@ -406,10 +427,34 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      profiles_safe: {
+        Row: {
+          created_at: string | null
+          full_name: string | null
+          id: string | null
+          is_blocked: boolean | null
+          last_sign_in_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          full_name?: string | null
+          id?: string | null
+          is_blocked?: boolean | null
+          last_sign_in_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          full_name?: string | null
+          id?: string | null
+          is_blocked?: boolean | null
+          last_sign_in_at?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       check_user_blocked: { Args: { user_id: string }; Returns: boolean }
+      cleanup_old_rate_limits: { Args: never; Returns: undefined }
       delete_user_account: { Args: never; Returns: boolean }
       get_my_profile: {
         Args: never
