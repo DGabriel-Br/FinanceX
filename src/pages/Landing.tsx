@@ -203,10 +203,10 @@ const ForWhoSection = memo(function ForWhoSection() {
   ];
 
   const notForYou = [
-    'Você quer conectar conta bancária automaticamente',
+    'Você quer tudo automático, conectado ao banco',
     'Você precisa de relatórios complexos pra empresa',
-    'Você quer uma ferramenta gratuita com tudo',
-    'Você já tem um sistema que funciona'
+    'Você quer uma ferramenta gratuita que faça tudo',
+    'Você já tem um sistema que resolve seu problema'
   ];
 
   return (
