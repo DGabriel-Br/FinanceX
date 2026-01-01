@@ -88,7 +88,7 @@ const ProblemSection = memo(function ProblemSection() {
 // How It Works Section Component
 const HowItWorksSection = memo(function HowItWorksSection() {
   return (
-    <section className="py-16 lg:py-28 bg-landing-dark relative overflow-hidden">
+    <section className="pt-16 pb-12 lg:pt-28 lg:pb-16 bg-landing-dark relative overflow-hidden">
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_50%_80%_at_20%_40%,rgba(34,211,238,0.06),transparent_50%)]" />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_40%_60%_at_80%_20%,rgba(45,212,191,0.04),transparent_50%)]" />
