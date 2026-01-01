@@ -135,9 +135,11 @@ const HowItWorksSection = memo(function HowItWorksSection() {
                 </div>
                 <span className="text-5xl lg:text-6xl font-bold text-white/[0.06] group-hover:text-white/[0.1] transition-colors duration-500">02</span>
               </div>
-              <h3 className="text-xl lg:text-2xl font-semibold text-white/90 mb-3 lg:mb-4">O FinanceX organiza pra você</h3>
+              <h3 className="text-xl lg:text-2xl font-semibold text-white/90 mb-3 lg:mb-4">O FinanceX organiza sozinho</h3>
               <p className="text-white/45 text-base lg:text-lg leading-relaxed">
-                Categorias prontas. Tudo separado automaticamente. Você não precisa montar nada.
+                Tudo separado em categorias prontas.
+                <br />
+                <span className="font-semibold text-white/70">Você não configura nada.</span>
               </p>
             </article>
           </ScrollReveal>
