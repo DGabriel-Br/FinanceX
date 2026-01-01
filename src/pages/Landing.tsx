@@ -37,7 +37,7 @@ const ProblemSection = memo(function ProblemSection() {
                 className="text-2xl sm:text-3xl lg:text-4xl xl:text-[2.75rem] font-bold tracking-[-0.02em] mb-8 lg:mb-10 leading-tight text-landing-dark/95"
                 style={{ fontFamily: "'Sora', sans-serif" }}
               >
-                Você já passou por isso?
+                Isso já aconteceu com você?
               </h2>
               
               <div className="space-y-4 lg:space-y-5 text-base lg:text-lg text-landing-dark/55 max-w-2xl">
