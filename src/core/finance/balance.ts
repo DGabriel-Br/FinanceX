@@ -97,7 +97,7 @@ export const calculatePreviousYearBalance = (
 
 /**
  * Calcula dados mensais para gráfico (receitas e despesas por mês)
- * O saldo do ano anterior é aplicado apenas no primeiro mês
+ * O saldo remanescente de cada mês é passado para o próximo
  */
 export const calculateMonthlyData = (
   transactions: Transaction[],
@@ -115,38 +115,49 @@ export const calculateMonthlyData = (
   const currentYear = new Date().getFullYear();
   const isCurrentYear = year === currentYear;
 
-  // Inicializa dados mensais
+  // Primeiro, agrupa transações brutas por mês
   const monthlyRaw = MONTHS.map((name, index) => ({
     name,
-    receitas: 0,
-    despesas: 0,
+    receitasBrutas: 0,
+    despesasBrutas: 0,
     month: index,
     isCurrentMonth: isCurrentYear && index === currentMonth,
   }));
 
-  // Agrupa transações por mês
   for (const t of transactions) {
     const [transYear, monthStr] = t.date.split('-');
     if (parseInt(transYear) === year) {
       const monthIndex = parseInt(monthStr) - 1;
       if (monthIndex >= 0 && monthIndex < 12) {
         if (t.type === 'receita') {
-          monthlyRaw[monthIndex].receitas += t.value;
+          monthlyRaw[monthIndex].receitasBrutas += t.value;
         } else {
-          monthlyRaw[monthIndex].despesas += t.value;
+          monthlyRaw[monthIndex].despesasBrutas += t.value;
         }
       }
     }
   }
 
-  // Aplica saldo do ano anterior apenas no primeiro mês (Janeiro)
-  if (previousYearBalance > 0) {
-    monthlyRaw[0].receitas += previousYearBalance;
-  } else if (previousYearBalance < 0) {
-    monthlyRaw[0].despesas += Math.abs(previousYearBalance);
-  }
-
-  return monthlyRaw;
+  // Agora calcula com saldo acumulado mês a mês
+  let saldoAnterior = previousYearBalance;
+  
+  return monthlyRaw.map((month) => {
+    // Receitas = transações de receita + saldo anterior (se positivo)
+    const receitas = month.receitasBrutas + (saldoAnterior > 0 ? saldoAnterior : 0);
+    // Despesas = transações de despesa + |saldo anterior| (se negativo)
+    const despesas = month.despesasBrutas + (saldoAnterior < 0 ? Math.abs(saldoAnterior) : 0);
+    
+    // O saldo deste mês vira o saldo anterior do próximo
+    saldoAnterior = receitas - despesas;
+    
+    return {
+      name: month.name,
+      receitas,
+      despesas,
+      month: month.month,
+      isCurrentMonth: month.isCurrentMonth,
+    };
+  });
 };
 
 // Helper para criar Date a partir de string YYYY-MM-DD sem problemas de fuso
