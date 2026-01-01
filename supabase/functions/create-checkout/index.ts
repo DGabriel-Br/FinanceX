@@ -75,7 +75,7 @@ serve(async (req) => {
       success_url: `${origin}/dashboard?checkout=success`,
       cancel_url: `${origin}/?checkout=canceled`,
       
-      billing_address_collection: "required",
+      billing_address_collection: "auto",
       locale: "pt-BR",
     });
 
