@@ -141,7 +141,7 @@ export const TestimonialsSection = memo(function TestimonialsSection() {
           </div>
         </div>
 
-        <p className="text-center text-sm text-landing-dark/40 mt-6">
+        <p className="text-center text-sm text-landing-dark/40 mt-10 lg:mt-14">
           Pessoas comuns. Problemas comuns. Clareza real.
         </p>
       </div>
