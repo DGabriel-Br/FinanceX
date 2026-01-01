@@ -303,7 +303,7 @@ const FinalCTASection = memo(function FinalCTASection() {
             >
               Menos ansiedade.
               <br />
-              <span className="bg-gradient-to-r from-landing-cyan via-landing-teal to-landing-green bg-clip-text text-transparent whitespace-nowrap inline-block">
+              <span className="bg-gradient-to-r from-landing-cyan via-landing-teal to-landing-green bg-clip-text text-transparent whitespace-nowrap block w-fit mx-auto">
                 Mais clareza sobre seu dinheiro.
               </span>
             </h2>
