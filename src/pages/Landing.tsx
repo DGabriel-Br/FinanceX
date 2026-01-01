@@ -243,7 +243,7 @@ const ForWhoSection = memo(function ForWhoSection() {
                     <div className="h-5 w-5 lg:h-6 lg:w-6 rounded-full bg-landing-green/10 flex items-center justify-center flex-shrink-0 mt-0.5 group-hover:bg-landing-green/15 transition-colors duration-300">
                       <Check className="w-3 h-3 lg:w-3.5 lg:h-3.5 text-landing-green" />
                     </div>
-                    <span className="text-landing-dark/55 text-sm lg:text-base leading-relaxed">{item}</span>
+                    <span className="text-landing-dark/55 text-sm lg:text-base leading-relaxed whitespace-nowrap">{item}</span>
                   </li>
                 ))}
               </ul>
@@ -264,7 +264,7 @@ const ForWhoSection = memo(function ForWhoSection() {
                     <div className="h-5 w-5 lg:h-6 lg:w-6 rounded-full bg-red-50 flex items-center justify-center flex-shrink-0 mt-0.5 group-hover:bg-red-100/60 transition-colors duration-300">
                       <X className="w-3 h-3 lg:w-3.5 lg:h-3.5 text-red-400" />
                     </div>
-                    <span className="text-landing-dark/55 text-sm lg:text-base leading-relaxed">{item}</span>
+                    <span className="text-landing-dark/55 text-sm lg:text-base leading-relaxed whitespace-nowrap">{item}</span>
                   </li>
                 ))}
               </ul>
