@@ -31,7 +31,7 @@ export const HeroSection = memo(function HeroSection() {
                 <span className="text-white/95">Se você não sabe pra onde seu dinheiro vai,</span>
                 <br />
                 <span className="bg-gradient-to-r from-landing-cyan via-landing-teal to-landing-green bg-clip-text text-transparent">
-                  o FinanceX mostra. Simples assim.
+                  descubra quanto sobra antes de gastar. Simples assim.
                 </span>
               </h1>
               
