@@ -56,7 +56,6 @@ export const AppShell = ({ children, onRefresh, onAddTransaction }: AppShellProp
   const [showSplash, setShowSplash] = useState(true);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
-  const [tourHighlightedTab, setTourHighlightedTab] = useState<Tab | null>(null);
 
   // Detecta direção da navegação entre abas
   useEffect(() => {
@@ -71,7 +70,6 @@ export const AppShell = ({ children, onRefresh, onAddTransaction }: AppShellProp
   const { theme, toggleTheme } = useTheme();
   const { user, loading: authLoading, signOut, refreshUser } = useAuthContext();
   const { showValues, toggleValuesVisibility } = useValuesVisibility();
-  const { showTour } = useOnboarding(user?.id);
   const isNativeApp = useIsNativeApp();
   
   // Configura a cor da barra de navegação do Android
@@ -126,8 +124,12 @@ export const AppShell = ({ children, onRefresh, onAddTransaction }: AppShellProp
     return null;
   }
 
-  // Determinar tab destacada baseado no tour
-  const highlightedTab = showTour ? tourHighlightedTab : null;
+  // Handler para adicionar transação (usado pelo onboarding)
+  const handleAddTransactionForOnboarding = async (transaction: any) => {
+    if (onAddTransaction) {
+      await onAddTransaction(transaction);
+    }
+  };
 
   return (
     <>
@@ -152,7 +154,7 @@ export const AppShell = ({ children, onRefresh, onAddTransaction }: AppShellProp
             showValues={showValues}
             onToggleValues={toggleValuesVisibility}
             onSignOut={handleSignOutRequest}
-            highlightedTab={highlightedTab}
+            highlightedTab={null}
           />
         }
         mobileNavSlot={
@@ -163,7 +165,7 @@ export const AppShell = ({ children, onRefresh, onAddTransaction }: AppShellProp
               onToggleTheme={toggleTheme}
               userEmail={user.email}
               onSignOut={handleSignOutRequest}
-              highlightedTab={highlightedTab}
+              highlightedTab={null}
               onAddTransaction={onAddTransaction}
             />
           ) : null
@@ -172,10 +174,10 @@ export const AppShell = ({ children, onRefresh, onAddTransaction }: AppShellProp
         {children}
       </AppShellLayout>
 
-      {/* Onboarding tour */}
+      {/* Onboarding focado em ação */}
       <AppShellOnboardingGate
         userId={user.id}
-        onHighlightedTabChange={setTourHighlightedTab}
+        onAddTransaction={handleAddTransactionForOnboarding}
       >
         {null}
       </AppShellOnboardingGate>
