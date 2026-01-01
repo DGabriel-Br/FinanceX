@@ -62,7 +62,7 @@ const ProblemSection = memo(function ProblemSection() {
 
               <div className="mt-10 lg:mt-12 pl-5 lg:pl-6 border-l-[3px] border-landing-cyan/60">
                 <p 
-                  className="text-lg lg:text-xl xl:text-2xl text-landing-dark/55 leading-snug"
+                  className="text-lg lg:text-xl xl:text-2xl text-landing-dark/85 leading-snug"
                   style={{ fontFamily: "'Sora', sans-serif" }}
                 >
                   <span className="font-semibold">O problema não é você.</span>
