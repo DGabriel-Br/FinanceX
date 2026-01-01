@@ -24,6 +24,10 @@ const faqs = [
     question: 'É difícil de usar?',
     answer: 'Não. Se você sabe digitar um valor, sabe usar o FinanceX. Não tem configuração, não tem curva de aprendizado.',
   },
+  {
+    question: 'Isso serve pra controle financeiro avançado?',
+    answer: 'Não. O FinanceX é feito pra quem quer clareza, não controle obsessivo. Se você procura relatórios complexos, essa ferramenta não é pra você.',
+  },
 ];
 
 export const FAQSection = memo(function FAQSection() {
