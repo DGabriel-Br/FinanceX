@@ -80,8 +80,8 @@ export const Sidebar = ({
       <nav className="flex-1 px-3 overflow-hidden">
         <ul className="space-y-1">
         {menuItems.map(item => {
-            // Se há um highlightedTab (durante o tour), usa ele; senão, usa activeTab
-            const isActive = highlightedTab ? highlightedTab === item.id : activeTab === item.id;
+            const isActive = activeTab === item.id;
+            const isHighlighted = highlightedTab === item.id;
             const Icon = item.icon;
             
             return (
@@ -89,13 +89,14 @@ export const Sidebar = ({
                 <Link
                   to={`/${item.id}`}
                   title={collapsed ? item.label : undefined}
-                  data-tour={item.tourId}
+                  data-tour={item.id}
                   className={cn(
-                    'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors duration-200',
+                    'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-all duration-200',
                     collapsed && 'justify-center px-0',
-                    isActive
+                    isActive || isHighlighted
                       ? 'bg-primary text-primary-foreground'
-                      : 'text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
+                      : 'text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
+                    isHighlighted && 'ring-2 ring-primary ring-offset-2 ring-offset-sidebar'
                   )}
                 >
                   <div className="w-5 h-5 flex items-center justify-center flex-shrink-0">
