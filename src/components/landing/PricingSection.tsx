@@ -2,8 +2,8 @@ import { memo, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
 import { Check, ArrowRight, Loader2 } from 'lucide-react';
-import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
+import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { StripePaymentForm } from '@/components/payment/StripePaymentForm';
 
 const features = [
   { title: 'Registre seus gastos em minutos', description: 'Sem planilha, sem banco conectado, sem setup chato.' },
@@ -13,30 +13,11 @@ const features = [
 ];
 
 export const PricingSection = memo(function PricingSection() {
-  const [isLoading, setIsLoading] = useState(false);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
 
-  const handleCheckout = async () => {
-    setIsLoading(true);
-    try {
-      const { data, error } = await supabase.functions.invoke('create-checkout');
-      
-      if (error) {
-        console.error('Checkout error:', error);
-        toast.error('Erro ao iniciar checkout. Tente novamente.');
-        return;
-      }
-
-      if (data?.url) {
-        window.location.href = data.url;
-      } else {
-        toast.error('Erro ao obter link de checkout.');
-      }
-    } catch (err) {
-      console.error('Checkout error:', err);
-      toast.error('Erro ao iniciar checkout. Tente novamente.');
-    } finally {
-      setIsLoading(false);
-    }
+  const handleSuccess = () => {
+    setShowPaymentModal(false);
+    window.location.href = '/bem-vindo?checkout=success';
   };
 
   return (
@@ -107,20 +88,10 @@ export const PricingSection = memo(function PricingSection() {
                 <Button 
                   className="w-full h-12 lg:h-14 text-sm lg:text-base rounded-full bg-gradient-to-r from-landing-cyan to-landing-teal text-landing-dark font-semibold hover:shadow-[0_0_40px_rgba(34,211,238,0.4)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-500 border-0" 
                   size="lg" 
-                  onClick={handleCheckout}
-                  disabled={isLoading}
+                  onClick={() => setShowPaymentModal(true)}
                 >
-                  {isLoading ? (
-                    <>
-                      <Loader2 className="mr-2 h-4 w-4 lg:h-5 lg:w-5 animate-spin" />
-                      Processando...
-                    </>
-                  ) : (
-                    <>
-                      Descobrir quanto sobra agora
-                      <ArrowRight className="ml-2 h-4 w-4 lg:h-5 lg:w-5" />
-                    </>
-                  )}
+                  Descobrir quanto sobra agora
+                  <ArrowRight className="ml-2 h-4 w-4 lg:h-5 lg:w-5" />
                 </Button>
                 <p className="text-center text-white/40 text-xs lg:text-sm mt-4 leading-relaxed">
                   Teste grátis por 3 dias • Depois, R$14,90/mês<br />
@@ -131,6 +102,23 @@ export const PricingSection = memo(function PricingSection() {
           </article>
         </ScrollReveal>
       </div>
+
+      <Dialog open={showPaymentModal} onOpenChange={setShowPaymentModal}>
+        <DialogContent className="bg-landing-dark border-white/10 max-w-md p-6">
+          <div className="mb-6">
+            <h3 className="text-xl font-semibold text-white mb-2" style={{ fontFamily: "'Sora', sans-serif" }}>
+              Comece seu teste grátis
+            </h3>
+            <p className="text-white/60 text-sm">
+              3 dias grátis, depois R$14,90/mês
+            </p>
+          </div>
+          <StripePaymentForm 
+            onSuccess={handleSuccess}
+            onCancel={() => setShowPaymentModal(false)}
+          />
+        </DialogContent>
+      </Dialog>
     </section>
   );
 });
