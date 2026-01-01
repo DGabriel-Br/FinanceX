@@ -57,6 +57,9 @@ export const HeroSection = memo(function HeroSection() {
                   Já tenho conta
                 </Button>
               </div>
+              <p className="text-sm text-white/40 mt-4">
+                Teste grátis por 3 dias • Cancele quando quiser
+              </p>
             </ScrollReveal>
           </div>
 
