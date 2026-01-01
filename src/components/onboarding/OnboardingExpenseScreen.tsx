@@ -100,7 +100,17 @@ export const OnboardingExpenseScreen = ({ onSave }: OnboardingExpenseScreenProps
       <div className="w-full max-w-xs mb-10">
         <Select value={category} onValueChange={(val) => setCategory(val as ExpenseCategory)}>
           <SelectTrigger className="h-12">
-            <SelectValue placeholder="Categoria" />
+            <SelectValue placeholder="Categoria">
+              {(() => {
+                const SelectedIcon = expenseCategoryIcons[category];
+                return (
+                  <div className="flex items-center gap-2">
+                    <SelectedIcon className="w-4 h-4 text-muted-foreground" />
+                    <span>{expenseCategoryLabels[category]}</span>
+                  </div>
+                );
+              })()}
+            </SelectValue>
           </SelectTrigger>
           <SelectContent className="z-[60] bg-background border border-border">
             {EXPENSE_CATEGORIES.map((cat) => {
