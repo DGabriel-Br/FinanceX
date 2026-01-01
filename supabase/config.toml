@@ -11,9 +11,3 @@ verify_jwt = false
 
 [functions.get-checkout-session]
 verify_jwt = false
-
-[functions.create-setup-intent]
-verify_jwt = false
-
-[functions.create-subscription]
-verify_jwt = false
