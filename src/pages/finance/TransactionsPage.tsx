@@ -1,5 +1,5 @@
-import { Transactions } from '@/components/finance/Transactions';
-import { useFinanceData } from '@/contexts/FinanceDataContext';
+import { Transactions } from '@/features/finance/components';
+import { useFinanceData } from '@/features/finance/state';
 
 const TransactionsPage = () => {
   const {

@@ -1,5 +1,5 @@
-import { Debts } from '@/components/finance/Debts';
-import { useFinanceData } from '@/contexts/FinanceDataContext';
+import { Debts } from '@/features/finance/components';
+import { useFinanceData } from '@/features/finance/state';
 
 const DebtsPage = () => {
   const {
