@@ -1,13 +1,14 @@
 import { ReactNode, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthContext } from '@/contexts/AuthContext';
+import { SubscriptionGate } from '@/components/auth/SubscriptionGate';
 
 interface AppShellAuthGateProps {
   children: ReactNode;
 }
 
 /**
- * Responsável por validar sessão e redirecionar usuário não autenticado
+ * Responsável por validar sessão, verificar subscription e redirecionar usuário não autenticado
  */
 export const AppShellAuthGate = ({ children }: AppShellAuthGateProps) => {
   const navigate = useNavigate();
@@ -29,5 +30,6 @@ export const AppShellAuthGate = ({ children }: AppShellAuthGateProps) => {
     return null;
   }
 
-  return <>{children}</>;
+  // Wrap children with SubscriptionGate to verify active subscription
+  return <SubscriptionGate>{children}</SubscriptionGate>;
 };
