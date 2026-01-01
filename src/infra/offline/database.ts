@@ -75,6 +75,12 @@ export interface OperationQueueItem {
   payload?: Record<string, unknown>; // Dados para criar/atualizar
 }
 
+// Cursor para sync incremental (updated_at, id)
+export interface SyncCursor {
+  updatedAt: string; // ISO string de TIMESTAMPTZ
+  id: string;
+}
+
 // Metadados de sincronização
 export interface SyncMeta {
   id: string;
@@ -82,6 +88,7 @@ export interface SyncMeta {
   lastSyncAt: number;
   lastFullSyncAt?: number;
   syncVersion: number;
+  lastCursor?: SyncCursor;
 }
 
 // Configurações do usuário local

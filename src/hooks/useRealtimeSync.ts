@@ -45,6 +45,9 @@ export const useRealtimeSync = () => {
           return;
         }
         
+        // Usar updated_at do servidor (TIMESTAMPTZ)
+        const serverUpdatedAtMs = new Date(record.updated_at).getTime();
+        
         await db.transactions.put({
           id: record.id,
           type: record.type,
@@ -56,7 +59,7 @@ export const useRealtimeSync = () => {
           userId: record.user_id,
           syncStatus: 'synced',
           localUpdatedAt: existing?.localUpdatedAt || Date.now(),
-          serverUpdatedAt: Date.now(),
+          serverUpdatedAt: serverUpdatedAtMs,
           version: (existing?.version || 0) + 1,
         });
       } else if (payload.eventType === 'DELETE') {
@@ -111,6 +114,9 @@ export const useRealtimeSync = () => {
           return;
         }
         
+        // Usar updated_at do servidor (TIMESTAMPTZ)
+        const serverUpdatedAtMs = new Date(record.updated_at).getTime();
+        
         await db.debts.put({
           id: record.id,
           name: record.name,
@@ -122,7 +128,7 @@ export const useRealtimeSync = () => {
           userId: record.user_id,
           syncStatus: 'synced',
           localUpdatedAt: existing?.localUpdatedAt || Date.now(),
-          serverUpdatedAt: Date.now(),
+          serverUpdatedAt: serverUpdatedAtMs,
           version: (existing?.version || 0) + 1,
         });
       } else if (payload.eventType === 'DELETE') {
@@ -176,6 +182,9 @@ export const useRealtimeSync = () => {
           return;
         }
         
+        // Usar updated_at do servidor (TIMESTAMPTZ)
+        const serverUpdatedAtMs = new Date(record.updated_at).getTime();
+        
         await db.investmentGoals.put({
           id: record.id,
           type: record.type,
@@ -184,7 +193,7 @@ export const useRealtimeSync = () => {
           userId: record.user_id,
           syncStatus: 'synced',
           localUpdatedAt: existing?.localUpdatedAt || Date.now(),
-          serverUpdatedAt: Date.now(),
+          serverUpdatedAt: serverUpdatedAtMs,
           version: (existing?.version || 0) + 1,
         });
       } else if (payload.eventType === 'DELETE') {
