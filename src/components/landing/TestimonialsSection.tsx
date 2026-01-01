@@ -10,7 +10,8 @@ const testimonials = [
     borderHover: 'hover:border-landing-cyan/20',
     lineColor: 'via-landing-cyan/30',
     quote: 'Eu já tinha desistido de controlar meu dinheiro. Planilha, app de banco, caderninho… nada funcionava.',
-    highlight: 'O FinanceX foi o primeiro que realmente me deu clareza. Em 2 meses, eu sabia exatamente pra onde ia cada centavo.',
+    highlight: 'O FinanceX foi o primeiro que realmente me deu clareza.',
+    afterHighlight: 'Em 2 meses, eu sabia exatamente pra onde ia cada centavo.',
     featured: true,
     delay: 0,
   },
@@ -88,7 +89,7 @@ const TestimonialCard = memo(function TestimonialCard({
         </div>
         
         <blockquote className={`text-landing-dark/60 ${testimonial.featured ? 'text-base lg:text-lg' : 'text-base'} leading-relaxed`}>
-          "{testimonial.quote} <span className="text-landing-dark/85 font-medium">{testimonial.highlight}</span>"
+          "{testimonial.quote} <span className="text-landing-dark/85 font-medium">{testimonial.highlight}</span>{testimonial.afterHighlight ? ` ${testimonial.afterHighlight}` : ''}"
         </blockquote>
       </div>
     </ScrollReveal>
