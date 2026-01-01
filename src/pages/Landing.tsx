@@ -54,7 +54,7 @@ const ProblemSection = memo(function ProblemSection() {
                 <p className="leading-[1.7]">
                   Ou baixou um app cheio de função, conectou banco, configurou tudo…
                   <br />
-                  e desistiu porque era coisa demais.
+                  <span className="text-landing-dark/90 font-medium">e desistiu porque era coisa demais.</span>
                 </p>
               </div>
 
