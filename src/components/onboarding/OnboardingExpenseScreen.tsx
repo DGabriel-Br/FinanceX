@@ -20,6 +20,8 @@ const EXPENSE_CATEGORIES: ExpenseCategory[] = [
   'delivery',
   'transporte',
   'contas_fixas',
+  'investimentos',
+  'dividas',
   'educacao',
   'outros_despesa',
 ];
