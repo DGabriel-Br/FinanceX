@@ -26,10 +26,10 @@ export const LandingHeader = memo(function LandingHeader() {
               <Link to="/login">Entrar</Link>
             </Button>
             <Button 
-              asChild 
+              onClick={() => document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' })}
               className="hidden sm:inline-flex rounded-full px-5 lg:px-6 h-9 lg:h-10 bg-gradient-to-r from-landing-cyan to-landing-teal text-landing-dark font-semibold text-sm hover:shadow-[0_0_24px_rgba(34,211,238,0.4)] transition-all duration-500 border-0"
             >
-              <Link to="/cadastro">Começar agora</Link>
+              Começar agora
             </Button>
           </div>
         </div>
