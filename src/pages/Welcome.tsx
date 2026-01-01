@@ -162,9 +162,9 @@ export default function Welcome() {
           "text-white/60 text-base sm:text-lg mb-8 transition-all duration-500 delay-400",
           showContent ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
         )}>
-          Seu período de teste de 3 dias já começou.
+          Seu teste gratuito de <strong className="text-white">3 dias já começou.</strong>
           <br />
-          {emailSent ? 'Verifique seu email para definir sua senha.' : 'Defina sua senha para acessar.'}
+          {emailSent ? 'Verifique seu email para definir sua senha.' : 'Agora é só acessar o FinanceX.'}
         </p>
 
         {!emailSent ? (
