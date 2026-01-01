@@ -20,7 +20,8 @@ import {
   Plus,
   X,
   Trash2,
-  AlertTriangle
+  AlertTriangle,
+  CreditCard
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -101,7 +102,9 @@ export default function Settings() {
   // Estado para deletar conta
   const [isDeletingAccount, setIsDeletingAccount] = useState(false);
   const [deleteConfirmText, setDeleteConfirmText] = useState('');
-
+  
+  // Estado para portal do cliente
+  const [isLoadingPortal, setIsLoadingPortal] = useState(false);
   useEffect(() => {
     if (user?.user_metadata?.full_name) {
       setName(user.user_metadata.full_name);
@@ -307,6 +310,34 @@ export default function Settings() {
     }
   };
 
+  const handleOpenCustomerPortal = async () => {
+    setIsLoadingPortal(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('customer-portal', {
+        body: { return_url: window.location.href }
+      });
+      
+      if (error) {
+        console.error('Portal error:', error);
+        toast.error('Erro ao acessar portal. Tente novamente.');
+        return;
+      }
+
+      if (data?.url) {
+        window.open(data.url, '_blank');
+      } else if (data?.error) {
+        toast.error(data.error);
+      } else {
+        toast.error('Erro ao obter link do portal.');
+      }
+    } catch (err) {
+      console.error('Portal error:', err);
+      toast.error('Erro ao acessar portal. Tente novamente.');
+    } finally {
+      setIsLoadingPortal(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
@@ -436,6 +467,26 @@ export default function Settings() {
               <Cog className="w-6 h-6 text-primary stroke-[1.5]" />
               <span className="text-xs font-medium text-foreground leading-tight text-left">
                 Preferências
+              </span>
+            </button>
+
+            {/* Card Assinatura */}
+            <button
+              onClick={handleOpenCustomerPortal}
+              disabled={isLoadingPortal}
+              className="group flex flex-col items-start justify-between p-4 bg-muted rounded-2xl hover:bg-muted/80 active:scale-[0.97] transition-all h-[100px] animate-fade-in opacity-0 disabled:opacity-50 col-span-3"
+              style={{ animationDelay: '0.35s', animationFillMode: 'forwards' }}
+            >
+              <div className="flex items-center justify-between w-full">
+                {isLoadingPortal ? (
+                  <Loader2 className="w-6 h-6 text-primary stroke-[1.5] animate-spin" />
+                ) : (
+                  <CreditCard className="w-6 h-6 text-primary stroke-[1.5]" />
+                )}
+                <ChevronRight className="w-5 h-5 text-muted-foreground" />
+              </div>
+              <span className="text-xs font-medium text-foreground leading-tight text-left">
+                Gerenciar assinatura
               </span>
             </button>
           </div>
@@ -780,6 +831,21 @@ export default function Settings() {
                   <div className="flex items-center gap-3">
                     <Tag className="w-5 h-5 text-primary" />
                     <span className="text-sm font-medium">Gerenciar categorias</span>
+                  </div>
+                  <ChevronRight className="w-5 h-5 text-muted-foreground" />
+                </button>
+                <button
+                  onClick={handleOpenCustomerPortal}
+                  disabled={isLoadingPortal}
+                  className="w-full flex items-center justify-between p-3 bg-muted/50 rounded-xl hover:bg-muted transition-colors disabled:opacity-50"
+                >
+                  <div className="flex items-center gap-3">
+                    {isLoadingPortal ? (
+                      <Loader2 className="w-5 h-5 text-primary animate-spin" />
+                    ) : (
+                      <CreditCard className="w-5 h-5 text-primary" />
+                    )}
+                    <span className="text-sm font-medium">Gerenciar assinatura</span>
                   </div>
                   <ChevronRight className="w-5 h-5 text-muted-foreground" />
                 </button>
