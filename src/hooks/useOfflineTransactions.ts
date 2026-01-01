@@ -8,6 +8,7 @@ import { syncService } from '@/infra/offline/syncService';
 import { offlineAdd, offlineUpdate, offlineDelete, transactionMessages } from '@/infra/offline/repository';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useAuthContext } from '@/contexts/AuthContext';
+import { track, hasFirstValueEvent } from '@/infra/analytics';
 
 // Função para obter data local no formato YYYY-MM-DD
 export const getLocalDateString = (date: Date = new Date()): string => {
@@ -68,6 +69,9 @@ export const useOfflineTransactions = () => {
     if (!userId) return;
 
     const tempId = generateTempId();
+    
+    // Check if this is the first transaction for first_value event
+    const isFirstTransaction = !hasFirstValueEvent() && transactions.length === 0;
 
     await offlineAdd<LocalTransaction, { id: string; created_at: number }>({
       tempId,
@@ -119,7 +123,15 @@ export const useOfflineTransactions = () => {
         });
       },
     });
-  }, [userId]);
+    
+    // Track first_value event after successful add
+    if (isFirstTransaction) {
+      track('first_value', {
+        transaction_type: transaction.type,
+        category: transaction.category,
+      });
+    }
+  }, [userId, transactions.length]);
 
   // Atualizar transação
   const updateTransaction = useCallback(async (id: string, updates: Partial<Omit<Transaction, 'id' | 'createdAt'>>) => {

@@ -3,7 +3,9 @@
  * Only logs to console in development mode to prevent information leakage in production
  */
 
-const isDev = import.meta.env.DEV;
+import { env } from '@/infra/config';
+
+const isDev = env.DEV;
 
 export const logger = {
   /**

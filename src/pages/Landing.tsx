@@ -1,4 +1,5 @@
 import { useEffect, memo } from 'react';
+import { track } from '@/infra/analytics';
 import { Button } from '@/components/ui/button';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
 import { 
@@ -329,6 +330,7 @@ const FinalCTASection = memo(function FinalCTASection() {
 export default function Landing() {
   useEffect(() => {
     document.title = 'FinanceX - Veja pra onde seu dinheiro vai';
+    track('landing_viewed');
   }, []);
 
   return (

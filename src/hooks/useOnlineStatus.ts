@@ -3,6 +3,7 @@ import { syncService } from '@/infra/offline/syncService';
 import { toast } from 'sonner';
 import { Capacitor } from '@capacitor/core';
 import { App } from '@capacitor/app';
+import { env } from '@/infra/config';
 
 /**
  * Verifica conectividade real fazendo um ping para um endpoint confiável
@@ -13,7 +14,7 @@ const checkRealConnectivity = async (): Promise<boolean> => {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 5000);
     
-    const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+    const supabaseUrl = env.VITE_SUPABASE_URL;
     if (supabaseUrl) {
       const response = await fetch(`${supabaseUrl}/rest/v1/`, {
         method: 'HEAD',

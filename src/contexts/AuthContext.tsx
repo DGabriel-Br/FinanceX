@@ -10,6 +10,7 @@ import {
 } from '@/lib/secureStorage';
 import { db } from '@/infra/offline/database';
 import { logger } from '@/lib/logger';
+import { identify, trackAndIdentify, resetIdentity } from '@/infra/analytics';
 
 interface LoginResult {
   error: any;
@@ -80,7 +81,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const signUp = async (email: string, password: string, name?: string) => {
     const redirectUrl = `${window.location.origin}/dashboard`;
     
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -90,6 +91,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         }
       }
     });
+    
+    // Track signup_completed and identify user on success
+    if (!error && data.user) {
+      await trackAndIdentify('signup_completed', data.user.id, { 
+        signup_method: 'email' 
+      });
+    }
+    
     return { error };
   };
 
@@ -149,6 +158,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         .eq('id', data.user.id);
     }
     
+    // Identify user for analytics
+    if (data.user) {
+      identify(data.user.id);
+    }
+    
     // Success - reset attempt counter
     await resetLoginAttempts();
     return { error: null };
@@ -183,6 +197,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         // The app will recreate the database on next login.
       }
     }
+    
+    // Reset analytics identity on logout
+    resetIdentity();
     
     const { error } = await supabase.auth.signOut();
     return { error };
