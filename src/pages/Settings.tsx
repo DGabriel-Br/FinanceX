@@ -21,7 +21,8 @@ import {
   X,
   Trash2,
   AlertTriangle,
-  CreditCard
+  CreditCard,
+  RotateCcw
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -36,6 +37,7 @@ import { cn } from '@/lib/utils';
 import { useTheme } from '@/hooks/useTheme';
 import { useIsNativeApp } from '@/hooks/useIsNativeApp';
 import { useCustomCategories } from '@/hooks/useCustomCategories';
+import { useOnboarding } from '@/hooks/useOnboarding';
 import { incomeCategoryLabels, expenseCategoryLabels } from '@/types/transaction';
 import {
   Sheet,
@@ -77,6 +79,7 @@ export default function Settings() {
   const { user, loading, refreshUser, signOut } = useAuthContext();
   const { theme, toggleTheme } = useTheme();
   const isNativeApp = useIsNativeApp();
+  const { resetOnboarding } = useOnboarding(user?.id);
   
   // Estado para seção ativa
   const [activeSection, setActiveSection] = useState<SettingsSection>(null);
@@ -846,6 +849,19 @@ export default function Settings() {
                       <CreditCard className="w-5 h-5 text-primary" />
                     )}
                     <span className="text-sm font-medium">Gerenciar assinatura</span>
+                  </div>
+                  <ChevronRight className="w-5 h-5 text-muted-foreground" />
+                </button>
+                <button
+                  onClick={() => {
+                    resetOnboarding();
+                    toast.success('Onboarding resetado. Volte à página inicial para testar.');
+                  }}
+                  className="w-full flex items-center justify-between p-3 bg-muted/50 rounded-xl hover:bg-muted transition-colors"
+                >
+                  <div className="flex items-center gap-3">
+                    <RotateCcw className="w-5 h-5 text-primary" />
+                    <span className="text-sm font-medium">Resetar onboarding</span>
                   </div>
                   <ChevronRight className="w-5 h-5 text-muted-foreground" />
                 </button>
