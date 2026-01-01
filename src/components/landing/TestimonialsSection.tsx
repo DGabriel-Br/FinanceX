@@ -44,7 +44,7 @@ const testimonials = [
     gradient: 'from-landing-cyan to-landing-teal',
     borderHover: 'hover:border-landing-cyan/20',
     lineColor: 'via-landing-cyan/30',
-    quote: 'O melhor é a praticidade. Lanço os gastos na hora, sem complicação. Simples como deveria ser.',
+    quote: 'O melhor é a praticidade. Lanço os gastos na hora, sem complicação.',
     highlight: 'Praticidade total.',
     delay: 180,
   },
