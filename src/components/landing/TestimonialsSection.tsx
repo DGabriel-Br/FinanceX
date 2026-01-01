@@ -88,9 +88,8 @@ const TestimonialCard = memo(function TestimonialCard({
           <StarRating size={starSize} />
         </div>
         
-        <blockquote className={`text-landing-dark/60 ${testimonial.featured ? 'text-base lg:text-lg' : 'text-base'} leading-relaxed whitespace-pre-line`}>
-          "{testimonial.quote}
-<span className="text-landing-dark/85 font-medium">{testimonial.highlight}</span>{testimonial.afterHighlight ? ` ${testimonial.afterHighlight}` : ''}"
+        <blockquote className={`text-landing-dark/60 ${testimonial.featured ? 'text-base lg:text-lg' : 'text-base'} leading-relaxed`}>
+          "{testimonial.quote} <span className="text-landing-dark/85 font-medium">{testimonial.highlight}</span>{testimonial.afterHighlight ? ` ${testimonial.afterHighlight}` : ''}"
         </blockquote>
       </div>
     </ScrollReveal>
