@@ -100,7 +100,7 @@ export const OnboardingExpenseScreen = ({ onSave }: OnboardingExpenseScreenProps
           <SelectTrigger className="h-12">
             <SelectValue placeholder="Categoria" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent className="z-[60] bg-background border border-border">
             {EXPENSE_CATEGORIES.map((cat) => (
               <SelectItem key={cat} value={cat}>
                 {expenseCategoryLabels[cat]}
