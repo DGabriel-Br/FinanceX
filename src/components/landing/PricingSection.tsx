@@ -8,8 +8,8 @@ import { toast } from 'sonner';
 const features = [
   { title: 'Uso sem limites', description: 'Lançamentos ilimitados, sem travas.' },
   { title: 'Controle completo', description: 'Dívidas e investimentos no mesmo lugar.' },
-  { title: 'Funciona na vida real', description: 'Offline no celular, mesmo sem internet.' },
-  { title: 'Sempre sincronizado', description: 'Dados atualizados em todos os dispositivos.' }
+  { title: 'Simples de usar', description: 'Interface limpa, sem complicação.' },
+  { title: 'Dados seguros', description: 'Suas informações protegidas e privadas.' }
 ];
 
 export const PricingSection = memo(function PricingSection() {

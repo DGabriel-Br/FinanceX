@@ -43,7 +43,7 @@ const testimonials = [
     gradient: 'from-landing-cyan to-landing-teal',
     borderHover: 'hover:border-landing-cyan/20',
     lineColor: 'via-landing-cyan/30',
-    quote: 'O melhor é que funciona offline. Lanço os gastos na hora, mesmo sem internet. Quando chego em casa, já está tudo sincronizado.',
+    quote: 'O melhor é a praticidade. Lanço os gastos na hora, sem complicação. Simples como deveria ser.',
     highlight: 'Praticidade total.',
     delay: 180,
   },

@@ -13,16 +13,16 @@ const faqs = [
     answer: 'Sim. Você pode cancelar a qualquer momento, direto pelo FinanceX. Sem multa, sem burocracia.',
   },
   {
-    question: 'Funciona offline?',
-    answer: 'Funciona sim. Você pode lançar gastos mesmo sem internet. Quando a conexão voltar, tudo sincroniza automaticamente.',
-  },
-  {
     question: 'Preciso conectar minha conta bancária?',
     answer: 'Não. O FinanceX é manual e simples. Você lança apenas o que quiser, quando quiser.',
   },
   {
     question: 'Meus dados ficam seguros?',
     answer: 'Ficam. Seus dados são privados e ninguém além de você tem acesso.',
+  },
+  {
+    question: 'É difícil de usar?',
+    answer: 'Não. Você lança o que gastou em segundos. Sem configuração complicada.',
   },
 ];
 
