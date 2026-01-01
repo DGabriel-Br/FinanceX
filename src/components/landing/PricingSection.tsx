@@ -6,10 +6,10 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 
 const features = [
-  { title: 'Uso sem limites', description: 'Lançamentos ilimitados, sem travas.' },
-  { title: 'Controle completo', description: 'Dívidas e investimentos no mesmo lugar.' },
-  { title: 'Simples de usar', description: 'Interface limpa, sem complicação.' },
-  { title: 'Dados seguros', description: 'Suas informações protegidas e privadas.' }
+  { title: 'Registre seus gastos em minutos', description: 'Sem planilha, sem banco conectado, sem setup chato.' },
+  { title: 'Veja quanto SOBRA antes de gastar', description: 'Clareza real pra decidir com consciência.' },
+  { title: 'Organização simples e objetiva', description: 'Você olha e entende. Sem gráfico inútil.' },
+  { title: 'Acesso imediato pelo navegador', description: 'Entrou, usou, entendeu. Simples assim.' }
 ];
 
 export const PricingSection = memo(function PricingSection() {
