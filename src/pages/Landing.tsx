@@ -301,9 +301,8 @@ const FinalCTASection = memo(function FinalCTASection() {
               className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-[-0.02em] text-white/95 mb-5 lg:mb-6"
               style={{ fontFamily: "'Sora', sans-serif" }}
             >
-              Menos ansiedade.
-              <br />
-              <span className="bg-gradient-to-r from-landing-cyan via-landing-teal to-landing-green bg-clip-text text-transparent whitespace-nowrap block w-fit mx-auto">
+              <span className="block">Menos ansiedade.</span>
+              <span className="bg-gradient-to-r from-landing-cyan via-landing-teal to-landing-green bg-clip-text text-transparent">
                 Mais clareza sobre seu dinheiro.
               </span>
             </h2>
