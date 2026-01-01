@@ -74,7 +74,7 @@ serve(async (req) => {
       },
       success_url: `${origin}/dashboard?checkout=success`,
       cancel_url: `${origin}/?checkout=canceled`,
-      allow_promotion_codes: true,
+      
       billing_address_collection: "required",
       locale: "pt-BR",
     });
