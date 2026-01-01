@@ -173,7 +173,7 @@ const HowItWorksSection = memo(function HowItWorksSection() {
 const ForWhoSection = memo(function ForWhoSection() {
   const forYou = [
     'Você ganha dinheiro mas não sabe pra onde ele vai',
-    'Você quer algo simples que funcione no celular',
+    'Você quer algo simples que funcione',
     'Você já desistiu de planilha e de ferramenta complicada',
     'Você quer clareza, não controle obsessivo'
   ];
