@@ -223,7 +223,7 @@ const ForWhoSection = memo(function ForWhoSection() {
               className="text-2xl sm:text-3xl lg:text-4xl xl:text-[2.75rem] font-bold tracking-[-0.02em] text-landing-dark/95"
               style={{ fontFamily: "'Sora', sans-serif" }}
             >
-              Pra quem o FinanceX faz sentido (e pra quem não faz)
+              Pra quem o FinanceX faz sentido<br />(e pra quem não faz)
             </h2>
           </header>
         </ScrollReveal>
