@@ -98,7 +98,7 @@ export const PricingSection = memo(function PricingSection() {
                       <Check className="w-5 h-5 text-landing-green flex-shrink-0 mt-0.5" aria-hidden="true" />
                       <div>
                         <span className="text-white/90 font-semibold text-sm lg:text-base block">{feature.title}</span>
-                        <span className="text-white/50 text-sm">{feature.description}</span>
+                        <span className="text-white/50 text-sm whitespace-nowrap">{feature.description}</span>
                       </div>
                     </li>
                   ))}
