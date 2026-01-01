@@ -201,14 +201,6 @@ export default function Welcome() {
                 </>
               )}
             </Button>
-
-            {/* Already have password */}
-            <button
-              onClick={handleAccessLogin}
-              className="text-primary hover:underline text-sm font-medium transition-colors"
-            >
-              Já defini minha senha, quero fazer login
-            </button>
           </div>
         ) : (
           <div className={cn(
