@@ -14,7 +14,7 @@ const faqs = [
   },
   {
     question: 'Preciso conectar minha conta bancária?',
-    answer: 'Não. O FinanceX é manual e simples. Você lança apenas o que quiser, quando quiser.',
+    answer: 'Não. O FinanceX não conecta com banco. Você registra seus gastos manualmente, de forma simples e consciente.',
   },
   {
     question: 'Meus dados ficam seguros?',
