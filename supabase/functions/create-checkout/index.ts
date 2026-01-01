@@ -74,7 +74,7 @@ serve(async (req) => {
       subscription_data: {
         trial_period_days: 3,
       },
-      success_url: `${origin}/bem-vindo?checkout=success`,
+      success_url: `${origin}/bem-vindo?checkout=success&session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/?checkout=canceled`,
       billing_address_collection: "auto",
       locale: "pt-BR",
