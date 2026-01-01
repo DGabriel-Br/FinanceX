@@ -27,7 +27,7 @@ export const PricingSection = memo(function PricingSection() {
       }
 
       if (data?.url) {
-        window.open(data.url, '_blank');
+        window.location.href = data.url;
       } else {
         toast.error('Erro ao obter link de checkout.');
       }

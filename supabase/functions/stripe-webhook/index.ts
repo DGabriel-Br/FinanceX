@@ -12,6 +12,17 @@ const logStep = (step: string, details?: any) => {
   console.log(`[STRIPE-WEBHOOK] ${step}${detailsStr}`);
 };
 
+// Gera uma senha temporária segura
+const generateTempPassword = () => {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
+  let password = '';
+  for (let i = 0; i < 16; i++) {
+    password += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  // Garantir que tem todos os requisitos
+  return password + 'Aa1!';
+};
+
 serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
@@ -66,49 +77,90 @@ serve(async (req) => {
         logStep("Checkout session completed", { 
           sessionId: session.id, 
           customerId: session.customer,
-          subscriptionId: session.subscription 
+          subscriptionId: session.subscription,
+          customerEmail: session.customer_email || session.customer_details?.email
         });
 
         if (session.mode === "subscription" && session.subscription && session.customer) {
           const subscription = await stripe.subscriptions.retrieve(session.subscription as string);
           const customer = await stripe.customers.retrieve(session.customer as string) as Stripe.Customer;
+          const customerEmail = customer.email || session.customer_email || session.customer_details?.email;
           
-          if (customer.email) {
-            // Find user by email
-            const { data: userData, error: userError } = await supabaseClient.auth.admin.listUsers();
-            if (userError) {
-              logStep("ERROR: Failed to list users", { error: userError.message });
-              break;
-            }
+          if (!customerEmail) {
+            logStep("ERROR: No customer email found");
+            break;
+          }
+
+          logStep("Processing checkout for email", { email: customerEmail });
+
+          // Verificar se usuário já existe
+          const { data: userData, error: userError } = await supabaseClient.auth.admin.listUsers();
+          if (userError) {
+            logStep("ERROR: Failed to list users", { error: userError.message });
+            break;
+          }
+          
+          let user = userData.users.find(u => u.email === customerEmail);
+          
+          // Se usuário não existe, criar automaticamente
+          if (!user) {
+            logStep("User not found, creating new user", { email: customerEmail });
             
-            const user = userData.users.find(u => u.email === customer.email);
-            if (!user) {
-              logStep("ERROR: User not found for email", { email: customer.email });
+            const tempPassword = generateTempPassword();
+            const customerName = customer.name || session.customer_details?.name || customerEmail.split('@')[0];
+            
+            const { data: newUserData, error: createError } = await supabaseClient.auth.admin.createUser({
+              email: customerEmail,
+              password: tempPassword,
+              email_confirm: true, // Auto-confirma o email
+              user_metadata: {
+                full_name: customerName,
+                needs_password_setup: true, // Flag para indicar que precisa definir senha
+                stripe_customer_id: session.customer as string
+              }
+            });
+
+            if (createError) {
+              logStep("ERROR: Failed to create user", { error: createError.message });
               break;
             }
 
-            const subscriptionData = {
-              user_id: user.id,
-              stripe_customer_id: session.customer as string,
-              stripe_subscription_id: session.subscription as string,
-              status: subscription.status,
-              price_id: subscription.items.data[0]?.price?.id || null,
-              current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
-              current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
-              cancel_at_period_end: subscription.cancel_at_period_end,
-              trial_start: subscription.trial_start ? new Date(subscription.trial_start * 1000).toISOString() : null,
-              trial_end: subscription.trial_end ? new Date(subscription.trial_end * 1000).toISOString() : null,
-            };
+            user = newUserData.user;
+            logStep("User created successfully", { userId: user.id, email: customerEmail });
+          } else {
+            logStep("User already exists", { userId: user.id, email: customerEmail });
+            
+            // Atualizar metadata do usuário existente com o customer_id
+            await supabaseClient.auth.admin.updateUserById(user.id, {
+              user_metadata: {
+                ...user.user_metadata,
+                stripe_customer_id: session.customer as string
+              }
+            });
+          }
 
-            const { error: upsertError } = await supabaseClient
-              .from("subscriptions")
-              .upsert(subscriptionData, { onConflict: "stripe_subscription_id" });
+          // Criar/atualizar subscription
+          const subscriptionData = {
+            user_id: user.id,
+            stripe_customer_id: session.customer as string,
+            stripe_subscription_id: session.subscription as string,
+            status: subscription.status,
+            price_id: subscription.items.data[0]?.price?.id || null,
+            current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
+            current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
+            cancel_at_period_end: subscription.cancel_at_period_end,
+            trial_start: subscription.trial_start ? new Date(subscription.trial_start * 1000).toISOString() : null,
+            trial_end: subscription.trial_end ? new Date(subscription.trial_end * 1000).toISOString() : null,
+          };
 
-            if (upsertError) {
-              logStep("ERROR: Failed to upsert subscription", { error: upsertError.message });
-            } else {
-              logStep("Subscription created/updated", { subscriptionId: session.subscription });
-            }
+          const { error: upsertError } = await supabaseClient
+            .from("subscriptions")
+            .upsert(subscriptionData, { onConflict: "stripe_subscription_id" });
+
+          if (upsertError) {
+            logStep("ERROR: Failed to upsert subscription", { error: upsertError.message });
+          } else {
+            logStep("Subscription created/updated", { subscriptionId: session.subscription, userId: user.id });
           }
         }
         break;
@@ -134,7 +186,7 @@ serve(async (req) => {
           
           const user = userData.users.find(u => u.email === customer.email);
           if (!user) {
-            logStep("ERROR: User not found for email", { email: customer.email });
+            logStep("User not found for subscription update, skipping", { email: customer.email });
             break;
           }
 
