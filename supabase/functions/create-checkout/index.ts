@@ -59,9 +59,11 @@ serve(async (req) => {
     const origin = req.headers.get("origin") || "https://financex.lovable.app";
 
     // Create subscription checkout session with 3-day trial
+    // Não requer autenticação - o email será coletado no checkout
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       customer_email: customerId ? undefined : userEmail,
+      customer_creation: customerId ? undefined : "always",
       line_items: [
         {
           price: "price_1SkYlU1qJqkZgiRaCWyFWo0u",
@@ -72,7 +74,7 @@ serve(async (req) => {
       subscription_data: {
         trial_period_days: 3,
       },
-      success_url: `${origin}/dashboard?checkout=success`,
+      success_url: `${origin}/bem-vindo?checkout=success`,
       cancel_url: `${origin}/?checkout=canceled`,
       billing_address_collection: "auto",
       locale: "pt-BR",

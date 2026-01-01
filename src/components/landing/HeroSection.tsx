@@ -1,11 +1,38 @@
-import { memo } from 'react';
+import { memo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { ScrollReveal } from '@/components/ui/ScrollReveal';
-import { ArrowRight, TrendingUp, Check } from 'lucide-react';
+import { ArrowRight, TrendingUp, Check, Loader2 } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 export const HeroSection = memo(function HeroSection() {
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState(false);
+
+  const handleCheckout = async () => {
+    setIsLoading(true);
+    try {
+      const { data, error } = await supabase.functions.invoke('create-checkout');
+      
+      if (error) {
+        console.error('Checkout error:', error);
+        toast.error('Erro ao iniciar checkout. Tente novamente.');
+        return;
+      }
+
+      if (data?.url) {
+        window.location.href = data.url;
+      } else {
+        toast.error('Erro ao obter link de checkout.');
+      }
+    } catch (err) {
+      console.error('Checkout error:', err);
+      toast.error('Erro ao iniciar checkout. Tente novamente.');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <section className="relative min-h-[100svh] flex items-center pt-16 lg:pt-20 overflow-hidden">
@@ -42,11 +69,21 @@ export const HeroSection = memo(function HeroSection() {
               <div className="flex flex-col sm:flex-row gap-3 lg:gap-4">
                 <Button 
                   size="lg" 
-                  onClick={() => document.getElementById('pricing')?.scrollIntoView({ behavior: 'smooth' })} 
+                  onClick={handleCheckout}
+                  disabled={isLoading}
                   className="h-12 lg:h-14 px-5 lg:px-6 text-sm lg:text-base rounded-full bg-gradient-to-r from-landing-cyan to-landing-teal text-landing-dark font-semibold hover:shadow-[0_0_48px_rgba(34,211,238,0.35)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-500 border-0"
                 >
-                  Descobrir quanto sobra agora
-                  <ArrowRight className="ml-2 h-4 w-4 lg:h-5 lg:w-5" />
+                  {isLoading ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 lg:h-5 lg:w-5 animate-spin" />
+                      Processando...
+                    </>
+                  ) : (
+                    <>
+                      Descobrir quanto sobra agora
+                      <ArrowRight className="ml-2 h-4 w-4 lg:h-5 lg:w-5" />
+                    </>
+                  )}
                 </Button>
                 <Button 
                   variant="outline" 
