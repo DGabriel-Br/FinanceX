@@ -97,6 +97,7 @@ export const calculatePreviousYearBalance = (
 
 /**
  * Calcula dados mensais para gráfico (receitas e despesas por mês)
+ * O saldo do ano anterior é aplicado apenas no primeiro mês
  */
 export const calculateMonthlyData = (
   transactions: Transaction[],
@@ -117,8 +118,8 @@ export const calculateMonthlyData = (
   // Inicializa dados mensais
   const monthlyRaw = MONTHS.map((name, index) => ({
     name,
-    receitasBrutas: 0,
-    despesasBrutas: 0,
+    receitas: 0,
+    despesas: 0,
     month: index,
     isCurrentMonth: isCurrentYear && index === currentMonth,
   }));
@@ -130,30 +131,22 @@ export const calculateMonthlyData = (
       const monthIndex = parseInt(monthStr) - 1;
       if (monthIndex >= 0 && monthIndex < 12) {
         if (t.type === 'receita') {
-          monthlyRaw[monthIndex].receitasBrutas += t.value;
+          monthlyRaw[monthIndex].receitas += t.value;
         } else {
-          monthlyRaw[monthIndex].despesasBrutas += t.value;
+          monthlyRaw[monthIndex].despesas += t.value;
         }
       }
     }
   }
 
-  // Calcula valores com saldo acumulado
-  let saldoAcumulado = previousYearBalance;
-  
-  return monthlyRaw.map((month) => {
-    const receitas = month.receitasBrutas + (saldoAcumulado > 0 ? saldoAcumulado : 0);
-    const despesas = month.despesasBrutas + (saldoAcumulado < 0 ? Math.abs(saldoAcumulado) : 0);
-    saldoAcumulado = receitas - despesas;
-    
-    return {
-      name: month.name,
-      receitas,
-      despesas,
-      month: month.month,
-      isCurrentMonth: month.isCurrentMonth,
-    };
-  });
+  // Aplica saldo do ano anterior apenas no primeiro mês (Janeiro)
+  if (previousYearBalance > 0) {
+    monthlyRaw[0].receitas += previousYearBalance;
+  } else if (previousYearBalance < 0) {
+    monthlyRaw[0].despesas += Math.abs(previousYearBalance);
+  }
+
+  return monthlyRaw;
 };
 
 // Helper para criar Date a partir de string YYYY-MM-DD sem problemas de fuso
