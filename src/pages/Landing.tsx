@@ -182,6 +182,12 @@ const HowItWorksSection = memo(function HowItWorksSection() {
             </article>
           </ScrollReveal>
         </div>
+        
+        <ScrollReveal direction="up" delay={200} duration={700}>
+          <p className="text-center text-sm lg:text-base text-white/50 mt-10 lg:mt-14">
+            Em poucos dias, você para de se perguntar onde o dinheiro foi.
+          </p>
+        </ScrollReveal>
       </div>
     </section>
   );
