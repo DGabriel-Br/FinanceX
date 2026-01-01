@@ -12,6 +12,7 @@ import { cn } from '@/lib/utils';
 import { FinanceLogo } from '@/components/ui/FinanceLogo';
 import { useIsNativeApp } from '@/hooks/useIsNativeApp';
 import { NativeAuthScreens } from '@/components/auth/NativeAuthScreens';
+import { track, trackAndIdentify } from '@/infra/analytics';
 
 const emailSchema = z.string().email('Email inválido');
 const passwordSchema = z.string()
@@ -155,6 +156,12 @@ export default function Auth() {
     const goingToForgot = path === '/esqueci-senha';
     setSlideDirection(goingToRegister || goingToForgot ? 'right' : 'left');
     setEmailSent(false);
+    
+    // Track signup_started when navigating to register
+    if (goingToRegister) {
+      track('signup_started');
+    }
+    
     navigate(path);
   };
 

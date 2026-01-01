@@ -1,8 +1,21 @@
 import { supabase } from '@/integrations/supabase/client';
-import type { AnalyticsEventName, AnalyticsEventPayload } from './types';
+import type { AnalyticsEventName } from './types';
 import { getAnonymousId, hasFirstValueEvent, setFirstValueEventTracked } from './anonymousId';
 import { sanitizeProperties } from './sanitize';
 import { logger } from '@/lib/logger';
+
+/**
+ * Analytics event insert payload
+ * Matches the analytics_events table structure
+ */
+interface AnalyticsInsertPayload {
+  anonymous_id: string;
+  user_id?: string;
+  event_name: string;
+  properties: Record<string, unknown>;
+  page_url: string;
+  user_agent: string;
+}
 
 let currentUserId: string | null = null;
 
@@ -42,7 +55,7 @@ export async function track(
       setFirstValueEventTracked();
     }
 
-    const payload: Omit<AnalyticsEventPayload, 'created_at'> = {
+    const payload: AnalyticsInsertPayload = {
       anonymous_id: getAnonymousId(),
       user_id: currentUserId ?? undefined,
       event_name: eventName,
@@ -51,9 +64,12 @@ export async function track(
       user_agent: typeof navigator !== 'undefined' ? navigator.userAgent : '',
     };
 
-    const { error } = await supabase
-      .from('analytics_events')
-      .insert(payload);
+    // Use type assertion since analytics_events table types will be regenerated
+    const { error } = await (supabase as unknown as { 
+      from: (table: string) => { 
+        insert: (data: AnalyticsInsertPayload) => Promise<{ error: { message: string } | null }> 
+      } 
+    }).from('analytics_events').insert(payload);
 
     if (error) {
       logger.error('[Analytics] Failed to track event', { eventName, error: error.message });

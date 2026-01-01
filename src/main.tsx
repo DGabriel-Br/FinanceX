@@ -1,5 +1,7 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
+// Validate environment variables early - will throw if invalid
+import '@/infra/config/env';
 import App from "./App.tsx";
 import "./index.css";
 

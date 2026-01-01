@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      analytics_events: {
+        Row: {
+          anonymous_id: string
+          created_at: string
+          event_name: string
+          id: string
+          page_url: string | null
+          properties: Json | null
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          anonymous_id: string
+          created_at?: string
+          event_name: string
+          id?: string
+          page_url?: string | null
+          properties?: Json | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          anonymous_id?: string
+          created_at?: string
+          event_name?: string
+          id?: string
+          page_url?: string | null
+          properties?: Json | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       audit_log: {
         Row: {
           action: string
