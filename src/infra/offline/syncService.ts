@@ -1,4 +1,4 @@
-import { db, isTempId, LocalTransaction, LocalDebt, LocalInvestmentGoal } from './database';
+import { db, isTempId, LocalTransaction, LocalDebt, LocalInvestmentGoal, SyncCursor } from './database';
 import { 
   batchUpsertTransactions, 
   batchDeleteTransactions, 
@@ -31,6 +31,18 @@ class SyncService {
 
   private notifyListeners() {
     this.syncListeners.forEach(listener => listener(this.isSyncing));
+  }
+
+  // Atualizar cursor de sincronização
+  private async updateSyncCursor(userId: string, cursor: SyncCursor): Promise<void> {
+    const existing = await db.syncMeta.get('lastSync');
+    await db.syncMeta.put({
+      id: 'lastSync',
+      userId,
+      lastSyncAt: Date.now(),
+      syncVersion: existing?.syncVersion || 1,
+      lastCursor: cursor,
+    });
   }
 
   // Sincronizar todos os dados pendentes
@@ -402,44 +414,45 @@ class SyncService {
   }
 
   // Baixar dados do servidor usando sync incremental
-  // Usa lastSyncAt para puxar apenas dados modificados desde a última sincronização
+  // Usa cursor composto (updated_at, id) para puxar apenas dados modificados
   private async pullFromServer(userId: string): Promise<void> {
     // SECURITY: Always filter by user_id for defense in depth
     // Even though RLS should handle this, explicit filtering prevents data leakage
     
-    // Obter timestamp da última sincronização
+    // Obter cursor da última sincronização
     const syncMeta = await db.syncMeta.get('lastSync');
-    const lastSyncAt = syncMeta?.lastSyncAt || 0;
-    const isFullSync = lastSyncAt === 0;
+    const lastCursor = syncMeta?.lastCursor;
+    const isFullSync = !lastCursor;
     
-    logger.info(`Pull from server - ${isFullSync ? 'full sync' : `incremental since ${new Date(lastSyncAt).toISOString()}`}`);
+    logger.info(`Pull from server - ${isFullSync ? 'full sync' : `incremental from cursor ${lastCursor?.updatedAt}`}`);
     
-    // Para sync incremental, buscar apenas itens modificados após lastSyncAt
+    // Para sync incremental, buscar apenas itens após o cursor
     // Para full sync, buscar tudo
     await Promise.all([
-      this.pullTransactions(userId, lastSyncAt, isFullSync),
-      this.pullDebts(userId, lastSyncAt, isFullSync),
-      this.pullGoals(userId, lastSyncAt, isFullSync),
+      this.pullTransactions(userId, lastCursor, isFullSync),
+      this.pullDebts(userId, lastCursor, isFullSync),
+      this.pullGoals(userId, lastCursor, isFullSync),
     ]);
   }
 
-  private async pullTransactions(userId: string, lastSyncAt: number, isFullSync: boolean): Promise<void> {
-    // Buscar transações do servidor
+  private async pullTransactions(userId: string, lastCursor: SyncCursor | undefined, isFullSync: boolean): Promise<void> {
+    // Buscar transações do servidor com cursor composto (updated_at, id) ASC
     let query = supabase
       .from('transactions')
       .select('*')
       .eq('user_id', userId);
     
-    // Sync incremental: buscar apenas modificados após lastSyncAt
-    // Usa updated_at para capturar edições, não apenas criações
-    if (!isFullSync && lastSyncAt > 0) {
-      // updated_at é bigint em ms
-      query = query.gt('updated_at', lastSyncAt);
+    // Sync incremental: cursor composto (updated_at, id)
+    // Condição: (updated_at > cursor.updatedAt) OR (updated_at = cursor.updatedAt AND id > cursor.id)
+    if (!isFullSync && lastCursor) {
+      query = query.or(
+        `updated_at.gt.${lastCursor.updatedAt},and(updated_at.eq.${lastCursor.updatedAt},id.gt.${lastCursor.id})`
+      );
     }
     
-    // Ordenação determinística: updated_at DESC, id ASC (para empates)
+    // Ordenação ASC para processar do mais antigo ao mais recente
     const { data: serverTransactions } = await query
-      .order('updated_at', { ascending: false })
+      .order('updated_at', { ascending: true })
       .order('id', { ascending: true });
 
     if (serverTransactions && serverTransactions.length > 0) {
@@ -465,6 +478,8 @@ class SyncService {
         // Evitar duplicação e não sobrescrever pendentes
         if (!localPendingIds.has(t.id) && !processedIds.has(t.id)) {
           processedIds.add(t.id);
+          // Converter TIMESTAMPTZ string para ms
+          const serverUpdatedAtMs = new Date(t.updated_at).getTime();
           entitiesToUpsert.push({
             id: t.id,
             type: t.type,
@@ -476,7 +491,7 @@ class SyncService {
             userId: t.user_id || userId,
             syncStatus: 'synced',
             localUpdatedAt: now,
-            serverUpdatedAt: Number(t.updated_at) || now,
+            serverUpdatedAt: serverUpdatedAtMs,
             version: 1,
           });
         }
@@ -487,6 +502,10 @@ class SyncService {
         await batchUpsertTransactions(entitiesToUpsert);
         logger.info(`Synced ${entitiesToUpsert.length} transactions from server`);
       }
+      
+      // Atualizar cursor com o último item processado
+      const lastItem = serverTransactions[serverTransactions.length - 1];
+      await this.updateSyncCursor(userId, { updatedAt: lastItem.updated_at, id: lastItem.id });
     }
 
     // No full sync, remover transações locais que não existem mais no servidor
@@ -515,20 +534,22 @@ class SyncService {
     }
   }
 
-  private async pullDebts(userId: string, lastSyncAt: number, isFullSync: boolean): Promise<void> {
+  private async pullDebts(userId: string, lastCursor: SyncCursor | undefined, isFullSync: boolean): Promise<void> {
     let query = supabase
       .from('debts')
       .select('*')
       .eq('user_id', userId);
     
-    // Sync incremental: usar updated_at (bigint em ms)
-    if (!isFullSync && lastSyncAt > 0) {
-      query = query.gt('updated_at', lastSyncAt);
+    // Sync incremental: cursor composto (updated_at, id)
+    if (!isFullSync && lastCursor) {
+      query = query.or(
+        `updated_at.gt.${lastCursor.updatedAt},and(updated_at.eq.${lastCursor.updatedAt},id.gt.${lastCursor.id})`
+      );
     }
     
-    // Ordenação determinística: updated_at DESC, id ASC
+    // Ordenação ASC
     const { data: serverDebts } = await query
-      .order('updated_at', { ascending: false })
+      .order('updated_at', { ascending: true })
       .order('id', { ascending: true });
 
     if (serverDebts && serverDebts.length > 0) {
@@ -549,6 +570,7 @@ class SyncService {
       for (const d of serverDebts) {
         if (!localPendingIds.has(d.id) && !processedIds.has(d.id)) {
           processedIds.add(d.id);
+          const serverUpdatedAtMs = new Date(d.updated_at).getTime();
           entitiesToUpsert.push({
             id: d.id,
             name: d.name,
@@ -560,7 +582,7 @@ class SyncService {
             userId: d.user_id || userId,
             syncStatus: 'synced',
             localUpdatedAt: now,
-            serverUpdatedAt: Number(d.updated_at) || now,
+            serverUpdatedAt: serverUpdatedAtMs,
             version: 1,
           });
         }
@@ -570,6 +592,10 @@ class SyncService {
         await batchUpsertDebts(entitiesToUpsert);
         logger.info(`Synced ${entitiesToUpsert.length} debts from server`);
       }
+      
+      // Atualizar cursor
+      const lastItem = serverDebts[serverDebts.length - 1];
+      await this.updateSyncCursor(userId, { updatedAt: lastItem.updated_at, id: lastItem.id });
     }
 
     if (isFullSync) {
@@ -597,21 +623,22 @@ class SyncService {
     }
   }
 
-  private async pullGoals(userId: string, lastSyncAt: number, isFullSync: boolean): Promise<void> {
+  private async pullGoals(userId: string, lastCursor: SyncCursor | undefined, isFullSync: boolean): Promise<void> {
     let query = supabase
       .from('investment_goals')
       .select('*')
       .eq('user_id', userId);
     
-    // Sync incremental: usar updated_at (timestamp)
-    if (!isFullSync && lastSyncAt > 0) {
-      const lastSyncDate = new Date(lastSyncAt).toISOString();
-      query = query.gt('updated_at', lastSyncDate);
+    // Sync incremental: cursor composto (updated_at, id)
+    if (!isFullSync && lastCursor) {
+      query = query.or(
+        `updated_at.gt.${lastCursor.updatedAt},and(updated_at.eq.${lastCursor.updatedAt},id.gt.${lastCursor.id})`
+      );
     }
     
-    // Ordenação determinística: updated_at DESC, id ASC
+    // Ordenação ASC
     const { data: serverGoals } = await query
-      .order('updated_at', { ascending: false })
+      .order('updated_at', { ascending: true })
       .order('id', { ascending: true });
 
     if (serverGoals && serverGoals.length > 0) {
@@ -632,6 +659,7 @@ class SyncService {
       for (const g of serverGoals) {
         if (!localPendingIds.has(g.id) && !processedIds.has(g.id)) {
           processedIds.add(g.id);
+          const serverUpdatedAtMs = new Date(g.updated_at).getTime();
           entitiesToUpsert.push({
             id: g.id,
             type: g.type,
@@ -640,7 +668,7 @@ class SyncService {
             userId: g.user_id || userId,
             syncStatus: 'synced',
             localUpdatedAt: now,
-            serverUpdatedAt: g.updated_at ? new Date(g.updated_at).getTime() : now,
+            serverUpdatedAt: serverUpdatedAtMs,
             version: 1,
           });
         }
@@ -650,6 +678,10 @@ class SyncService {
         await batchUpsertGoals(entitiesToUpsert);
         logger.info(`Synced ${entitiesToUpsert.length} goals from server`);
       }
+      
+      // Atualizar cursor
+      const lastItem = serverGoals[serverGoals.length - 1];
+      await this.updateSyncCursor(userId, { updatedAt: lastItem.updated_at, id: lastItem.id });
     }
 
     if (isFullSync) {
