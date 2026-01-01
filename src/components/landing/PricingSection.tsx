@@ -4,6 +4,7 @@ import { ScrollReveal } from '@/components/ui/ScrollReveal';
 import { Check, ArrowRight, Loader2 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
+import { track } from '@/infra/analytics';
 
 const features = [
   { title: 'Registre seus gastos em minutos', description: 'Sem planilha, sem banco conectado, sem setup chato.' },
@@ -17,6 +18,10 @@ export const PricingSection = memo(function PricingSection() {
 
   const handleCheckout = async () => {
     setIsLoading(true);
+    
+    // Track checkout started
+    track('checkout_started');
+    
     try {
       const { data, error } = await supabase.functions.invoke('create-checkout');
       
