@@ -48,7 +48,7 @@ export const PricingSection = memo(function PricingSection() {
       
       <div className="w-full max-w-7xl mx-auto px-5 lg:px-8 relative">
         <ScrollReveal direction="up" duration={700}>
-          <header className="text-center mb-10 lg:mb-14 max-w-md mx-auto">
+          <header className="text-center mb-10 lg:mb-14">
             <div className="flex items-center justify-center gap-3 mb-4 lg:mb-5">
               <div className="h-px w-6 lg:w-8 bg-landing-cyan" />
               <span className="text-[11px] lg:text-xs font-semibold tracking-[0.2em] uppercase text-landing-cyan/70">Investimento</span>
