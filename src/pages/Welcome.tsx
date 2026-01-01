@@ -241,7 +241,7 @@ export default function Welcome() {
           "text-white/40 text-xs mt-6 transition-all duration-500 delay-600",
           showContent ? "opacity-100" : "opacity-0"
         )}>
-          Não recebeu o email? Verifique sua caixa de spam.
+          Não chegou? Verifique o spam ou aguarde até 1 minuto.
         </p>
       </div>
     </div>
