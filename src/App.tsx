@@ -62,7 +62,6 @@ const App = () => (
               
               {/* Auth routes - not lazy loaded */}
               <Route path="/login" element={<Auth />} />
-              <Route path="/cadastro" element={<Auth />} />
               <Route path="/esqueci-senha" element={<Auth />} />
               <Route path="/reset-password" element={<ResetPassword />} />
               <Route path="/auth" element={<Navigate to="/login" replace />} />
