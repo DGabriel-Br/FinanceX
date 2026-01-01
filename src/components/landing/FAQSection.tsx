@@ -10,7 +10,7 @@ import {
 const faqs = [
   {
     question: 'Posso cancelar quando quiser?',
-    answer: 'Sim. Você pode cancelar quando quiser, em 1 clique.\nSem multa, sem ligação, sem conversa chata.',
+    answer: 'Sim. Você pode cancelar quando quiser, em 1 clique. Sem multa, sem ligação, sem conversa chata.',
   },
   {
     question: 'Preciso conectar minha conta bancária?',
@@ -52,7 +52,7 @@ export const FAQSection = memo(function FAQSection() {
                 <AccordionTrigger className="text-left text-sm lg:text-base font-normal text-landing-dark/70 hover:text-landing-dark/90 py-4 hover:no-underline">
                   {faq.question}
                 </AccordionTrigger>
-                <AccordionContent className="text-sm text-landing-dark/50 leading-relaxed pb-4 whitespace-pre-line">
+                <AccordionContent className="text-sm text-landing-dark/50 leading-relaxed pb-4">
                   {faq.answer}
                 </AccordionContent>
               </AccordionItem>
