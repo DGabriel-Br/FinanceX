@@ -431,13 +431,16 @@ class SyncService {
       .eq('user_id', userId);
     
     // Sync incremental: buscar apenas modificados após lastSyncAt
-    // Nota: created_at é usado pois transactions não tem updated_at
+    // Usa updated_at para capturar edições, não apenas criações
     if (!isFullSync && lastSyncAt > 0) {
-      // Converter timestamp para segundos (created_at é bigint em ms)
-      query = query.gt('created_at', lastSyncAt);
+      // updated_at é bigint em ms
+      query = query.gt('updated_at', lastSyncAt);
     }
     
-    const { data: serverTransactions } = await query.order('created_at', { ascending: false });
+    // Ordenação determinística: updated_at DESC, id ASC (para empates)
+    const { data: serverTransactions } = await query
+      .order('updated_at', { ascending: false })
+      .order('id', { ascending: true });
 
     if (serverTransactions && serverTransactions.length > 0) {
       const now = Date.now();
@@ -455,9 +458,13 @@ class SyncService {
         ).map(t => t.id)
       );
       
+      // Track IDs processados para evitar duplicação
+      const processedIds = new Set<string>();
+      
       for (const t of serverTransactions) {
-        // Não sobrescrever itens pendentes locais
-        if (!localPendingIds.has(t.id)) {
+        // Evitar duplicação e não sobrescrever pendentes
+        if (!localPendingIds.has(t.id) && !processedIds.has(t.id)) {
+          processedIds.add(t.id);
           entitiesToUpsert.push({
             id: t.id,
             type: t.type,
@@ -469,7 +476,7 @@ class SyncService {
             userId: t.user_id || userId,
             syncStatus: 'synced',
             localUpdatedAt: now,
-            serverUpdatedAt: now,
+            serverUpdatedAt: Number(t.updated_at) || now,
             version: 1,
           });
         }
@@ -514,11 +521,15 @@ class SyncService {
       .select('*')
       .eq('user_id', userId);
     
+    // Sync incremental: usar updated_at (bigint em ms)
     if (!isFullSync && lastSyncAt > 0) {
-      query = query.gt('created_at', lastSyncAt);
+      query = query.gt('updated_at', lastSyncAt);
     }
     
-    const { data: serverDebts } = await query.order('created_at', { ascending: false });
+    // Ordenação determinística: updated_at DESC, id ASC
+    const { data: serverDebts } = await query
+      .order('updated_at', { ascending: false })
+      .order('id', { ascending: true });
 
     if (serverDebts && serverDebts.length > 0) {
       const now = Date.now();
@@ -533,9 +544,11 @@ class SyncService {
       );
       
       const entitiesToUpsert: LocalDebt[] = [];
+      const processedIds = new Set<string>();
       
       for (const d of serverDebts) {
-        if (!localPendingIds.has(d.id)) {
+        if (!localPendingIds.has(d.id) && !processedIds.has(d.id)) {
+          processedIds.add(d.id);
           entitiesToUpsert.push({
             id: d.id,
             name: d.name,
@@ -547,7 +560,7 @@ class SyncService {
             userId: d.user_id || userId,
             syncStatus: 'synced',
             localUpdatedAt: now,
-            serverUpdatedAt: now,
+            serverUpdatedAt: Number(d.updated_at) || now,
             version: 1,
           });
         }
@@ -590,13 +603,16 @@ class SyncService {
       .select('*')
       .eq('user_id', userId);
     
+    // Sync incremental: usar updated_at (timestamp)
     if (!isFullSync && lastSyncAt > 0) {
-      // investment_goals usa timestamp real, converter para formato ISO
       const lastSyncDate = new Date(lastSyncAt).toISOString();
-      query = query.gt('created_at', lastSyncDate);
+      query = query.gt('updated_at', lastSyncDate);
     }
     
-    const { data: serverGoals } = await query;
+    // Ordenação determinística: updated_at DESC, id ASC
+    const { data: serverGoals } = await query
+      .order('updated_at', { ascending: false })
+      .order('id', { ascending: true });
 
     if (serverGoals && serverGoals.length > 0) {
       const now = Date.now();
@@ -611,9 +627,11 @@ class SyncService {
       );
       
       const entitiesToUpsert: LocalInvestmentGoal[] = [];
+      const processedIds = new Set<string>();
       
       for (const g of serverGoals) {
-        if (!localPendingIds.has(g.id)) {
+        if (!localPendingIds.has(g.id) && !processedIds.has(g.id)) {
+          processedIds.add(g.id);
           entitiesToUpsert.push({
             id: g.id,
             type: g.type,
@@ -622,7 +640,7 @@ class SyncService {
             userId: g.user_id || userId,
             syncStatus: 'synced',
             localUpdatedAt: now,
-            serverUpdatedAt: now,
+            serverUpdatedAt: g.updated_at ? new Date(g.updated_at).getTime() : now,
             version: 1,
           });
         }

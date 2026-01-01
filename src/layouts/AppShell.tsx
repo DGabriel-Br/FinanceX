@@ -1,22 +1,11 @@
 import { ReactNode, useState, useEffect, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { cn } from '@/lib/utils';
-import { Sidebar } from '@/components/finance/Sidebar';
-import { MobileHeader } from '@/components/finance/MobileHeader';
-import { MobileNav } from '@/components/finance/MobileNav';
-import { FloatingAddButton } from '@/components/finance/FloatingAddButton';
-import { PullToRefresh } from '@/components/finance/PullToRefresh';
-import { OfflineModal } from '@/components/finance/OfflineModal';
-import { OnboardingTour } from '@/components/onboarding/OnboardingTour';
-import { FinanceLogo } from '@/components/ui/FinanceLogo';
 import { useTheme } from '@/hooks/useTheme';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { useValuesVisibility } from '@/hooks/useValuesVisibility';
 import { useOnboarding } from '@/hooks/useOnboarding';
 import { useIsNativeApp } from '@/hooks/useIsNativeApp';
 import { useNavigationBar } from '@/hooks/useNavigationBar';
-import { useRealtimeSync } from '@/hooks/useRealtimeSync';
-import { syncService } from '@/lib/offline/syncService';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -27,6 +16,15 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
+
+import {
+  AppShellSyncManager,
+  AppShellLayout,
+  AppShellNavigationHeader,
+  AppShellMobileFooter,
+  AppShellOnboardingGate,
+  AppShellLoadingScreen,
+} from './appshell';
 
 type Tab = 'dashboard' | 'lancamentos' | 'investimentos' | 'dividas';
 
@@ -73,14 +71,11 @@ export const AppShell = ({ children, onRefresh, onAddTransaction }: AppShellProp
   const { theme, toggleTheme } = useTheme();
   const { user, loading: authLoading, signOut, refreshUser } = useAuthContext();
   const { showValues, toggleValuesVisibility } = useValuesVisibility();
-  const { showTour, completeTour, skipTour } = useOnboarding(user?.id);
+  const { showTour } = useOnboarding(user?.id);
   const isNativeApp = useIsNativeApp();
   
   // Configura a cor da barra de navegação do Android
   useNavigationBar(theme);
-  
-  // Ativa sincronização em tempo real com o servidor
-  useRealtimeSync();
 
   // Tempo mínimo de exibição da splash screen (1.5 segundos)
   useEffect(() => {
@@ -96,13 +91,6 @@ export const AppShell = ({ children, onRefresh, onAddTransaction }: AppShellProp
       navigate('/login');
     }
   }, [user, authLoading, navigate]);
-
-  // Sincronizar quando o usuário logar
-  useEffect(() => {
-    if (user && navigator.onLine) {
-      syncService.syncAll();
-    }
-  }, [user?.id]);
 
   // Pull to refresh handler
   const handlePullRefresh = useCallback(async () => {
@@ -128,30 +116,9 @@ export const AppShell = ({ children, onRefresh, onAddTransaction }: AppShellProp
   // Estados de loading
   if (authLoading || showSplash || isLoggingOut) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-background">
-        <div className="relative mb-6">
-          <div className="relative flex items-end">
-            <div className="absolute -inset-4 bg-gradient-to-r from-primary/20 via-income/20 to-primary/20 rounded-2xl blur-2xl animate-pulse" />
-            <FinanceLogo size={48} className="relative" />
-            <span 
-              className="text-3xl font-black tracking-wider text-foreground -ml-1 relative"
-              style={{ fontFamily: "'Orbitron', sans-serif" }}
-            >
-              inanceX
-            </span>
-          </div>
-          <div className="absolute -inset-4 rounded-3xl border-2 border-primary/30 animate-spin" style={{ animationDuration: '3s' }} />
-          <div className="absolute -inset-5 rounded-3xl border-2 border-t-primary border-r-transparent border-b-transparent border-l-transparent animate-spin" style={{ animationDuration: '1.5s' }} />
-        </div>
-        
-        <p className="text-sm text-muted-foreground animate-fade-in" style={{ animationDelay: '0.1s' }}>
-          {isLoggingOut ? 'Saindo...' : 'Carregando seu controle financeiro...'}
-        </p>
-        
-        <div className="w-48 h-1 bg-muted rounded-full mt-6 overflow-hidden">
-          <div className="h-full bg-gradient-to-r from-income to-primary rounded-full animate-[loading_1.5s_ease-in-out_infinite]" />
-        </div>
-      </div>
+      <AppShellLoadingScreen 
+        message={isLoggingOut ? 'Saindo...' : 'Carregando seu controle financeiro...'} 
+      />
     );
   }
 
@@ -159,100 +126,59 @@ export const AppShell = ({ children, onRefresh, onAddTransaction }: AppShellProp
     return null;
   }
 
+  // Determinar tab destacada baseado no tour
+  const highlightedTab = showTour ? tourHighlightedTab : null;
+
   return (
     <>
-      {isNativeApp && <OfflineModal />}
-      
-      <div className={`flex ${isNativeApp ? 'flex-col' : ''} min-h-screen w-full relative`}>
-        {/* Sidebar - desktop */}
-        {!isNativeApp && (
-          <Sidebar 
-            activeTab={activeTab} 
-            collapsed={sidebarCollapsed}
-            onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
+      {/* Gerenciador de Sync - não renderiza nada visualmente */}
+      <AppShellSyncManager userId={user.id} />
+
+      {/* Layout principal com navegação e conteúdo */}
+      <AppShellLayout
+        isNativeApp={isNativeApp}
+        activeTab={activeTab}
+        slideDirection={slideDirection}
+        onPullRefresh={handlePullRefresh}
+        navigationSlot={
+          <AppShellNavigationHeader
+            isNativeApp={isNativeApp}
+            activeTab={activeTab}
+            sidebarCollapsed={sidebarCollapsed}
+            onToggleSidebar={() => setSidebarCollapsed(!sidebarCollapsed)}
             theme={theme}
             onToggleTheme={toggleTheme}
-            userName={user.user_metadata?.full_name}
-            userEmail={user.email}
-            userAvatar={user.user_metadata?.avatar_url}
-            onSignOut={handleSignOutRequest}
-            highlightedTab={showTour ? tourHighlightedTab : null}
-          />
-        )}
-
-        {/* Mobile Header */}
-        {isNativeApp && (
-          <MobileHeader
-            userName={user.user_metadata?.full_name}
-            userEmail={user.email}
-            userAvatar={user.user_metadata?.avatar_url}
+            user={user}
             showValues={showValues}
             onToggleValues={toggleValuesVisibility}
-            theme={theme}
-            onToggleTheme={toggleTheme}
+            onSignOut={handleSignOutRequest}
+            highlightedTab={highlightedTab}
           />
-        )}
-
-        {/* Conteúdo principal */}
-        <main 
-          className={cn(
-            "flex-1 flex flex-col overflow-auto overflow-x-hidden",
-            isNativeApp ? "pb-mobile-nav bg-background" : "bg-background"
-          )}
-        >
-          {isNativeApp ? (
-            <PullToRefresh onRefresh={handlePullRefresh} className="flex-1">
-              <div 
-                key={activeTab} 
-                className={cn(
-                  "flex-1 max-w-full",
-                  slideDirection === 'left' && "animate-slide-in-right",
-                  slideDirection === 'right' && "animate-slide-in-left",
-                  slideDirection === 'none' && "animate-fade-in"
-                )}
-              >
-                {children}
-              </div>
-            </PullToRefresh>
-          ) : (
-            <div 
-              key={activeTab} 
-              className={cn(
-                "flex-1 max-w-full",
-                slideDirection === 'left' && "animate-slide-in-right",
-                slideDirection === 'right' && "animate-slide-in-left",
-                slideDirection === 'none' && "animate-fade-in"
-              )}
-            >
-              {children}
-            </div>
-          )}
-        </main>
-
-        {/* Mobile Navigation */}
-        {isNativeApp && (
-          <>
-            {onAddTransaction && <FloatingAddButton onAddTransaction={onAddTransaction} />}
-            <MobileNav
+        }
+        mobileNavSlot={
+          isNativeApp ? (
+            <AppShellMobileFooter
               activeTab={activeTab}
               theme={theme}
               onToggleTheme={toggleTheme}
               userEmail={user.email}
               onSignOut={handleSignOutRequest}
-              highlightedTab={showTour ? tourHighlightedTab : null}
+              highlightedTab={highlightedTab}
+              onAddTransaction={onAddTransaction}
             />
-          </>
-        )}
-      </div>
+          ) : null
+        }
+      >
+        {children}
+      </AppShellLayout>
 
-      {/* Tour de onboarding */}
-      {showTour && (
-        <OnboardingTour 
-          onComplete={completeTour} 
-          onSkip={skipTour}
-          onStepChange={setTourHighlightedTab}
-        />
-      )}
+      {/* Onboarding tour */}
+      <AppShellOnboardingGate
+        userId={user.id}
+        onHighlightedTabChange={setTourHighlightedTab}
+      >
+        {null}
+      </AppShellOnboardingGate>
 
       {/* Diálogo de confirmação de logout */}
       <AlertDialog open={showLogoutConfirm} onOpenChange={setShowLogoutConfirm}>
