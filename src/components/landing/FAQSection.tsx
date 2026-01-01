@@ -21,12 +21,12 @@ const faqs = [
     answer: 'Sim. Seus dados ficam protegidos e não são vendidos nem compartilhados. O FinanceX não exibe anúncios e não usa seus dados para outros fins.',
   },
   {
-    question: 'É difícil de usar?',
-    answer: 'Não. Se você sabe digitar um valor, sabe usar o FinanceX. Não tem configuração, não tem curva de aprendizado.',
-  },
-  {
     question: 'Isso serve pra controle financeiro avançado?',
     answer: 'Não. O FinanceX é feito pra quem quer clareza, não controle obsessivo. Se você procura relatórios complexos, essa ferramenta não é pra você.',
+  },
+  {
+    question: 'É difícil de usar?',
+    answer: 'Não. Se você sabe digitar um valor, sabe usar o FinanceX. Não tem configuração, não tem curva de aprendizado.',
   },
 ];
 
