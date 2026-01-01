@@ -9,7 +9,7 @@ const testimonials = [
     gradient: 'from-landing-cyan to-landing-teal',
     borderHover: 'hover:border-landing-cyan/20',
     lineColor: 'via-landing-cyan/30',
-    quote: 'Eu já tinha desistido de controlar meu dinheiro. Tentei de tudo: planilha, app de banco, até caderninho. O FinanceX foi o primeiro que realmente funcionou pra mim.',
+    quote: 'Eu já tinha desistido de controlar meu dinheiro. Tentei de tudo: planilha, ferramenta de banco, até caderninho. O FinanceX foi o primeiro que realmente funcionou pra mim.',
     highlight: 'Em 2 meses eu já sabia exatamente pra onde ia cada centavo.',
     featured: true,
     delay: 0,
