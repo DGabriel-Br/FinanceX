@@ -210,7 +210,7 @@ const ForWhoSection = memo(function ForWhoSection() {
   ];
 
   return (
-    <section className="pt-14 pb-10 lg:pt-24 lg:pb-16 bg-[#f8f9fb] text-landing-dark relative overflow-hidden">
+    <section className="pt-14 pb-6 lg:pt-24 lg:pb-10 bg-[#f8f9fb] text-landing-dark relative overflow-hidden">
       <div className="w-full max-w-7xl mx-auto px-5 lg:px-8">
         <ScrollReveal direction="up" duration={700}>
           <header className="text-center mb-10 lg:mb-14">
