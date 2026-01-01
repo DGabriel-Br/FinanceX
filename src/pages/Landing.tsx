@@ -65,7 +65,7 @@ const ProblemSection = memo(function ProblemSection() {
                   className="text-lg lg:text-xl xl:text-2xl text-landing-dark/85 leading-snug"
                   style={{ fontFamily: "'Sora', sans-serif" }}
                 >
-                  <span className="italic">O problema não é você.</span>
+                  <span className="italic font-semibold">O problema não é você.</span>
                   <br />
                   É que tentaram complicar algo que deveria ser simples.
                 </p>
