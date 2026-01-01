@@ -298,14 +298,12 @@ const FinalCTASection = memo(function FinalCTASection() {
         <ScrollReveal direction="up" duration={700}>
           <div className="max-w-2xl mx-auto text-center">
             <h2 
-              className="text-2xl sm:text-3xl lg:text-4xl font-bold tracking-[-0.02em] text-white/95 mb-5 lg:mb-6"
+              className="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-[-0.02em] text-white/95 mb-5 lg:mb-6"
               style={{ fontFamily: "'Sora', sans-serif" }}
             >
-              <span className="block bg-gradient-to-r from-landing-cyan via-landing-teal to-landing-green bg-clip-text text-transparent">
-                Teste grátis por 3 dias • Depois, R$14,90/mês
-              </span>
-              <span className="block text-lg sm:text-xl lg:text-2xl font-normal text-white/60 mt-2">
-                Cancele quando quiser, em 1 clique.
+              <span className="block">Menos ansiedade.</span>
+              <span className="bg-gradient-to-r from-landing-cyan via-landing-teal to-landing-green bg-clip-text text-transparent">
+                Mais clareza sobre seu dinheiro.
               </span>
             </h2>
             <p className="text-base lg:text-lg text-white/50 mb-8 lg:mb-10 max-w-md mx-auto">
