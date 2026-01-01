@@ -44,9 +44,7 @@ const ProblemSection = memo(function ProblemSection() {
                 <p className="leading-[1.7]">
                   Chega no fim do mês e você não entende.
                   <br />
-                  Trabalhou, recebeu, não fez nenhuma loucura…
-                  <br />
-                  <span className="text-landing-dark/90 font-medium">mas o dinheiro sumiu.</span>
+                  Trabalhou, recebeu, não fez nenhuma loucura… <span className="text-landing-dark/90 font-medium">mas o dinheiro sumiu.</span>
                 </p>
                 <p className="leading-[1.7]">
                   Você até tentou planilha. Funcionou por uma semana.
