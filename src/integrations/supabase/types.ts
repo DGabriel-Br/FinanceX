@@ -122,6 +122,7 @@ export type Database = {
           paid_value: number
           start_date: string
           total_value: number
+          updated_at: number | null
           user_id: string
         }
         Insert: {
@@ -132,6 +133,7 @@ export type Database = {
           paid_value?: number
           start_date: string
           total_value: number
+          updated_at?: number | null
           user_id: string
         }
         Update: {
@@ -142,6 +144,7 @@ export type Database = {
           paid_value?: number
           start_date?: string
           total_value?: number
+          updated_at?: number | null
           user_id?: string
         }
         Relationships: []
@@ -176,6 +179,7 @@ export type Database = {
           id: string
           target_value: number
           type: string
+          updated_at: string | null
           user_id: string
         }
         Insert: {
@@ -183,6 +187,7 @@ export type Database = {
           id?: string
           target_value: number
           type: string
+          updated_at?: string | null
           user_id: string
         }
         Update: {
@@ -190,6 +195,7 @@ export type Database = {
           id?: string
           target_value?: number
           type?: string
+          updated_at?: string | null
           user_id?: string
         }
         Relationships: []
@@ -283,6 +289,7 @@ export type Database = {
           description: string
           id: string
           type: string
+          updated_at: number | null
           user_id: string
           value: number
         }
@@ -293,6 +300,7 @@ export type Database = {
           description: string
           id?: string
           type: string
+          updated_at?: number | null
           user_id: string
           value: number
         }
@@ -303,6 +311,7 @@ export type Database = {
           description?: string
           id?: string
           type?: string
+          updated_at?: number | null
           user_id?: string
           value?: number
         }
