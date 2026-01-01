@@ -34,26 +34,9 @@ export default tseslint.config(
           // REGRA 1: shared/ui não pode importar features ou app
           // ----------------------------------------
           {
-            "group": ["@/components/finance/*", "@/pages/*", "@/layouts/*"],
+            "group": ["@/components/finance/*", "@/features/*", "@/pages/*", "@/layouts/*"],
             "message": "shared/ui (components/ui) não pode importar de features ou app. Use apenas core e shared."
-          },
-          
-          // ----------------------------------------
-          // REGRA 2: core não pode importar React/infra
-          // Os arquivos em src/core devem ser pure business logic
-          // ----------------------------------------
-          // Nota: Esta regra é aplicada via override abaixo
-          
-          // ----------------------------------------
-          // REGRA 3: features só podem importar core e shared
-          // ----------------------------------------
-          // Nota: features podem importar de components/ui, hooks, lib, core
-          // Não podem importar de outras features específicas (evita acoplamento)
-          
-          // ----------------------------------------
-          // REGRA 4: routes/pages só compõem, sem lógica de domínio inline
-          // ----------------------------------------
-          // Nota: Isso é mais uma convenção de code review do que uma regra de lint
+          }
         ]
       }]
     },
@@ -85,7 +68,11 @@ export default tseslint.config(
             "message": "core/ não pode importar Dexie. Use interfaces abstratas para storage."
           },
           {
-            "group": ["@/components/*", "@/pages/*", "@/layouts/*", "@/contexts/*", "@/hooks/*"],
+            "group": ["@/infra/*"],
+            "message": "core/ não pode importar de infra/. Use interfaces abstratas."
+          },
+          {
+            "group": ["@/components/*", "@/features/*", "@/pages/*", "@/layouts/*", "@/contexts/*", "@/hooks/*"],
             "message": "core/ não pode importar de UI/React. Mantenha separação de concerns."
           }
         ]
@@ -107,6 +94,10 @@ export default tseslint.config(
             "message": "components/ui/ (shared) não pode importar de features. Apenas de @/lib e outros ui."
           },
           {
+            "group": ["@/features/*"],
+            "message": "components/ui/ (shared) não pode importar de features/."
+          },
+          {
             "group": ["@/pages/*", "@/layouts/*"],
             "message": "components/ui/ (shared) não pode importar de pages/layouts (app layer)."
           },
@@ -115,8 +106,44 @@ export default tseslint.config(
             "message": "components/ui/ (shared) não pode importar contexts. Passe dados via props."
           },
           {
-            "group": ["@/integrations/*"],
-            "message": "components/ui/ (shared) não pode importar integrations diretamente."
+            "group": ["@/integrations/*", "@/infra/*"],
+            "message": "components/ui/ (shared) não pode importar integrations/infra diretamente."
+          }
+        ]
+      }]
+    }
+  },
+
+  // ============================================
+  // Override para arquivos em src/infra
+  // infra pode importar de qualquer lugar, mas evita features/app
+  // ============================================
+  {
+    files: ["src/infra/**/*.{ts,tsx}"],
+    rules: {
+      "no-restricted-imports": ["error", {
+        "patterns": [
+          {
+            "group": ["@/features/*", "@/pages/*", "@/layouts/*", "@/components/*"],
+            "message": "infra/ não pode importar de features/pages/layouts/components. Mantenha infra agnóstica de UI."
+          }
+        ]
+      }]
+    }
+  },
+
+  // ============================================
+  // Override para arquivos em src/features
+  // features não podem importar de outras features ou de app/routes
+  // ============================================
+  {
+    files: ["src/features/**/*.{ts,tsx}"],
+    rules: {
+      "no-restricted-imports": ["error", {
+        "patterns": [
+          {
+            "group": ["@/pages/*", "@/layouts/*"],
+            "message": "features/ não podem importar de pages/layouts. Apenas de core, shared, infra e hooks."
           }
         ]
       }]
