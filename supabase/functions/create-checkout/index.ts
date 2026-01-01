@@ -63,6 +63,7 @@ serve(async (req) => {
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       customer_email: customerId ? undefined : userEmail,
+      customer_creation: customerId ? undefined : "always",
       line_items: [
         {
           price: "price_1SkYlU1qJqkZgiRaCWyFWo0u",
