@@ -12,6 +12,13 @@ export const ANALYTICS_EVENTS = [
   'checkout_completed',
   'password_setup_completed',
   'subscription_verified',
+  // Onboarding events
+  'onboarding_started',
+  'onboarding_income_added',
+  'onboarding_expense_added',
+  'onboarding_completed',
+  'onboarding_skipped',
+  'onboarding_second_expense_added',
 ] as const;
 
 export type AnalyticsEventName = (typeof ANALYTICS_EVENTS)[number];

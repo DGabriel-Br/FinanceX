@@ -1,0 +1,36 @@
+import { Button } from '@/components/ui/button';
+import { Sparkles } from 'lucide-react';
+
+interface OnboardingImpactScreenProps {
+  onStart: () => void;
+}
+
+export const OnboardingImpactScreen = ({ onStart }: OnboardingImpactScreenProps) => {
+  return (
+    <div className="flex flex-col items-center justify-center min-h-full px-6 py-12 text-center">
+      {/* Icon */}
+      <div className="mb-8 p-4 rounded-2xl bg-primary/10">
+        <Sparkles className="w-12 h-12 text-primary" />
+      </div>
+
+      {/* Headline */}
+      <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-4 max-w-sm">
+        Antes de tudo: vamos descobrir quanto sobra.
+      </h1>
+
+      {/* Sub */}
+      <p className="text-muted-foreground text-lg mb-12 max-w-xs">
+        Leva menos de 1 minuto. Sem compromisso.
+      </p>
+
+      {/* CTA único */}
+      <Button 
+        onClick={onStart} 
+        size="lg" 
+        className="w-full max-w-xs h-14 text-lg font-semibold"
+      >
+        Começar
+      </Button>
+    </div>
+  );
+};

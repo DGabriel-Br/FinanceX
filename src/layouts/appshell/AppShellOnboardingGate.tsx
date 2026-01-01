@@ -1,34 +1,32 @@
 import { ReactNode } from 'react';
-import { OnboardingTour } from '@/components/onboarding/OnboardingTour';
+import { OnboardingOverlay } from '@/components/onboarding';
 import { useOnboarding } from '@/hooks/useOnboarding';
-
-type Tab = 'dashboard' | 'lancamentos' | 'investimentos' | 'dividas';
+import { Transaction } from '@/types/transaction';
 
 interface AppShellOnboardingGateProps {
   userId: string | undefined;
   children: ReactNode;
-  onHighlightedTabChange: (tab: Tab | null) => void;
+  onAddTransaction: (transaction: Omit<Transaction, 'id' | 'createdAt'>) => Promise<void>;
 }
 
 /**
- * Responsável por gerenciar o tour de onboarding
+ * Responsável por gerenciar o onboarding focado em ação
  */
 export const AppShellOnboardingGate = ({ 
   userId, 
   children, 
-  onHighlightedTabChange 
+  onAddTransaction,
 }: AppShellOnboardingGateProps) => {
-  const { showTour, completeTour, skipTour } = useOnboarding(userId);
+  const { showOnboarding, completeOnboarding } = useOnboarding(userId);
 
   return (
     <>
       {children}
       
-      {showTour && (
-        <OnboardingTour 
-          onComplete={completeTour} 
-          onSkip={skipTour}
-          onStepChange={onHighlightedTabChange}
+      {showOnboarding && (
+        <OnboardingOverlay 
+          onComplete={completeOnboarding} 
+          onAddTransaction={onAddTransaction}
         />
       )}
     </>
@@ -36,6 +34,6 @@ export const AppShellOnboardingGate = ({
 };
 
 export const useOnboardingState = (userId: string | undefined) => {
-  const { showTour } = useOnboarding(userId);
-  return { showTour };
+  const { showOnboarding } = useOnboarding(userId);
+  return { showOnboarding, showTour: showOnboarding };
 };
