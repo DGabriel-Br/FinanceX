@@ -85,10 +85,12 @@ export const PricingSection = memo(function PricingSection() {
                     </span>
                     <span className="text-white/40 text-base lg:text-lg">/mês</span>
                   </div>
-                  <p className="text-white/40 text-sm lg:text-base mb-6 lg:mb-8">
+                  <p className="text-white/40 text-sm lg:text-base">
                     Menos de R$ 0,50 por dia pra saber exatamente onde seu dinheiro vai.
                   </p>
                 </div>
+
+                <div className="w-full h-px bg-white/[0.08] my-6 lg:my-8" />
 
                 <ul className="space-y-4 mb-8 lg:mb-10">
                   {features.map((feature, i) => (
