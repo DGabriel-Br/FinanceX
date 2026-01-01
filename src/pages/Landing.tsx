@@ -317,7 +317,7 @@ const FinalCTASection = memo(function FinalCTASection() {
               Descobrir quanto sobra agora
               <ArrowRight className="ml-2 h-4 w-4 lg:h-5 lg:w-5" />
             </Button>
-            <p className="text-xs lg:text-sm text-landing-muted mt-4 text-center">
+            <p className="text-center text-white/40 text-xs lg:text-sm mt-4 leading-relaxed">
               Teste grátis por 3 dias • Depois, R$14,90/mês<br />
               Cancele quando quiser, em 1 clique.
             </p>
