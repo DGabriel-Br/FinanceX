@@ -11,3 +11,6 @@ verify_jwt = false
 
 [functions.get-checkout-session]
 verify_jwt = false
+
+[functions.send-password-email]
+verify_jwt = false

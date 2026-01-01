@@ -73,19 +73,39 @@ export default function Welcome() {
     
     setIsLoading(true);
     
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/reset-password`,
-    });
+    try {
+      // Primeiro, gera o link de reset via Supabase Auth
+      const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/reset-password`,
+      });
 
-    setIsLoading(false);
+      if (error) {
+        console.error('Password reset error:', error);
+        toast.error('Erro ao gerar link de recuperação');
+        setIsLoading(false);
+        return;
+      }
 
-    if (error) {
-      console.error('Password reset error:', error);
+      // Envia email personalizado via Resend
+      const resetLink = `${window.location.origin}/reset-password`;
+      
+      const { error: emailError } = await supabase.functions.invoke('send-password-email', {
+        body: { email, resetLink }
+      });
+
+      if (emailError) {
+        console.error('Custom email error:', emailError);
+        // Mesmo se falhar o email customizado, o Supabase já enviou o padrão
+      }
+
+      setEmailSent(true);
+      toast.success('Link enviado! Verifique seu email.');
+    } catch (err) {
+      console.error('Error:', err);
+      toast.error('Erro ao enviar email');
+    } finally {
+      setIsLoading(false);
     }
-
-    // Sempre mostrar sucesso por segurança
-    setEmailSent(true);
-    toast.success('Link enviado! Verifique seu email.');
   };
 
   const handleAccessLogin = () => {
