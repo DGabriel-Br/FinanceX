@@ -9,7 +9,7 @@ import {
   SelectValue 
 } from '@/components/ui/select';
 import { Receipt } from 'lucide-react';
-import { ExpenseCategory, expenseCategoryLabels } from '@/types/transaction';
+import { ExpenseCategory, expenseCategoryLabels, expenseCategoryIcons } from '@/types/transaction';
 
 interface OnboardingExpenseScreenProps {
   onSave: (expense: { value: number; category: ExpenseCategory }) => void;
@@ -103,11 +103,17 @@ export const OnboardingExpenseScreen = ({ onSave }: OnboardingExpenseScreenProps
             <SelectValue placeholder="Categoria" />
           </SelectTrigger>
           <SelectContent className="z-[60] bg-background border border-border">
-            {EXPENSE_CATEGORIES.map((cat) => (
-              <SelectItem key={cat} value={cat}>
-                {expenseCategoryLabels[cat]}
-              </SelectItem>
-            ))}
+            {EXPENSE_CATEGORIES.map((cat) => {
+              const IconComponent = expenseCategoryIcons[cat];
+              return (
+                <SelectItem key={cat} value={cat}>
+                  <div className="flex items-center gap-2">
+                    <IconComponent className="w-4 h-4 text-muted-foreground" />
+                    <span>{expenseCategoryLabels[cat]}</span>
+                  </div>
+                </SelectItem>
+              );
+            })}
           </SelectContent>
         </Select>
       </div>
