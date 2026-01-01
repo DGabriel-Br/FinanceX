@@ -122,8 +122,10 @@ export const PricingSection = memo(function PricingSection() {
                     </>
                   )}
                 </Button>
-                <p className="text-center text-white/40 text-xs lg:text-sm mt-4">
-                  Ao iniciar o teste, você concorda com a cobrança automática de R$14,90/mês após 3 dias. Você pode cancelar quando quiser, em 1 clique.
+                <p className="text-center text-white/40 text-xs lg:text-sm mt-4 leading-relaxed">
+                  Teste grátis por 3 dias.<br />
+                  Depois, R$14,90/mês.<br />
+                  <span className="font-semibold text-white/60">Cancele quando quiser, em 1 clique.</span>
                 </p>
               </div>
             </div>
