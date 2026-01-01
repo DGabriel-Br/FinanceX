@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { syncService } from '@/lib/offline/syncService';
+import { syncService } from '@/infra/offline/syncService';
 import { toast } from 'sonner';
 import { Capacitor } from '@capacitor/core';
 import { App } from '@capacitor/app';

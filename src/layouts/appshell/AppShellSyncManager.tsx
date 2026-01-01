@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useRealtimeSync } from '@/hooks/useRealtimeSync';
-import { syncService } from '@/lib/offline/syncService';
+import { syncService } from '@/infra/offline/syncService';
 
 interface AppShellSyncManagerProps {
   userId: string | undefined;

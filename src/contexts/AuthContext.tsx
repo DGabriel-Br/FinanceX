@@ -8,7 +8,7 @@ import {
   getProgressiveDelay,
   clearAllSecureItems 
 } from '@/lib/secureStorage';
-import { db } from '@/lib/offline/database';
+import { db } from '@/infra/offline/database';
 import { logger } from '@/lib/logger';
 
 interface LoginResult {
