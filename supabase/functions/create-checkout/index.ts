@@ -77,11 +77,6 @@ serve(async (req) => {
       cancel_url: `${origin}/?checkout=canceled`,
       billing_address_collection: "auto",
       locale: "pt-BR",
-      custom_text: {
-        submit: {
-          message: "Ao iniciar o teste, você concorda com a cobrança automática de R$14,90/mês após 3 dias. Você pode cancelar quando quiser, em 1 clique.",
-        },
-      },
     });
 
     logStep("Checkout session created", { sessionId: session.id, url: session.url });
