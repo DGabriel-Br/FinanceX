@@ -1,15 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { FinanceLogo } from '@/components/ui/FinanceLogo';
 import { Check, ArrowRight, Loader2, Mail } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
-import { z } from 'zod';
-
-const emailSchema = z.string().email('Email inválido');
 
 export default function Welcome() {
   const navigate = useNavigate();
@@ -18,36 +14,63 @@ export default function Welcome() {
   const [showContent, setShowContent] = useState(false);
   const [email, setEmail] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isFetchingEmail, setIsFetchingEmail] = useState(true);
   const [emailSent, setEmailSent] = useState(false);
 
   const isSuccess = searchParams.get('checkout') === 'success';
+  const sessionId = searchParams.get('session_id');
 
   useEffect(() => {
     // Redireciona se não veio do checkout
-    if (!isSuccess) {
+    if (!isSuccess || !sessionId) {
       navigate('/');
       return;
     }
-    
+
+    // Buscar email do checkout session
+    const fetchCheckoutSession = async () => {
+      try {
+        const { data, error } = await supabase.functions.invoke('get-checkout-session', {
+          body: { session_id: sessionId }
+        });
+
+        if (error) {
+          console.error('Error fetching session:', error);
+          toast.error('Erro ao carregar dados do checkout');
+          navigate('/');
+          return;
+        }
+
+        if (data?.email) {
+          setEmail(data.email);
+        } else {
+          toast.error('Email não encontrado no checkout');
+          navigate('/');
+          return;
+        }
+      } catch (err) {
+        console.error('Error:', err);
+        navigate('/');
+        return;
+      } finally {
+        setIsFetchingEmail(false);
+      }
+    };
+
+    fetchCheckoutSession();
     setMounted(true);
-    // Delay para animação
     const timer = setTimeout(() => setShowContent(true), 300);
     return () => clearTimeout(timer);
-  }, [isSuccess, navigate]);
+  }, [isSuccess, sessionId, navigate]);
 
   // Não renderiza nada enquanto verifica
-  if (!isSuccess) {
+  if (!isSuccess || !sessionId) {
     return null;
   }
 
   const handleSendPasswordLink = async () => {
-    try {
-      emailSchema.parse(email);
-    } catch {
-      toast.error('Por favor, insira um email válido');
-      return;
-    }
-
+    if (!email) return;
+    
     setIsLoading(true);
     
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
@@ -57,7 +80,6 @@ export default function Welcome() {
     setIsLoading(false);
 
     if (error) {
-      // Não revelar se o email existe ou não
       console.error('Password reset error:', error);
     }
 
@@ -69,6 +91,14 @@ export default function Welcome() {
   const handleAccessLogin = () => {
     navigate('/login');
   };
+
+  if (isFetchingEmail) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-sidebar via-[hsl(220,50%,15%)] to-primary/30 flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-sidebar via-[hsl(220,50%,15%)] to-primary/30 relative overflow-hidden flex items-center justify-center">
@@ -112,14 +142,12 @@ export default function Welcome() {
         </div>
 
         {/* Success icon */}
-        {isSuccess && (
-          <div className={cn(
-            "mx-auto w-20 h-20 rounded-full bg-income/20 flex items-center justify-center mb-6 transition-all duration-500 delay-200",
-            showContent ? "scale-100 opacity-100" : "scale-50 opacity-0"
-          )}>
-            <Check className="w-10 h-10 text-income" />
-          </div>
-        )}
+        <div className={cn(
+          "mx-auto w-20 h-20 rounded-full bg-income/20 flex items-center justify-center mb-6 transition-all duration-500 delay-200",
+          showContent ? "scale-100 opacity-100" : "scale-50 opacity-0"
+        )}>
+          <Check className="w-10 h-10 text-income" />
+        </div>
 
         {/* Title */}
         <h1 className={cn(
@@ -144,19 +172,14 @@ export default function Welcome() {
             "space-y-4 transition-all duration-500 delay-500",
             showContent ? "opacity-100 translate-y-0" : "opacity-0 translate-y-4"
           )}>
-            {/* Email input */}
+            {/* Email display (read-only) */}
             <div className="space-y-2">
               <label className="text-xs font-medium text-white/70 uppercase tracking-wide text-left block">
                 E-mail usado no checkout
               </label>
-              <Input
-                type="email"
-                placeholder="seu@email.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                disabled={isLoading}
-                className="h-12 px-4 text-base bg-sidebar-accent/80 border-0 rounded-lg text-white placeholder:text-white/30 focus:ring-1 focus:ring-primary/50"
-              />
+              <div className="h-12 px-4 text-base bg-sidebar-accent/50 border border-white/10 rounded-lg text-white/80 flex items-center">
+                {email}
+              </div>
             </div>
 
             {/* CTA Button */}
