@@ -29,9 +29,12 @@ serve(async (req) => {
     if (!stripeKey) throw new Error("STRIPE_SECRET_KEY is not set");
     logStep("Stripe key verified");
 
+    const stripe = new Stripe(stripeKey, { apiVersion: "2025-08-27.basil" });
+
     const authHeader = req.headers.get("Authorization");
     let userEmail: string | undefined;
     let customerId: string | undefined;
+    let isExistingUserWithPassword = false;
 
     // Check if user is authenticated
     if (authHeader) {
@@ -41,25 +44,66 @@ serve(async (req) => {
       
       if (user?.email) {
         userEmail = user.email;
-        logStep("User authenticated", { email: userEmail });
+        isExistingUserWithPassword = !user.user_metadata?.needs_password_setup;
+        logStep("User authenticated", { email: userEmail, isExistingUserWithPassword });
       }
     }
 
-    const stripe = new Stripe(stripeKey, { apiVersion: "2025-08-27.basil" });
-
-    // Check if customer exists
+    // Check if customer exists in Stripe
     if (userEmail) {
       const customers = await stripe.customers.list({ email: userEmail, limit: 1 });
       if (customers.data.length > 0) {
         customerId = customers.data[0].id;
         logStep("Found existing customer", { customerId });
+
+        // Check if customer already has an active subscription
+        const subscriptions = await stripe.subscriptions.list({
+          customer: customerId,
+          status: "active",
+          limit: 1,
+        });
+
+        const trialingSubs = await stripe.subscriptions.list({
+          customer: customerId,
+          status: "trialing",
+          limit: 1,
+        });
+
+        if (subscriptions.data.length > 0 || trialingSubs.data.length > 0) {
+          const activeSub = subscriptions.data[0] || trialingSubs.data[0];
+          logStep("Customer already has active subscription", { 
+            subscriptionId: activeSub.id, 
+            status: activeSub.status 
+          });
+
+          // Create portal session for existing subscribers
+          const portalSession = await stripe.billingPortal.sessions.create({
+            customer: customerId,
+            return_url: `${req.headers.get("origin") || "https://financex.lovable.app"}/dashboard`,
+          });
+
+          return new Response(JSON.stringify({ 
+            error: "already_subscribed",
+            message: "Você já possui uma assinatura ativa.",
+            portal_url: portalSession.url
+          }), {
+            headers: { ...corsHeaders, "Content-Type": "application/json" },
+            status: 400,
+          });
+        }
       }
     }
 
     const origin = req.headers.get("origin") || "https://financex.lovable.app";
 
+    // Determine success URL based on whether user already has a password
+    const successUrl = isExistingUserWithPassword 
+      ? `${origin}/dashboard?checkout=success`
+      : `${origin}/setup-password?session_id={CHECKOUT_SESSION_ID}`;
+
+    logStep("Creating checkout session", { successUrl, isExistingUserWithPassword });
+
     // Create subscription checkout session with 3-day trial
-    // Não requer autenticação - o email será coletado no checkout
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       customer_email: customerId ? undefined : userEmail,
@@ -73,7 +117,7 @@ serve(async (req) => {
       subscription_data: {
         trial_period_days: 3,
       },
-      success_url: `${origin}/setup-password?session_id={CHECKOUT_SESSION_ID}`,
+      success_url: successUrl,
       cancel_url: `${origin}/?checkout=canceled`,
       billing_address_collection: "auto",
       locale: "pt-BR",

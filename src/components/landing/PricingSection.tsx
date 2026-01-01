@@ -26,8 +26,23 @@ export const PricingSection = memo(function PricingSection() {
         return;
       }
 
+      // Handle already subscribed error
+      if (data?.error === 'already_subscribed') {
+        toast.info('Você já possui uma assinatura ativa!');
+        if (data?.portal_url) {
+          // Redirect to customer portal to manage subscription
+          window.location.href = data.portal_url;
+        } else {
+          // Fallback to dashboard
+          window.location.href = '/dashboard';
+        }
+        return;
+      }
+
       if (data?.url) {
         window.location.href = data.url;
+      } else if (data?.error) {
+        toast.error(data.error);
       } else {
         toast.error('Erro ao obter link de checkout.');
       }

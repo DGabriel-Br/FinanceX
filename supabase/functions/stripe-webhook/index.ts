@@ -103,7 +103,7 @@ serve(async (req) => {
           let user = userData.users.find(u => u.email === customerEmail);
           
           // Se usuário não existe, criar automaticamente
-          if (!user) {
+        if (!user) {
             logStep("User not found, creating new user", { email: customerEmail });
             
             const tempPassword = generateTempPassword();
@@ -145,13 +145,34 @@ serve(async (req) => {
           } else {
             logStep("User already exists", { userId: user.id, email: customerEmail });
             
-            // Atualizar metadata do usuário existente com o customer_id
+            // Check if user already has password set (not needs_password_setup)
+            const needsPasswordSetup = user.user_metadata?.needs_password_setup === true;
+            
+            // Update user metadata with customer_id
             await supabaseClient.auth.admin.updateUserById(user.id, {
               user_metadata: {
                 ...user.user_metadata,
                 stripe_customer_id: session.customer as string
               }
             });
+
+            // Only create setup token if user still needs password setup
+            if (needsPasswordSetup) {
+              logStep("Existing user needs password setup, creating token");
+              const { error: tokenError } = await supabaseClient
+                .from("password_setup_tokens")
+                .insert({
+                  user_id: user.id,
+                  email: customerEmail,
+                  stripe_session_id: session.id,
+                });
+
+              if (tokenError) {
+                logStep("ERROR: Failed to create setup token for existing user", { error: tokenError.message });
+              }
+            } else {
+              logStep("Existing user already has password, skipping token creation");
+            }
           }
 
           // Criar/atualizar subscription
