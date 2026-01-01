@@ -307,7 +307,7 @@ const FinalCTASection = memo(function FinalCTASection() {
               </span>
             </h2>
             <p className="text-base lg:text-lg text-white/50 mb-8 lg:mb-10 max-w-md mx-auto">
-              Comece hoje e veja pra onde seu dinheiro está indo.
+              Em poucos dias, você para de se perguntar onde o dinheiro foi.
             </p>
             <Button 
               size="lg" 
