@@ -251,7 +251,7 @@ const ForWhoSection = memo(function ForWhoSection() {
           </ScrollReveal>
 
           <ScrollReveal direction="up" delay={80} duration={700}>
-            <article className="bg-white border border-black/[0.04] rounded-2xl lg:rounded-3xl p-6 lg:p-8 h-full shadow-sm hover:shadow-xl hover:shadow-red-500/[0.03] hover:-translate-y-1 transition-all duration-500 md:translate-y-4">
+            <article className="bg-white border border-black/[0.04] rounded-2xl lg:rounded-3xl p-6 lg:p-8 h-full shadow-sm hover:shadow-xl hover:shadow-red-500/[0.03] hover:-translate-y-1 transition-all duration-500">
               <div className="flex items-center gap-3 lg:gap-4 mb-6 lg:mb-8">
                 <div className="h-10 w-10 lg:h-12 lg:w-12 rounded-full bg-red-50 flex items-center justify-center">
                   <X className="w-5 h-5 lg:w-6 lg:h-6 text-red-400" />
