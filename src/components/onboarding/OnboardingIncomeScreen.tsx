@@ -90,7 +90,7 @@ export const OnboardingIncomeScreen = ({ onContinue }: OnboardingIncomeScreenPro
       </div>
 
       {/* Sugestões rápidas */}
-      <div className="flex flex-wrap justify-center gap-2 mb-10 w-full max-w-xs animate-fade-in opacity-0" style={{ animationDelay: '0.5s', animationFillMode: 'forwards' }}>
+      <div className="flex justify-center gap-2 mb-10 w-full max-w-sm animate-fade-in opacity-0" style={{ animationDelay: '0.5s', animationFillMode: 'forwards' }}>
         {INCOME_SUGGESTIONS.map((amount) => (
           <button
             key={amount}
