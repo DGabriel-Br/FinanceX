@@ -13,13 +13,21 @@ const logStep = (step: string, details?: Record<string, unknown>) => {
   console.log(`[SEND-WELCOME-EMAIL] ${step}${detailsStr}`);
 };
 
+// Generate tracking pixel URL
+const getTrackingPixel = (trackingId: string, emailType: string, email: string) => {
+  const baseUrl = Deno.env.get("SUPABASE_URL") || "";
+  const encodedEmail = encodeURIComponent(email);
+  return `<img src="${baseUrl}/functions/v1/track-email-open?id=${trackingId}&type=${emailType}&email=${encodedEmail}" width="1" height="1" style="display:block;width:1px;height:1px;border:0;" alt="" />`;
+};
+
 interface WelcomeEmailRequest {
   email: string;
   sessionId: string;
   userName?: string;
+  trackingId?: string;
 }
 
-const getWelcomeEmailHtml = (setupLink: string) => {
+const getWelcomeEmailHtml = (setupLink: string, trackingPixel: string) => {
   return `
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -181,6 +189,7 @@ const getWelcomeEmailHtml = (setupLink: string) => {
       </td>
     </tr>
   </table>
+  ${trackingPixel}
 </body>
 </html>
 `;
@@ -194,7 +203,7 @@ serve(async (req: Request): Promise<Response> => {
   try {
     logStep("Welcome email request received");
 
-    const { email, sessionId, userName }: WelcomeEmailRequest = await req.json();
+    const { email, sessionId, userName, trackingId }: WelcomeEmailRequest = await req.json();
 
     if (!email || !sessionId) {
       logStep("ERROR: Missing required fields", { email: !!email, sessionId: !!sessionId });
@@ -206,13 +215,17 @@ serve(async (req: Request): Promise<Response> => {
 
     logStep("Processing welcome email", { email, sessionId, userName });
 
+    // Generate tracking ID if not provided
+    const emailTrackingId = trackingId || crypto.randomUUID();
+    const trackingPixel = getTrackingPixel(emailTrackingId, "welcome", email);
+
     // Construir o link de setup de senha
     const baseUrl = "https://financex.lovable.app";
     const setupLink = `${baseUrl}/setup-password?session_id=${sessionId}`;
 
-    logStep("Setup link generated", { setupLink });
+    logStep("Setup link generated", { setupLink, trackingId: emailTrackingId });
 
-    const emailHtml = getWelcomeEmailHtml(setupLink);
+    const emailHtml = getWelcomeEmailHtml(setupLink, trackingPixel);
 
     const emailResponse = await resend.emails.send({
       from: "FinanceX <contato@financex.com.br>",
@@ -221,10 +234,10 @@ serve(async (req: Request): Promise<Response> => {
       html: emailHtml,
     });
 
-    logStep("Email sent successfully", { emailResponse, to: email });
+    logStep("Email sent successfully", { emailResponse, to: email, trackingId: emailTrackingId });
 
     return new Response(
-      JSON.stringify({ success: true, emailResponse }),
+      JSON.stringify({ success: true, emailResponse, trackingId: emailTrackingId }),
       { status: 200, headers: { ...corsHeaders, "Content-Type": "application/json" } }
     );
   } catch (error) {

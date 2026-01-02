@@ -38,3 +38,6 @@ verify_jwt = false
 
 [functions.send-trial-cancelled-email]
 verify_jwt = false
+
+[functions.track-email-open]
+verify_jwt = false

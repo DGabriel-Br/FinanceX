@@ -203,6 +203,39 @@ export type Database = {
         }
         Relationships: []
       }
+      email_tracking: {
+        Row: {
+          email_id: string
+          email_type: string
+          id: string
+          ip_address: string | null
+          opened_at: string
+          recipient_email: string
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          email_id: string
+          email_type: string
+          id?: string
+          ip_address?: string | null
+          opened_at?: string
+          recipient_email: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          email_id?: string
+          email_type?: string
+          id?: string
+          ip_address?: string | null
+          opened_at?: string
+          recipient_email?: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       hidden_default_categories: {
         Row: {
           category_key: string
@@ -328,6 +361,7 @@ export type Database = {
           scheduled_for: string
           sent_at: string | null
           status: string
+          tracking_id: string | null
           updated_at: string
           user_id: string
         }
@@ -341,6 +375,7 @@ export type Database = {
           scheduled_for: string
           sent_at?: string | null
           status?: string
+          tracking_id?: string | null
           updated_at?: string
           user_id: string
         }
@@ -354,6 +389,7 @@ export type Database = {
           scheduled_for?: string
           sent_at?: string | null
           status?: string
+          tracking_id?: string | null
           updated_at?: string
           user_id?: string
         }
