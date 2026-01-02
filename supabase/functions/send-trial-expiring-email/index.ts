@@ -140,7 +140,7 @@ const getTrialExpiringEmailHtml = (trackingPixel: string) => {
   <div class="container">
     <div class="card">
       <div class="logo">
-        <span class="logo-text">Finance<span style="color: #2DD4BF;">X</span></span>
+        <img src="https://financex.app.br/images/financex-logo.png" alt="FinanceX" width="160" height="40" style="display: block; margin: 0 auto; width: 160px; height: auto;" />
       </div>
       
       <p style="color: #f1f5f9; font-size: 18px;">Oi,</p>

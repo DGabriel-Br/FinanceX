@@ -135,7 +135,7 @@ const handler = async (req: Request): Promise<Response> => {
             <td style="padding: 40px;">
               <!-- Logo -->
               <div style="text-align: center; margin-bottom: 32px;">
-                <span style="font-size: 24px; font-weight: 800; color: #0f172a; letter-spacing: -0.025em;">FinanceX</span>
+                <img src="https://financex.app.br/images/financex-logo.png" alt="FinanceX" width="140" height="35" style="display: block; margin: 0 auto; width: 140px; height: auto;" />
               </div>
               
               <!-- Título -->
