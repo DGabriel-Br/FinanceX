@@ -64,22 +64,22 @@ export const OnboardingExpenseScreen = ({ onSave }: OnboardingExpenseScreenProps
   return (
     <div className="flex flex-col items-center justify-center min-h-full px-6 py-12">
       {/* Icon */}
-      <div className="mb-6 p-3 rounded-xl bg-expense/10">
+      <div className="mb-6 p-3 rounded-xl bg-expense/10 animate-fade-in opacity-0" style={{ animationDelay: '0.1s', animationFillMode: 'forwards' }}>
         <Receipt className="w-8 h-8 text-expense" />
       </div>
 
       {/* Title */}
-      <h2 className="text-xl md:text-2xl font-bold text-foreground mb-2 text-center">
+      <h2 className="text-xl md:text-2xl font-bold text-foreground mb-2 text-center animate-fade-in opacity-0" style={{ animationDelay: '0.2s', animationFillMode: 'forwards' }}>
         Agora, um gasto recente qualquer.
       </h2>
 
       {/* Sub */}
-      <p className="text-muted-foreground text-sm mb-8 text-center max-w-xs">
+      <p className="text-muted-foreground text-sm mb-8 text-center max-w-xs animate-fade-in opacity-0" style={{ animationDelay: '0.3s', animationFillMode: 'forwards' }}>
         Não precisa ser exato. Só pra gente começar.
       </p>
 
       {/* Input de valor */}
-      <div className="w-full max-w-xs mb-4">
+      <div className="w-full max-w-xs mb-4 animate-fade-in opacity-0" style={{ animationDelay: '0.4s', animationFillMode: 'forwards' }}>
         <div className="relative">
           <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground text-lg">
             R$
@@ -97,7 +97,7 @@ export const OnboardingExpenseScreen = ({ onSave }: OnboardingExpenseScreenProps
       </div>
 
       {/* Categoria */}
-      <div className="w-full max-w-xs mb-10">
+      <div className="w-full max-w-xs mb-10 animate-fade-in opacity-0" style={{ animationDelay: '0.5s', animationFillMode: 'forwards' }}>
         <Select value={category} onValueChange={(val) => setCategory(val as ExpenseCategory)}>
           <SelectTrigger className="h-12">
             <SelectValue placeholder="Categoria">
@@ -133,7 +133,8 @@ export const OnboardingExpenseScreen = ({ onSave }: OnboardingExpenseScreenProps
         onClick={handleSave} 
         disabled={!isValid}
         size="lg" 
-        className="w-full max-w-xs h-14 text-lg font-semibold"
+        className="w-full max-w-xs h-14 text-lg font-semibold animate-fade-in opacity-0 hover:scale-105 transition-transform"
+        style={{ animationDelay: '0.6s', animationFillMode: 'forwards' }}
       >
         Salvar gasto
       </Button>
