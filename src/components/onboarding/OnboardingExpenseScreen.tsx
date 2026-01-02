@@ -112,7 +112,7 @@ export const OnboardingExpenseScreen = ({ onSave }: OnboardingExpenseScreenProps
               })()}
             </SelectValue>
           </SelectTrigger>
-          <SelectContent className="z-[60] bg-background border border-border">
+          <SelectContent className="z-[10000] bg-background border border-border" position="popper" sideOffset={4}>
             {EXPENSE_CATEGORIES.map((cat) => {
               const IconComponent = expenseCategoryIcons[cat];
               return (
