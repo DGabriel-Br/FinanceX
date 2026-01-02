@@ -19,6 +19,7 @@ interface AppShellNavigationHeaderProps {
   onToggleValues: () => void;
   onSignOut: () => void;
   highlightedTab: Tab | null;
+  isAdmin?: boolean;
 }
 
 interface AppShellMobileFooterProps {
@@ -46,6 +47,7 @@ export const AppShellNavigationHeader = ({
   onToggleValues,
   onSignOut,
   highlightedTab,
+  isAdmin,
 }: AppShellNavigationHeaderProps) => {
   if (isNativeApp) {
     return (
@@ -73,6 +75,7 @@ export const AppShellNavigationHeader = ({
       userAvatar={user.user_metadata?.avatar_url}
       onSignOut={onSignOut}
       highlightedTab={highlightedTab}
+      isAdmin={isAdmin}
     />
   );
 };

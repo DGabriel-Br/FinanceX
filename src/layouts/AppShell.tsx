@@ -6,6 +6,7 @@ import { useValuesVisibility } from '@/hooks/useValuesVisibility';
 import { useOnboarding } from '@/hooks/useOnboarding';
 import { useIsNativeApp } from '@/hooks/useIsNativeApp';
 import { useNavigationBar } from '@/hooks/useNavigationBar';
+import { supabase } from '@/integrations/supabase/client';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -56,6 +57,7 @@ export const AppShell = ({ children, onRefresh, onAddTransaction }: AppShellProp
   const [showSplash, setShowSplash] = useState(true);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   // Detecta direção da navegação entre abas
   useEffect(() => {
@@ -89,6 +91,24 @@ export const AppShell = ({ children, onRefresh, onAddTransaction }: AppShellProp
       navigate('/login');
     }
   }, [user, authLoading, navigate]);
+
+  // Check admin status
+  useEffect(() => {
+    if (!user) return;
+    
+    const checkAdmin = async () => {
+      const { data } = await supabase
+        .from('user_roles')
+        .select('role')
+        .eq('user_id', user.id)
+        .eq('role', 'admin')
+        .maybeSingle();
+      
+      setIsAdmin(!!data);
+    };
+    
+    checkAdmin();
+  }, [user]);
 
   // Pull to refresh handler
   const handlePullRefresh = useCallback(async () => {
@@ -155,6 +175,7 @@ export const AppShell = ({ children, onRefresh, onAddTransaction }: AppShellProp
             onToggleValues={toggleValuesVisibility}
             onSignOut={handleSignOutRequest}
             highlightedTab={null}
+            isAdmin={isAdmin}
           />
         }
         mobileNavSlot={
