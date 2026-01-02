@@ -85,7 +85,7 @@ export const OnboardingCelebration = ({
 
       {/* Main message */}
       <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-6 animate-fade-in opacity-0" style={{ animationDelay: '0.2s', animationFillMode: 'forwards' }}>
-        Pronto. Isso já muda tudo.
+        Pronto. Agora você está no controle.
       </h1>
 
       {/* Projection result */}
