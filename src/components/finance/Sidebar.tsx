@@ -1,4 +1,4 @@
-import { LayoutDashboard, Receipt, ChevronLeft, ChevronRight, Moon, Sun, CreditCard, TrendingUp, LogOut, Settings, BarChart3 } from 'lucide-react';
+import { LayoutDashboard, Receipt, ChevronLeft, ChevronRight, Moon, Sun, CreditCard, TrendingUp, LogOut, Settings } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { cn } from '@/lib/utils';
 import { Switch } from '@/components/ui/switch';
@@ -16,8 +16,7 @@ export interface SidebarProps {
   userEmail?: string;
   userAvatar?: string | null;
   onSignOut?: () => void;
-  highlightedTab?: Tab | null;
-  isAdmin?: boolean;
+  highlightedTab?: Tab | null; // Tab a ser destacada durante o tour
 }
 
 const menuItems = [
@@ -37,8 +36,7 @@ export const Sidebar = ({
   userEmail,
   userAvatar,
   onSignOut,
-  highlightedTab,
-  isAdmin
+  highlightedTab
 }: SidebarProps) => {
   return (
     <aside className={cn(
@@ -110,31 +108,6 @@ export const Sidebar = ({
             );
           })}
         </ul>
-
-        {/* Admin Section */}
-        {isAdmin && (
-          <div className="mt-4 pt-4 border-t border-sidebar-border">
-            <p className={cn(
-              "text-xs text-sidebar-foreground/50 uppercase tracking-wider mb-2",
-              collapsed && "hidden"
-            )}>
-              Admin
-            </p>
-            <Link
-              to="/admin/funnel"
-              title={collapsed ? "Dashboard de Conversão" : undefined}
-              className={cn(
-                'w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors text-sidebar-foreground/80 hover:bg-sidebar-accent hover:text-sidebar-accent-foreground',
-                collapsed && 'justify-center px-0'
-              )}
-            >
-              <div className="w-5 h-5 flex items-center justify-center flex-shrink-0">
-                <BarChart3 className="w-5 h-5" />
-              </div>
-              {!collapsed && <span className="whitespace-nowrap">Conversão</span>}
-            </Link>
-          </div>
-        )}
       </nav>
 
       {/* Footer com User e Theme Toggle */}
