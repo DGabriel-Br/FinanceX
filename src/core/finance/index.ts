@@ -56,6 +56,13 @@ export {
   type DebtProgress,
 } from './debts';
 
+// Financial projections
+export {
+  calculateMonthProjection,
+  calculateSimpleProjection,
+  type MonthProjection,
+} from './projections';
+
 // Investment metadata (structured description encoding/decoding)
 export {
   encodeInvestmentDescription,

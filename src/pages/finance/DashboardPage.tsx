@@ -14,6 +14,7 @@ const DashboardPage = () => {
     showValues,
     toggleValuesVisibility,
     formatValue,
+    addTransaction,
   } = useFinanceData();
 
   return (
@@ -28,6 +29,7 @@ const DashboardPage = () => {
       showValues={showValues}
       onToggleValues={toggleValuesVisibility}
       formatValue={formatValue}
+      onAddTransaction={addTransaction}
     />
   );
 };

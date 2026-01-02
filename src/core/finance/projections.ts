@@ -1,6 +1,6 @@
 import { Transaction } from '@/types/transaction';
 
-interface MonthProjection {
+export interface MonthProjection {
   projectedBalance: number;
   daysUntilNegative: number | null;
   dailyAverageExpense: number;

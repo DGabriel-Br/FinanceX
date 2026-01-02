@@ -1,12 +1,13 @@
-import { memo, useMemo, useCallback } from 'react';
-import { TrendingUp, TrendingDown, Wallet, BarChart3 } from 'lucide-react';
+import { memo, useMemo } from 'react';
+import { TrendingUp, TrendingDown, BarChart3 } from 'lucide-react';
 import { PeriodFilter, CustomDateRange } from './PeriodFilter';
 import { DebtTracker } from './DebtTracker';
 import { CategoryCharts } from './CategoryCharts';
+import { HeroCard, AddExpenseCTA } from './dashboard';
 import { Transaction } from '@/types/transaction';
 import { Debt } from '@/types/debt';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, Cell } from 'recharts';
-import { calculatePreviousYearBalance, calculateMonthlyData } from '@/core/finance';
+import { calculatePreviousYearBalance, calculateMonthlyData, calculateMonthProjection } from '@/core/finance';
 import { useIsMobile } from '@/hooks/use-mobile';
 
 interface DashboardProps {
@@ -26,6 +27,7 @@ interface DashboardProps {
   showValues: boolean;
   onToggleValues: () => void;
   formatValue: (value: number) => string;
+  onAddTransaction: (transaction: Omit<Transaction, 'id' | 'createdAt'>) => Promise<void>;
 }
 
 const MONTHS = [
@@ -45,8 +47,8 @@ const formatCurrency = (value: number): string => {
   }).format(value);
 };
 
-// Memoized summary card to prevent re-renders
-const SummaryCard = memo(({ 
+// Memoized secondary card (smaller version)
+const SecondaryCard = memo(({ 
   icon: Icon, 
   title, 
   value, 
@@ -62,23 +64,23 @@ const SummaryCard = memo(({
   delay: string;
 }) => (
   <div 
-    className="bg-card border border-border rounded-xl p-4 md:p-6 shadow-sm animate-fade-in hover:shadow-lg hover:scale-[1.02] transition-all duration-300" 
+    className="bg-card border border-border rounded-xl p-4 shadow-sm animate-fade-in hover:shadow-md transition-all duration-300" 
     style={{ animationDelay: delay, animationDuration: '0.5s', animationFillMode: 'both' }}
   >
-    <div className="flex items-center gap-3 md:gap-4">
-      <div className={`w-10 h-10 md:w-12 md:h-12 rounded-full ${bgClass} flex items-center justify-center animate-scale-in`} style={{ animationDelay: `calc(${delay} + 0.1s)`, animationDuration: '0.4s', animationFillMode: 'both' }}>
-        <Icon className={`w-5 h-5 md:w-6 md:h-6 ${colorClass}`} />
+    <div className="flex items-center gap-3">
+      <div className={`w-9 h-9 rounded-full ${bgClass} flex items-center justify-center`}>
+        <Icon className={`w-4 h-4 ${colorClass}`} />
       </div>
       <div className="min-w-0 flex-1">
-        <p className="text-xs md:text-sm text-muted-foreground">{title}</p>
-        <p className={`text-lg md:text-2xl font-bold ${colorClass} truncate`}>
+        <p className="text-xs text-muted-foreground">{title}</p>
+        <p className={`text-lg font-bold ${colorClass} truncate`}>
           {value}
         </p>
       </div>
     </div>
   </div>
 ));
-SummaryCard.displayName = 'SummaryCard';
+SecondaryCard.displayName = 'SecondaryCard';
 
 // Memoized chart component
 const MonthlyChart = memo(({ 
@@ -219,7 +221,7 @@ const MonthlyChart = memo(({
               name="Receitas" 
               radius={isMobile ? [3, 3, 0, 0] : [6, 6, 0, 0]}
               barSize={isMobile ? 8 : undefined}
-              isAnimationActive={!isMobile} // Disable animations on mobile for performance
+              isAnimationActive={!isMobile}
               animationBegin={300}
               animationDuration={600}
               animationEasing="ease-out"
@@ -238,7 +240,7 @@ const MonthlyChart = memo(({
               name="Despesas" 
               radius={isMobile ? [3, 3, 0, 0] : [6, 6, 0, 0]}
               barSize={isMobile ? 8 : undefined}
-              isAnimationActive={!isMobile} // Disable animations on mobile for performance
+              isAnimationActive={!isMobile}
               animationBegin={400}
               animationDuration={600}
               animationEasing="ease-out"
@@ -270,7 +272,8 @@ export const Dashboard = memo(({
   onNavigateToDebts,
   showValues,
   onToggleValues,
-  formatValue
+  formatValue,
+  onAddTransaction
 }: DashboardProps) => {
   const isMobile = useIsMobile();
 
@@ -280,23 +283,24 @@ export const Dashboard = memo(({
     [customRange?.start]
   );
 
-  // Memoize previous year balance - only recalculate when allTransactions or year changes
+  // Calculate "Sobra para gastar" projection
+  const projection = useMemo(() => {
+    return calculateMonthProjection(totals.receitas, transactions);
+  }, [totals.receitas, transactions]);
+
+  // Memoize previous year balance
   const previousYearBalance = useMemo(() => {
     return calculatePreviousYearBalance(allTransactions, selectedYear);
   }, [allTransactions, selectedYear]);
 
-  // Memoize chart data - only recalculate when dependencies change
+  // Memoize chart data
   const chartData = useMemo(() => {
     return calculateMonthlyData(allTransactions, selectedYear, previousYearBalance);
   }, [allTransactions, selectedYear, previousYearBalance]);
 
-  // Memoize formatted values to prevent re-renders
+  // Memoize formatted values
   const formattedReceitas = useMemo(() => formatValue(totals.receitas), [formatValue, totals.receitas]);
   const formattedDespesas = useMemo(() => formatValue(totals.despesas), [formatValue, totals.despesas]);
-  const formattedSaldo = useMemo(() => formatValue(totals.saldo), [formatValue, totals.saldo]);
-
-  // Memoize saldo color class
-  const saldoColorClass = totals.saldo >= 0 ? 'text-income' : 'text-expense';
 
   return (
     <div className="page-container">
@@ -304,7 +308,7 @@ export const Dashboard = memo(({
       <div className="flex items-start justify-between gap-2 sm:gap-3 mb-6 md:mb-8">
         <div className="min-w-0 flex-1">
           <h2 className="text-xl md:text-2xl font-bold text-foreground truncate">Dashboard</h2>
-          <p className="text-sm md:text-base text-muted-foreground mt-1 hidden sm:block">Resumo das suas finanças</p>
+          <p className="text-sm md:text-base text-muted-foreground mt-1 hidden sm:block">Decida com clareza antes de gastar</p>
         </div>
         <PeriodFilter 
           customRange={customRange}
@@ -314,42 +318,46 @@ export const Dashboard = memo(({
         />
       </div>
 
-      {/* Cards - usando componentes memoizados */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-6">
-        <SummaryCard
+      {/* 1. HERO: Sobra para gastar */}
+      <HeroCard
+        sobraValue={projection.projectedBalance}
+        isPositive={projection.isPositive}
+        daysUntilNegative={projection.daysUntilNegative}
+        showValues={showValues}
+        formatValue={formatValue}
+      />
+
+      {/* 2. CTA: Lançar gasto */}
+      <div className="mt-6">
+        <AddExpenseCTA onAddTransaction={onAddTransaction} />
+      </div>
+
+      {/* 3. Cards secundários: Receitas | Gastos do mês */}
+      <div className="grid grid-cols-2 gap-3 md:gap-4 mt-6">
+        <SecondaryCard
           icon={TrendingUp}
-          title="Receitas"
+          title="Receitas do mês"
           value={formattedReceitas}
           colorClass="text-income"
           bgClass="bg-income/10"
-          delay="0.1s"
+          delay="0.15s"
         />
-        <SummaryCard
+        <SecondaryCard
           icon={TrendingDown}
-          title="Despesas"
+          title="Gastos do mês"
           value={formattedDespesas}
           colorClass="text-expense"
           bgClass="bg-expense/10"
-          delay="0.15s"
-        />
-        <SummaryCard
-          icon={Wallet}
-          title="Saldo"
-          value={formattedSaldo}
-          colorClass={saldoColorClass}
-          bgClass="bg-primary/10"
           delay="0.2s"
         />
       </div>
 
-      {/* Dica */}
-      <div className="mt-8 p-4 bg-muted/50 rounded-lg border border-border">
-        <p className="text-sm text-muted-foreground">
-          💡 <strong>Dica:</strong> Vá até a aba "Lançamentos" para adicionar suas receitas e despesas.
-        </p>
+      {/* 4. Acompanhamento de Dívidas */}
+      <div className="mt-6">
+        <DebtTracker debts={debts} transactions={allTransactions} onNavigateToDebts={onNavigateToDebts} formatValue={formatValue} />
       </div>
 
-      {/* Gráfico memoizado */}
+      {/* 5. Gráfico mensal (mais abaixo) */}
       <MonthlyChart 
         chartData={chartData}
         isMobile={isMobile}
@@ -357,12 +365,7 @@ export const Dashboard = memo(({
         selectedYear={selectedYear}
       />
 
-      {/* Acompanhamento de Dívidas */}
-      <div className="mt-6">
-        <DebtTracker debts={debts} transactions={allTransactions} onNavigateToDebts={onNavigateToDebts} formatValue={formatValue} />
-      </div>
-
-      {/* Gráficos de Pizza por Categoria */}
+      {/* 6. Gráficos de Pizza por Categoria */}
       <CategoryCharts transactions={transactions} formatValue={formatValue} />
     </div>
   );
