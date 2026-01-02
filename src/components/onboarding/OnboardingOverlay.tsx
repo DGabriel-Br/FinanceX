@@ -40,11 +40,19 @@ export const OnboardingOverlay = ({
     animateToStep('income');
   };
 
+  const getLocalDateString = () => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, '0');
+    const day = String(now.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+
   const handleIncomeContinue = async (income: number) => {
     setMonthlyIncome(income);
     
     // Salvar receita como transação
-    const today = new Date().toISOString().split('T')[0];
+    const today = getLocalDateString();
     await onAddTransaction({
       type: 'receita',
       category: 'salario',
@@ -60,7 +68,7 @@ export const OnboardingOverlay = ({
     setLastExpenseValue(expense.value);
     
     // Salvar despesa como transação
-    const today = new Date().toISOString().split('T')[0];
+    const today = getLocalDateString();
     await onAddTransaction({
       type: 'despesa',
       category: expense.category,
