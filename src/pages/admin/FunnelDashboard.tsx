@@ -86,12 +86,17 @@ export default function FunnelDashboard() {
 
       try {
         const { data: responseData, error: invokeError } = await supabase.functions.invoke(
-          'admin-funnel-stats',
-          { body: { days: parseInt(daysBack, 10) } }
+          `admin-funnel-stats?days=${daysBack}`,
+          { method: 'GET' }
         );
 
         if (invokeError) {
           throw invokeError;
+        }
+
+        // Check if response contains an error
+        if (responseData?.error) {
+          throw new Error(responseData.error);
         }
 
         setData(responseData as FunnelData);
