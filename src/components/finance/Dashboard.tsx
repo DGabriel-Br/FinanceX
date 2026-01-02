@@ -100,11 +100,14 @@ const MonthlyChart = memo(({
 
   return (
     <div className="mt-6 bg-card border border-border rounded-xl p-3 md:p-6 shadow-sm animate-fade-in" style={{ animationDelay: '0.3s', animationDuration: '0.6s', animationFillMode: 'both' }}>
-      <h3 className="text-sm md:text-lg font-semibold text-foreground mb-4 flex items-center gap-2">
-        <BarChart3 className="w-4 h-4 md:w-5 md:h-5 text-primary" />
-        <span className="hidden sm:inline">Receitas e Despesas por Mês ({selectedYear})</span>
-        <span className="sm:hidden">Receitas/Despesas ({selectedYear})</span>
-      </h3>
+      <div className="mb-4">
+        <h3 className="text-sm md:text-lg font-semibold text-foreground flex items-center gap-2">
+          <BarChart3 className="w-4 h-4 md:w-5 md:h-5 text-primary" />
+          <span className="hidden sm:inline">Receitas e Despesas por Mês ({selectedYear})</span>
+          <span className="sm:hidden">Receitas/Despesas ({selectedYear})</span>
+        </h3>
+        <p className="text-xs text-muted-foreground mt-1 ml-6 md:ml-7">Visual do seu mês ao longo do tempo.</p>
+      </div>
       <div className="h-64 md:h-80">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart 
