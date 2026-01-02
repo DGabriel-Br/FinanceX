@@ -96,7 +96,7 @@ export const OnboardingIncomeScreen = ({ onContinue }: OnboardingIncomeScreenPro
             key={amount}
             onClick={() => handleSuggestionClick(amount)}
             className={cn(
-              'px-4 py-2 rounded-full text-sm font-medium transition-all',
+              'px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap',
               selectedSuggestion === amount
                 ? 'bg-primary text-primary-foreground'
                 : 'bg-muted text-muted-foreground hover:bg-muted/80'
