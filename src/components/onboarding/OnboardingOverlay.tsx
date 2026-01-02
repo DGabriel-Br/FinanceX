@@ -64,7 +64,7 @@ export const OnboardingOverlay = ({
     animateToStep('expense');
   };
 
-  const handleExpenseSave = async (expense: { value: number; category: ExpenseCategory }) => {
+  const handleExpenseSave = async (expense: { value: number; category: ExpenseCategory; description: string }) => {
     setLastExpenseValue(expense.value);
     
     // Salvar despesa como transação
@@ -74,7 +74,7 @@ export const OnboardingOverlay = ({
       category: expense.category,
       value: expense.value,
       date: today,
-      description: 'Gasto registrado no onboarding',
+      description: expense.description,
     });
 
     // Calcular projeção
