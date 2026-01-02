@@ -137,20 +137,20 @@ export const OnboardingCelebration = ({
       {/* CTAs */}
       <div className="w-full max-w-xs space-y-3 animate-fade-in opacity-0" style={{ animationDelay: '0.5s', animationFillMode: 'forwards' }}>
         <Button 
-          onClick={onAddAnother} 
-          variant="outline"
+          onClick={onFinish} 
+          variant="default"
           size="lg" 
           className="w-full h-12 hover:scale-105 transition-transform"
         >
-          <Plus className="w-4 h-4 mr-2" />
-          Adicionar outro gasto
+          Ir para o app
         </Button>
 
         <button 
-          onClick={onFinish}
-          className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+          onClick={onAddAnother}
+          className="text-sm text-muted-foreground hover:text-foreground transition-colors flex items-center justify-center gap-2"
         >
-          Ou explore o FinanceX no seu ritmo
+          <Plus className="w-4 h-4" />
+          Adicionar outro gasto
         </button>
       </div>
     </div>
