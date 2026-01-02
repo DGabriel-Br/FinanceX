@@ -57,22 +57,22 @@ export const OnboardingIncomeScreen = ({ onContinue }: OnboardingIncomeScreenPro
   return (
     <div className="flex flex-col items-center justify-center min-h-full px-6 py-12">
       {/* Icon */}
-      <div className="mb-6 p-3 rounded-xl bg-income/10">
+      <div className="mb-6 p-3 rounded-xl bg-income/10 animate-fade-in opacity-0" style={{ animationDelay: '0.1s', animationFillMode: 'forwards' }}>
         <Wallet className="w-8 h-8 text-income" />
       </div>
 
       {/* Title */}
-      <h2 className="text-xl md:text-2xl font-bold text-foreground mb-2 text-center">
+      <h2 className="text-xl md:text-2xl font-bold text-foreground mb-2 text-center animate-fade-in opacity-0" style={{ animationDelay: '0.2s', animationFillMode: 'forwards' }}>
         Quanto você recebe por mês?
       </h2>
 
       {/* Sub */}
-      <p className="text-muted-foreground text-sm mb-8 text-center max-w-xs">
+      <p className="text-muted-foreground text-sm mb-8 text-center max-w-xs animate-fade-in opacity-0" style={{ animationDelay: '0.3s', animationFillMode: 'forwards' }}>
         Pode ser aproximado. Você ajusta depois.
       </p>
 
       {/* Input de valor */}
-      <div className="w-full max-w-xs mb-6">
+      <div className="w-full max-w-xs mb-6 animate-fade-in opacity-0" style={{ animationDelay: '0.4s', animationFillMode: 'forwards' }}>
         <div className="relative">
           <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground text-lg">
             R$
@@ -90,7 +90,7 @@ export const OnboardingIncomeScreen = ({ onContinue }: OnboardingIncomeScreenPro
       </div>
 
       {/* Sugestões rápidas */}
-      <div className="flex flex-wrap justify-center gap-2 mb-10 w-full max-w-xs">
+      <div className="flex flex-wrap justify-center gap-2 mb-10 w-full max-w-xs animate-fade-in opacity-0" style={{ animationDelay: '0.5s', animationFillMode: 'forwards' }}>
         {INCOME_SUGGESTIONS.map((amount) => (
           <button
             key={amount}
@@ -112,7 +112,8 @@ export const OnboardingIncomeScreen = ({ onContinue }: OnboardingIncomeScreenPro
         onClick={handleContinue} 
         disabled={!isValid}
         size="lg" 
-        className="w-full max-w-xs h-14 text-lg font-semibold"
+        className="w-full max-w-xs h-14 text-lg font-semibold animate-fade-in opacity-0 hover:scale-105 transition-transform"
+        style={{ animationDelay: '0.6s', animationFillMode: 'forwards' }}
       >
         Continuar
       </Button>

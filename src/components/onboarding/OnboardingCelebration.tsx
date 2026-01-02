@@ -62,10 +62,10 @@ export const OnboardingCelebration = ({
 
       {/* Success icon */}
       <div className={cn(
-        'mb-6 p-4 rounded-2xl transition-transform duration-500',
+        'mb-6 p-4 rounded-2xl transition-transform duration-500 animate-fade-in opacity-0',
         showConfetti && 'scale-110',
         isPositive ? 'bg-income/10' : 'bg-expense/10'
-      )}>
+      )} style={{ animationDelay: '0.1s', animationFillMode: 'forwards' }}>
         {isPositive ? (
           <CheckCircle2 className="w-12 h-12 text-income" />
         ) : (
@@ -74,15 +74,15 @@ export const OnboardingCelebration = ({
       </div>
 
       {/* Main message */}
-      <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-6">
+      <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-6 animate-fade-in opacity-0" style={{ animationDelay: '0.2s', animationFillMode: 'forwards' }}>
         Pronto. Isso já muda tudo.
       </h1>
 
       {/* Projection result */}
       <div className={cn(
-        'w-full max-w-xs p-6 rounded-2xl mb-6',
+        'w-full max-w-xs p-6 rounded-2xl mb-6 animate-fade-in opacity-0',
         isPositive ? 'bg-income/10' : 'bg-expense/10'
-      )}>
+      )} style={{ animationDelay: '0.3s', animationFillMode: 'forwards' }}>
         {isPositive ? (
           <>
             <div className="flex items-center justify-center gap-2 mb-2">
@@ -116,7 +116,7 @@ export const OnboardingCelebration = ({
       </div>
 
       {/* Reinforcement message */}
-      <p className="text-muted-foreground text-sm mb-10 max-w-xs leading-relaxed">
+      <p className="text-muted-foreground text-sm mb-10 max-w-xs leading-relaxed animate-fade-in opacity-0" style={{ animationDelay: '0.4s', animationFillMode: 'forwards' }}>
         Agora, sempre que lançar um gasto, você sabe{' '}
         <span className="text-foreground font-medium">
           se pode gastar ou se é melhor parar
@@ -125,12 +125,12 @@ export const OnboardingCelebration = ({
       </p>
 
       {/* CTAs */}
-      <div className="w-full max-w-xs space-y-3">
+      <div className="w-full max-w-xs space-y-3 animate-fade-in opacity-0" style={{ animationDelay: '0.5s', animationFillMode: 'forwards' }}>
         <Button 
           onClick={onAddAnother} 
           variant="outline"
           size="lg" 
-          className="w-full h-12"
+          className="w-full h-12 hover:scale-105 transition-transform"
         >
           <Plus className="w-4 h-4 mr-2" />
           Adicionar outro gasto
