@@ -29,7 +29,7 @@ export const OnboardingImpactScreen = ({ onStart }: OnboardingImpactScreenProps)
         size="lg" 
         className="w-full max-w-xs h-14 text-lg font-semibold"
       >
-        Começar
+        Descobrir agora
       </Button>
     </div>
   );
