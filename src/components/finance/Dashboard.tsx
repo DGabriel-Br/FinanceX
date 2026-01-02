@@ -289,10 +289,18 @@ export const Dashboard = memo(({
   // Calculate "Sobra para gastar" - simple difference between income and expenses
   const sobraParaGastar = useMemo(() => {
     const sobra = totals.receitas - totals.despesas;
-    return {
-      value: sobra,
-      isPositive: sobra >= 0
-    };
+    const threshold = totals.receitas * 0.40; // 40% da receita restante = gastou 60%
+    
+    let status: 'positive' | 'warning' | 'negative';
+    if (sobra <= 0) {
+      status = 'negative';
+    } else if (sobra < threshold) {
+      status = 'warning';
+    } else {
+      status = 'positive';
+    }
+    
+    return { value: sobra, status };
   }, [totals.receitas, totals.despesas]);
 
   // Memoize previous year balance
@@ -328,7 +336,7 @@ export const Dashboard = memo(({
       {/* 1. HERO: Sobra para gastar */}
       <HeroCard
         sobraValue={sobraParaGastar.value}
-        isPositive={sobraParaGastar.isPositive}
+        status={sobraParaGastar.status}
         daysUntilNegative={null}
         showValues={showValues}
         formatValue={formatValue}
