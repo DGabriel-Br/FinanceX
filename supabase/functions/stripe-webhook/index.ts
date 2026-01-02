@@ -358,7 +358,11 @@ serve(async (req) => {
 
       case "invoice.payment_succeeded": {
         const invoice = event.data.object as Stripe.Invoice;
-        logStep("Invoice payment succeeded", { invoiceId: invoice.id, subscriptionId: invoice.subscription });
+        logStep("Invoice payment succeeded", { 
+          invoiceId: invoice.id, 
+          subscriptionId: invoice.subscription,
+          billingReason: invoice.billing_reason 
+        });
         
         if (invoice.subscription) {
           const subscription = await stripe.subscriptions.retrieve(invoice.subscription as string);
@@ -376,6 +380,46 @@ serve(async (req) => {
             logStep("ERROR: Failed to update subscription after payment", { error: updateError.message });
           } else {
             logStep("Subscription updated after payment", { subscriptionId: invoice.subscription });
+          }
+
+          // Verificar se é a primeira cobrança após o trial (trial acabou e agora está ativo)
+          // billing_reason = 'subscription_cycle' indica cobrança recorrente (não trial)
+          if (invoice.billing_reason === 'subscription_cycle' && 
+              subscription.trial_end && 
+              subscription.status === 'active') {
+            
+            logStep("First payment after trial detected, sending activation email");
+            
+            try {
+              const customer = await stripe.customers.retrieve(subscription.customer as string) as Stripe.Customer;
+              
+              if (customer.email) {
+                const activationEmailResponse = await fetch(
+                  `${Deno.env.get("SUPABASE_URL")}/functions/v1/send-subscription-activated-email`,
+                  {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/json",
+                      "Authorization": `Bearer ${Deno.env.get("SUPABASE_ANON_KEY")}`,
+                    },
+                    body: JSON.stringify({ email: customer.email }),
+                  }
+                );
+                
+                if (activationEmailResponse.ok) {
+                  logStep("Subscription activated email sent successfully", { email: customer.email });
+                } else {
+                  const errorText = await activationEmailResponse.text();
+                  logStep("WARNING: Failed to send subscription activated email", { error: errorText });
+                }
+              } else {
+                logStep("WARNING: No customer email found for activation email");
+              }
+            } catch (emailError) {
+              logStep("WARNING: Failed to send subscription activated email", { 
+                error: emailError instanceof Error ? emailError.message : String(emailError) 
+              });
+            }
           }
         }
         break;
