@@ -78,26 +78,8 @@ export const OnboardingExpenseScreen = ({ onSave }: OnboardingExpenseScreenProps
         Não precisa ser exato. Pode ser até um café.
       </p>
 
-      {/* Input de valor */}
-      <div className="w-full max-w-xs mb-4 animate-fade-in opacity-0" style={{ animationDelay: '0.4s', animationFillMode: 'forwards' }}>
-        <div className="relative">
-          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground text-lg">
-            R$
-          </span>
-          <Input
-            ref={inputRef}
-            type="text"
-            inputMode="numeric"
-            value={value}
-            onChange={handleInputChange}
-            placeholder="0"
-            className="h-14 text-2xl font-semibold pl-12 text-center"
-          />
-        </div>
-      </div>
-
       {/* Categoria */}
-      <div className="w-full max-w-xs mb-10 animate-fade-in opacity-0" style={{ animationDelay: '0.5s', animationFillMode: 'forwards' }}>
+      <div className="w-full max-w-xs mb-4 animate-fade-in opacity-0" style={{ animationDelay: '0.4s', animationFillMode: 'forwards' }}>
         <label className="text-sm text-muted-foreground mb-2 block">Categoria</label>
         <Select value={category} onValueChange={(val) => setCategory(val as ExpenseCategory)}>
           <SelectTrigger className="h-12">
@@ -127,6 +109,25 @@ export const OnboardingExpenseScreen = ({ onSave }: OnboardingExpenseScreenProps
             })}
           </SelectContent>
         </Select>
+      </div>
+
+      {/* Input de valor */}
+      <div className="w-full max-w-xs mb-10 animate-fade-in opacity-0" style={{ animationDelay: '0.5s', animationFillMode: 'forwards' }}>
+        <label className="text-sm text-muted-foreground mb-2 block">Valor</label>
+        <div className="relative">
+          <span className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground text-lg">
+            R$
+          </span>
+          <Input
+            ref={inputRef}
+            type="text"
+            inputMode="numeric"
+            value={value}
+            onChange={handleInputChange}
+            placeholder="0"
+            className="h-14 text-2xl font-semibold pl-12 text-center"
+          />
+        </div>
       </div>
 
       {/* CTA */}
