@@ -130,7 +130,7 @@ export const OnboardingCelebration = ({
         A partir de agora, cada gasto responde uma pergunta simples:
         <br />
         <span className="text-foreground font-medium text-base">
-          Dá pra gastar ou é melhor parar?
+          👉 Dá pra gastar ou é melhor parar?
         </span>
       </p>
 
