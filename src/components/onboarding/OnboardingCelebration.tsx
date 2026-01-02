@@ -127,11 +127,10 @@ export const OnboardingCelebration = ({
 
       {/* Reinforcement message */}
       <p className="text-muted-foreground text-sm mb-10 max-w-xs leading-relaxed animate-fade-in opacity-0" style={{ animationDelay: '0.4s', animationFillMode: 'forwards' }}>
-        Agora, sempre que lançar um gasto, você sabe{' '}
+        A partir de agora, cada gasto responde uma pergunta simples:{' '}
         <span className="text-foreground font-medium">
-          se pode gastar ou se é melhor parar
+          Dá pra gastar ou é melhor parar?
         </span>
-        .
       </p>
 
       {/* CTAs */}
