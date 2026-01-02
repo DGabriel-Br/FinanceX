@@ -190,7 +190,7 @@ const handler = async (req: Request): Promise<Response> => {
         "Authorization": `Bearer ${RESEND_API_KEY}`,
       },
       body: JSON.stringify({
-        from: "FinanceX <onboarding@resend.dev>",
+        from: "FinanceX <appfinancex@resend.dev>",
         to: [email],
         subject: "Defina sua senha - FinanceX",
         html: emailHtml,

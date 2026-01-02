@@ -228,7 +228,7 @@ serve(async (req: Request): Promise<Response> => {
     const emailHtml = getWelcomeEmailHtml(setupLink, trackingPixel);
 
     const emailResponse = await resend.emails.send({
-      from: "FinanceX <contato@financex.com.br>",
+      from: "FinanceX <appfinancex@resend.dev>",
       to: [email],
       subject: "Tá tudo certo. Seu teste no FinanceX já começou ✨",
       html: emailHtml,
