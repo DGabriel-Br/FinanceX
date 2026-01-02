@@ -15,7 +15,7 @@ export const OnboardingImpactScreen = ({ onStart }: OnboardingImpactScreenProps)
 
       {/* Headline */}
       <h1 className="text-2xl md:text-3xl font-bold text-foreground mb-4 max-w-sm">
-        Antes de tudo: vamos descobrir quanto sobra.
+        Antes de tudo, vamos descobrir quanto sobra pra você.
       </h1>
 
       {/* Sub */}
