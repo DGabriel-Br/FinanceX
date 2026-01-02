@@ -89,7 +89,7 @@ export const HeroCard = memo(({
           <div className="flex items-center gap-2 mt-4 p-3 rounded-lg bg-warning/10 border border-warning/20">
             <AlertCircle className="w-4 h-4 text-warning" />
             <span className="text-sm text-warning">
-              Alerta: você já gastou mais de 60% da sua receita
+              Atenção: você já gastou mais de 60% da sua receita
             </span>
           </div>
         )}
@@ -100,8 +100,8 @@ export const HeroCard = memo(({
             <AlertTriangle className="w-4 h-4 text-expense" />
             <span className="text-sm text-expense">
               {daysUntilNegative !== null && daysUntilNegative > 0 
-                ? `Alerta: saldo pode ficar negativo em ${daysUntilNegative} dia${daysUntilNegative !== 1 ? 's' : ''}`
-                : 'Alerta: você já gastou mais do que recebeu este mês'
+                ? `Atenção: saldo pode ficar negativo em ${daysUntilNegative} dia${daysUntilNegative !== 1 ? 's' : ''}`
+                : 'Atenção: você já gastou mais do que recebeu este mês'
               }
             </span>
           </div>
