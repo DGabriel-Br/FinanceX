@@ -174,6 +174,13 @@ const getTrialExpiringEmailHtml = (trackingPixel: string) => {
         — FinanceX
       </div>
     </div>
+    
+    <!-- Footer -->
+    <div style="text-align: center; padding-top: 24px;">
+      <p style="margin: 0; font-size: 13px; color: rgba(255, 255, 255, 0.4);">
+        © ${new Date().getFullYear()} FinanceX. Todos os direitos reservados.
+      </p>
+    </div>
   </div>
   ${trackingPixel}
 </body>

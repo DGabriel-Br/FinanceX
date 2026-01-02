@@ -121,61 +121,84 @@ const handler = async (req: Request): Promise<Response> => {
 
     const emailHtml = `
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
-  <meta charset="utf-8">
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Defina sua senha - FinanceX</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+  </style>
 </head>
-<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f9fafb;">
-  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f9fafb; padding: 40px 20px;">
+<body style="margin: 0; padding: 0; background-color: #0f172a; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background-color: #0f172a;">
     <tr>
-      <td align="center">
-        <table width="100%" cellpadding="0" cellspacing="0" style="max-width: 480px; background-color: #ffffff; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+      <td align="center" style="padding: 40px 20px;">
+        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width: 600px; margin: 0 auto;">
+          
+          <!-- Header with Logo -->
           <tr>
-            <td style="padding: 40px;">
-              <!-- Logo -->
-              <div style="text-align: center; margin-bottom: 32px;">
-                <img src="https://financex.app.br/images/financex-logo.png" alt="FinanceX" width="140" height="35" style="display: block; margin: 0 auto; width: 140px; height: auto;" />
-              </div>
+            <td align="center" style="padding-bottom: 32px;">
+              <img src="https://financex.app.br/images/financex-logo.png" alt="FinanceX" width="160" height="40" style="display: block; width: 160px; height: auto;" />
+            </td>
+          </tr>
+
+          <!-- Main Card -->
+          <tr>
+            <td style="background-color: #1e293b; border-radius: 16px; padding: 40px 32px; border: 1px solid rgba(34, 211, 238, 0.1);">
               
-              <!-- Título -->
-              <h1 style="margin: 0 0 16px 0; font-size: 20px; font-weight: 600; color: #0f172a; text-align: center;">
+              <!-- Title -->
+              <h1 style="margin: 0 0 16px 0; font-size: 22px; font-weight: 600; color: #ffffff; text-align: center;">
                 Definir sua senha
               </h1>
               
-              <!-- Texto -->
-              <p style="margin: 0 0 24px 0; font-size: 15px; line-height: 1.6; color: #64748b; text-align: center;">
+              <!-- Text -->
+              <p style="margin: 0 0 32px 0; font-size: 16px; color: rgba(255, 255, 255, 0.8); line-height: 1.6; text-align: center;">
                 Clique no botão abaixo para criar sua senha e acessar o FinanceX.
               </p>
-              
-              <!-- Botão -->
-              <div style="text-align: center; margin-bottom: 24px;">
-                <a href="${resetLink}" 
-                   style="display: inline-block; padding: 12px 32px; font-size: 15px; font-weight: 600; color: #ffffff; background-color: #0f172a; text-decoration: none; border-radius: 6px;">
-                  Criar senha
-                </a>
-              </div>
-              
-              <!-- Link alternativo -->
-              <p style="margin: 0 0 8px 0; font-size: 13px; color: #94a3b8; text-align: center;">
+
+              <!-- CTA Button -->
+              <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-bottom: 32px;">
+                <tr>
+                  <td align="center">
+                    <a href="${resetLink}" target="_blank" style="display: inline-block; padding: 16px 32px; background: linear-gradient(135deg, #22D3EE, #2DD4BF); color: #0f172a; font-size: 16px; font-weight: 600; text-decoration: none; border-radius: 10px; box-shadow: 0 4px 20px rgba(34, 211, 238, 0.3);">
+                      Criar senha
+                    </a>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Alternative link -->
+              <p style="margin: 0 0 8px 0; font-size: 14px; color: rgba(255, 255, 255, 0.5); text-align: center;">
                 Ou copie e cole este link:
               </p>
-              <p style="margin: 0 0 24px 0; font-size: 12px; color: #64748b; text-align: center; word-break: break-all;">
+              <p style="margin: 0 0 24px 0; font-size: 12px; color: rgba(255, 255, 255, 0.6); text-align: center; word-break: break-all;">
                 ${resetLink}
               </p>
               
-              <!-- Aviso -->
-              <p style="margin: 0; font-size: 13px; color: #94a3b8; text-align: center;">
+              <!-- Warning -->
+              <p style="margin: 0 0 24px 0; font-size: 14px; color: rgba(255, 255, 255, 0.5); text-align: center;">
                 Se você não solicitou este email, pode ignorá-lo.
+              </p>
+              
+              <!-- Signature -->
+              <p style="margin: 0; font-size: 15px; color: #ffffff; font-weight: 500; text-align: center;">
+                — FinanceX
+              </p>
+
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td align="center" style="padding-top: 24px;">
+              <p style="margin: 0; font-size: 13px; color: rgba(255, 255, 255, 0.4);">
+                © ${new Date().getFullYear()} FinanceX. Todos os direitos reservados.
               </p>
             </td>
           </tr>
+
         </table>
-        
-        <!-- Footer -->
-        <p style="margin-top: 24px; font-size: 12px; color: #94a3b8; text-align: center;">
-          © ${new Date().getFullYear()} FinanceX
-        </p>
       </td>
     </tr>
   </table>
