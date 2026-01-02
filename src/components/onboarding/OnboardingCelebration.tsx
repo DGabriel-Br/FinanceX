@@ -146,10 +146,6 @@ export const OnboardingCelebration = ({
           Adicionar outro gasto
         </Button>
 
-        <p className="text-sm text-muted-foreground/80 mt-4">
-          É assim que o FinanceX funciona. Simples assim.
-        </p>
-
         <button 
           onClick={onFinish}
           className="text-sm text-muted-foreground hover:text-foreground transition-colors"
