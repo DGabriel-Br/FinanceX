@@ -76,11 +76,23 @@ Deno.serve(async (req) => {
 
     console.log('[admin-funnel-stats] Admin verified, fetching stats');
 
-    // Parse days from header or query params
+    // Parse days from body or query params
+    let daysBack = 30;
+    try {
+      const body = await req.json().catch(() => ({}));
+      if (body.days) {
+        daysBack = parseInt(body.days, 10);
+      }
+    } catch {
+      // Use default
+    }
+    
     const url = new URL(req.url);
-    const daysFromHeader = req.headers.get('days');
     const daysFromQuery = url.searchParams.get('days');
-    const daysBack = parseInt(daysFromHeader || daysFromQuery || '30', 10);
+    if (daysFromQuery) {
+      daysBack = parseInt(daysFromQuery, 10);
+    }
+    
     const startDate = new Date();
     startDate.setDate(startDate.getDate() - daysBack);
 
