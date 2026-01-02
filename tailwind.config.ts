@@ -133,6 +133,7 @@ export default {
         "scale-in": "scale-in 0.3s ease-out forwards",
         "slide-in-left": "slide-in-left 0.4s ease-out forwards",
         "slide-in-right": "slide-in-right 0.4s ease-out forwards",
+        "pulse-subtle": "pulse 3s ease-in-out infinite",
       },
     },
   },

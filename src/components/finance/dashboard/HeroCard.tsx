@@ -55,6 +55,7 @@ export const HeroCard = memo(({
   const displayValue = showValues ? formatValue(sobraValue) : '••••••';
   const styles = statusStyles[status];
   const shouldPulse = status === 'warning' || status === 'negative';
+  const pulseClass = shouldPulse ? 'animate-pulse-subtle' : '';
   
   return (
     <div 
@@ -66,7 +67,7 @@ export const HeroCard = memo(({
       style={{ animationDuration: '0.5s' }}
     >
       {/* Background decoration with pulse effect */}
-      <div className={`absolute -right-8 -top-8 w-32 h-32 rounded-full blur-3xl opacity-20 transition-colors duration-500 ${styles.glow} ${shouldPulse ? 'animate-[pulse_3s_ease-in-out_infinite]' : ''}`} />
+      <div className={`absolute -right-8 -top-8 w-32 h-32 rounded-full blur-3xl opacity-20 transition-colors duration-500 ${styles.glow} ${pulseClass}`} />
       
       <div className="relative z-10">
         {/* Icon and label */}
@@ -87,7 +88,7 @@ export const HeroCard = memo(({
         
         {/* Alert for warning state */}
         {status === 'warning' && (
-          <div className="flex items-center gap-2 mt-4 p-3 rounded-lg bg-warning/10 border border-warning/20 animate-[pulse_3s_ease-in-out_infinite]">
+          <div className={`flex items-center gap-2 mt-4 p-3 rounded-lg bg-warning/10 border border-warning/20 ${pulseClass}`}>
             <AlertCircle className="w-4 h-4 text-warning" />
             <span className="text-sm text-warning">
               Atenção: você já gastou mais de 60% da sua receita
@@ -97,7 +98,7 @@ export const HeroCard = memo(({
         
         {/* Alert for negative balance */}
         {status === 'negative' && (
-          <div className="flex items-center gap-2 mt-4 p-3 rounded-lg bg-expense/10 border border-expense/20 animate-[pulse_3s_ease-in-out_infinite]">
+          <div className={`flex items-center gap-2 mt-4 p-3 rounded-lg bg-expense/10 border border-expense/20 ${pulseClass}`}>
             <AlertTriangle className="w-4 h-4 text-expense animate-[shake_0.5s_ease-in-out_infinite]" />
             <span className="text-sm text-expense">
               {daysUntilNegative !== null && daysUntilNegative > 0 
