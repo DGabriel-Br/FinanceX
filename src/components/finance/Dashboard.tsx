@@ -283,11 +283,14 @@ export const Dashboard = memo(({
     [customRange?.start]
   );
 
-  // Calculate "Sobra para gastar" projection
-  // Pass 0 as monthlyIncome since all income is already tracked in transactions
-  const projection = useMemo(() => {
-    return calculateMonthProjection(0, transactions);
-  }, [transactions]);
+  // Calculate "Sobra para gastar" - simple difference between income and expenses
+  const sobraParaGastar = useMemo(() => {
+    const sobra = totals.receitas - totals.despesas;
+    return {
+      value: sobra,
+      isPositive: sobra >= 0
+    };
+  }, [totals.receitas, totals.despesas]);
 
   // Memoize previous year balance
   const previousYearBalance = useMemo(() => {
@@ -321,9 +324,9 @@ export const Dashboard = memo(({
 
       {/* 1. HERO: Sobra para gastar */}
       <HeroCard
-        sobraValue={projection.projectedBalance}
-        isPositive={projection.isPositive}
-        daysUntilNegative={projection.daysUntilNegative}
+        sobraValue={sobraParaGastar.value}
+        isPositive={sobraParaGastar.isPositive}
+        daysUntilNegative={null}
         showValues={showValues}
         formatValue={formatValue}
       />
