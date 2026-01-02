@@ -75,41 +75,23 @@ export function calculateMonthProjection(
 }
 
 /**
- * Calcula projeção simplificada apenas com renda e um gasto
- * Usado no onboarding para dar uma estimativa rápida
+ * Calcula projeção simplificada apenas com renda e um gasto pontual
+ * Usado no onboarding para mostrar o saldo restante após o gasto
  */
 export function calculateSimpleProjection(
   monthlyIncome: number,
   singleExpenseValue: number
 ): MonthProjection {
-  const now = new Date();
-  const currentYear = now.getFullYear();
-  const currentMonth = now.getMonth();
-  const dayOfMonth = now.getDate();
-  const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-
-  // Assumir que esse gasto é representativo da média diária
-  const dailyAverageExpense = singleExpenseValue;
-
-  // Projetar gastos para o mês inteiro
-  const projectedMonthlyExpenses = dailyAverageExpense * daysInMonth;
-
-  // Saldo projetado
-  const projectedBalance = monthlyIncome - projectedMonthlyExpenses;
-
-  // Calcular dias até ficar negativo
-  let daysUntilNegative: number | null = null;
-  if (projectedBalance < 0 && dailyAverageExpense > 0) {
-    daysUntilNegative = Math.ceil(monthlyIncome / dailyAverageExpense);
-  }
+  // Saldo restante após o gasto pontual
+  const projectedBalance = monthlyIncome - singleExpenseValue;
 
   return {
     projectedBalance,
-    daysUntilNegative,
-    dailyAverageExpense,
+    daysUntilNegative: null, // Não aplicável para gasto pontual
+    dailyAverageExpense: 0,
     isPositive: projectedBalance >= 0,
     totalIncome: monthlyIncome,
     totalExpenses: singleExpenseValue,
-    projectedMonthlyExpenses,
+    projectedMonthlyExpenses: singleExpenseValue,
   };
 }
