@@ -91,10 +91,13 @@ export const DebtTracker = ({ debts, transactions, onNavigateToDebts, formatValu
     <div className="bg-card border border-border rounded-xl p-6 shadow-sm">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
-        <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
-          <CreditCard className="w-5 h-5 text-primary" />
-          Acompanhamento de Dívidas
-        </h3>
+        <div>
+          <h3 className="text-lg font-semibold text-foreground flex items-center gap-2">
+            <CreditCard className="w-5 h-5 text-primary" />
+            Acompanhamento de Dívidas
+          </h3>
+          <p className="text-xs text-muted-foreground mt-1 ml-7">Pagamentos registrados automaticamente a partir dos lançamentos.</p>
+        </div>
         {onNavigateToDebts && (
           <button 
             onClick={onNavigateToDebts}
