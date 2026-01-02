@@ -186,8 +186,31 @@ serve(async (req) => {
                     } else {
                       logStep("Reminder email scheduled for 24h", { email: customerEmail, scheduledFor: reminderDate.toISOString() });
                     }
+                    
+                    // Agendar email de trial expirando para 48h depois
+                    const trialExpiringDate = new Date();
+                    trialExpiringDate.setHours(trialExpiringDate.getHours() + 48);
+                    
+                    const { error: trialScheduleError } = await supabaseClient
+                      .from("scheduled_emails")
+                      .insert({
+                        user_id: user.id,
+                        email: customerEmail,
+                        email_type: "trial_expiring",
+                        scheduled_for: trialExpiringDate.toISOString(),
+                        metadata: { 
+                          stripe_session_id: session.id,
+                          customer_name: customer.name || session.customer_details?.name 
+                        }
+                      });
+                    
+                    if (trialScheduleError) {
+                      logStep("WARNING: Failed to schedule trial expiring email", { error: trialScheduleError.message });
+                    } else {
+                      logStep("Trial expiring email scheduled for 48h", { email: customerEmail, scheduledFor: trialExpiringDate.toISOString() });
+                    }
                   } catch (scheduleErr) {
-                    logStep("WARNING: Failed to schedule reminder email", { 
+                    logStep("WARNING: Failed to schedule emails", { 
                       error: scheduleErr instanceof Error ? scheduleErr.message : String(scheduleErr) 
                     });
                   }
