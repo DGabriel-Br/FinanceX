@@ -59,18 +59,18 @@ export const HeroCard = memo(({
     <div 
       className={`
         relative overflow-hidden rounded-2xl p-6 md:p-8 shadow-lg
-        animate-fade-in border
+        animate-fade-in border transition-all duration-500 ease-out
         ${styles.gradient}
       `}
       style={{ animationDuration: '0.5s' }}
     >
       {/* Background decoration */}
-      <div className={`absolute -right-8 -top-8 w-32 h-32 rounded-full blur-3xl opacity-20 ${styles.glow}`} />
+      <div className={`absolute -right-8 -top-8 w-32 h-32 rounded-full blur-3xl opacity-20 transition-colors duration-500 ${styles.glow}`} />
       
       <div className="relative z-10">
         {/* Icon and label */}
         <div className="flex items-center gap-3 mb-4">
-          <div className={`w-12 h-12 rounded-full flex items-center justify-center ${styles.iconBg}`}>
+          <div className={`w-12 h-12 rounded-full flex items-center justify-center transition-colors duration-500 ${styles.iconBg}`}>
             <StatusIcon status={status} />
           </div>
           <div>
@@ -80,7 +80,7 @@ export const HeroCard = memo(({
         </div>
         
         {/* Main value */}
-        <div className={`text-4xl md:text-5xl font-bold tracking-tight ${styles.text}`}>
+        <div className={`text-4xl md:text-5xl font-bold tracking-tight transition-colors duration-500 ${styles.text}`}>
           {displayValue}
         </div>
         
