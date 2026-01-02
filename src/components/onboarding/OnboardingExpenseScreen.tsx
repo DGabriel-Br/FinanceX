@@ -98,6 +98,7 @@ export const OnboardingExpenseScreen = ({ onSave }: OnboardingExpenseScreenProps
 
       {/* Categoria */}
       <div className="w-full max-w-xs mb-10 animate-fade-in opacity-0" style={{ animationDelay: '0.5s', animationFillMode: 'forwards' }}>
+        <label className="text-sm text-muted-foreground mb-2 block">Categoria</label>
         <Select value={category} onValueChange={(val) => setCategory(val as ExpenseCategory)}>
           <SelectTrigger className="h-12">
             <SelectValue placeholder="Categoria">
