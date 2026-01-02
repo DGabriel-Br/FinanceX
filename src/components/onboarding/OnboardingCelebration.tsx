@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Button } from '@/components/ui/button';
-import { CheckCircle2, TrendingUp, TrendingDown, Plus } from 'lucide-react';
+import { CheckCircle2, TrendingUp, TrendingDown, Plus, ArrowLeft } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface OnboardingCelebrationProps {
@@ -9,6 +9,7 @@ interface OnboardingCelebrationProps {
   isPositive: boolean;
   onAddAnother: () => void;
   onFinish: () => void;
+  onBack: () => void;
 }
 
 export const OnboardingCelebration = ({
@@ -17,6 +18,7 @@ export const OnboardingCelebration = ({
   isPositive,
   onAddAnother,
   onFinish,
+  onBack,
 }: OnboardingCelebrationProps) => {
   const [showConfetti, setShowConfetti] = useState(false);
 
@@ -37,6 +39,14 @@ export const OnboardingCelebration = ({
 
   return (
     <div className="flex flex-col items-center justify-center min-h-full px-6 py-12 text-center relative overflow-hidden">
+      {/* Back button */}
+      <button
+        onClick={onBack}
+        className="absolute top-6 left-6 p-2 rounded-full hover:bg-muted transition-colors z-10"
+      >
+        <ArrowLeft className="w-5 h-5 text-muted-foreground" />
+      </button>
+
       {/* Confetti effect - CSS only */}
       {showConfetti && (
         <div className="absolute inset-0 pointer-events-none overflow-hidden">
