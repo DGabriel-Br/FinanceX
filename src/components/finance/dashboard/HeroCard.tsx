@@ -54,6 +54,7 @@ export const HeroCard = memo(({
 }: HeroCardProps) => {
   const displayValue = showValues ? formatValue(sobraValue) : '••••••';
   const styles = statusStyles[status];
+  const shouldPulse = status === 'warning' || status === 'negative';
   
   return (
     <div 
@@ -64,8 +65,8 @@ export const HeroCard = memo(({
       `}
       style={{ animationDuration: '0.5s' }}
     >
-      {/* Background decoration */}
-      <div className={`absolute -right-8 -top-8 w-32 h-32 rounded-full blur-3xl opacity-20 transition-colors duration-500 ${styles.glow}`} />
+      {/* Background decoration with pulse effect */}
+      <div className={`absolute -right-8 -top-8 w-32 h-32 rounded-full blur-3xl opacity-20 transition-colors duration-500 ${styles.glow} ${shouldPulse ? 'animate-[pulse_3s_ease-in-out_infinite]' : ''}`} />
       
       <div className="relative z-10">
         {/* Icon and label */}
