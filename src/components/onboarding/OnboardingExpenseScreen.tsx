@@ -8,11 +8,12 @@ import {
   SelectTrigger, 
   SelectValue 
 } from '@/components/ui/select';
-import { Receipt } from 'lucide-react';
+import { Receipt, ArrowLeft } from 'lucide-react';
 import { ExpenseCategory, expenseCategoryLabels, expenseCategoryIcons } from '@/types/transaction';
 
 interface OnboardingExpenseScreenProps {
   onSave: (expense: { value: number; category: ExpenseCategory }) => void;
+  onBack: () => void;
 }
 
 const EXPENSE_CATEGORIES: ExpenseCategory[] = [
@@ -26,7 +27,7 @@ const EXPENSE_CATEGORIES: ExpenseCategory[] = [
   'outros_despesa',
 ];
 
-export const OnboardingExpenseScreen = ({ onSave }: OnboardingExpenseScreenProps) => {
+export const OnboardingExpenseScreen = ({ onSave, onBack }: OnboardingExpenseScreenProps) => {
   const [value, setValue] = useState('');
   const [category, setCategory] = useState<ExpenseCategory>('outros_despesa');
   const inputRef = useRef<HTMLInputElement>(null);
@@ -87,7 +88,15 @@ export const OnboardingExpenseScreen = ({ onSave }: OnboardingExpenseScreenProps
   const isValid = numericValue > 0;
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-full px-6 py-12">
+    <div className="flex flex-col items-center justify-center min-h-full px-6 py-12 relative">
+      {/* Back button */}
+      <button
+        onClick={onBack}
+        className="absolute top-6 left-6 p-2 rounded-full hover:bg-muted transition-colors"
+      >
+        <ArrowLeft className="w-5 h-5 text-muted-foreground" />
+      </button>
+
       {/* Icon */}
       <div className="mb-6 p-3 rounded-xl bg-expense/10 animate-fade-in opacity-0" style={{ animationDelay: '0.1s', animationFillMode: 'forwards' }}>
         <Receipt className="w-8 h-8 text-expense" />

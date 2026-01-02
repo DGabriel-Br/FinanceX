@@ -102,11 +102,17 @@ export const OnboardingOverlay = ({
         )}
 
         {step === 'income' && (
-          <OnboardingIncomeScreen onContinue={handleIncomeContinue} />
+          <OnboardingIncomeScreen 
+            onContinue={handleIncomeContinue} 
+            onBack={() => animateToStep('impact')}
+          />
         )}
 
         {step === 'expense' && (
-          <OnboardingExpenseScreen onSave={handleExpenseSave} />
+          <OnboardingExpenseScreen 
+            onSave={handleExpenseSave}
+            onBack={() => animateToStep('income')}
+          />
         )}
 
         {step === 'celebration' && projection && (
@@ -116,6 +122,7 @@ export const OnboardingOverlay = ({
             isPositive={projection.isPositive}
             onAddAnother={handleAddAnother}
             onFinish={handleFinish}
+            onBack={() => animateToStep('expense')}
           />
         )}
       </div>

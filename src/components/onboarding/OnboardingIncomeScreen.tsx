@@ -1,16 +1,17 @@
 import { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Wallet } from 'lucide-react';
+import { Wallet, ArrowLeft } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface OnboardingIncomeScreenProps {
   onContinue: (income: number) => void;
+  onBack: () => void;
 }
 
 const INCOME_SUGGESTIONS = [2000, 3000, 5000, 8000];
 
-export const OnboardingIncomeScreen = ({ onContinue }: OnboardingIncomeScreenProps) => {
+export const OnboardingIncomeScreen = ({ onContinue, onBack }: OnboardingIncomeScreenProps) => {
   const [value, setValue] = useState('');
   const [selectedSuggestion, setSelectedSuggestion] = useState<number | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -77,7 +78,15 @@ export const OnboardingIncomeScreen = ({ onContinue }: OnboardingIncomeScreenPro
   const isValid = numericValue > 0;
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-full px-6 py-12">
+    <div className="flex flex-col items-center justify-center min-h-full px-6 py-12 relative">
+      {/* Back button */}
+      <button
+        onClick={onBack}
+        className="absolute top-6 left-6 p-2 rounded-full hover:bg-muted transition-colors"
+      >
+        <ArrowLeft className="w-5 h-5 text-muted-foreground" />
+      </button>
+
       {/* Icon */}
       <div className="mb-6 p-3 rounded-xl bg-income/10 animate-fade-in opacity-0" style={{ animationDelay: '0.1s', animationFillMode: 'forwards' }}>
         <Wallet className="w-8 h-8 text-income" />
