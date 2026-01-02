@@ -89,10 +89,7 @@ export default function FunnelDashboard() {
         const { data: responseData, error: invokeError } = await supabase.functions.invoke(
           'admin-funnel-stats',
           { 
-            method: 'GET',
-            headers: {
-              'days': daysBack,
-            }
+            body: { days: parseInt(daysBack, 10) }
           }
         );
 
