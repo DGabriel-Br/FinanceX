@@ -87,7 +87,7 @@ export const HeroCard = memo(({
         
         {/* Alert for warning state */}
         {status === 'warning' && (
-          <div className="flex items-center gap-2 mt-4 p-3 rounded-lg bg-warning/10 border border-warning/20">
+          <div className="flex items-center gap-2 mt-4 p-3 rounded-lg bg-warning/10 border border-warning/20 animate-[pulse_3s_ease-in-out_infinite]">
             <AlertCircle className="w-4 h-4 text-warning" />
             <span className="text-sm text-warning">
               Atenção: você já gastou mais de 60% da sua receita
@@ -97,7 +97,7 @@ export const HeroCard = memo(({
         
         {/* Alert for negative balance */}
         {status === 'negative' && (
-          <div className="flex items-center gap-2 mt-4 p-3 rounded-lg bg-expense/10 border border-expense/20">
+          <div className="flex items-center gap-2 mt-4 p-3 rounded-lg bg-expense/10 border border-expense/20 animate-[pulse_3s_ease-in-out_infinite]">
             <AlertTriangle className="w-4 h-4 text-expense" />
             <span className="text-sm text-expense">
               {daysUntilNegative !== null && daysUntilNegative > 0 
