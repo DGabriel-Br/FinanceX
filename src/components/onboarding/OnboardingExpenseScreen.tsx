@@ -12,7 +12,7 @@ import { Receipt, ArrowLeft } from 'lucide-react';
 import { ExpenseCategory, expenseCategoryLabels, expenseCategoryIcons } from '@/types/transaction';
 
 interface OnboardingExpenseScreenProps {
-  onSave: (expense: { value: number; category: ExpenseCategory }) => void;
+  onSave: (expense: { value: number; category: ExpenseCategory; description: string }) => void;
   onBack: () => void;
 }
 
@@ -30,6 +30,7 @@ const EXPENSE_CATEGORIES: ExpenseCategory[] = [
 export const OnboardingExpenseScreen = ({ onSave, onBack }: OnboardingExpenseScreenProps) => {
   const [value, setValue] = useState('');
   const [category, setCategory] = useState<ExpenseCategory>('outros_despesa');
+  const [description, setDescription] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
 
   // Auto-focus no input
@@ -80,7 +81,7 @@ export const OnboardingExpenseScreen = ({ onSave, onBack }: OnboardingExpenseScr
   const handleSave = () => {
     const numericValue = parseValue(value);
     if (numericValue > 0) {
-      onSave({ value: numericValue, category });
+      onSave({ value: numericValue, category, description: description.trim() || 'Gasto registrado no onboarding' });
     }
   };
 
@@ -143,6 +144,19 @@ export const OnboardingExpenseScreen = ({ onSave, onBack }: OnboardingExpenseScr
             })}
           </SelectContent>
         </Select>
+      </div>
+
+      {/* Input de descrição */}
+      <div className="w-full max-w-xs mb-4 animate-fade-in opacity-0" style={{ animationDelay: '0.45s', animationFillMode: 'forwards' }}>
+        <label className="text-sm text-muted-foreground mb-2 block">Descrição (opcional)</label>
+        <Input
+          type="text"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+          placeholder="Ex: Café da manhã"
+          className="h-12"
+          maxLength={100}
+        />
       </div>
 
       {/* Input de valor */}
