@@ -40,10 +40,29 @@ export const OnboardingExpenseScreen = ({ onSave }: OnboardingExpenseScreenProps
   }, []);
 
   const formatCurrency = (val: string) => {
-    const numbers = val.replace(/\D/g, '');
-    if (!numbers) return '';
-    const amount = parseInt(numbers, 10);
-    return amount.toLocaleString('pt-BR');
+    // Remove tudo exceto números e vírgula
+    let cleaned = val.replace(/[^\d,]/g, '');
+    
+    // Garante apenas uma vírgula
+    const parts = cleaned.split(',');
+    if (parts.length > 2) {
+      cleaned = parts[0] + ',' + parts.slice(1).join('');
+    }
+    
+    // Limita centavos a 2 dígitos
+    if (parts.length === 2 && parts[1].length > 2) {
+      cleaned = parts[0] + ',' + parts[1].slice(0, 2);
+    }
+    
+    // Formata a parte inteira com separador de milhar
+    if (parts[0]) {
+      const intPart = parseInt(parts[0], 10);
+      if (!isNaN(intPart)) {
+        cleaned = intPart.toLocaleString('pt-BR') + (parts.length > 1 ? ',' + parts[1] : '');
+      }
+    }
+    
+    return cleaned;
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -51,14 +70,20 @@ export const OnboardingExpenseScreen = ({ onSave }: OnboardingExpenseScreenProps
     setValue(formatted);
   };
 
+  const parseValue = (val: string): number => {
+    // Remove pontos de milhar e troca vírgula por ponto
+    const normalized = val.replace(/\./g, '').replace(',', '.');
+    return parseFloat(normalized) || 0;
+  };
+
   const handleSave = () => {
-    const numericValue = parseInt(value.replace(/\D/g, ''), 10);
+    const numericValue = parseValue(value);
     if (numericValue > 0) {
       onSave({ value: numericValue, category });
     }
   };
 
-  const numericValue = parseInt(value.replace(/\D/g, ''), 10) || 0;
+  const numericValue = parseValue(value);
   const isValid = numericValue > 0;
 
   return (
@@ -121,7 +146,7 @@ export const OnboardingExpenseScreen = ({ onSave }: OnboardingExpenseScreenProps
           <Input
             ref={inputRef}
             type="text"
-            inputMode="numeric"
+            inputMode="decimal"
             value={value}
             onChange={handleInputChange}
             placeholder="0"
