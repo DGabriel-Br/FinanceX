@@ -141,7 +141,7 @@ function getReminderEmailHtml(trackingPixel: string): string {
     <div class="card">
       <!-- Logo -->
       <div class="logo">
-        <span class="logo-text">Finance<span class="logo-x">X</span></span>
+        <img src="https://financex.app.br/images/financex-logo.png" alt="FinanceX" width="160" height="40" style="display: block; margin: 0 auto; width: 160px; height: auto;" />
       </div>
       
       <!-- Content -->

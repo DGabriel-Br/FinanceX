@@ -48,9 +48,7 @@ const getWelcomeEmailHtml = (setupLink: string, trackingPixel: string) => {
           <!-- Header with Logo -->
           <tr>
             <td align="center" style="padding-bottom: 32px;">
-              <h1 style="margin: 0; font-size: 28px; font-weight: 700; color: #ffffff; letter-spacing: -0.5px;">
-                Finance<span style="background: linear-gradient(135deg, #22D3EE, #2DD4BF); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">X</span>
-              </h1>
+              <img src="https://financex.app.br/images/financex-logo.png" alt="FinanceX" width="160" height="40" style="display: block; width: 160px; height: auto;" />
             </td>
           </tr>
 

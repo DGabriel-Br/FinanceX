@@ -194,9 +194,7 @@ const handler = async (req: Request): Promise<Response> => {
           <div class="container">
             <div class="card">
               <div class="logo">
-                <span class="logo-text">
-                  <span class="logo-finance">Finance</span><span class="logo-x">X</span>
-                </span>
+                <img src="https://financex.app.br/images/financex-logo.png" alt="FinanceX" width="160" height="40" style="display: block; margin: 0 auto; width: 160px; height: auto;" />
               </div>
               
               <p class="greeting">Fala! 👋</p>
