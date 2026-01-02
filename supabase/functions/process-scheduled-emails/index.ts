@@ -67,6 +67,10 @@ const handler = async (req: Request): Promise<Response> => {
             functionName = "send-reminder-email";
             payload = { email: scheduledEmail.email };
             break;
+          case "trial_expiring":
+            functionName = "send-trial-expiring-email";
+            payload = { email: scheduledEmail.email };
+            break;
           default:
             throw new Error(`Unknown email type: ${scheduledEmail.email_type}`);
         }
