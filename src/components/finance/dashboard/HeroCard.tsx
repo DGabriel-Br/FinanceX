@@ -89,7 +89,7 @@ export const HeroCard = memo(({
           <div className="flex items-center gap-2 mt-4 p-3 rounded-lg bg-warning/10 border border-warning/20">
             <AlertCircle className="w-4 h-4 text-warning" />
             <span className="text-sm text-warning">
-              Atenção: você já gastou mais de 60% da sua receita
+              Alerta: você já gastou mais de 60% da sua receita
             </span>
           </div>
         )}
