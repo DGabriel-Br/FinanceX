@@ -85,20 +85,33 @@ export default function FunnelDashboard() {
       setError(null);
 
       try {
-        const { data: responseData, error: invokeError } = await supabase.functions.invoke(
-          `admin-funnel-stats?days=${daysBack}`,
-          { method: 'GET' }
+        // Get the session to include auth token
+        const { data: sessionData } = await supabase.auth.getSession();
+        const accessToken = sessionData?.session?.access_token;
+
+        if (!accessToken) {
+          throw new Error('Sessão expirada. Faça login novamente.');
+        }
+
+        // Call the edge function with proper authorization
+        const response = await fetch(
+          `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/admin-funnel-stats?days=${daysBack}`,
+          {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${accessToken}`,
+              'Content-Type': 'application/json',
+              'apikey': import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY,
+            },
+          }
         );
 
-        if (invokeError) {
-          throw invokeError;
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.error || `Erro ${response.status}`);
         }
 
-        // Check if response contains an error
-        if (responseData?.error) {
-          throw new Error(responseData.error);
-        }
-
+        const responseData = await response.json();
         setData(responseData as FunnelData);
       } catch (err) {
         logger.error('[FunnelDashboard] Error fetching stats:', err);
