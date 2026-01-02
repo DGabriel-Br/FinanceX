@@ -15,6 +15,9 @@ const TransactionsPage = lazy(() => import("./pages/finance/TransactionsPage"));
 const InvestmentsPage = lazy(() => import("./pages/finance/InvestmentsPage"));
 const DebtsPage = lazy(() => import("./pages/finance/DebtsPage"));
 
+// Admin pages
+const FunnelDashboard = lazy(() => import("./pages/admin/FunnelDashboard"));
+
 // Landing - lazy loaded for performance
 const Landing = lazy(() => import("./pages/Landing"));
 
@@ -68,6 +71,9 @@ const App = () => (
               <Route path="/setup-password" element={<SetupPassword />} />
               <Route path="/auth" element={<Navigate to="/login" replace />} />
               <Route path="/settings" element={<Settings />} />
+              
+              {/* Admin routes */}
+              <Route path="/admin/funnel" element={<FunnelDashboard />} />
               
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
