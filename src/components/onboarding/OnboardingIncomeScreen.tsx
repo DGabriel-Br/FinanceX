@@ -68,7 +68,7 @@ export const OnboardingIncomeScreen = ({ onContinue }: OnboardingIncomeScreenPro
 
       {/* Sub */}
       <p className="text-muted-foreground text-sm mb-8 text-center max-w-xs animate-fade-in opacity-0" style={{ animationDelay: '0.3s', animationFillMode: 'forwards' }}>
-        Pode ser aproximado. Você ajusta depois.
+        Pode ser aproximado. Dá pra ajustar depois.
       </p>
 
       {/* Input de valor */}
