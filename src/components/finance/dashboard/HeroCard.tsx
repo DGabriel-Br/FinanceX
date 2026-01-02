@@ -94,12 +94,15 @@ export const HeroCard = memo(({
           </div>
         )}
         
-        {/* Alert for negative projection */}
-        {status === 'negative' && daysUntilNegative !== null && daysUntilNegative > 0 && (
+        {/* Alert for negative balance */}
+        {status === 'negative' && (
           <div className="flex items-center gap-2 mt-4 p-3 rounded-lg bg-expense/10 border border-expense/20">
             <AlertTriangle className="w-4 h-4 text-expense" />
             <span className="text-sm text-expense">
-              Atenção: saldo pode ficar negativo em {daysUntilNegative} dia{daysUntilNegative !== 1 ? 's' : ''}
+              {daysUntilNegative !== null && daysUntilNegative > 0 
+                ? `Alerta: saldo pode ficar negativo em ${daysUntilNegative} dia${daysUntilNegative !== 1 ? 's' : ''}`
+                : 'Alerta: você já gastou mais do que recebeu este mês'
+              }
             </span>
           </div>
         )}
