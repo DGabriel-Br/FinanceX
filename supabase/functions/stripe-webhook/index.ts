@@ -162,6 +162,35 @@ serve(async (req) => {
                 
                 if (welcomeEmailResponse.ok) {
                   logStep("Welcome email sent successfully", { email: customerEmail });
+                  
+                  // Agendar email de lembrete para 24h depois
+                  try {
+                    const reminderDate = new Date();
+                    reminderDate.setHours(reminderDate.getHours() + 24);
+                    
+                    const { error: scheduleError } = await supabaseClient
+                      .from("scheduled_emails")
+                      .insert({
+                        user_id: user.id,
+                        email: customerEmail,
+                        email_type: "reminder_24h",
+                        scheduled_for: reminderDate.toISOString(),
+                        metadata: { 
+                          stripe_session_id: session.id,
+                          customer_name: customer.name || session.customer_details?.name 
+                        }
+                      });
+                    
+                    if (scheduleError) {
+                      logStep("WARNING: Failed to schedule reminder email", { error: scheduleError.message });
+                    } else {
+                      logStep("Reminder email scheduled for 24h", { email: customerEmail, scheduledFor: reminderDate.toISOString() });
+                    }
+                  } catch (scheduleErr) {
+                    logStep("WARNING: Failed to schedule reminder email", { 
+                      error: scheduleErr instanceof Error ? scheduleErr.message : String(scheduleErr) 
+                    });
+                  }
                 } else {
                   const errorText = await welcomeEmailResponse.text();
                   logStep("WARNING: Failed to send welcome email", { error: errorText });
