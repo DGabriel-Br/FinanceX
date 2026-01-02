@@ -291,7 +291,8 @@ serve(async (req) => {
         logStep("Subscription event", { 
           type: event.type,
           subscriptionId: subscription.id, 
-          status: subscription.status 
+          status: subscription.status,
+          cancelAtPeriodEnd: subscription.cancel_at_period_end
         });
 
         const customer = await stripe.customers.retrieve(subscription.customer as string) as Stripe.Customer;
@@ -331,6 +332,50 @@ serve(async (req) => {
             logStep("ERROR: Failed to upsert subscription", { error: upsertError.message });
           } else {
             logStep("Subscription updated in database", { subscriptionId: subscription.id, status: subscription.status });
+          }
+
+          // Detectar cancelamento do trial: subscription em trialing com cancel_at_period_end = true
+          if (subscription.cancel_at_period_end && subscription.status === 'trialing') {
+            logStep("Trial cancellation detected, sending cancellation email", { email: customer.email });
+            
+            try {
+              // Cancelar emails agendados que ainda não foram enviados
+              const { error: cancelEmailsError } = await supabaseClient
+                .from("scheduled_emails")
+                .update({ status: 'cancelled' })
+                .eq("user_id", user.id)
+                .eq("status", "pending");
+              
+              if (cancelEmailsError) {
+                logStep("WARNING: Failed to cancel scheduled emails", { error: cancelEmailsError.message });
+              } else {
+                logStep("Cancelled pending scheduled emails for user", { userId: user.id });
+              }
+
+              // Enviar email de cancelamento
+              const cancelEmailResponse = await fetch(
+                `${Deno.env.get("SUPABASE_URL")}/functions/v1/send-trial-cancelled-email`,
+                {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${Deno.env.get("SUPABASE_ANON_KEY")}`,
+                  },
+                  body: JSON.stringify({ email: customer.email }),
+                }
+              );
+              
+              if (cancelEmailResponse.ok) {
+                logStep("Trial cancelled email sent successfully", { email: customer.email });
+              } else {
+                const errorText = await cancelEmailResponse.text();
+                logStep("WARNING: Failed to send trial cancelled email", { error: errorText });
+              }
+            } catch (emailError) {
+              logStep("WARNING: Failed to send trial cancelled email", { 
+                error: emailError instanceof Error ? emailError.message : String(emailError) 
+              });
+            }
           }
         }
         break;
