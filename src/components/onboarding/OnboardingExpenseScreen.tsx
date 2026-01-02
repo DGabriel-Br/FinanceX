@@ -75,7 +75,7 @@ export const OnboardingExpenseScreen = ({ onSave }: OnboardingExpenseScreenProps
 
       {/* Sub */}
       <p className="text-muted-foreground text-sm mb-8 text-center max-w-xs animate-fade-in opacity-0" style={{ animationDelay: '0.3s', animationFillMode: 'forwards' }}>
-        Não precisa ser exato. Só pra gente começar.
+        Não precisa ser exato. Pode ser até um café.
       </p>
 
       {/* Input de valor */}
