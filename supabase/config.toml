@@ -32,3 +32,6 @@ verify_jwt = false
 
 [functions.send-trial-expiring-email]
 verify_jwt = false
+
+[functions.send-subscription-activated-email]
+verify_jwt = false
