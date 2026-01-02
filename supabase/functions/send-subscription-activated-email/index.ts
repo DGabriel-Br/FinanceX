@@ -13,6 +13,13 @@ const logStep = (step: string, details?: any) => {
   console.log(`[SEND-SUBSCRIPTION-ACTIVATED-EMAIL] ${step}${detailsStr}`);
 };
 
+// Generate tracking pixel URL
+const getTrackingPixel = (trackingId: string, emailType: string, email: string) => {
+  const baseUrl = Deno.env.get("SUPABASE_URL") || "";
+  const encodedEmail = encodeURIComponent(email);
+  return `<img src="${baseUrl}/functions/v1/track-email-open?id=${trackingId}&type=${emailType}&email=${encodedEmail}" width="1" height="1" style="display:block;width:1px;height:1px;border:0;" alt="" />`;
+};
+
 // Estilos base do email (mesmo padrão dos outros emails)
 const getEmailBaseStyles = () => `
   body {
@@ -150,6 +157,7 @@ const getEmailBaseStyles = () => `
 
 interface SubscriptionActivatedEmailRequest {
   email: string;
+  trackingId?: string;
 }
 
 const handler = async (req: Request): Promise<Response> => {
@@ -160,12 +168,16 @@ const handler = async (req: Request): Promise<Response> => {
   try {
     logStep("Function started");
 
-    const { email }: SubscriptionActivatedEmailRequest = await req.json();
+    const { email, trackingId }: SubscriptionActivatedEmailRequest = await req.json();
     logStep("Request parsed", { email });
 
     if (!email) {
       throw new Error("Email is required");
     }
+
+    // Generate tracking ID if not provided
+    const emailTrackingId = trackingId || crypto.randomUUID();
+    const trackingPixel = getTrackingPixel(emailTrackingId, "subscription_activated", email);
 
     const dashboardUrl = "https://financex.lovable.app/dashboard";
 
@@ -216,11 +228,12 @@ const handler = async (req: Request): Promise<Response> => {
       </div>
     </div>
   </div>
+  ${trackingPixel}
 </body>
 </html>
     `;
 
-    logStep("Sending email", { to: email });
+    logStep("Sending email", { to: email, trackingId: emailTrackingId });
 
     const emailResponse = await resend.emails.send({
       from: "FinanceX <contato@financex.app.br>",
@@ -229,9 +242,9 @@ const handler = async (req: Request): Promise<Response> => {
       html: emailHtml,
     });
 
-    logStep("Email sent successfully", { response: emailResponse });
+    logStep("Email sent successfully", { response: emailResponse, trackingId: emailTrackingId });
 
-    return new Response(JSON.stringify(emailResponse), {
+    return new Response(JSON.stringify({ ...emailResponse, trackingId: emailTrackingId }), {
       status: 200,
       headers: { "Content-Type": "application/json", ...corsHeaders },
     });

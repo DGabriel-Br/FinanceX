@@ -13,8 +13,16 @@ const logStep = (step: string, details?: Record<string, unknown>) => {
   console.log(`[SEND-REMINDER-EMAIL] ${step}${detailsStr}`);
 };
 
+// Generate tracking pixel URL
+const getTrackingPixel = (trackingId: string, emailType: string, email: string) => {
+  const baseUrl = Deno.env.get("SUPABASE_URL") || "";
+  const encodedEmail = encodeURIComponent(email);
+  return `<img src="${baseUrl}/functions/v1/track-email-open?id=${trackingId}&type=${emailType}&email=${encodedEmail}" width="1" height="1" style="display:block;width:1px;height:1px;border:0;" alt="" />`;
+};
+
 interface ReminderEmailRequest {
   email: string;
+  trackingId?: string;
 }
 
 function getEmailBaseStyles(): string {
@@ -116,7 +124,7 @@ function getEmailBaseStyles(): string {
   `;
 }
 
-function getReminderEmailHtml(): string {
+function getReminderEmailHtml(trackingPixel: string): string {
   const dashboardLink = "https://financex.lovable.app/dashboard";
   
   return `
@@ -162,6 +170,7 @@ function getReminderEmailHtml(): string {
       </div>
     </div>
   </div>
+  ${trackingPixel}
 </body>
 </html>
   `;
@@ -175,24 +184,28 @@ const handler = async (req: Request): Promise<Response> => {
   try {
     logStep("Processing reminder email request");
     
-    const { email }: ReminderEmailRequest = await req.json();
+    const { email, trackingId }: ReminderEmailRequest = await req.json();
     
     if (!email) {
       throw new Error("Email is required");
     }
     
-    logStep("Sending reminder email", { email });
+    // Generate tracking ID if not provided
+    const emailTrackingId = trackingId || crypto.randomUUID();
+    const trackingPixel = getTrackingPixel(emailTrackingId, "reminder_24h", email);
+    
+    logStep("Sending reminder email", { email, trackingId: emailTrackingId });
     
     const emailResponse = await resend.emails.send({
       from: "FinanceX <contato@financex.com.br>",
       to: [email],
       subject: "Você já sabe quanto sobra este mês?",
-      html: getReminderEmailHtml(),
+      html: getReminderEmailHtml(trackingPixel),
     });
     
-    logStep("Reminder email sent successfully", { emailResponse });
+    logStep("Reminder email sent successfully", { emailResponse, trackingId: emailTrackingId });
     
-    return new Response(JSON.stringify({ success: true, emailResponse }), {
+    return new Response(JSON.stringify({ success: true, emailResponse, trackingId: emailTrackingId }), {
       status: 200,
       headers: { "Content-Type": "application/json", ...corsHeaders },
     });

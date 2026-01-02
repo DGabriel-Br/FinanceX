@@ -14,6 +14,13 @@ const logStep = (step: string, details?: any) => {
   console.log(`[SEND-TRIAL-CANCELLED-EMAIL] ${step}${detailsStr}`);
 };
 
+// Generate tracking pixel URL
+const getTrackingPixel = (trackingId: string, emailType: string, email: string) => {
+  const baseUrl = Deno.env.get("SUPABASE_URL") || "";
+  const encodedEmail = encodeURIComponent(email);
+  return `<img src="${baseUrl}/functions/v1/track-email-open?id=${trackingId}&type=${emailType}&email=${encodedEmail}" width="1" height="1" style="display:block;width:1px;height:1px;border:0;" alt="" />`;
+};
+
 const getEmailBaseStyles = () => `
   body {
     margin: 0;
@@ -157,6 +164,7 @@ const getEmailBaseStyles = () => `
 
 interface TrialCancelledEmailRequest {
   email: string;
+  trackingId?: string;
 }
 
 const handler = async (req: Request): Promise<Response> => {
@@ -165,8 +173,13 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const { email }: TrialCancelledEmailRequest = await req.json();
-    logStep("Sending trial cancelled email", { email });
+    const { email, trackingId }: TrialCancelledEmailRequest = await req.json();
+    
+    // Generate tracking ID if not provided
+    const emailTrackingId = trackingId || crypto.randomUUID();
+    const trackingPixel = getTrackingPixel(emailTrackingId, "trial_cancelled", email);
+    
+    logStep("Sending trial cancelled email", { email, trackingId: emailTrackingId });
 
     const emailHtml = `
       <!DOCTYPE html>
@@ -234,20 +247,21 @@ const handler = async (req: Request): Promise<Response> => {
               </p>
             </div>
           </div>
+          ${trackingPixel}
         </body>
       </html>
     `;
 
     const emailResponse = await resend.emails.send({
-      from: "FinanceX <onboarding@resend.dev>",
+      from: "FinanceX <contato@financex.com.br>",
       to: [email],
       subject: "Tudo certo. Seu teste no FinanceX foi cancelado",
       html: emailHtml,
     });
 
-    logStep("Trial cancelled email sent successfully", { email, response: emailResponse });
+    logStep("Trial cancelled email sent successfully", { email, response: emailResponse, trackingId: emailTrackingId });
 
-    return new Response(JSON.stringify(emailResponse), {
+    return new Response(JSON.stringify({ ...emailResponse, trackingId: emailTrackingId }), {
       status: 200,
       headers: { "Content-Type": "application/json", ...corsHeaders },
     });

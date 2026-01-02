@@ -13,6 +13,13 @@ const logStep = (step: string, details?: Record<string, unknown>) => {
   console.log(`[SEND-TRIAL-EXPIRING-EMAIL] ${step}${detailsStr}`);
 };
 
+// Generate tracking pixel URL
+const getTrackingPixel = (trackingId: string, emailType: string, email: string) => {
+  const baseUrl = Deno.env.get("SUPABASE_URL") || "";
+  const encodedEmail = encodeURIComponent(email);
+  return `<img src="${baseUrl}/functions/v1/track-email-open?id=${trackingId}&type=${emailType}&email=${encodedEmail}" width="1" height="1" style="display:block;width:1px;height:1px;border:0;" alt="" />`;
+};
+
 const getEmailBaseStyles = () => `
   body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -119,7 +126,7 @@ const getEmailBaseStyles = () => `
   }
 `;
 
-const getTrialExpiringEmailHtml = () => {
+const getTrialExpiringEmailHtml = (trackingPixel: string) => {
   return `
 <!DOCTYPE html>
 <html lang="pt-BR">
@@ -168,6 +175,7 @@ const getTrialExpiringEmailHtml = () => {
       </div>
     </div>
   </div>
+  ${trackingPixel}
 </body>
 </html>
   `;
@@ -175,6 +183,7 @@ const getTrialExpiringEmailHtml = () => {
 
 interface TrialExpiringEmailRequest {
   email: string;
+  trackingId?: string;
 }
 
 const handler = async (req: Request): Promise<Response> => {
@@ -183,20 +192,24 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const { email }: TrialExpiringEmailRequest = await req.json();
+    const { email, trackingId }: TrialExpiringEmailRequest = await req.json();
     
-    logStep("Sending trial expiring email", { email });
+    // Generate tracking ID if not provided
+    const emailTrackingId = trackingId || crypto.randomUUID();
+    const trackingPixel = getTrackingPixel(emailTrackingId, "trial_expiring", email);
+    
+    logStep("Sending trial expiring email", { email, trackingId: emailTrackingId });
 
     const emailResponse = await resend.emails.send({
       from: "FinanceX <contato@financex.com.br>",
       to: [email],
       subject: "Seu teste termina amanhã",
-      html: getTrialExpiringEmailHtml(),
+      html: getTrialExpiringEmailHtml(trackingPixel),
     });
 
-    logStep("Trial expiring email sent successfully", { email, response: emailResponse });
+    logStep("Trial expiring email sent successfully", { email, response: emailResponse, trackingId: emailTrackingId });
 
-    return new Response(JSON.stringify({ success: true, data: emailResponse }), {
+    return new Response(JSON.stringify({ success: true, data: emailResponse, trackingId: emailTrackingId }), {
       status: 200,
       headers: { "Content-Type": "application/json", ...corsHeaders },
     });
