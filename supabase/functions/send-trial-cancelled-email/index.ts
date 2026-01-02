@@ -253,7 +253,7 @@ const handler = async (req: Request): Promise<Response> => {
     `;
 
     const emailResponse = await resend.emails.send({
-      from: "FinanceX <contato@financex.com.br>",
+      from: "FinanceX <appfinancex@resend.dev>",
       to: [email],
       subject: "Tudo certo. Seu teste no FinanceX foi cancelado",
       html: emailHtml,

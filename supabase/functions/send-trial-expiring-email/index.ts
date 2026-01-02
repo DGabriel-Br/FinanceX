@@ -201,7 +201,7 @@ const handler = async (req: Request): Promise<Response> => {
     logStep("Sending trial expiring email", { email, trackingId: emailTrackingId });
 
     const emailResponse = await resend.emails.send({
-      from: "FinanceX <contato@financex.com.br>",
+      from: "FinanceX <appfinancex@resend.dev>",
       to: [email],
       subject: "Seu teste termina amanhã",
       html: getTrialExpiringEmailHtml(trackingPixel),

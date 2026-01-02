@@ -236,7 +236,7 @@ const handler = async (req: Request): Promise<Response> => {
     logStep("Sending email", { to: email, trackingId: emailTrackingId });
 
     const emailResponse = await resend.emails.send({
-      from: "FinanceX <contato@financex.app.br>",
+      from: "FinanceX <appfinancex@resend.dev>",
       to: [email],
       subject: "Seu FinanceX está ativo",
       html: emailHtml,

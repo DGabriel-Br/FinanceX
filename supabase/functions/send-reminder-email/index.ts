@@ -197,7 +197,7 @@ const handler = async (req: Request): Promise<Response> => {
     logStep("Sending reminder email", { email, trackingId: emailTrackingId });
     
     const emailResponse = await resend.emails.send({
-      from: "FinanceX <contato@financex.com.br>",
+      from: "FinanceX <appfinancex@resend.dev>",
       to: [email],
       subject: "Você já sabe quanto sobra este mês?",
       html: getReminderEmailHtml(trackingPixel),
