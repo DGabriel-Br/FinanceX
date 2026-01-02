@@ -284,9 +284,10 @@ export const Dashboard = memo(({
   );
 
   // Calculate "Sobra para gastar" projection
+  // Pass 0 as monthlyIncome since all income is already tracked in transactions
   const projection = useMemo(() => {
-    return calculateMonthProjection(totals.receitas, transactions);
-  }, [totals.receitas, transactions]);
+    return calculateMonthProjection(0, transactions);
+  }, [transactions]);
 
   // Memoize previous year balance
   const previousYearBalance = useMemo(() => {
