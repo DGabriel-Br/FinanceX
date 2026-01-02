@@ -141,6 +141,37 @@ serve(async (req) => {
               logStep("ERROR: Failed to create setup token", { error: tokenError.message });
             } else {
               logStep("Password setup token created", { userId: user.id, sessionId: session.id });
+
+              // Enviar email de boas-vindas
+              try {
+                const welcomeEmailResponse = await fetch(
+                  `${Deno.env.get("SUPABASE_URL")}/functions/v1/send-welcome-email`,
+                  {
+                    method: "POST",
+                    headers: {
+                      "Content-Type": "application/json",
+                      "Authorization": `Bearer ${Deno.env.get("SUPABASE_ANON_KEY")}`,
+                    },
+                    body: JSON.stringify({
+                      email: customerEmail,
+                      sessionId: session.id,
+                      userName: customer.name || session.customer_details?.name,
+                    }),
+                  }
+                );
+                
+                if (welcomeEmailResponse.ok) {
+                  logStep("Welcome email sent successfully", { email: customerEmail });
+                } else {
+                  const errorText = await welcomeEmailResponse.text();
+                  logStep("WARNING: Failed to send welcome email", { error: errorText });
+                }
+              } catch (emailError) {
+                logStep("WARNING: Failed to send welcome email", { 
+                  error: emailError instanceof Error ? emailError.message : String(emailError) 
+                });
+                // Não quebrar o fluxo principal se o email falhar
+              }
             }
           } else {
             logStep("User already exists", { userId: user.id, email: customerEmail });
