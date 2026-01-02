@@ -126,8 +126,9 @@ export const OnboardingCelebration = ({
       </div>
 
       {/* Reinforcement message */}
-      <p className="text-muted-foreground text-sm mb-10 max-w-xs leading-relaxed animate-fade-in opacity-0" style={{ animationDelay: '0.4s', animationFillMode: 'forwards' }}>
-        A partir de agora, cada gasto responde uma pergunta simples:{' '}
+      <p className="text-muted-foreground text-sm mb-10 max-w-xs leading-relaxed animate-fade-in opacity-0 text-center" style={{ animationDelay: '0.4s', animationFillMode: 'forwards' }}>
+        A partir de agora, cada gasto responde uma pergunta simples:
+        <br />
         <span className="text-foreground font-medium">
           Dá pra gastar ou é melhor parar?
         </span>
