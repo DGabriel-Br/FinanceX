@@ -149,7 +149,7 @@ export const OnboardingExpenseScreen = ({ onSave }: OnboardingExpenseScreenProps
             inputMode="decimal"
             value={value}
             onChange={handleInputChange}
-            placeholder="0"
+            placeholder="0,00"
             className="h-14 text-2xl font-semibold pl-12 text-center"
           />
         </div>
