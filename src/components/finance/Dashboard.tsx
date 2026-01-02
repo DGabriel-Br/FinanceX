@@ -348,7 +348,7 @@ export const Dashboard = memo(({
         />
         <SecondaryCard
           icon={TrendingDown}
-          title="Gastos do mês"
+          title="Total gasto no mês"
           value={formattedDespesas}
           colorClass="text-expense"
           bgClass="bg-expense/10"
