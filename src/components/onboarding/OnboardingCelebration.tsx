@@ -97,10 +97,10 @@ export const OnboardingCelebration = ({
           <>
             <div className="flex items-center justify-center gap-2 mb-2">
               <TrendingUp className="w-5 h-5 text-income" />
-              <span className="text-sm text-muted-foreground">No ritmo atual</span>
+              <span className="text-sm text-muted-foreground">Após esse gasto</span>
             </div>
             <p className="text-lg font-medium text-foreground mb-1">
-              Sobram
+              Ainda sobram
             </p>
             <p className="text-3xl font-bold text-income">
               {formatCurrency(projectedBalance)}
@@ -113,13 +113,13 @@ export const OnboardingCelebration = ({
           <>
             <div className="flex items-center justify-center gap-2 mb-2">
               <TrendingDown className="w-5 h-5 text-expense" />
-              <span className="text-sm text-muted-foreground">No ritmo atual</span>
+              <span className="text-sm text-muted-foreground">Após esse gasto</span>
             </div>
             <p className="text-lg font-medium text-foreground mb-1">
-              Você entra no vermelho em
+              Você está no vermelho
             </p>
             <p className="text-3xl font-bold text-expense">
-              {daysUntilNegative ?? 0} {(daysUntilNegative ?? 0) === 1 ? 'dia' : 'dias'}
+              -{formatCurrency(Math.abs(projectedBalance))}
             </p>
           </>
         )}
