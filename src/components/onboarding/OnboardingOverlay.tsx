@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { OnboardingImpactScreen } from './OnboardingImpactScreen';
 import { OnboardingIncomeScreen } from './OnboardingIncomeScreen';
 import { OnboardingExpenseScreen } from './OnboardingExpenseScreen';
@@ -6,6 +6,23 @@ import { OnboardingCelebration } from './OnboardingCelebration';
 import { calculateSimpleProjection } from '@/core/finance/projections';
 import { ExpenseCategory, Transaction } from '@/types/transaction';
 import { cn } from '@/lib/utils';
+import { track } from '@/infra/analytics';
+
+const getIncomeRange = (value: number): string => {
+  if (value <= 1000) return '0-1000';
+  if (value <= 3000) return '1001-3000';
+  if (value <= 5000) return '3001-5000';
+  if (value <= 10000) return '5001-10000';
+  return '10000+';
+};
+
+const getBalanceRange = (value: number): string => {
+  if (value < 0) return 'negative';
+  if (value <= 500) return '0-500';
+  if (value <= 2000) return '501-2000';
+  if (value <= 5000) return '2001-5000';
+  return '5000+';
+};
 
 type OnboardingStep = 'impact' | 'income' | 'expense' | 'celebration';
 
@@ -27,6 +44,8 @@ export const OnboardingOverlay = ({
     daysUntilNegative: number | null;
     isPositive: boolean;
   } | null>(null);
+  const hasTrackedFirstExpense = useRef(false);
+
 
   const animateToStep = useCallback((nextStep: OnboardingStep) => {
     setIsAnimating(true);
@@ -37,6 +56,7 @@ export const OnboardingOverlay = ({
   }, []);
 
   const handleStart = () => {
+    track('onboarding_started');
     animateToStep('income');
   };
 
@@ -61,10 +81,12 @@ export const OnboardingOverlay = ({
       description: 'Renda mensal',
     });
 
+    track('onboarding_income_added', { income_range: getIncomeRange(income) });
     animateToStep('expense');
   };
 
   const handleExpenseSave = async (expense: { value: number; category: ExpenseCategory; description: string }) => {
+    const isFirstExpense = !hasTrackedFirstExpense.current;
     setLastExpenseValue(expense.value);
     
     // Salvar despesa como transação
@@ -77,12 +99,29 @@ export const OnboardingOverlay = ({
       description: expense.description,
     });
 
+    // Track expense event
+    if (isFirstExpense) {
+      track('onboarding_expense_added', { 
+        category: expense.category, 
+        has_description: !!expense.description && expense.description !== 'Gasto registrado no onboarding'
+      });
+      hasTrackedFirstExpense.current = true;
+    } else {
+      track('onboarding_second_expense_added', { category: expense.category });
+    }
+
     // Calcular projeção
     const proj = calculateSimpleProjection(monthlyIncome, expense.value);
     setProjection({
       projectedBalance: proj.projectedBalance,
       daysUntilNegative: proj.daysUntilNegative,
       isPositive: proj.isPositive,
+    });
+
+    // Track completion (chegou no "quanto sobra")
+    track('onboarding_completed', { 
+      is_positive: proj.isPositive, 
+      projected_balance_range: getBalanceRange(proj.projectedBalance)
     });
 
     animateToStep('celebration');
