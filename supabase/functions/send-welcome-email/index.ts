@@ -48,31 +48,7 @@ const getWelcomeEmailHtml = (setupLink: string, trackingPixel: string) => {
           <!-- Header with Logo -->
           <tr>
             <td align="center" style="padding-bottom: 32px;">
-              <table role="presentation" cellspacing="0" cellpadding="0">
-                <tr>
-                  <td style="vertical-align: middle; padding-right: 12px;">
-                    <svg width="40" height="40" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <defs>
-                        <linearGradient id="fGradient" x1="0%" y1="100%" x2="100%" y2="0%">
-                          <stop offset="0%" stop-color="#06b6d4" />
-                          <stop offset="50%" stop-color="#22d3ee" />
-                          <stop offset="100%" stop-color="#4ade80" />
-                        </linearGradient>
-                        <linearGradient id="arrowGradient" x1="0%" y1="100%" x2="100%" y2="0%">
-                          <stop offset="0%" stop-color="#22d3ee" />
-                          <stop offset="100%" stop-color="#4ade80" />
-                        </linearGradient>
-                      </defs>
-                      <path d="M20 95 L20 20 L35 5 L70 5 L70 20 L40 20 L40 42 L65 42 L65 57 L40 57 L40 95 Z" fill="url(#fGradient)" />
-                      <path d="M60 5 L85 5 L85 30 L75 30 L75 20 L60 20 Z" fill="url(#arrowGradient)" />
-                      <path d="M70 5 L90 5 L70 25 Z" fill="url(#arrowGradient)" />
-                    </svg>
-                  </td>
-                  <td style="vertical-align: middle;">
-                    <span style="font-size: 24px; font-weight: 700; color: #ffffff;">Finance<span style="background: linear-gradient(135deg, #22D3EE, #4ade80); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">X</span></span>
-                  </td>
-                </tr>
-              </table>
+              <img src="https://financex.lovable.app/images/financex-logo.png" alt="FinanceX" width="160" height="40" style="display: block; width: 160px; height: auto;" />
             </td>
           </tr>
 
