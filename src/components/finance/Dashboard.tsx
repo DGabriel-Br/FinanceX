@@ -340,7 +340,7 @@ export const Dashboard = memo(({
       <div className="grid grid-cols-2 gap-3 md:gap-4 mt-6">
         <SecondaryCard
           icon={TrendingUp}
-          title="Receitas do mês"
+          title="Total recebido no mês"
           value={formattedReceitas}
           colorClass="text-income"
           bgClass="bg-income/10"
