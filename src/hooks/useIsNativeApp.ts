@@ -5,7 +5,7 @@
  */
 
 // Detecção síncrona no carregamento do módulo (mais rápido que useMemo)
-const detectNativeApp = (): boolean => {
+const detectMobileExperience = (): boolean => {
   if (typeof window === 'undefined') return false;
   
   // Verifica se está rodando no Capacitor (método mais confiável)
@@ -20,13 +20,18 @@ const detectNativeApp = (): boolean => {
     (userAgent.includes('android') && userAgent.includes('version/'));
   const isIOSWebView = /(iphone|ipod|ipad).*applewebkit(?!.*safari)/i.test(navigator.userAgent);
   
-  // É nativo se Capacitor detectar OU se estiver em WebView
-  return hasCapacitor || isAndroidWebView || isIOSWebView;
+  // Detecta navegador mobile (para unificar experiência web mobile com app nativo)
+  const isMobileDevice = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+  const isSmallScreen = window.innerWidth < 768;
+  const isMobileBrowser = isMobileDevice && isSmallScreen;
+  
+  // É "nativo" se Capacitor, WebView OU navegador mobile
+  return hasCapacitor || isAndroidWebView || isIOSWebView || isMobileBrowser;
 };
 
 // Valor calculado uma única vez no carregamento do módulo
-const IS_NATIVE_APP = detectNativeApp();
+const IS_MOBILE_EXPERIENCE = detectMobileExperience();
 
 export function useIsNativeApp(): boolean {
-  return IS_NATIVE_APP;
+  return IS_MOBILE_EXPERIENCE;
 }
