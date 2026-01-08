@@ -48,8 +48,9 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <Suspense fallback={<PageLoader />}>
-            <Routes>
+          <div className="min-h-screen w-full overflow-x-clip">
+            <Suspense fallback={<PageLoader />}>
+              <Routes>
               {/* Public landing page - only on web, native redirects to login/welcome */}
               <Route path="/" element={<NativeRedirect webElement={<Landing />} nativeRedirectTo="/login" />} />
               
@@ -73,6 +74,7 @@ const App = () => (
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
+          </div>
         </BrowserRouter>
       </TooltipProvider>
     </AuthProvider>
