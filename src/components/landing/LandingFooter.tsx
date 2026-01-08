@@ -19,13 +19,13 @@ export const LandingFooter = memo(function LandingFooter() {
             </Link>
             <span className="hidden md:inline text-white/20">|</span>
             <span className="hidden md:inline text-xs lg:text-sm text-white/30">
-              © {new Date().getFullYear()} Todos os direitos reservados.
+              © 2025-{new Date().getFullYear()} Todos os direitos reservados.
             </span>
           </div>
           
           <div className="flex flex-col md:flex-row items-center gap-4 md:gap-6 lg:gap-8">
             <span className="md:hidden text-xs text-white/30">
-              © {new Date().getFullYear()} FinanceX. Todos os direitos reservados.
+              © 2025-{new Date().getFullYear()} Todos os direitos reservados.
             </span>
             <nav className="flex items-center gap-6 lg:gap-8 text-xs lg:text-sm text-white/40" aria-label="Footer navigation">
               <Link to="/termos" className="hover:text-white/70 transition-colors duration-300">
