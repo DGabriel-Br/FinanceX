@@ -32,10 +32,10 @@ const faqs = [
 
 export const FAQSection = memo(function FAQSection() {
   return (
-    <section className="pt-12 pb-10 lg:pt-16 lg:pb-14 bg-white text-landing-dark">
+    <section className="pt-16 pb-12 lg:pt-24 lg:pb-16 bg-white text-landing-dark">
       <div className="w-full max-w-3xl mx-auto px-5 lg:px-8">
         <ScrollReveal direction="up" duration={700}>
-          <header className="text-center mb-8 lg:mb-10">
+          <header className="text-center mb-10 lg:mb-14">
             <h2 
               className="text-lg sm:text-xl lg:text-2xl font-medium tracking-[-0.01em] text-landing-dark/70"
               style={{ fontFamily: "'Sora', sans-serif" }}
