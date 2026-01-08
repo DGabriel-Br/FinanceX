@@ -18,7 +18,7 @@ import { cn } from '@/lib/utils';
 import { format, isToday, isYesterday } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { formatCurrency } from '@/lib/currency';
-import { getCleanDescription } from '@/core/finance/investmentMetadata';
+import { getCleanDescription, hasStructuredTag } from '@/core/finance/investmentMetadata';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -81,7 +81,7 @@ const TransactionItem = memo(({
       <div className="flex-1 min-w-0">
         <p className="text-xs text-muted-foreground">{categoryLabel}</p>
         <p className="text-sm font-medium text-foreground line-clamp-2">
-          {transaction.category === 'investimentos' 
+          {hasStructuredTag(transaction.description) 
             ? getCleanDescription(transaction.description) 
             : transaction.description}
         </p>
@@ -386,7 +386,7 @@ export const VirtualizedTransactionList = ({
             <AlertDialogDescription>
               {deleteConfirm.transaction && (
                 <>
-                  Tem certeza que deseja excluir "{deleteConfirm.transaction.category === 'investimentos' 
+                  Tem certeza que deseja excluir "{hasStructuredTag(deleteConfirm.transaction.description) 
                     ? getCleanDescription(deleteConfirm.transaction.description) 
                     : deleteConfirm.transaction.description}" 
                   no valor de {formatValue ? formatValue(deleteConfirm.transaction.value) : formatCurrency(deleteConfirm.transaction.value)}?
