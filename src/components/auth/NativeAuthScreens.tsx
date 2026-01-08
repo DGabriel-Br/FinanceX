@@ -50,16 +50,15 @@ const FloatingParticle = forwardRef<HTMLDivElement, FloatingParticleProps>(
 
 FloatingParticle.displayName = "FloatingParticle";
 
-type Screen = 'welcome' | 'login' | 'register' | 'forgot-password';
+type Screen = 'welcome' | 'login' | 'forgot-password';
 
 interface NativeAuthScreensProps {
   onSignIn: (email: string, password: string) => Promise<{ error: Error | null }>;
-  onSignUp: (email: string, password: string, name: string) => Promise<{ error: Error | null }>;
   onResetPassword: (email: string) => Promise<{ error: any }>;
   onSuccess: () => void;
 }
 
-export function NativeAuthScreens({ onSignIn, onSignUp, onResetPassword, onSuccess }: NativeAuthScreensProps) {
+export function NativeAuthScreens({ onSignIn, onResetPassword, onSuccess }: NativeAuthScreensProps) {
   const [screen, setScreen] = useState<Screen>('welcome');
   const [mounted, setMounted] = useState(false);
   const [initialFadeIn, setInitialFadeIn] = useState(false);
@@ -70,16 +69,10 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onResetPassword, onSucce
   // Configura a cor da barra de navegação do Android (usa tema dark pois as telas de auth usam fundo escuro)
   useNavigationBar('dark');
   // Form states
-  const [name, setName] = useState('');
   const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
   const [loginIdentifier, setLoginIdentifier] = useState(''); // Single field for email or phone
-  const [registerMethod, setRegisterMethod] = useState<'email' | 'phone'>('email');
-  const [registerStep, setRegisterStep] = useState<'method' | 'details'>('method');
   const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isShaking, setIsShaking] = useState(false);
@@ -135,45 +128,6 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onResetPassword, onSucce
     setAnimationKey(prev => prev + 1);
     setScreen(newScreen);
     setEmailSent(false);
-    // Reset register step when navigating to register
-    if (newScreen === 'register') {
-      setRegisterStep('method');
-    }
-  };
-
-  const handleRegisterBack = () => {
-    if (registerStep === 'details') {
-      setSlideAnimation('slide-in-left');
-      setAnimationKey(prev => prev + 1);
-      setRegisterStep('method');
-    } else {
-      handleNavigate('welcome');
-    }
-  };
-
-  const handleRegisterNext = () => {
-    // Validate email or phone based on method
-    if (registerMethod === 'email') {
-      try {
-        emailSchema.parse(email);
-      } catch {
-        toast.error('Por favor, insira um email válido');
-        triggerShake();
-        return;
-      }
-    } else {
-      // Basic phone validation
-      const phoneDigits = phone.replace(/\D/g, '');
-      if (phoneDigits.length < 10 || phoneDigits.length > 11) {
-        toast.error('Por favor, insira um telefone válido');
-        triggerShake();
-        return;
-      }
-    }
-    
-    setSlideAnimation('slide-in-right');
-    setAnimationKey(prev => prev + 1);
-    setRegisterStep('details');
   };
 
   const formatPhone = (value: string) => {
@@ -215,47 +169,6 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onResetPassword, onSucce
 
     if (password.length < 1) {
       toast.error('Por favor, insira sua senha');
-      triggerShake();
-      return false;
-    }
-
-    return true;
-  };
-
-  const validateRegister = () => {
-    if (name.trim().length < 2) {
-      toast.error('Por favor, insira seu nome');
-      triggerShake();
-      return false;
-    }
-
-    // Email/phone already validated in first step, but double-check
-    if (registerMethod === 'email') {
-      try {
-        emailSchema.parse(email);
-      } catch {
-        toast.error('Por favor, insira um email válido');
-        triggerShake();
-        return false;
-      }
-    } else {
-      const phoneDigits = phone.replace(/\D/g, '');
-      if (phoneDigits.length < 10 || phoneDigits.length > 11) {
-        toast.error('Por favor, insira um telefone válido');
-        triggerShake();
-        return false;
-      }
-    }
-
-    const passwordResult = passwordSchema.safeParse(password);
-    if (!passwordResult.success) {
-      toast.error(passwordResult.error.errors[0].message);
-      triggerShake();
-      return false;
-    }
-
-    if (password !== confirmPassword) {
-      toast.error('As senhas não coincidem');
       triggerShake();
       return false;
     }
@@ -315,32 +228,6 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onResetPassword, onSucce
     }
   };
 
-  const handleRegister = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!validateRegister()) return;
-
-    setIsLoading(true);
-    // For phone registration, create a fake email using the phone number
-    const registrationEmail = registerMethod === 'phone' 
-      ? `${phone.replace(/\D/g, '')}@phone.financex.app` 
-      : email;
-    const { error } = await onSignUp(registrationEmail, password, name.trim());
-    setIsLoading(false);
-
-    if (error) {
-      triggerShake();
-      if (error.message.includes('User already registered')) {
-        toast.error(registerMethod === 'phone' 
-          ? 'Este telefone já está cadastrado. Tente fazer login.'
-          : 'Este email já está cadastrado. Tente fazer login.');
-      } else {
-        toast.error('Erro ao criar conta: ' + error.message);
-      }
-    } else {
-      toast.success('Conta criada com sucesso!');
-      onSuccess();
-    }
-  };
 
   const handleForgotPassword = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
@@ -588,13 +475,6 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onResetPassword, onSucce
             slideAnimation === 'slide-in-right' && "animate-slide-in-right"
           )}
         >
-          <Button
-            onClick={() => handleNavigate('register')}
-            variant="outline"
-            className="w-full h-14 text-base font-semibold rounded-full border-2 border-white/30 bg-white/5 hover:bg-white/10 text-white backdrop-blur-sm"
-          >
-            Registre-se
-          </Button>
           <Button
             onClick={() => handleNavigate('login')}
             className="w-full h-14 text-base font-semibold rounded-full bg-primary/90 hover:bg-primary text-primary-foreground shadow-lg shadow-primary/30"
@@ -855,234 +735,6 @@ export function NativeAuthScreens({ onSignIn, onSignUp, onResetPassword, onSucce
           )}
         </div>
       </div>
-    );
-  }
-
-  // Register Screen
-  if (screen === 'register') {
-    return (
-      <div className={cn(
-        "min-h-screen bg-[radial-gradient(ellipse_at_top,hsl(225,12%,14%)_0%,hsl(225,8%,10%)_50%,hsl(225,6%,8%)_100%)] relative overflow-hidden flex flex-col transition-opacity duration-300",
-        bgFading && "opacity-80"
-      )}>
-          <style>{cssAnimations}</style>
-
-        {/* Floating Particles - igual ao web */}
-        <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          {particles.map((particle) => (
-            <FloatingParticle key={particle.id} {...particle} />
-          ))}
-        </div>
-
-        {/* Animated Background Elements */}
-        <div className="absolute inset-0 pointer-events-none overflow-hidden">
-          <div className={cn("absolute top-[10%] left-[5%] w-40 h-40 bg-gradient-to-br from-white/5 to-transparent rounded-full blur-xl transition-all duration-1000", mounted ? "opacity-40 scale-100" : "opacity-0 scale-50")} />
-          <div className={cn("absolute top-[15%] right-[10%] w-32 h-32 bg-gradient-to-br from-primary/10 to-white/5 rounded-full blur-2xl transition-all duration-1000 delay-200", mounted ? "opacity-30 scale-100" : "opacity-0 scale-50")} />
-          <div className={cn("absolute bottom-[20%] left-[8%] w-48 h-48 bg-gradient-to-br from-primary/8 to-white/5 rounded-full blur-3xl transition-all duration-1000 delay-300", mounted ? "opacity-25 scale-100" : "opacity-0 scale-50")} />
-          <div className={cn("absolute bottom-[10%] right-[15%] w-36 h-36 bg-gradient-to-br from-white/5 to-primary/10 rounded-full blur-2xl transition-all duration-1000 delay-500", mounted ? "opacity-30 scale-100" : "opacity-0 scale-50")} />
-          
-          {/* Star-like dots */}
-          <div className="absolute top-[20%] left-[20%] w-1 h-1 bg-white/20 rounded-full animate-pulse" />
-          <div className="absolute top-[30%] left-[70%] w-1.5 h-1.5 bg-white/15 rounded-full animate-pulse" style={{ animationDelay: '0.3s' }} />
-          <div className="absolute top-[60%] left-[85%] w-1 h-1 bg-white/18 rounded-full animate-pulse" style={{ animationDelay: '0.5s' }} />
-          <div className="absolute top-[70%] left-[10%] w-1 h-1 bg-white/12 rounded-full animate-pulse" style={{ animationDelay: '0.7s' }} />
-        </div>
-
-        {/* Header */}
-        <div className="pt-4 px-4 safe-area-top">
-          <button
-            onClick={handleRegisterBack}
-            className="p-2 -ml-2 text-white/70 hover:text-white transition-colors"
-          >
-            <ArrowLeft className="w-6 h-6" />
-          </button>
-        </div>
-
-        {/* Content */}
-        <div 
-          key={`register-content-${animationKey}-${registerStep}`}
-          className={cn(
-            "flex-1 px-6 pt-4 pb-8 safe-area-bottom overflow-auto",
-            slideAnimation === 'slide-in-left' && "animate-slide-in-left",
-            slideAnimation === 'slide-in-right' && "animate-slide-in-right",
-            isShaking && "animate-shake"
-          )}
-        >
-          {registerStep === 'method' ? (
-            // Step 1: Choose method and enter email/phone
-            <>
-              <h1 className="text-xl font-bold text-white mb-1 leading-tight">
-                Como deseja se cadastrar?
-              </h1>
-              <p className="text-white/50 text-sm mb-6">
-                Escolha entre telefone ou e-mail
-              </p>
-
-              {/* Toggle E-mail / Telefone */}
-              <div className="flex bg-sidebar-accent/60 rounded-xl p-1 mb-6">
-                <button
-                  type="button"
-                  onClick={() => setRegisterMethod('email')}
-                  className={cn(
-                    "flex-1 py-3 px-4 rounded-lg text-sm font-medium transition-all duration-200",
-                    registerMethod === 'email' 
-                      ? "bg-sidebar-accent text-white" 
-                      : "text-white/50 hover:text-white/70"
-                  )}
-                >
-                  E-mail
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setRegisterMethod('phone')}
-                  className={cn(
-                    "flex-1 py-3 px-4 rounded-lg text-sm font-medium transition-all duration-200",
-                    registerMethod === 'phone' 
-                      ? "bg-sidebar-accent text-white" 
-                      : "text-white/50 hover:text-white/70"
-                  )}
-                >
-                  Telefone
-                </button>
-              </div>
-
-              {/* Email or Phone input based on method */}
-              <div className="space-y-2 mb-6">
-                <label className="text-sm text-white/60">
-                  {registerMethod === 'email' ? 'E-mail' : 'Telefone'}
-                </label>
-                {registerMethod === 'email' ? (
-                  <Input
-                    type="email"
-                    placeholder="E-mail"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="h-14 px-4 text-base bg-sidebar-accent/80 border-0 rounded-xl text-white placeholder:text-white/30 focus:ring-2 focus:ring-primary/50"
-                  />
-                ) : (
-                  <Input
-                    type="tel"
-                    placeholder="(00) 00000-0000"
-                    value={phone}
-                    onChange={(e) => setPhone(formatPhone(e.target.value))}
-                    maxLength={16}
-                    className="h-14 px-4 text-base bg-sidebar-accent/80 border-0 rounded-xl text-white placeholder:text-white/30 focus:ring-2 focus:ring-primary/50"
-                  />
-                )}
-              </div>
-
-              {/* Next button */}
-              <Button
-                type="button"
-                onClick={handleRegisterNext}
-                className="w-full h-14 text-base font-semibold rounded-full bg-primary/90 hover:bg-primary text-primary-foreground"
-              >
-                Próximo
-              </Button>
-
-              {/* Already have account */}
-              <p className="text-center text-white/50 text-sm pt-6">
-                Já tem uma conta?{' '}
-                <button
-                  type="button"
-                  onClick={() => handleNavigate('login')}
-                  className="text-primary font-medium"
-                >
-                  Entrar
-                </button>
-              </p>
-            </>
-          ) : (
-            // Step 2: Name and password
-            <>
-              <h1 className="text-2xl font-bold text-white mb-2">
-                Complete seu cadastro
-              </h1>
-              <p className="text-white/50 text-sm mb-6">
-                {registerMethod === 'email' ? email : phone}
-              </p>
-
-              <form onSubmit={handleRegister} className="space-y-4">
-                {/* Name */}
-                <div className="space-y-2">
-                  <label className="text-sm text-white/60">Nome completo</label>
-                  <Input
-                    type="text"
-                    placeholder="Seu nome"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                    disabled={isLoading}
-                    className="h-14 px-4 text-base bg-sidebar-accent/80 border-0 rounded-xl text-white placeholder:text-white/30 focus:ring-2 focus:ring-primary/50"
-                  />
-                </div>
-
-                {/* Password */}
-                <div className="space-y-2">
-                  <label className="text-sm text-white/60">Senha</label>
-                  <div className="relative">
-                    <Input
-                      type={showPassword ? 'text' : 'password'}
-                      placeholder="••••••••"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      disabled={isLoading}
-                      className="h-14 px-4 pr-12 text-base bg-sidebar-accent/80 border-0 rounded-xl text-white placeholder:text-white/30 focus:ring-2 focus:ring-primary/50"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/70 transition-colors"
-                    >
-                      {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                    </button>
-                  </div>
-                  <PasswordStrengthMeter password={password} className="mt-2" />
-                </div>
-
-                {/* Confirm Password */}
-                <div className="space-y-2">
-                  <label className="text-sm text-white/60">Confirmar senha</label>
-                  <div className="relative">
-                    <Input
-                      type={showConfirmPassword ? 'text' : 'password'}
-                      placeholder="••••••••"
-                      value={confirmPassword}
-                      onChange={(e) => setConfirmPassword(e.target.value)}
-                      disabled={isLoading}
-                      className={cn(
-                        "h-14 px-4 pr-12 text-base bg-sidebar-accent/80 border-0 rounded-xl text-white placeholder:text-white/30 focus:ring-2 focus:ring-primary/50",
-                        confirmPassword && password !== confirmPassword && "ring-2 ring-red-500/50"
-                      )}
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/70 transition-colors"
-                    >
-                      {showConfirmPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
-                    </button>
-                  </div>
-                  {confirmPassword && password !== confirmPassword && (
-                    <p className="text-xs text-red-400">As senhas não coincidem</p>
-                  )}
-                  {confirmPassword && password === confirmPassword && confirmPassword.length > 0 && (
-                    <p className="text-xs text-green-400">Senhas coincidem ✓</p>
-                  )}
-                </div>
-
-                {/* Register button */}
-                <Button
-                  type="submit"
-                  disabled={isLoading}
-                  className="w-full h-14 text-base font-semibold rounded-full bg-primary/90 hover:bg-primary text-primary-foreground mt-4"
-                >
-                  {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Criar conta'}
-                </Button>
-              </form>
-            </>
-          )}
-        </div>
-        </div>
     );
   }
 

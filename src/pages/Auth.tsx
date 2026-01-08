@@ -10,7 +10,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { z } from 'zod';
 import { cn } from '@/lib/utils';
 import { FinanceLogo } from '@/components/ui/FinanceLogo';
-import { useIsNativeApp } from '@/hooks/useIsNativeApp';
+import { useIsMobileExperience } from '@/hooks/useIsNativeApp';
 import { NativeAuthScreens } from '@/components/auth/NativeAuthScreens';
 import { track, trackAndIdentify } from '@/infra/analytics';
 
@@ -59,7 +59,7 @@ export default function Auth() {
   const location = useLocation();
   const isRegisterRoute = location.pathname === '/cadastro';
   const isForgotPasswordRoute = location.pathname === '/esqueci-senha';
-  const isNativeApp = useIsNativeApp();
+  const isNativeApp = useIsMobileExperience();
   
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -303,7 +303,6 @@ export default function Auth() {
     return (
       <NativeAuthScreens
         onSignIn={signIn}
-        onSignUp={signUp}
         onResetPassword={resetPassword}
         onSuccess={() => navigate('/dashboard')}
       />
