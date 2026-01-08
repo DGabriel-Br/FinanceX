@@ -1,12 +1,12 @@
 import { Download, X, Smartphone } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { usePWAInstall } from '@/hooks/usePWAInstall';
-import { useIsNativeApp } from '@/hooks/useIsNativeApp';
+import { useIsMobileExperience } from '@/hooks/useIsNativeApp';
 import { cn } from '@/lib/utils';
 
 export const InstallPrompt = () => {
   const { canShowPrompt, install, dismiss } = usePWAInstall();
-  const isMobileExperience = useIsNativeApp();
+  const isMobileExperience = useIsMobileExperience();
 
   // Só mostra em dispositivos mobile e quando pode instalar
   if (!isMobileExperience || !canShowPrompt) {
