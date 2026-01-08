@@ -709,7 +709,9 @@ export const TransactionList = ({ transactions, onUpdate, onDelete, formatValue 
             <AlertDialogDescription>
               {deleteConfirm.transaction && (
                 <>
-                  Tem certeza que deseja excluir "{deleteConfirm.transaction.description}" 
+                  Tem certeza que deseja excluir "{deleteConfirm.transaction.category === 'investimentos' 
+                    ? getCleanDescription(deleteConfirm.transaction.description) 
+                    : deleteConfirm.transaction.description}" 
                   no valor de {formatValue ? formatValue(deleteConfirm.transaction.value) : formatCurrency(deleteConfirm.transaction.value)}?
                   <br /><br />
                   Esta ação não pode ser desfeita.
