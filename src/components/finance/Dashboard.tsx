@@ -3,7 +3,7 @@ import { TrendingUp, TrendingDown, BarChart3 } from 'lucide-react';
 import { PeriodFilter, CustomDateRange } from './PeriodFilter';
 import { DebtTracker } from './DebtTracker';
 import { CategoryCharts } from './CategoryCharts';
-import { HeroCard, AddExpenseCTA } from './dashboard';
+import { HeroCard, AddExpenseCTA } from './dashboard-components';
 import { Transaction } from '@/types/transaction';
 import { Debt } from '@/types/debt';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, Cell } from 'recharts';
