@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from 'react';
-import { Pencil, Trash2, Check, X, ChevronRight } from 'lucide-react';
-import { 
+import { Pencil, Trash2, Check, X } from 'lucide-react';
+import {
   Transaction, 
   TransactionType, 
   TransactionCategory,
@@ -114,7 +114,7 @@ const MobileTransactionItem = ({
             <select
               value={editForm.type}
               onChange={e => setEditForm(prev => ({ ...prev, type: e.target.value as TransactionType }))}
-              className="w-full px-3 py-2 rounded-lg border border-input bg-background text-sm"
+              className="w-full h-11 px-3 rounded-lg border border-input bg-background text-base"
             >
               <option value="receita">Receita</option>
               <option value="despesa">Despesa</option>
@@ -126,7 +126,7 @@ const MobileTransactionItem = ({
               type="date"
               value={editForm.date}
               onChange={e => setEditForm(prev => ({ ...prev, date: e.target.value }))}
-              className="w-full px-3 py-2 rounded-lg border border-input bg-background text-sm"
+              className="w-full h-11 px-3 rounded-lg border border-input bg-background text-base"
             />
           </div>
         </div>
@@ -136,7 +136,7 @@ const MobileTransactionItem = ({
           <select
             value={editForm.category}
             onChange={e => setEditForm(prev => ({ ...prev, category: e.target.value as TransactionCategory }))}
-            className="w-full px-3 py-2 rounded-lg border border-input bg-background text-sm"
+            className="w-full h-11 px-3 rounded-lg border border-input bg-background text-base"
           >
             {currentEditCategories.map(cat => (
               <option key={cat} value={cat}>
@@ -152,7 +152,7 @@ const MobileTransactionItem = ({
             type="text"
             value={editForm.description}
             onChange={e => setEditForm(prev => ({ ...prev, description: e.target.value }))}
-            className="w-full px-3 py-2 rounded-lg border border-input bg-background text-sm"
+            className="w-full h-11 px-3 rounded-lg border border-input bg-background text-base"
           />
         </div>
         
@@ -163,21 +163,21 @@ const MobileTransactionItem = ({
             inputMode="numeric"
             value={editForm.value}
             onChange={e => setEditForm(prev => ({ ...prev, value: e.target.value }))}
-            className="w-full px-3 py-2 rounded-lg border border-input bg-background text-sm"
+            className="w-full h-11 px-3 rounded-lg border border-input bg-background text-base"
           />
         </div>
         
         <div className="flex gap-2 pt-2">
           <button
             onClick={onSave}
-            className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg bg-primary text-primary-foreground text-sm font-medium"
+            className="flex-1 flex items-center justify-center gap-2 h-11 rounded-lg bg-primary text-primary-foreground text-sm font-medium touch-target"
           >
             <Check className="w-4 h-4" />
             Salvar
           </button>
           <button
             onClick={onCancel}
-            className="flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg border border-border text-foreground text-sm font-medium"
+            className="flex-1 flex items-center justify-center gap-2 h-11 rounded-lg border border-border text-foreground text-sm font-medium touch-target"
           >
             <X className="w-4 h-4" />
             Cancelar
@@ -188,7 +188,7 @@ const MobileTransactionItem = ({
   }
 
   return (
-    <div className="flex items-center gap-3 py-3 border-b border-border last:border-b-0 group">
+    <div className="flex items-center gap-3 py-3 border-b border-border last:border-b-0">
       {/* Ícone */}
       <div className={cn(
         "w-10 h-10 rounded-full flex items-center justify-center shrink-0",
@@ -203,7 +203,7 @@ const MobileTransactionItem = ({
       {/* Conteúdo */}
       <div className="flex-1 min-w-0">
         <p className="text-xs text-muted-foreground">{categoryLabel}</p>
-        <p className="text-sm font-medium text-foreground truncate">{transaction.description}</p>
+        <p className="text-sm font-medium text-foreground line-clamp-2">{transaction.description}</p>
         <p className={cn(
           "text-sm font-semibold",
           transaction.type === 'receita' ? 'text-income' : 'text-expense'
@@ -212,23 +212,21 @@ const MobileTransactionItem = ({
         </p>
       </div>
       
-      {/* Ações */}
-      <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 group-active:opacity-100 transition-opacity">
+      {/* Ações - sempre visíveis em mobile */}
+      <div className="flex items-center gap-1">
         <button
           onClick={onEdit}
-          className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+          className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors touch-target"
         >
           <Pencil className="w-4 h-4" />
         </button>
         <button
           onClick={onDelete}
-          className="p-2 rounded-lg text-muted-foreground hover:text-expense hover:bg-expense/10 transition-colors"
+          className="p-2 rounded-lg text-muted-foreground hover:text-expense hover:bg-expense/10 transition-colors touch-target"
         >
           <Trash2 className="w-4 h-4" />
         </button>
       </div>
-      
-      <ChevronRight className="w-5 h-5 text-muted-foreground/50 shrink-0" />
     </div>
   );
 };
