@@ -93,7 +93,7 @@ export const OnboardingExpenseScreen = ({ onSave, onBack }: OnboardingExpenseScr
       {/* Back button */}
       <button
         onClick={onBack}
-        className="absolute top-6 left-6 p-2 rounded-full hover:bg-muted transition-colors"
+        className="absolute top-6 left-6 p-2 rounded-full hover:bg-muted transition-colors touch-target"
       >
         <ArrowLeft className="w-5 h-5 text-muted-foreground" />
       </button>

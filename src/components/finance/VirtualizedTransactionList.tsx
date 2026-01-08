@@ -79,7 +79,7 @@ const TransactionItem = memo(({
       {/* Content */}
       <div className="flex-1 min-w-0">
         <p className="text-xs text-muted-foreground">{categoryLabel}</p>
-        <p className="text-sm font-medium text-foreground truncate">{transaction.description}</p>
+        <p className="text-sm font-medium text-foreground line-clamp-2">{transaction.description}</p>
         <p className={cn(
           "text-sm font-semibold",
           transaction.type === 'receita' ? 'text-income' : 'text-expense'
@@ -88,8 +88,8 @@ const TransactionItem = memo(({
         </p>
       </div>
       
-      {/* Actions */}
-      <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+      {/* Actions - sempre visíveis no mobile */}
+      <div className="flex items-center gap-1 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
         <button
           onClick={onEdit}
           className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors touch-target"
@@ -103,8 +103,6 @@ const TransactionItem = memo(({
           <Trash2 className="w-4 h-4" />
         </button>
       </div>
-      
-      <ChevronRight className="w-5 h-5 text-muted-foreground/50 shrink-0 md:hidden" />
     </div>
   );
 });
@@ -288,7 +286,7 @@ export const VirtualizedTransactionList = ({
             type="text"
             value={editForm.description}
             onChange={e => setEditForm(prev => ({ ...prev, description: e.target.value }))}
-            className="w-full px-2 py-1 mb-2 rounded border border-input bg-background text-sm"
+            className="w-full px-3 h-11 text-base lg:h-10 lg:text-sm mb-2 rounded-lg border border-input bg-background"
             placeholder="Descrição"
           />
           <div className="flex gap-2">
@@ -297,18 +295,18 @@ export const VirtualizedTransactionList = ({
               inputMode="numeric"
               value={editForm.value}
               onChange={e => setEditForm(prev => ({ ...prev, value: e.target.value }))}
-              className="flex-1 px-2 py-1 rounded border border-input bg-background text-sm"
+              className="flex-1 px-3 h-11 text-base lg:h-10 lg:text-sm rounded-lg border border-input bg-background"
               placeholder="Valor"
             />
             <button
               onClick={() => saveEditing(transaction.id)}
-              className="p-2 rounded bg-primary text-primary-foreground"
+              className="h-11 lg:h-10 px-4 rounded-lg bg-primary text-primary-foreground touch-target flex items-center justify-center"
             >
               <Check className="w-4 h-4" />
             </button>
             <button
               onClick={cancelEditing}
-              className="p-2 rounded border border-border"
+              className="h-11 lg:h-10 px-4 rounded-lg border border-border touch-target flex items-center justify-center"
             >
               <X className="w-4 h-4" />
             </button>
