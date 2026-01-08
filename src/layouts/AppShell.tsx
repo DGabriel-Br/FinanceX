@@ -6,6 +6,7 @@ import { useFinanceData } from '@/contexts/FinanceDataContext';
 import { useOnboarding } from '@/hooks/useOnboarding';
 import { useIsNativeApp } from '@/hooks/useIsNativeApp';
 import { useNavigationBar } from '@/hooks/useNavigationBar';
+import { InstallPrompt } from '@/components/pwa/InstallPrompt';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -133,6 +134,9 @@ export const AppShell = ({ children, onRefresh, onAddTransaction }: AppShellProp
 
   return (
     <>
+      {/* Prompt de instalação PWA */}
+      <InstallPrompt />
+
       {/* Gerenciador de Sync - não renderiza nada visualmente */}
       <AppShellSyncManager userId={user.id} />
 
