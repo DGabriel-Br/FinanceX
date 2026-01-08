@@ -52,7 +52,7 @@ export const Debts = ({
     <div className="page-container">
       {/* Header */}
       <div 
-        className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 sm:gap-4 mb-6 md:mb-8 opacity-0 animate-fade-in"
+        className="flex flex-col md:flex-row md:items-center justify-between gap-3 md:gap-4 mb-6 md:mb-8 opacity-0 animate-fade-in"
         style={{ animationDelay: '0.05s' }}
       >
         <div className="min-w-0">
@@ -61,7 +61,7 @@ export const Debts = ({
         </div>
         
         {/* Botões visíveis apenas em desktop */}
-        <div className="hidden sm:flex items-center gap-2">
+        <div className="hidden lg:flex items-center gap-2">
           {onToggleValues && (
             <Button
               variant="outline"
@@ -81,7 +81,7 @@ export const Debts = ({
                 Nova Dívida
               </button>
             </DialogTrigger>
-            <DialogContent className="max-w-[95vw] sm:max-w-md mx-auto">
+            <DialogContent>
               <DialogHeader>
                 <DialogTitle>Adicionar Nova Dívida</DialogTitle>
               </DialogHeader>
@@ -128,7 +128,7 @@ export const Debts = ({
       </div>
 
       {/* Botão Nova Dívida - visível apenas em mobile, abaixo da dica */}
-      <div className="sm:hidden mb-6">
+      <div className="lg:hidden mb-6">
         <Dialog open={isDebtDialogOpen} onOpenChange={setIsDebtDialogOpen}>
           <DialogTrigger asChild>
             <button className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg bg-primary text-primary-foreground font-medium text-sm transition-all duration-200 hover:bg-primary/90">
@@ -136,7 +136,7 @@ export const Debts = ({
               Nova Dívida
             </button>
           </DialogTrigger>
-          <DialogContent className="max-w-[95vw] sm:max-w-md mx-auto">
+          <DialogContent>
             <DialogHeader>
               <DialogTitle>Adicionar Nova Dívida</DialogTitle>
             </DialogHeader>
