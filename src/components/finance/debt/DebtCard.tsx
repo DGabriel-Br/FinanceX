@@ -99,7 +99,7 @@ export const DebtCard = forwardRef<HTMLDivElement, DebtCardProps>(
 
     if (isEditing) {
       return (
-        <div ref={ref} className="bg-card border border-primary/50 rounded-xl p-6 shadow-sm">
+        <div ref={ref} className="bg-card border border-primary/50 rounded-xl p-4 md:p-6 shadow-sm">
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-foreground mb-2">Nome da Dívida</label>
@@ -107,11 +107,11 @@ export const DebtCard = forwardRef<HTMLDivElement, DebtCardProps>(
                 type="text"
                 value={editName}
                 onChange={e => setEditName(e.target.value)}
-                className="w-full px-3 py-2 rounded-lg border border-input bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                className="w-full px-3 h-11 text-base lg:h-10 lg:text-sm rounded-lg border border-input bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
                 <label className="block text-sm font-medium text-foreground mb-2">Valor Total (R$)</label>
                 <input
@@ -119,7 +119,7 @@ export const DebtCard = forwardRef<HTMLDivElement, DebtCardProps>(
                   inputMode="numeric"
                   value={editTotalValue}
                   onChange={e => setEditTotalValue(formatCurrencyInput(e.target.value))}
-                  className="w-full px-3 py-2 rounded-lg border border-input bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                  className="w-full px-3 h-11 text-base lg:h-10 lg:text-sm rounded-lg border border-input bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                 />
               </div>
               <div>
@@ -129,7 +129,7 @@ export const DebtCard = forwardRef<HTMLDivElement, DebtCardProps>(
                   inputMode="numeric"
                   value={editMonthlyInstallment}
                   onChange={e => setEditMonthlyInstallment(formatCurrencyInput(e.target.value))}
-                  className="w-full px-3 py-2 rounded-lg border border-input bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                  className="w-full px-3 h-11 text-base lg:h-10 lg:text-sm rounded-lg border border-input bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                 />
               </div>
             </div>
@@ -141,7 +141,7 @@ export const DebtCard = forwardRef<HTMLDivElement, DebtCardProps>(
                 inputMode="numeric"
                 value={editPaidValue}
                 onChange={e => setEditPaidValue(formatCurrencyInput(e.target.value))}
-                className="w-full px-3 py-2 rounded-lg border border-input bg-background text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring"
+                className="w-full px-3 h-11 text-base lg:h-10 lg:text-sm rounded-lg border border-input bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
               />
             </div>
 
@@ -152,7 +152,7 @@ export const DebtCard = forwardRef<HTMLDivElement, DebtCardProps>(
                   <Button
                     variant="outline"
                     className={cn(
-                      "w-full justify-start text-left font-normal",
+                      "w-full h-11 text-base lg:h-10 lg:text-sm justify-start text-left font-normal",
                       !editDate && "text-muted-foreground"
                     )}
                   >
@@ -176,14 +176,14 @@ export const DebtCard = forwardRef<HTMLDivElement, DebtCardProps>(
               <button
                 onClick={handleSave}
                 disabled={!editName.trim() || parseCurrency(editTotalValue) <= 0 || parseCurrency(editMonthlyInstallment) <= 0 || !editDate}
-                className="flex-1 flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg bg-primary text-primary-foreground font-medium text-sm transition-all duration-200 hover:bg-primary/90 disabled:opacity-50"
+                className="flex-1 h-12 text-base lg:h-10 lg:text-sm touch-target flex items-center justify-center gap-2 px-4 rounded-lg bg-primary text-primary-foreground font-medium transition-all duration-200 hover:bg-primary/90 disabled:opacity-50"
               >
                 <Save className="w-4 h-4" />
                 Salvar
               </button>
               <button
                 onClick={handleCancel}
-                className="flex items-center justify-center gap-2 py-2.5 px-4 rounded-lg border border-border text-foreground font-medium text-sm transition-all duration-200 hover:bg-muted"
+                className="h-12 text-base lg:h-10 lg:text-sm touch-target flex items-center justify-center gap-2 px-4 rounded-lg border border-border text-foreground font-medium transition-all duration-200 hover:bg-muted"
               >
                 <X className="w-4 h-4" />
                 Cancelar
@@ -195,31 +195,31 @@ export const DebtCard = forwardRef<HTMLDivElement, DebtCardProps>(
     }
 
     return (
-      <div ref={ref} className="bg-card border border-border rounded-xl p-6 shadow-sm">
+      <div ref={ref} className="bg-card border border-border rounded-xl p-4 md:p-6 shadow-sm">
         {/* Header */}
         <div className="flex items-start justify-between mb-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+          <div className="flex items-center gap-3 min-w-0 flex-1">
+            <div className="w-10 h-10 shrink-0 rounded-full bg-primary/10 flex items-center justify-center">
               <CreditCard className="w-5 h-5 text-primary" />
             </div>
-            <div>
-              <h3 className="font-semibold text-foreground">{debt.name}</h3>
+            <div className="min-w-0">
+              <h3 className="font-semibold text-foreground line-clamp-2">{debt.name}</h3>
               <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                <CalendarIcon className="w-3 h-3" />
+                <CalendarIcon className="w-3 h-3 shrink-0" />
                 <span>Início: {formatMonthYear(debt.startDate)}</span>
               </div>
             </div>
           </div>
-          <div className="flex gap-1">
+          <div className="flex gap-1 shrink-0">
             <button
               onClick={() => setIsEditing(true)}
-              className="p-2 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-lg transition-colors"
+              className="p-2 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-lg transition-colors touch-target"
             >
               <Pencil className="w-4 h-4" />
             </button>
             <button
               onClick={handleDeleteClick}
-              className="p-2 text-muted-foreground hover:text-expense hover:bg-expense/10 rounded-lg transition-colors"
+              className="p-2 text-muted-foreground hover:text-expense hover:bg-expense/10 rounded-lg transition-colors touch-target"
             >
               <Trash2 className="w-4 h-4" />
             </button>
@@ -236,22 +236,22 @@ export const DebtCard = forwardRef<HTMLDivElement, DebtCardProps>(
         </div>
 
         {/* Valores */}
-        <div className="grid grid-cols-2 gap-3 mb-4">
-          <div className="text-center p-3 bg-muted/30 rounded-lg">
+        <div className="grid grid-cols-2 gap-2 md:gap-3 mb-4">
+          <div className="text-center p-2 md:p-3 bg-muted/30 rounded-lg">
             <p className="text-xs text-muted-foreground mb-1">Pago até agora</p>
-            <p className="font-semibold text-income text-sm">{displayValue(paidValue)}</p>
+            <p className="font-semibold text-income text-xs md:text-sm">{displayValue(paidValue)}</p>
           </div>
-          <div className="text-center p-3 bg-muted/30 rounded-lg">
+          <div className="text-center p-2 md:p-3 bg-muted/30 rounded-lg">
             <p className="text-xs text-muted-foreground mb-1">Falta pagar</p>
-            <p className="font-semibold text-expense text-sm">{displayValue(Math.max(0, remaining))}</p>
+            <p className="font-semibold text-expense text-xs md:text-sm">{displayValue(Math.max(0, remaining))}</p>
           </div>
-          <div className="text-center p-3 bg-muted/30 rounded-lg">
+          <div className="text-center p-2 md:p-3 bg-muted/30 rounded-lg">
             <p className="text-xs text-muted-foreground mb-1">Valor Total</p>
-            <p className="font-semibold text-foreground text-sm">{displayValue(debt.totalValue)}</p>
+            <p className="font-semibold text-foreground text-xs md:text-sm">{displayValue(debt.totalValue)}</p>
           </div>
-          <div className="text-center p-3 bg-muted/30 rounded-lg">
+          <div className="text-center p-2 md:p-3 bg-muted/30 rounded-lg">
             <p className="text-xs text-muted-foreground mb-1">Parcela Mensal</p>
-            <p className="font-semibold text-primary text-sm">{displayValue(debt.monthlyInstallment)}</p>
+            <p className="font-semibold text-primary text-xs md:text-sm">{displayValue(debt.monthlyInstallment)}</p>
           </div>
         </div>
 
