@@ -2,7 +2,7 @@ import { ReactNode, useState, useEffect, useCallback } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTheme } from '@/hooks/useTheme';
 import { useAuthContext } from '@/contexts/AuthContext';
-import { useValuesVisibility } from '@/hooks/useValuesVisibility';
+import { useFinanceData } from '@/contexts/FinanceDataContext';
 import { useOnboarding } from '@/hooks/useOnboarding';
 import { useIsNativeApp } from '@/hooks/useIsNativeApp';
 import { useNavigationBar } from '@/hooks/useNavigationBar';
@@ -69,7 +69,7 @@ export const AppShell = ({ children, onRefresh, onAddTransaction }: AppShellProp
 
   const { theme, toggleTheme } = useTheme();
   const { user, loading: authLoading, signOut, refreshUser } = useAuthContext();
-  const { showValues, toggleValuesVisibility } = useValuesVisibility();
+  const { showValues, toggleValuesVisibility } = useFinanceData();
   const isNativeApp = useIsNativeApp();
   
   // Configura a cor da barra de navegação do Android
