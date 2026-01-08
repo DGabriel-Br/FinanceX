@@ -82,7 +82,7 @@ export const OnboardingIncomeScreen = ({ onContinue, onBack }: OnboardingIncomeS
       {/* Back button */}
       <button
         onClick={onBack}
-        className="absolute top-6 left-6 p-2 rounded-full hover:bg-muted transition-colors"
+        className="absolute top-6 left-6 p-2 rounded-full hover:bg-muted transition-colors touch-target"
       >
         <ArrowLeft className="w-5 h-5 text-muted-foreground" />
       </button>
@@ -121,13 +121,13 @@ export const OnboardingIncomeScreen = ({ onContinue, onBack }: OnboardingIncomeS
       </div>
 
       {/* Sugestões rápidas */}
-      <div className="flex justify-center gap-2 mb-10 w-full max-w-sm animate-fade-in opacity-0" style={{ animationDelay: '0.5s', animationFillMode: 'forwards' }}>
+      <div className="flex flex-wrap justify-center gap-2 mb-10 w-full max-w-sm animate-fade-in opacity-0" style={{ animationDelay: '0.5s', animationFillMode: 'forwards' }}>
         {INCOME_SUGGESTIONS.map((amount) => (
           <button
             key={amount}
             onClick={() => handleSuggestionClick(amount)}
             className={cn(
-              'px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap',
+              'px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap touch-target',
               selectedSuggestion === amount
                 ? 'bg-primary text-primary-foreground'
                 : 'bg-muted text-muted-foreground hover:bg-muted/80'
