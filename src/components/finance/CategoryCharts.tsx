@@ -147,17 +147,17 @@ export const CategoryCharts = ({ transactions, formatValue }: CategoryChartsProp
   }, []);
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6 mt-6">
       {/* Gráfico de Despesas */}
-      <div className="bg-card border border-border rounded-xl p-6 shadow-sm animate-fade-in" style={{ animationDelay: '0.4s', animationDuration: '0.6s', animationFillMode: 'both' }}>
+      <div className="bg-card border border-border rounded-xl p-4 md:p-6 shadow-sm animate-fade-in" style={{ animationDelay: '0.4s', animationDuration: '0.6s', animationFillMode: 'both' }}>
         <div className="flex items-center gap-2 mb-4">
-          <TrendingDown className="w-5 h-5 text-expense" />
-          <h3 className="text-lg font-semibold text-foreground">Despesas por Categoria</h3>
+          <TrendingDown className="w-4 h-4 md:w-5 md:h-5 text-expense" />
+          <h3 className="text-base md:text-lg font-semibold text-foreground">Despesas por Categoria</h3>
         </div>
         
         {expenseData.length > 0 ? (
           <>
-            <div className="h-64">
+            <div className="h-48 md:h-64">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
@@ -192,31 +192,31 @@ export const CategoryCharts = ({ transactions, formatValue }: CategoryChartsProp
                 </PieChart>
               </ResponsiveContainer>
             </div>
-            <div className="mt-4 space-y-2">
+            <div className="mt-3 md:mt-4 space-y-1 md:space-y-2">
               {expenseData.map((item, index) => (
                 <div 
                   key={index} 
-                  className="flex items-center justify-between text-sm p-2 rounded-lg transition-colors cursor-pointer hover:bg-muted/50"
+                  className="flex items-center justify-between text-xs md:text-sm p-1.5 md:p-2 rounded-lg transition-colors cursor-pointer hover:bg-muted/50"
                   onMouseEnter={() => setActiveExpenseIndex(index)}
                   onMouseLeave={() => setActiveExpenseIndex(undefined)}
                   style={{
                     backgroundColor: activeExpenseIndex === index ? 'hsl(var(--muted))' : 'transparent',
                   }}
                 >
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 min-w-0 flex-1">
                     <div 
-                      className="w-3 h-3 rounded-full transition-transform"
+                      className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full transition-transform shrink-0"
                       style={{ 
                         backgroundColor: item.color,
                         transform: activeExpenseIndex === index ? 'scale(1.3)' : 'scale(1)',
                       }}
                     />
-                    <span className="text-muted-foreground">{item.name}</span>
+                    <span className="text-muted-foreground truncate">{item.name}</span>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1 md:gap-2 shrink-0">
                     <span className="font-medium text-foreground">{displayValue(item.value)}</span>
-                    <span className="text-xs text-muted-foreground">
-                      ({((item.value / totalExpenses) * 100).toFixed(1)}%)
+                    <span className="text-[10px] md:text-xs text-muted-foreground">
+                      ({((item.value / totalExpenses) * 100).toFixed(0)}%)
                     </span>
                   </div>
                 </div>
@@ -224,22 +224,22 @@ export const CategoryCharts = ({ transactions, formatValue }: CategoryChartsProp
             </div>
           </>
         ) : (
-          <div className="h-64 flex items-center justify-center">
+          <div className="h-48 md:h-64 flex items-center justify-center">
             <p className="text-muted-foreground text-sm">Nenhuma despesa registrada</p>
           </div>
         )}
       </div>
 
       {/* Gráfico de Receitas */}
-      <div className="bg-card border border-border rounded-xl p-6 shadow-sm animate-fade-in" style={{ animationDelay: '0.5s', animationDuration: '0.6s', animationFillMode: 'both' }}>
+      <div className="bg-card border border-border rounded-xl p-4 md:p-6 shadow-sm animate-fade-in" style={{ animationDelay: '0.5s', animationDuration: '0.6s', animationFillMode: 'both' }}>
         <div className="flex items-center gap-2 mb-4">
-          <TrendingUp className="w-5 h-5 text-income" />
-          <h3 className="text-lg font-semibold text-foreground">Receitas por Categoria</h3>
+          <TrendingUp className="w-4 h-4 md:w-5 md:h-5 text-income" />
+          <h3 className="text-base md:text-lg font-semibold text-foreground">Receitas por Categoria</h3>
         </div>
         
         {incomeData.length > 0 ? (
           <>
-            <div className="h-64">
+            <div className="h-48 md:h-64">
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
                   <Pie
@@ -274,31 +274,31 @@ export const CategoryCharts = ({ transactions, formatValue }: CategoryChartsProp
                 </PieChart>
               </ResponsiveContainer>
             </div>
-            <div className="mt-4 space-y-2">
+            <div className="mt-3 md:mt-4 space-y-1 md:space-y-2">
               {incomeData.map((item, index) => (
                 <div 
                   key={index} 
-                  className="flex items-center justify-between text-sm p-2 rounded-lg transition-colors cursor-pointer hover:bg-muted/50"
+                  className="flex items-center justify-between text-xs md:text-sm p-1.5 md:p-2 rounded-lg transition-colors cursor-pointer hover:bg-muted/50"
                   onMouseEnter={() => setActiveIncomeIndex(index)}
                   onMouseLeave={() => setActiveIncomeIndex(undefined)}
                   style={{
                     backgroundColor: activeIncomeIndex === index ? 'hsl(var(--muted))' : 'transparent',
                   }}
                 >
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 min-w-0 flex-1">
                     <div 
-                      className="w-3 h-3 rounded-full transition-transform"
+                      className="w-2.5 h-2.5 md:w-3 md:h-3 rounded-full transition-transform shrink-0"
                       style={{ 
                         backgroundColor: item.color,
                         transform: activeIncomeIndex === index ? 'scale(1.3)' : 'scale(1)',
                       }}
                     />
-                    <span className="text-muted-foreground">{item.name}</span>
+                    <span className="text-muted-foreground truncate">{item.name}</span>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-1 md:gap-2 shrink-0">
                     <span className="font-medium text-foreground">{displayValue(item.value)}</span>
-                    <span className="text-xs text-muted-foreground">
-                      ({((item.value / totalIncome) * 100).toFixed(1)}%)
+                    <span className="text-[10px] md:text-xs text-muted-foreground">
+                      ({((item.value / totalIncome) * 100).toFixed(0)}%)
                     </span>
                   </div>
                 </div>
@@ -306,7 +306,7 @@ export const CategoryCharts = ({ transactions, formatValue }: CategoryChartsProp
             </div>
           </>
         ) : (
-          <div className="h-64 flex items-center justify-center">
+          <div className="h-48 md:h-64 flex items-center justify-center">
             <p className="text-muted-foreground text-sm">Nenhuma receita registrada</p>
           </div>
         )}
