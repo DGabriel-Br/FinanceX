@@ -166,7 +166,6 @@ export const AppShell = ({ children, onRefresh, onAddTransaction }: AppShellProp
               userEmail={user.email}
               onSignOut={handleSignOutRequest}
               highlightedTab={null}
-              onAddTransaction={onAddTransaction}
             />
           ) : null
         }

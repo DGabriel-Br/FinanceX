@@ -2,7 +2,6 @@ import { User } from '@supabase/supabase-js';
 import { Sidebar } from '@/components/finance/Sidebar';
 import { MobileHeader } from '@/components/finance/MobileHeader';
 import { MobileNav } from '@/components/finance/MobileNav';
-import { FloatingAddButton } from '@/components/finance/FloatingAddButton';
 
 type Tab = 'dashboard' | 'lancamentos' | 'investimentos' | 'dividas';
 type Theme = 'light' | 'dark';
@@ -78,7 +77,7 @@ export const AppShellNavigationHeader = ({
 };
 
 /**
- * Footer mobile: FloatingAddButton + MobileNav
+ * Footer mobile: MobileNav (sem FloatingAddButton na versão nativa)
  */
 export const AppShellMobileFooter = ({
   activeTab,
@@ -87,19 +86,15 @@ export const AppShellMobileFooter = ({
   userEmail,
   onSignOut,
   highlightedTab,
-  onAddTransaction,
-}: AppShellMobileFooterProps) => {
+}: Omit<AppShellMobileFooterProps, 'onAddTransaction'>) => {
   return (
-    <>
-      {onAddTransaction && <FloatingAddButton onAddTransaction={onAddTransaction} />}
-      <MobileNav
-        activeTab={activeTab}
-        theme={theme}
-        onToggleTheme={onToggleTheme}
-        userEmail={userEmail}
-        onSignOut={onSignOut}
-        highlightedTab={highlightedTab}
-      />
-    </>
+    <MobileNav
+      activeTab={activeTab}
+      theme={theme}
+      onToggleTheme={onToggleTheme}
+      userEmail={userEmail}
+      onSignOut={onSignOut}
+      highlightedTab={highlightedTab}
+    />
   );
 };
