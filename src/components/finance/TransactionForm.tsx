@@ -270,7 +270,7 @@ export const TransactionForm = ({ onSubmit }: TransactionFormProps) => {
             onBlur={() => handleBlur('description')}
             placeholder="Ex: Salário, Aluguel, Mercado..."
             className={cn(
-              "w-full px-3 py-2 rounded-lg border bg-background text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring",
+              "w-full h-11 lg:h-10 px-3 rounded-lg border bg-background text-foreground text-base lg:text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring",
               descriptionError ? "border-expense" : "border-input"
             )}
           />
@@ -293,7 +293,7 @@ export const TransactionForm = ({ onSubmit }: TransactionFormProps) => {
             onBlur={() => handleBlur('value')}
             placeholder="0,00"
             className={cn(
-              "w-full px-3 py-2 rounded-lg border bg-background text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring",
+              "w-full h-11 lg:h-10 px-3 rounded-lg border bg-background text-foreground text-base lg:text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring",
               valueError ? "border-expense" : "border-input"
             )}
           />
@@ -308,7 +308,7 @@ export const TransactionForm = ({ onSubmit }: TransactionFormProps) => {
         {/* Botão */}
         <button
           type="submit"
-          className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-lg bg-primary text-primary-foreground font-medium text-sm transition-all duration-200 hover:bg-primary/90"
+          className="w-full flex items-center justify-center gap-2 h-11 lg:h-10 px-4 rounded-lg bg-primary text-primary-foreground font-medium text-sm transition-all duration-200 hover:bg-primary/90 touch-target"
         >
           <Plus className="w-4 h-4" />
           Adicionar
