@@ -64,16 +64,16 @@ const SecondaryCard = memo(({
   delay: string;
 }) => (
   <div 
-    className="bg-card border border-border rounded-xl p-4 shadow-sm animate-fade-in hover:shadow-md transition-all duration-300" 
+    className="bg-card border border-border rounded-xl p-3 md:p-4 shadow-sm animate-fade-in hover:shadow-md transition-all duration-300" 
     style={{ animationDelay: delay, animationDuration: '0.5s', animationFillMode: 'both' }}
   >
-    <div className="flex items-center gap-3">
-      <div className={`w-9 h-9 rounded-full ${bgClass} flex items-center justify-center`}>
+    <div className="flex items-center gap-2 md:gap-3">
+      <div className={`w-8 h-8 md:w-9 md:h-9 rounded-full ${bgClass} flex items-center justify-center shrink-0`}>
         <Icon className={`w-4 h-4 ${colorClass}`} />
       </div>
       <div className="min-w-0 flex-1">
-        <p className="text-xs text-muted-foreground">{title}</p>
-        <p className={`text-lg font-bold ${colorClass} truncate`}>
+        <p className="text-[10px] md:text-xs text-muted-foreground leading-tight">{title}</p>
+        <p className={`text-base md:text-lg font-bold ${colorClass} leading-tight`}>
           {value}
         </p>
       </div>
@@ -348,10 +348,10 @@ export const Dashboard = memo(({
       </div>
 
       {/* 3. Cards secundários: Receitas | Gastos do mês */}
-      <div className="grid grid-cols-2 gap-3 md:gap-4 mt-6">
+      <div className="grid grid-cols-2 gap-2 md:gap-4 mt-6">
         <SecondaryCard
           icon={TrendingUp}
-          title="Total recebido no mês"
+          title="Total recebido"
           value={formattedReceitas}
           colorClass="text-income"
           bgClass="bg-income/10"
@@ -359,7 +359,7 @@ export const Dashboard = memo(({
         />
         <SecondaryCard
           icon={TrendingDown}
-          title="Total gasto no mês"
+          title="Total gasto"
           value={formattedDespesas}
           colorClass="text-expense"
           bgClass="bg-expense/10"
