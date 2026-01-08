@@ -32,9 +32,10 @@ export const AppShellLayout = ({
       key={activeTab} 
       className={cn(
         "flex-1 max-w-full",
-        slideDirection === 'left' && "animate-slide-in-right",
-        slideDirection === 'right' && "animate-slide-in-left",
-        slideDirection === 'none' && "animate-fade-in"
+        // Animações de transição entre abas (apenas para native app)
+        isNativeApp && slideDirection === 'left' && "animate-slide-in-right",
+        isNativeApp && slideDirection === 'right' && "animate-slide-in-left",
+        isNativeApp && slideDirection === 'none' && "animate-fade-in"
       )}
     >
       {children}
