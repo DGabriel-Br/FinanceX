@@ -22,7 +22,8 @@ import {
   Trash2,
   AlertTriangle,
   CreditCard,
-  RotateCcw
+  RotateCcw,
+  TrendingUp
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -38,6 +39,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { useIsNativeApp } from '@/hooks/useIsNativeApp';
 import { useCustomCategories } from '@/hooks/useCustomCategories';
 import { useOnboarding } from '@/hooks/useOnboarding';
+import { useMigrateInvestments } from '@/hooks/useMigrateInvestments';
 import { incomeCategoryLabels, expenseCategoryLabels } from '@/types/transaction';
 import {
   Sheet,
@@ -80,6 +82,7 @@ export default function Settings() {
   const { theme, toggleTheme } = useTheme();
   const isNativeApp = useIsNativeApp();
   const { resetOnboarding } = useOnboarding(user?.id);
+  const { migrateInvestments, isMigrating } = useMigrateInvestments();
   
   // Estado para seção ativa
   const [activeSection, setActiveSection] = useState<SettingsSection>(null);
@@ -583,6 +586,8 @@ export default function Settings() {
                 toggleTheme={toggleTheme}
                 setActiveSection={setActiveSection}
                 resetOnboarding={resetOnboarding}
+                migrateInvestments={migrateInvestments}
+                isMigrating={isMigrating}
               />
             </div>
           </DrawerContent>
@@ -866,6 +871,24 @@ export default function Settings() {
                   </div>
                   <ChevronRight className="w-5 h-5 text-muted-foreground" />
                 </button>
+                <button
+                  onClick={migrateInvestments}
+                  disabled={isMigrating}
+                  className="w-full flex items-center justify-between p-3 bg-muted/50 rounded-xl hover:bg-muted transition-colors disabled:opacity-50"
+                >
+                  <div className="flex items-center gap-3">
+                    {isMigrating ? (
+                      <Loader2 className="w-5 h-5 text-primary animate-spin" />
+                    ) : (
+                      <TrendingUp className="w-5 h-5 text-income" />
+                    )}
+                    <div className="text-left">
+                      <span className="text-sm font-medium block">Migrar investimentos</span>
+                      <span className="text-xs text-muted-foreground">Atualizar para novo formato</span>
+                    </div>
+                  </div>
+                  <ChevronRight className="w-5 h-5 text-muted-foreground" />
+                </button>
               </div>
             </AccordionContent>
           </AccordionItem>
@@ -1085,7 +1108,7 @@ function SecuritySheetContent({ currentPassword, setCurrentPassword, showCurrent
   );
 }
 
-function PreferencesSheetContent({ theme, toggleTheme, setActiveSection, resetOnboarding }: any) {
+function PreferencesSheetContent({ theme, toggleTheme, setActiveSection, resetOnboarding, migrateInvestments, isMigrating }: any) {
   const handleResetOnboarding = () => {
     resetOnboarding();
     toast.success('Onboarding resetado! Recarregue a página para ver novamente.');
@@ -1137,6 +1160,27 @@ function PreferencesSheetContent({ theme, toggleTheme, setActiveSection, resetOn
           <div className="text-left">
             <p className="text-sm font-medium text-foreground">Resetar onboarding</p>
             <p className="text-xs text-muted-foreground">Ver tutorial novamente</p>
+          </div>
+        </div>
+        <ChevronRight className="w-5 h-5 text-muted-foreground" />
+      </button>
+      <button 
+        onClick={migrateInvestments} 
+        disabled={isMigrating}
+        className="w-full flex items-center justify-between p-4 bg-muted/50 rounded-xl hover:bg-muted active:scale-[0.98] transition-all animate-fade-in opacity-0 disabled:opacity-50" 
+        style={{ animationDelay: '0.3s', animationFillMode: 'forwards' }}
+      >
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-income/10 flex items-center justify-center">
+            {isMigrating ? (
+              <Loader2 className="w-5 h-5 text-income animate-spin" />
+            ) : (
+              <TrendingUp className="w-5 h-5 text-income" />
+            )}
+          </div>
+          <div className="text-left">
+            <p className="text-sm font-medium text-foreground">Migrar investimentos</p>
+            <p className="text-xs text-muted-foreground">Atualizar para novo formato</p>
           </div>
         </div>
         <ChevronRight className="w-5 h-5 text-muted-foreground" />
