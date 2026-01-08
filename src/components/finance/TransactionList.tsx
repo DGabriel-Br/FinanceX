@@ -469,10 +469,133 @@ export const TransactionList = ({ transactions, onUpdate, onDelete, formatValue 
     </tr>
   );
 
+  // Renderiza uma linha compacta para tablet
+  const renderTabletRow = (transaction: Transaction) => {
+    const categoryKey = transaction.category || (transaction.type === 'receita' ? 'outros_receita' : 'outros_despesa');
+    const Icon = getCategoryIcon(categoryKey, transaction.type);
+    const categoryLabel = getCategoryLabel(categoryKey, transaction.type);
+    const displayValue = formatValue ? formatValue(transaction.value) : formatCurrency(transaction.value);
+    
+    if (editingId === transaction.id) {
+      return (
+        <tr key={transaction.id} className="bg-card">
+          <td colSpan={3} className="px-4 py-3">
+            <div className="space-y-3">
+              <div className="grid grid-cols-2 gap-3">
+                <select
+                  value={editForm.type}
+                  onChange={e => setEditForm(prev => ({ ...prev, type: e.target.value as TransactionType }))}
+                  className="h-10 px-3 rounded-lg border border-input bg-background text-sm"
+                >
+                  <option value="receita">Receita</option>
+                  <option value="despesa">Despesa</option>
+                </select>
+                <input
+                  type="date"
+                  value={editForm.date}
+                  onChange={e => setEditForm(prev => ({ ...prev, date: e.target.value }))}
+                  className="h-10 px-3 rounded-lg border border-input bg-background text-sm"
+                />
+              </div>
+              <select
+                value={editForm.category}
+                onChange={e => setEditForm(prev => ({ ...prev, category: e.target.value as TransactionCategory }))}
+                className="w-full h-10 px-3 rounded-lg border border-input bg-background text-sm"
+              >
+                {currentEditCategories.map(cat => (
+                  <option key={cat} value={cat}>
+                    {editCategoryLabels[cat as keyof typeof editCategoryLabels]}
+                  </option>
+                ))}
+              </select>
+              <input
+                type="text"
+                value={editForm.description}
+                onChange={e => setEditForm(prev => ({ ...prev, description: e.target.value }))}
+                className="w-full h-10 px-3 rounded-lg border border-input bg-background text-sm"
+                placeholder="Descrição"
+              />
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  value={editForm.value}
+                  onChange={e => setEditForm(prev => ({ ...prev, value: e.target.value }))}
+                  className="flex-1 h-10 px-3 rounded-lg border border-input bg-background text-sm"
+                  placeholder="Valor"
+                />
+                <button
+                  onClick={() => saveEditing(transaction.id)}
+                  className="h-10 px-4 rounded-lg bg-primary text-primary-foreground text-sm font-medium"
+                >
+                  <Check className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={cancelEditing}
+                  className="h-10 px-4 rounded-lg border border-border text-foreground text-sm font-medium"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          </td>
+        </tr>
+      );
+    }
+    
+    return (
+      <tr key={transaction.id} className="group bg-card hover:bg-muted/30 transition-colors duration-150">
+        <td className="px-3 py-3">
+          <div className="flex items-center gap-2">
+            <div className={cn(
+              "w-8 h-8 rounded-full flex items-center justify-center shrink-0",
+              transaction.type === 'receita' ? 'bg-income/10' : 'bg-muted'
+            )}>
+              <Icon className={cn(
+                "w-4 h-4",
+                transaction.type === 'receita' ? 'text-income' : 'text-muted-foreground'
+              )} />
+            </div>
+            <div className="min-w-0">
+              <p className="text-xs text-muted-foreground">{categoryLabel}</p>
+              <p className="text-sm font-medium text-foreground truncate">{transaction.description}</p>
+            </div>
+          </div>
+        </td>
+        <td className="px-3 py-3 text-right">
+          <span className={cn(
+            'text-sm font-semibold whitespace-nowrap',
+            transaction.type === 'receita' ? 'text-income' : 'text-expense'
+          )}>
+            {transaction.type === 'receita' ? '+' : '-'} {displayValue}
+          </span>
+        </td>
+        <td className="px-2 py-3 w-20">
+          <div className="flex items-center justify-end gap-1">
+            <button
+              onClick={() => startEditing(transaction)}
+              className="p-2 rounded-lg text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+              title="Editar"
+            >
+              <Pencil className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => handleDeleteClick(transaction)}
+              className="p-2 rounded-lg text-muted-foreground hover:text-expense hover:bg-expense/10 transition-colors"
+              title="Excluir"
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
+          </div>
+        </td>
+      </tr>
+    );
+  };
+
   return (
     <>
-      {/* Desktop - Tabela agrupada por data */}
-      <div className="hidden md:block space-y-6">
+      {/* Desktop - Tabela completa */}
+      <div className="hidden lg:block space-y-6">
         {groupedTransactions.map(([date, dateTransactions]) => (
           <div key={date}>
             {/* Header da data */}
@@ -501,6 +624,29 @@ export const TransactionList = ({ transactions, onUpdate, onDelete, formatValue 
                 </thead>
                 <tbody className="divide-y divide-border">
                   {dateTransactions.map(transaction => renderDesktopRow(transaction))}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Tablet - Tabela compacta */}
+      <div className="hidden md:block lg:hidden space-y-6">
+        {groupedTransactions.map(([date, dateTransactions]) => (
+          <div key={date}>
+            {/* Header da data */}
+            <div className="mb-3">
+              <h3 className="text-sm font-semibold text-foreground capitalize">
+                {formatDateHeader(date)}
+              </h3>
+            </div>
+            
+            {/* Tabela compacta de transações do dia */}
+            <div className="overflow-hidden rounded-xl border border-border">
+              <table className="w-full">
+                <tbody className="divide-y divide-border">
+                  {dateTransactions.map(transaction => renderTabletRow(transaction))}
                 </tbody>
               </table>
             </div>
