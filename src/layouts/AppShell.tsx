@@ -4,7 +4,7 @@ import { useTheme } from '@/hooks/useTheme';
 import { useAuthContext } from '@/contexts/AuthContext';
 import { useFinanceData } from '@/contexts/FinanceDataContext';
 import { useOnboarding } from '@/hooks/useOnboarding';
-import { useIsNativeApp } from '@/hooks/useIsNativeApp';
+import { useIsMobileExperience } from '@/hooks/useIsNativeApp';
 import { useNavigationBar } from '@/hooks/useNavigationBar';
 import { InstallPrompt } from '@/components/pwa/InstallPrompt';
 import {
@@ -71,7 +71,7 @@ export const AppShell = ({ children, onRefresh, onAddTransaction }: AppShellProp
   const { theme, toggleTheme } = useTheme();
   const { user, loading: authLoading, signOut, refreshUser } = useAuthContext();
   const { showValues, toggleValuesVisibility } = useFinanceData();
-  const isNativeApp = useIsNativeApp();
+  const isNativeApp = useIsMobileExperience();
   
   // Configura a cor da barra de navegação do Android
   useNavigationBar(theme);
