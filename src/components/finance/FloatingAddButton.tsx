@@ -250,7 +250,7 @@ export const FloatingAddButton = ({ onAddTransaction }: FloatingAddButtonProps) 
                 value={description}
                 onChange={e => setDescription(e.target.value)}
                 placeholder="Ex: Salário, Aluguel, Mercado..."
-                className="w-full px-3 py-3 rounded-lg border border-input bg-background text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                className="w-full h-11 px-3 rounded-lg border border-input bg-background text-foreground text-base placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
               />
             </div>
 
@@ -263,7 +263,7 @@ export const FloatingAddButton = ({ onAddTransaction }: FloatingAddButtonProps) 
                 value={value}
                 onChange={handleValueChange}
                 placeholder="0,00"
-                className="w-full px-3 py-3 rounded-lg border border-input bg-background text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                className="w-full h-11 px-3 rounded-lg border border-input bg-background text-foreground text-base placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
               />
             </div>
 
@@ -271,7 +271,7 @@ export const FloatingAddButton = ({ onAddTransaction }: FloatingAddButtonProps) 
             <button
               type="submit"
               disabled={!description.trim() || numericValue <= 0}
-              className="w-full flex items-center justify-center gap-2 py-4 px-4 rounded-lg bg-primary text-primary-foreground font-medium text-sm transition-all duration-200 hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full flex items-center justify-center gap-2 h-12 px-4 rounded-lg bg-primary text-primary-foreground font-medium text-sm transition-all duration-200 hover:bg-primary/90 disabled:opacity-50 disabled:cursor-not-allowed touch-target"
             >
               <Plus className="w-4 h-4" />
               Adicionar Lançamento
