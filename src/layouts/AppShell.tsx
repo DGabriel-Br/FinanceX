@@ -24,7 +24,7 @@ import {
   AppShellMobileFooter,
   AppShellOnboardingGate,
   AppShellLoadingScreen,
-} from './appshell';
+} from './app-shell';
 
 type Tab = 'dashboard' | 'lancamentos' | 'investimentos' | 'dividas';
 
