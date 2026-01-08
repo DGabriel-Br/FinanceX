@@ -18,6 +18,7 @@ import { cn } from '@/lib/utils';
 import { format, isToday, isYesterday } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { formatCurrency } from '@/lib/currency';
+import { getCleanDescription } from '@/core/finance/investmentMetadata';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -79,7 +80,11 @@ const TransactionItem = memo(({
       {/* Content */}
       <div className="flex-1 min-w-0">
         <p className="text-xs text-muted-foreground">{categoryLabel}</p>
-        <p className="text-sm font-medium text-foreground line-clamp-2">{transaction.description}</p>
+        <p className="text-sm font-medium text-foreground line-clamp-2">
+          {transaction.category === 'investimentos' 
+            ? getCleanDescription(transaction.description) 
+            : transaction.description}
+        </p>
         <p className={cn(
           "text-sm font-semibold",
           transaction.type === 'receita' ? 'text-income' : 'text-expense'
