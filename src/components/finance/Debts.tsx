@@ -11,7 +11,7 @@ import {
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { formatCurrency } from '@/lib/currency';
-import { DebtForm, DebtCard } from './debt';
+import { DebtForm, DebtCard } from './debt-components';
 import { calculateDebtPaidValue, calculateDebtsSummary } from '@/core/finance';
 
 interface DebtsProps {

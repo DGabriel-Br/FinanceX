@@ -27,4 +27,4 @@ export { Transactions } from './Transactions';
 export { VirtualizedTransactionList } from './VirtualizedTransactionList';
 
 // Debt subcomponents
-export { DebtForm, DebtCard } from './debt';
+export { DebtForm, DebtCard } from './debt-components';
