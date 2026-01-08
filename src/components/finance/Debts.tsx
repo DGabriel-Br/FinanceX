@@ -92,27 +92,27 @@ export const Debts = ({
       </div>
 
       {/* Resumo */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4 mb-6 md:mb-8">
+      <div className="grid grid-cols-3 gap-2 md:gap-4 mb-6 md:mb-8">
         <div 
           className="bg-card border border-border rounded-xl p-3 md:p-4 shadow-sm opacity-0 animate-fade-in-up"
           style={{ animationDelay: '0.1s' }}
         >
-          <p className="text-xs md:text-sm text-muted-foreground">Total em Dívidas</p>
-          <p className="text-lg md:text-xl font-bold text-foreground">{displayValue(stats.totalDebt)}</p>
+          <p className="text-xs md:text-sm text-muted-foreground"><span className="md:hidden">Total</span><span className="hidden md:inline">Total em Dívidas</span></p>
+          <p className="text-sm md:text-xl font-bold text-foreground">{displayValue(stats.totalDebt)}</p>
         </div>
         <div 
           className="bg-card border border-border rounded-xl p-3 md:p-4 shadow-sm opacity-0 animate-fade-in-up"
           style={{ animationDelay: '0.15s' }}
         >
-          <p className="text-xs md:text-sm text-muted-foreground">Total Pago</p>
-          <p className="text-lg md:text-xl font-bold text-income">{displayValue(stats.totalPaid)}</p>
+          <p className="text-xs md:text-sm text-muted-foreground"><span className="md:hidden">Pago</span><span className="hidden md:inline">Total Pago</span></p>
+          <p className="text-sm md:text-xl font-bold text-income">{displayValue(stats.totalPaid)}</p>
         </div>
         <div 
           className="bg-card border border-border rounded-xl p-3 md:p-4 shadow-sm opacity-0 animate-fade-in-up"
           style={{ animationDelay: '0.2s' }}
         >
-          <p className="text-xs md:text-sm text-muted-foreground">Falta Pagar</p>
-          <p className="text-lg md:text-xl font-bold text-expense">{displayValue(stats.totalRemaining)}</p>
+          <p className="text-xs md:text-sm text-muted-foreground"><span className="md:hidden">Resta</span><span className="hidden md:inline">Falta Pagar</span></p>
+          <p className="text-sm md:text-xl font-bold text-expense">{displayValue(stats.totalRemaining)}</p>
         </div>
       </div>
 

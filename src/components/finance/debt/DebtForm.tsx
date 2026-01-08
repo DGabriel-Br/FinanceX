@@ -110,7 +110,7 @@ export const DebtForm = forwardRef<HTMLFormElement, DebtFormProps>(
             onBlur={() => handleBlur('name')}
             placeholder="Ex: Empréstimo, Financiamento..."
             className={cn(
-              "w-full px-3 py-2 rounded-lg border bg-background text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring",
+              "w-full px-3 h-11 text-base lg:h-10 lg:text-sm rounded-lg border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring",
               nameError ? "border-expense" : "border-input"
             )}
           />
@@ -132,7 +132,7 @@ export const DebtForm = forwardRef<HTMLFormElement, DebtFormProps>(
             onBlur={() => handleBlur('totalValue')}
             placeholder="0,00"
             className={cn(
-              "w-full px-3 py-2 rounded-lg border bg-background text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring",
+              "w-full px-3 h-11 text-base lg:h-10 lg:text-sm rounded-lg border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring",
               totalValueError ? "border-expense" : "border-input"
             )}
           />
@@ -154,7 +154,7 @@ export const DebtForm = forwardRef<HTMLFormElement, DebtFormProps>(
             onBlur={() => handleBlur('monthlyInstallment')}
             placeholder="0,00"
             className={cn(
-              "w-full px-3 py-2 rounded-lg border bg-background text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring",
+              "w-full px-3 h-11 text-base lg:h-10 lg:text-sm rounded-lg border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring",
               monthlyInstallmentError ? "border-expense" : "border-input"
             )}
           />
@@ -176,7 +176,7 @@ export const DebtForm = forwardRef<HTMLFormElement, DebtFormProps>(
             onBlur={() => handleBlur('paidValue')}
             placeholder="0,00"
             className={cn(
-              "w-full px-3 py-2 rounded-lg border bg-background text-foreground text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring",
+              "w-full px-3 h-11 text-base lg:h-10 lg:text-sm rounded-lg border bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring",
               paidValueError ? "border-expense" : "border-input"
             )}
           />
@@ -195,7 +195,7 @@ export const DebtForm = forwardRef<HTMLFormElement, DebtFormProps>(
               <Button
                 variant="outline"
                 className={cn(
-                  "w-full justify-start text-left font-normal",
+                  "w-full h-11 text-base lg:h-10 lg:text-sm justify-start text-left font-normal",
                   !selectedDate && "text-muted-foreground",
                   startDateError && "border-expense"
                 )}
@@ -224,7 +224,7 @@ export const DebtForm = forwardRef<HTMLFormElement, DebtFormProps>(
 
         <button
           type="submit"
-          className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-lg bg-primary text-primary-foreground font-medium text-sm transition-all duration-200 hover:bg-primary/90"
+          className="w-full h-12 text-base lg:h-10 lg:text-sm touch-target flex items-center justify-center gap-2 px-4 rounded-lg bg-primary text-primary-foreground font-medium transition-all duration-200 hover:bg-primary/90"
         >
           <Plus className="w-4 h-4" />
           Adicionar Dívida

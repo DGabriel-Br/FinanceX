@@ -343,7 +343,7 @@ export const Investments = ({
                 Resgatar
               </button>
             </DialogTrigger>
-              <DialogContent className="max-w-md">
+              <DialogContent className="max-w-[95vw] sm:max-w-md mx-auto">
                 <DialogHeader>
                   <DialogTitle>Resgatar Investimento</DialogTitle>
                 </DialogHeader>
@@ -355,7 +355,7 @@ export const Investments = ({
                   <div className="space-y-2">
                     <label className="text-sm font-medium text-foreground">Tipo de Investimento</label>
                     <Select value={withdrawType} onValueChange={(v) => setWithdrawType(v as InvestmentType)}>
-                      <SelectTrigger>
+                      <SelectTrigger className="h-11 text-base lg:h-10 lg:text-sm">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -384,7 +384,7 @@ export const Investments = ({
                         value={withdrawValue}
                         onChange={e => setWithdrawValue(formatCurrencyInput(e.target.value))}
                         placeholder="0,00"
-                        className="w-full pl-10 pr-4 py-2 rounded-lg border border-input bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                        className="w-full pl-10 pr-4 h-11 text-base lg:h-10 lg:text-sm rounded-lg border border-input bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                       />
                     </div>
                   </div>
@@ -396,21 +396,21 @@ export const Investments = ({
                       value={withdrawDescription}
                       onChange={e => setWithdrawDescription(e.target.value)}
                       placeholder={`Resgate ${investmentTypeLabels[withdrawType]}`}
-                      className="w-full px-4 py-2 rounded-lg border border-input bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                      className="w-full px-4 h-11 text-base lg:h-10 lg:text-sm rounded-lg border border-input bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                     />
                   </div>
 
                   <div className="flex gap-3 pt-2">
                     <Button 
                       variant="outline" 
-                      className="flex-1" 
+                      className="flex-1 h-12 text-base lg:h-10 lg:text-sm touch-target" 
                       onClick={() => setIsWithdrawDialogOpen(false)}
                       disabled={isSubmitting}
                     >
                       Cancelar
                     </Button>
                     <Button 
-                      className="flex-1 gap-2"
+                      className="flex-1 h-12 text-base lg:h-10 lg:text-sm touch-target gap-2"
                       onClick={handleWithdraw}
                       disabled={isSubmitting || !withdrawValue}
                     >
@@ -514,7 +514,7 @@ export const Investments = ({
               Resgatar
             </button>
           </DialogTrigger>
-          <DialogContent className="max-w-md">
+          <DialogContent className="max-w-[95vw] sm:max-w-md mx-auto">
             <DialogHeader>
               <DialogTitle>Resgatar Investimento</DialogTitle>
             </DialogHeader>
@@ -526,7 +526,7 @@ export const Investments = ({
               <div className="space-y-2">
                 <label className="text-sm font-medium text-foreground">Tipo de Investimento</label>
                 <Select value={withdrawType} onValueChange={(v) => setWithdrawType(v as InvestmentType)}>
-                  <SelectTrigger>
+                  <SelectTrigger className="h-11 text-base lg:h-10 lg:text-sm">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -555,7 +555,7 @@ export const Investments = ({
                     value={withdrawValue}
                     onChange={e => setWithdrawValue(formatCurrencyInput(e.target.value))}
                     placeholder="0,00"
-                    className="w-full pl-10 pr-4 py-2 rounded-lg border border-input bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                    className="w-full pl-10 pr-4 h-11 text-base lg:h-10 lg:text-sm rounded-lg border border-input bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                   />
                 </div>
               </div>
@@ -567,20 +567,20 @@ export const Investments = ({
                   value={withdrawDescription}
                   onChange={e => setWithdrawDescription(e.target.value)}
                   placeholder={`Resgate ${investmentTypeLabels[withdrawType]}`}
-                  className="w-full px-4 py-2 rounded-lg border border-input bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
+                  className="w-full px-4 h-11 text-base lg:h-10 lg:text-sm rounded-lg border border-input bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-ring"
                 />
               </div>
 
               <div className="flex gap-3 pt-2">
                 <Button 
                   variant="outline" 
-                  className="flex-1" 
+                  className="flex-1 h-12 text-base lg:h-10 lg:text-sm touch-target" 
                   onClick={() => setIsWithdrawDialogOpen(false)}
                 >
                   Cancelar
                 </Button>
                 <Button 
-                  className="flex-1 gap-2"
+                  className="flex-1 h-12 text-base lg:h-10 lg:text-sm touch-target gap-2"
                   onClick={handleWithdraw}
                   disabled={isSubmitting || !withdrawValue}
                 >
