@@ -23,7 +23,7 @@ import {
 // Problem Section Component
 const ProblemSection = memo(function ProblemSection() {
   return (
-    <section className="pt-16 pb-10 lg:pt-28 lg:pb-16 bg-[#f8f9fb] text-landing-dark relative overflow-hidden">
+    <section className="pt-16 pb-12 lg:pt-20 lg:pb-16 bg-[#f8f9fb] text-landing-dark relative overflow-hidden">
       <div className="w-full max-w-7xl mx-auto px-5 lg:px-8 relative">
         <div className="max-w-3xl mx-auto lg:max-w-4xl">
           <ScrollReveal direction="up" duration={700}>
