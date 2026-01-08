@@ -108,9 +108,9 @@ export const TestimonialsSection = memo(function TestimonialsSection() {
         <div className="absolute bottom-20 right-1/4 w-[400px] h-[400px] bg-landing-teal/[0.02] rounded-full blur-[100px]" />
       </div>
 
-      <div className="w-full max-w-6xl mx-auto px-5 lg:px-8 relative">
+      <div className="w-full max-w-7xl mx-auto px-5 lg:px-8 relative">
         <ScrollReveal direction="up" duration={700}>
-          <header className="text-center mb-16 lg:mb-24">
+          <header className="text-center mb-10 lg:mb-14">
             <div className="flex items-center justify-center gap-3 mb-5 lg:mb-6">
               <div className="h-px w-8 lg:w-12 bg-gradient-to-r from-transparent to-landing-cyan/50" />
               <span className="text-[10px] lg:text-[11px] font-semibold tracking-[0.3em] uppercase text-landing-cyan/70">Depoimentos</span>

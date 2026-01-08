@@ -25,60 +25,57 @@ const ProblemSection = memo(function ProblemSection() {
   return (
     <section className="pt-16 pb-10 lg:pt-28 lg:pb-16 bg-[#f8f9fb] text-landing-dark relative overflow-hidden">
       <div className="w-full max-w-7xl mx-auto px-5 lg:px-8 relative">
-        <div className="grid lg:grid-cols-12 gap-8 lg:gap-12">
-          <div className="lg:col-span-8">
-            <ScrollReveal direction="up" duration={700}>
-              <div className="flex items-center gap-3 mb-4 lg:mb-5">
-                <div className="h-px w-6 lg:w-8 bg-landing-cyan" />
-                <span className="text-[11px] lg:text-xs font-semibold tracking-[0.2em] uppercase text-landing-cyan/80">O problema</span>
-              </div>
-              
-              <h2 
-                className="text-2xl sm:text-3xl lg:text-4xl xl:text-[2.75rem] font-bold tracking-[-0.02em] mb-8 lg:mb-10 leading-tight text-landing-dark/95"
-                style={{ fontFamily: "'Sora', sans-serif" }}
-              >
-                Isso já aconteceu com você?
-              </h2>
-              
-              <div className="space-y-4 lg:space-y-5 text-base lg:text-lg text-landing-dark/55 max-w-2xl">
-                <p className="leading-[1.7]">
-                  Chega no fim do mês e você não entende.
-                  <br />
-                  Trabalhou, recebeu, não fez nenhuma loucura…
-                  <br />
-                  <span className="text-landing-dark/90 font-medium">mas o dinheiro sumiu.</span>
-                </p>
-                <p className="leading-[1.7]">
-                  Você até tentou planilha. Funcionou por uma semana.
-                  <br />
-                  Depois virou mais um arquivo esquecido.
-                </p>
-                <p className="leading-[1.7]">
-                  Ou baixou um app cheio de função, conectou banco, configurou tudo…
-                  <br />
-                  <span className="text-landing-dark/90 font-medium">e desistiu porque era coisa demais.</span>
-                </p>
-              </div>
-
-              <div className="mt-10 lg:mt-12 pl-5 lg:pl-6 border-l-[3px] border-landing-cyan/60">
-                <p 
-                  className="text-lg lg:text-xl xl:text-2xl text-landing-dark/85 leading-snug"
-                  style={{ fontFamily: "'Sora', sans-serif" }}
-                >
-                  <span className="italic font-semibold">O problema não é você.</span>
-                  <br />
-                  É que tentaram complicar algo que deveria ser simples.
-                </p>
-              </div>
-              <p 
-                className="mt-4 pl-5 lg:pl-6 text-sm lg:text-base text-landing-dark/70"
-                style={{ fontFamily: "'Sora', sans-serif" }}
-              >
-                Controle financeiro não precisa virar um segundo emprego.
+        <div className="max-w-3xl mx-auto lg:max-w-4xl">
+          <ScrollReveal direction="up" duration={700}>
+            <div className="flex items-center gap-3 mb-4 lg:mb-5">
+              <div className="h-px w-6 lg:w-8 bg-landing-cyan" />
+              <span className="text-[11px] lg:text-xs font-semibold tracking-[0.2em] uppercase text-landing-cyan/80">O problema</span>
+            </div>
+            
+            <h2 
+              className="text-2xl sm:text-3xl lg:text-4xl xl:text-[2.75rem] font-bold tracking-[-0.02em] mb-8 lg:mb-10 leading-tight text-landing-dark/95"
+              style={{ fontFamily: "'Sora', sans-serif" }}
+            >
+              Isso já aconteceu com você?
+            </h2>
+            
+            <div className="space-y-4 lg:space-y-5 text-base lg:text-lg text-landing-dark/55 max-w-2xl">
+              <p className="leading-[1.7]">
+                Chega no fim do mês e você não entende.
+                <br />
+                Trabalhou, recebeu, não fez nenhuma loucura…
+                <br />
+                <span className="text-landing-dark/90 font-medium">mas o dinheiro sumiu.</span>
               </p>
-            </ScrollReveal>
-          </div>
-          <div className="hidden lg:block lg:col-span-4" />
+              <p className="leading-[1.7]">
+                Você até tentou planilha. Funcionou por uma semana.
+                <br />
+                Depois virou mais um arquivo esquecido.
+              </p>
+              <p className="leading-[1.7]">
+                Ou baixou um app cheio de função, conectou banco, configurou tudo…
+                <br />
+                <span className="text-landing-dark/90 font-medium">e desistiu porque era coisa demais.</span>
+              </p>
+            </div>
+
+            <div className="mt-10 lg:mt-12 pl-5 lg:pl-6 border-l-[3px] border-landing-cyan/60">
+              <p 
+                className="text-lg lg:text-xl xl:text-2xl text-landing-dark/85 leading-snug"
+                style={{ fontFamily: "'Sora', sans-serif" }}
+              >
+                <span className="italic font-semibold">O problema não é você.</span>
+                <br />
+                É que tentaram complicar algo que deveria ser simples.
+              </p>
+            </div>
+            <p 
+              className="mt-4 pl-5 lg:pl-6 text-sm lg:text-base text-landing-dark/70"
+              style={{ fontFamily: "'Sora', sans-serif" }}
+            >
+              Controle financeiro não precisa virar um segundo emprego.
+            </p>
+          </ScrollReveal>
         </div>
       </div>
     </section>
@@ -210,7 +207,7 @@ const ForWhoSection = memo(function ForWhoSection() {
   ];
 
   return (
-    <section className="pt-14 pb-6 lg:pt-24 lg:pb-10 bg-[#f8f9fb] text-landing-dark relative overflow-hidden">
+    <section className="pt-16 pb-12 lg:pt-24 lg:pb-16 bg-[#f8f9fb] text-landing-dark relative overflow-hidden">
       <div className="w-full max-w-7xl mx-auto px-5 lg:px-8">
         <ScrollReveal direction="up" duration={700}>
           <header className="text-center mb-10 lg:mb-14">
@@ -243,7 +240,7 @@ const ForWhoSection = memo(function ForWhoSection() {
                     <div className="h-5 w-5 lg:h-6 lg:w-6 rounded-full bg-landing-green/10 flex items-center justify-center flex-shrink-0 mt-0.5 group-hover:bg-landing-green/15 transition-colors duration-300">
                       <Check className="w-3 h-3 lg:w-3.5 lg:h-3.5 text-landing-green" />
                     </div>
-                    <span className="text-landing-dark/55 text-sm lg:text-base leading-relaxed whitespace-nowrap">{item}</span>
+                    <span className="text-landing-dark/55 text-sm lg:text-base leading-relaxed">{item}</span>
                   </li>
                 ))}
               </ul>
@@ -264,7 +261,7 @@ const ForWhoSection = memo(function ForWhoSection() {
                     <div className="h-5 w-5 lg:h-6 lg:w-6 rounded-full bg-red-50 flex items-center justify-center flex-shrink-0 mt-0.5 group-hover:bg-red-100/60 transition-colors duration-300">
                       <X className="w-3 h-3 lg:w-3.5 lg:h-3.5 text-red-400" />
                     </div>
-                    <span className="text-landing-dark/55 text-sm lg:text-base leading-relaxed whitespace-nowrap">{item}</span>
+                    <span className="text-landing-dark/55 text-sm lg:text-base leading-relaxed">{item}</span>
                   </li>
                 ))}
               </ul>

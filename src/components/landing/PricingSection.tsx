@@ -60,7 +60,7 @@ export const PricingSection = memo(function PricingSection() {
   };
 
   return (
-    <section id="pricing" className="pt-14 pb-12 lg:pt-24 lg:pb-16 bg-landing-dark relative overflow-hidden">
+    <section id="pricing" className="pt-16 pb-12 lg:pt-24 lg:pb-16 bg-landing-dark relative overflow-hidden">
       <div className="absolute inset-0">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_60%_50%_at_50%_100%,rgba(34,211,238,0.08),transparent_60%)]" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_30%,rgba(15,23,42,0.4)_100%)]" />
@@ -118,7 +118,7 @@ export const PricingSection = memo(function PricingSection() {
                       <Check className="w-5 h-5 text-landing-green flex-shrink-0 mt-0.5" aria-hidden="true" />
                       <div>
                         <span className="text-white/90 font-semibold text-sm lg:text-base block">{feature.title}</span>
-                        <span className="text-white/50 text-sm whitespace-nowrap">{feature.description}</span>
+                        <span className="text-white/50 text-sm">{feature.description}</span>
                       </div>
                     </li>
                   ))}
