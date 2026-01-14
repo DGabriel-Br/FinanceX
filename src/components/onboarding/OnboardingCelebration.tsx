@@ -70,6 +70,10 @@ export const OnboardingCelebration = ({
         </div>
       )}
 
+      <p className="text-xs font-semibold tracking-[0.2em] uppercase text-muted-foreground/70 mb-4 animate-fade-in opacity-0" style={{ animationDelay: '0.05s', animationFillMode: 'forwards' }}>
+        Tudo pronto
+      </p>
+
       {/* Success icon */}
       <div className={cn(
         'mb-6 p-4 rounded-2xl transition-transform duration-500 animate-fade-in opacity-0',

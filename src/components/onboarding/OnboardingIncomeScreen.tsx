@@ -87,6 +87,16 @@ export const OnboardingIncomeScreen = ({ onContinue, onBack }: OnboardingIncomeS
         <ArrowLeft className="w-5 h-5 text-muted-foreground" />
       </button>
 
+      <div className="w-full max-w-xs mb-4 animate-fade-in opacity-0" style={{ animationDelay: '0.05s', animationFillMode: 'forwards' }}>
+        <div className="flex items-center justify-between text-xs text-muted-foreground">
+          <span className="font-semibold tracking-wide uppercase">Passo 1 de 2</span>
+          <span>Leva segundos</span>
+        </div>
+        <div className="mt-2 h-1 w-full rounded-full bg-muted">
+          <div className="h-1 w-1/2 rounded-full bg-primary" />
+        </div>
+      </div>
+
       {/* Icon */}
       <div className="mb-6 p-3 rounded-xl bg-income/10 animate-fade-in opacity-0" style={{ animationDelay: '0.1s', animationFillMode: 'forwards' }}>
         <Wallet className="w-8 h-8 text-income" />

@@ -8,6 +8,9 @@ interface OnboardingImpactScreenProps {
 export const OnboardingImpactScreen = ({ onStart }: OnboardingImpactScreenProps) => {
   return (
     <div className="flex flex-col items-center justify-center min-h-full px-6 py-12 text-center">
+      <span className="text-xs font-semibold tracking-[0.2em] uppercase text-muted-foreground/70 mb-4 animate-fade-in opacity-0" style={{ animationDelay: '0.05s', animationFillMode: 'forwards' }}>
+        Em 3 passos rápidos
+      </span>
       {/* Icon */}
       <div className="mb-8 p-4 rounded-2xl bg-primary/10 animate-fade-in opacity-0" style={{ animationDelay: '0.1s', animationFillMode: 'forwards' }}>
         <Sparkles className="w-12 h-12 text-primary" />
