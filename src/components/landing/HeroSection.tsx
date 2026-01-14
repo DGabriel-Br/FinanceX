@@ -64,9 +64,9 @@ export const HeroSection = memo(function HeroSection() {
           </div>
 
           {/* Right - Dashboard preview */}
-          <div className="lg:col-span-5 lg:-mr-8 xl:-mr-16">
+          <div className="lg:col-span-5">
             <ScrollReveal direction="up" delay={150} duration={800}>
-              <div className="relative lg:translate-x-4 xl:translate-x-8">
+              <div className="relative">
                 <div className="absolute -inset-8 bg-gradient-to-br from-landing-cyan/15 via-landing-teal/8 to-transparent rounded-[2.5rem] blur-3xl opacity-60" />
                 
                 <div className="relative bg-gradient-to-b from-white/[0.08] to-white/[0.02] backdrop-blur-xl border border-white/[0.08] rounded-2xl lg:rounded-3xl p-5 lg:p-7 shadow-2xl">

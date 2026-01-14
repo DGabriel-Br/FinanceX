@@ -134,7 +134,7 @@ export const TestimonialsSection = memo(function TestimonialsSection() {
               <TestimonialCard key={t.name} testimonial={t} />
             ))}
           </div>
-          <div className="space-y-5 lg:space-y-6 md:pt-16">
+          <div className="space-y-5 lg:space-y-6">
             {rightColumn.map((t) => (
               <TestimonialCard key={t.name} testimonial={t} />
             ))}

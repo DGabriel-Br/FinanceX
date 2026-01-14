@@ -11,7 +11,7 @@ export const LandingHeader = memo(function LandingHeader() {
           <Link to="/" className="flex items-end group transition-opacity duration-300 hover:opacity-80">
             <FinanceLogo size={28} className="lg:w-8 lg:h-8" />
             <span 
-              className="text-lg lg:text-xl font-black tracking-wider -ml-0.5"
+              className="text-lg lg:text-xl font-black tracking-wider"
               style={{ fontFamily: "'Orbitron', sans-serif" }}
             >
               inanceX
