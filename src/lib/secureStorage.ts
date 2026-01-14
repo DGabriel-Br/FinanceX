@@ -99,9 +99,13 @@ export async function removeSecureItem(key: string): Promise<void> {
  * Clear all stored data (for logout)
  */
 export async function clearAllSecureItems(): Promise<void> {
+  const savedEmail = await getSecureItem(STORAGE_KEYS.SAVED_EMAIL);
   if (Capacitor.isNativePlatform()) {
     try {
       await Preferences.clear();
+      if (savedEmail) {
+        await Preferences.set({ key: STORAGE_KEYS.SAVED_EMAIL, value: savedEmail });
+      }
     } catch (error) {
       console.error('SecureStorage clear error:', error);
     }
@@ -110,6 +114,9 @@ export async function clearAllSecureItems(): Promise<void> {
     Object.values(STORAGE_KEYS).forEach(key => {
       localStorage.removeItem(key);
     });
+    if (savedEmail) {
+      localStorage.setItem(STORAGE_KEYS.SAVED_EMAIL, savedEmail);
+    }
   }
 }
 

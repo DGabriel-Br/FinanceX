@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo, forwardRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuthContext } from '@/contexts/AuthContext';
+import { getSecureItem, removeSecureItem, setSecureItem, STORAGE_KEYS } from '@/lib/secureStorage';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { PasswordStrengthMeter } from '@/components/ui/PasswordStrengthMeter';
@@ -83,13 +84,16 @@ export default function Auth() {
 
   // Load saved email on mount (NEVER store passwords!)
   useEffect(() => {
-    const savedEmail = localStorage.getItem('financex_saved_email');
-    if (savedEmail) {
-      setEmail(savedEmail);
-      setRememberMe(true);
-    }
-    // Security: Remove any legacy stored passwords
-    localStorage.removeItem('financex_saved_password');
+    const loadSavedEmail = async () => {
+      const savedEmail = await getSecureItem(STORAGE_KEYS.SAVED_EMAIL);
+      if (savedEmail) {
+        setEmail(savedEmail);
+        setRememberMe(true);
+      }
+      await removeSecureItem('financex_saved_password');
+    };
+
+    void loadSavedEmail();
   }, []);
 
   // Generate random particles
@@ -119,6 +123,17 @@ export default function Auth() {
     setInitialFadeIn(true);
     setMounted(true);
   }, []);
+
+  useEffect(() => {
+    if (rememberMe && email) {
+      void setSecureItem(STORAGE_KEYS.SAVED_EMAIL, email);
+      return;
+    }
+
+    if (!rememberMe) {
+      void removeSecureItem(STORAGE_KEYS.SAVED_EMAIL);
+    }
+  }, [email, rememberMe]);
 
   // Handle route transitions with animation (web only)
   useEffect(() => {
@@ -286,9 +301,9 @@ export default function Auth() {
       } else {
         // Save only email if remember me is checked (NEVER save passwords!)
         if (rememberMe) {
-          localStorage.setItem('financex_saved_email', email);
+          await setSecureItem(STORAGE_KEYS.SAVED_EMAIL, email);
         } else {
-          localStorage.removeItem('financex_saved_email');
+          await removeSecureItem(STORAGE_KEYS.SAVED_EMAIL);
         }
         toast.success('Login realizado com sucesso!');
         
@@ -703,9 +718,12 @@ export default function Auth() {
                         id="remember-me"
                         checked={rememberMe}
                         onCheckedChange={(checked) => {
-                          setRememberMe(checked === true);
-                          if (!checked) {
-                            localStorage.removeItem('financex_saved_email');
+                          const isChecked = checked === true;
+                          setRememberMe(isChecked);
+                          if (!isChecked) {
+                            void removeSecureItem(STORAGE_KEYS.SAVED_EMAIL);
+                          } else if (email) {
+                            void setSecureItem(STORAGE_KEYS.SAVED_EMAIL, email);
                           }
                         }}
                         className="border-white/30 data-[state=checked]:bg-primary data-[state=checked]:border-primary"
