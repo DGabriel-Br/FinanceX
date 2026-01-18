@@ -1,32 +1,32 @@
-# FinanceX — Suas Finanças, Sob Controle
+# FinanceX (main2)
 
-Uma aplicação moderna e intuitiva para gerenciar suas finanças pessoais.
+Monorepo com `apps/api` (Fastify) e `apps/web` (Next.js), além de `packages/shared` com tipos e validações comuns.
 
-## Funcionalidades
+## Pré-requisitos
+- Node.js LTS
+- PostgreSQL 15
+- Redis 7
 
-- 📊 **Dashboard** - Visão geral das suas finanças com gráficos interativos
-- 💰 **Lançamentos** - Registre suas receitas e despesas
-- 📈 **Controle de Investimentos** - Acompanhe seus investimentos e metas
-- 💳 **Controle de Dívidas** - Gerencie suas dívidas e pagamentos
+## Variáveis de ambiente
+Crie `.env` com base em `.env.example` (a ser incluído). Valores críticos:
+- `DATABASE_URL`
+- `JWT_SECRET`
+- `API_PORT`
 
-## Tecnologias
-
-- React 18
-- TypeScript
-- Tailwind CSS
-- Recharts
-- Shadcn/UI
-
-## Como executar
-
+## Comandos
 ```bash
-# Instalar dependências
 npm install
 
-# Iniciar servidor de desenvolvimento
-npm run dev
+npm run dev:api
+npm run dev:web
 ```
 
-## Licença
+## Estrutura
+```
+apps/api        # Fastify + Prisma
+apps/web        # Next.js App Router
+packages/shared # Tipos e validações
+```
 
-MIT
+## Observabilidade
+O backend expõe logs JSON e Swagger em `/docs`.
